@@ -20,6 +20,9 @@ interface ScannedCodeDao {
     @Query("SELECT * FROM scannedCode WHERE barcode LIKE :searchBarcode")
     suspend fun findByBarcode(searchBarcode: String): ScannedCode?
 
+    @Query("SELECT * FROM scannedCode WHERE heatNum LIKE :searchHeat")
+    suspend fun findByHeat(searchHeat: String): ScannedCode?
+
     @Query("DELETE FROM scannedCode")
     suspend fun deleteAll()
 
@@ -27,5 +30,5 @@ interface ScannedCodeDao {
     suspend fun insert(vararg scannedCodes: ScannedCode)
 
     @Delete
-    suspend fun delete(scannedCode: ScannedCode)
+    suspend fun delete(vararg scannedCode: ScannedCode)
 }
