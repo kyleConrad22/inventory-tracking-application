@@ -18,10 +18,10 @@ class CurrentInventoryViewModel(private val repository: CurrentInventoryReposito
         repository.deleteAll()
     }
 
-    fun findByHeat(barcode: String): LiveData<CurrentInventoryLineItem?> {
+    fun findByHeat(heat: String): LiveData<CurrentInventoryLineItem?> {
         val result = MutableLiveData<CurrentInventoryLineItem?>()
         viewModelScope.launch {
-            val returnedCode = repository.findByBarcode(barcode)
+            val returnedCode = repository.findByHeat(heat)
             result.postValue(returnedCode)
         }
         return result

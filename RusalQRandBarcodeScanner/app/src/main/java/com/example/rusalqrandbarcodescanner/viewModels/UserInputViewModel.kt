@@ -14,6 +14,7 @@ class UserInputViewModel(): ViewModel() {
     var bl: MutableLiveData<String> = MutableLiveData("")
     var vessel: MutableLiveData<String> = MutableLiveData("")
     var checker: MutableLiveData<String> = MutableLiveData("")
+    var heat: MutableLiveData<String> = MutableLiveData("")
 
     fun update(
         loader: String,
@@ -22,7 +23,8 @@ class UserInputViewModel(): ViewModel() {
         bundles: String,
         bl: String,
         vessel: String,
-        checker: String
+        checker: String,
+        heat: String
     ) {
         this.loader.value = loader
         this.order.value = order
@@ -31,6 +33,11 @@ class UserInputViewModel(): ViewModel() {
         this.bl.value = bl
         this.vessel.value = vessel
         this.checker.value = checker
+        this.heat.value = heat
+    }
+
+    fun updateHeat(heat: String){
+        this.heat.value = heat
     }
 
     class UserInputViewModelFactory(): ViewModelProvider.Factory {

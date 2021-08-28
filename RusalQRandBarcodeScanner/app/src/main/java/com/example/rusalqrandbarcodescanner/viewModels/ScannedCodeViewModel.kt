@@ -19,6 +19,19 @@ class ScannedCodeViewModel(private val repository: CodeRepository): ViewModel() 
         repository.deleteAll()
     }
 
+    fun delete(scannedCode: ScannedCode) = viewModelScope.launch{
+        repository.delete(scannedCode)
+    }
+
+    fun findByHeat(heat: String): LiveData<ScannedCode?> {
+        val result = MutableLiveData<ScannedCode?>()
+        viewModelScope.launch{
+            val returnedCode = repository.findByHeat(heat)
+            result.postValue(returnedCode)
+        }
+        return result
+    }
+
     fun findByBarcode(barcode: String): LiveData<ScannedCode?> {
         val result = MutableLiveData<ScannedCode?>()
         viewModelScope.launch {

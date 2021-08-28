@@ -11,9 +11,9 @@ class CurrentInventoryRepository(private val currentInventoryDao: CurrentInvento
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
-    suspend fun findByBarcode(barcode: String): CurrentInventoryLineItem? {
+    suspend fun findByHeat(heat: String): CurrentInventoryLineItem? {
         return try {
-            currentInventoryDao.findByHeat(barcode)
+            currentInventoryDao.findByHeat(heat)
         } catch (exc: EmptyResultSetException) {
             null
         }

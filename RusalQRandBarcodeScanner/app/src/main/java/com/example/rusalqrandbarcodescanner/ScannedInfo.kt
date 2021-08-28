@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
+import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
 import com.example.rusalqrandbarcodescanner.database.ScannedCode
 import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel
 import java.time.LocalDateTime
@@ -35,9 +36,23 @@ object ScannedInfo {
         netWgtLbs = elements[7].split("/")[0]
         grossWgtLbs = elements[7].split("/")[1]
         packageNum = elements[9]
+        setTime()
+    }
+
+    private fun setTime(){
         val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("MM_dd_yyyy HH:mm:ss")
         val timeNow: LocalDateTime = LocalDateTime.now()
         scanTime = formatter.format(timeNow)
+    }
+
+    fun getValues(currentInventoryLineItem: CurrentInventoryLineItem){
+        barCode = currentInventoryLineItem.barcode
+        blNum = currentInventoryLineItem.blNum.toString()
+        heatNum = currentInventoryLineItem.heatNum.toString()
+        netWgtKg = currentInventoryLineItem.netWeightKg.toString()
+        grossWgtKg = currentInventoryLineItem.grossWeightKg.toString()
+        packageNum = currentInventoryLineItem.packageNum.toString()
+        setTime()
     }
 
     fun clearValues(){

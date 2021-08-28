@@ -207,7 +207,7 @@ class MainActivity : ComponentActivity() {
             if (isVisible) {
                 navController.navigate("loadOptionsPage")
             }
-            userInputViewModel.update(loader = loader, order = workOrder, load = loadNum, bundles = bundleQty, bl = blExp, checker = "", vessel = "")
+            userInputViewModel.update(loader = loader, order = workOrder, load = loadNum, bundles = bundleQty, bl = blExp, checker = "", vessel = "", heat = "")
         }) {
             Text(text = "Confirm Load Info", modifier = Modifier.padding(16.dp))
         }
@@ -220,7 +220,7 @@ class MainActivity : ComponentActivity() {
             if (isVisible) {
                 navController.navigate("receptionOptionsPage")
             }
-            userInputViewModel.update(loader = "", order = "", load = "", bundles = "", bl = "", vessel = vessel, checker = vessel)
+            userInputViewModel.update(loader = "", order = "", load = "", bundles = "", bl = "", vessel = vessel, checker = vessel, heat = "")
         }) {
             Text(text = "Confirm Reception Info", modifier = Modifier.padding(16.dp))
         }
@@ -319,50 +319,64 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun blInput(): String {
-        var bl by remember { mutableStateOf("") }
+    fun blInput(): String? {
+        var bl by remember { mutableStateOf(userInputViewModel.bl.value) }
 
-        OutlinedTextField(maxLines = 2, value = bl, onValueChange = { bl = it }, label = { Text(text = "BL: ") })
+        bl?.let { blNum ->
+            OutlinedTextField(maxLines = 2,
+                value = blNum,
+                onValueChange = { bl = it },
+                label = { Text(text = "BL: ") })
+        }
         return bl
     }
 
     @Composable
-    fun loaderInput(): String {
-        var loader by remember { mutableStateOf("") }
+    fun loaderInput(): String? {
+        var loader by remember { mutableStateOf(userInputViewModel.loader.value) }
 
-        OutlinedTextField(maxLines = 1, value = loader,
-            onValueChange = { loader = it },
-            label = { Text(text = "Loader: ") })
+        loader?.let { load ->
+            OutlinedTextField(maxLines = 1, value = load,
+                onValueChange = { loader = it },
+                label = { Text(text = "Loader: ") })
+        }
         return loader
     }
 
     @Composable
-    fun vesselInput(): String {
-        var vessel by remember { mutableStateOf("") }
+    fun vesselInput(): String? {
+        var vessel by remember { mutableStateOf(userInputViewModel.vessel.value) }
 
-        OutlinedTextField(maxLines = 1, value = vessel,
-            onValueChange = { vessel = it },
-            label = { Text(text = "Vessel: ") })
+        vessel?.let { ves ->
+            OutlinedTextField(maxLines = 1,
+                value = ves,
+                onValueChange = { vessel = it },
+                label = { Text(text = "Vessel: ") })
+        }
         return vessel
     }
 
     @Composable
-    fun checkerInput(): String {
-        var checker by remember { mutableStateOf("") }
+    fun checkerInput(): String? {
+        var checker by remember { mutableStateOf(userInputViewModel.checker.value) }
 
-        OutlinedTextField(maxLines = 1, value = checker,
-            onValueChange = { checker = it },
-            label = { Text(text = "Checker: ") })
+        checker?.let { check ->
+            OutlinedTextField(maxLines = 1, value = check,
+                onValueChange = { checker = it },
+                label = { Text(text = "Checker: ") })
+        }
         return checker
     }
 
     @Composable
-    fun heatNumberInput(): String {
-        var heat by remember { mutableStateOf("") }
+    fun heatNumberInput(): String? {
+        var heat by remember { mutableStateOf(userInputViewModel.heat.value) }
 
-        OutlinedTextField(maxLines = 1, value = heat,
-            onValueChange = { heat = it },
-            label = { Text(text = "Heat Number: ") })
+        heat?.let { heatNum ->
+            OutlinedTextField(maxLines = 1, value = heatNum,
+                onValueChange = { heat = it },
+                label = { Text(text = "Heat Number: ") })
+        }
         return heat
     }
 
@@ -414,7 +428,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun MainMenu(navController: NavHostController) {
         scannedCodeViewModel.deleteAll()
-        userInputViewModel.update(loader = "", bundles = "", vessel = "", bl = "", checker = "", order = "", load = "")
+        userInputViewModel.update(loader = "", bundles = "", vessel = "", bl = "", checker = "", order = "", load = "", heat = "")
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
@@ -484,9 +498,11 @@ class MainActivity : ComponentActivity() {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                 BackButton(navController = navController, dest = "mainMenu")
-                ReceptionConfirmButton(navController = navController,
-                    vessel = vessel,
-                    checker = checker)
+                if (vessel != null && checker != null){
+                    ReceptionConfirmButton(navController = navController,
+                        vessel = vessel,
+                        checker = checker)
+                } else { throw NullPointerException("One of the assigned values is null!")}
             }
         }
     }
@@ -524,7 +540,7 @@ class MainActivity : ComponentActivity() {
             Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.End) {
                 Button(modifier = Modifier
                     .padding(16.dp)
-                    .alpha(if (true) {
+                    .alpha(if (false) {
                         1f
                     } else {
                         0f
@@ -550,15 +566,32 @@ class MainActivity : ComponentActivity() {
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(text="Manual Heat Number Search:", modifier = Modifier.padding(16.dp))
-            var heat = heatNumberInput()
+            Text(text="Manual Heat Number Search: ", modifier = Modifier.padding(16.dp))
+            val heat = heatNumberInput()
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                 BackButton(navController = navController, dest = "scannerPage")
-                ConfirmButton(navController = navController,
-                    str = "Heat",
-                    dest = "scannedInfoReturn")
+                Button(onClick = {
+                    if (heat != null){
+                        currentInventoryViewModel.findByHeat(heat.replace("\n", "").replace("-", "").replace(" ", "")).observe(this@MainActivity, { inventoryItem ->
+                            userInputViewModel.updateHeat(heat)
+                            if (inventoryItem != null) {
+                                ScannedInfo.getValues(inventoryItem)
+                                if (ScannedInfo.blNum == userInputViewModel.bl.value) {
+                                    navController.navigate("scannedInfoReturn")
+                                } else {
+                                    navController.navigate("incorrectBl")
+                                }
+                            } else{
+                                Log.d("DEBUG", "Heat number returned a null reference!")
+                            }
+                        })
+                    }
+
+                }){
+                    Text(text="Retrieve Bundle Info", modifier = Modifier.padding(16.dp))
+                }
             }
         }
     }
@@ -684,14 +717,25 @@ class MainActivity : ComponentActivity() {
             verticalArrangement = Arrangement.SpaceEvenly) {
             Text(text = "Enter Heat / Cast Number of Entry to be Removed:",
                 modifier = Modifier.padding(16.dp))
-            var heat = heatNumberInput()
+            val heat = heatNumberInput()
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                 BackButton(navController = navController, dest = backDest)
-                ConfirmButton(navController = navController,
-                    str = "Removal",
-                    dest = "removalConfirmationPage")
+                Button(onClick = {
+                    if( heat != null) {
+                        scannedCodeViewModel.findByHeat(heat).observe(this@MainActivity, {item ->
+                            if (item != null) {
+                                scannedCodeViewModel.delete(item)
+                                navController.navigate(backDest)
+                            } else {
+                                Log.d("DEBUG", "Heat number returned a null value!")
+                            }
+                        })
+                    }
+                }) {
+                    Text(text="Confirm Removal")
+                }
             }
         }
     }
@@ -710,7 +754,7 @@ class MainActivity : ComponentActivity() {
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(text = "(Heat Number) has been removed from $text.",
+            Text(text = "${userInputViewModel.heat.value} has been removed from $text.",
                 modifier = Modifier.padding(16.dp))
             OkButton(navController = navController, dest = dest)
         }
@@ -728,6 +772,21 @@ class MainActivity : ComponentActivity() {
             horizontalArrangement = Arrangement.SpaceEvenly) {
                 DenyButton(navController = navController)
                 AddButton(navController = navController)
+            }
+        }
+    }
+
+    @Composable
+    fun IncorrectBl(navController: NavHostController) {
+        Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
+            Text(text="Incorrect BL!", modifier = Modifier.padding(16.dp))
+            Text(text="Requested BL is ${userInputViewModel.bl.value}, the scanned bundle has BL of ${ScannedInfo.blNum}", modifier = Modifier.padding(16.dp))
+            Text(text="Put bundle away and scan another bundle!", modifier = Modifier.padding(16.dp))
+            Button(onClick = {
+                ScannedInfo.clearValues()
+                navController.navigate("scannerPage")
+            }) {
+                Text(text="Back to Scanner Live Feed", modifier = Modifier.padding(16.dp))
             }
         }
     }
@@ -755,6 +814,7 @@ class MainActivity : ComponentActivity() {
             composable("loadInfoPage") { LoadInfoPage(navController = navController) }
             composable("removeEntryPage") { RemoveEntryPage(navController = navController) }
             composable("removalConfirmationPage") { RemovalConfirmationPage(navController = navController) }
+            composable("incorrectBl") { IncorrectBl(navController = navController) }
         }
     }
 
@@ -808,8 +868,12 @@ class MainActivity : ComponentActivity() {
                                 { returnedCode ->
                                     result = returnedCode
                                     val scanTime: String? = returnedCode?.scanTime
-                                    if (result == null) {
-                                        navController.navigate("scannedInfoReturn")
+                                    if (result == null ) {
+                                        if (ScannedInfo.blNum == userInputViewModel.bl.value) {
+                                            navController.navigate("scannedInfoReturn")
+                                        } else {
+                                            navController.navigate("incorrectBl")
+                                        }
                                     } else if (scanTime != null) {
                                         Log.d("DEBUG", scanTime)
                                         navController.navigate("duplicateBundlePage/${scanTime}")
