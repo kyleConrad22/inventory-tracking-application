@@ -1,0 +1,41 @@
+package com.example.rusalqrandbarcodescanner.viewModels
+
+import androidx.lifecycle.*
+import com.example.rusalqrandbarcodescanner.CodeRepository
+import com.example.rusalqrandbarcodescanner.database.ScannedCode
+import com.google.mlkit.vision.barcode.Barcode
+import kotlinx.coroutines.launch
+import java.lang.IllegalArgumentException
+
+class ScannedCodeViewModel(private val repository: CodeRepository): ViewModel() {
+
+    val allCodes: LiveData<List<ScannedCode>> = repository.allCodes.asLiveData()
+
+    fun insert(scannedCode: ScannedCode) = viewModelScope.launch {
+        repository.insert(scannedCode)
+    }
+
+    fun deleteAll() = viewModelScope.launch {
+        repository.deleteAll()
+    }
+
+    fun findByBarcode(barcode: String): LiveData<ScannedCode?> {
+        val result = MutableLiveData<ScannedCode?>()
+        viewModelScope.launch {
+            val returnedCode = repository.findByBarcode(barcode)
+            result.postValue(returnedCode)
+        }
+        return result
+    }
+
+    class ScannedCodeViewModelFactory(private val repository: CodeRepository) :
+        ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(ScannedCodeViewModel::class.java)) {
+                @Suppress("UNCHECKED_CAST")
+                return ScannedCodeViewModel(repository) as T
+            }
+            throw IllegalArgumentException("Unknown ViewModel class")
+        }
+    }
+}
