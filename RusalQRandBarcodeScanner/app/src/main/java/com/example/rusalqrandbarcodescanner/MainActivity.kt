@@ -456,7 +456,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun MainMenu(navController: NavHostController) {
         scannedCodeViewModel.deleteAll()
-        userInputViewModel.update(loader = "", bundles = "", vessel = "", bl = "", checker = "", order = "", load = "", heat = "", quantity = "")
+        userInputViewModel.removeValues()
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
@@ -836,6 +836,21 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
+    fun IncorrectQuantity(navController: NavHostController) {
+        Column (modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
+            Text(text="Incorrect quantity!", modifier = Modifier.padding(16.dp))
+            Text(text="Requested quantity is ${userInputViewModel.quantity.value}, the scannned bundle has a quantity of ${ScannedInfo.quantity}", modifier = Modifier.padding(16.dp))
+            Text(text="Put bundle away and scan another bundle!", modifier=Modifier.padding(16.dp))
+            Button(onClick = {
+                ScannedInfo.clearValues()
+                navController.navigate("scannerPage")
+            }) {
+                Text(text = "Back to Scanner Live Feed", modifier = Modifier.padding(16.dp))
+            }
+        }
+    }
+
+    @Composable
     fun NavigationHost(navController: NavHostController) {
 
         NavHost(navController = navController, startDestination = "mainMenu") {
@@ -859,6 +874,7 @@ class MainActivity : ComponentActivity() {
             composable("removeEntryPage") { RemoveEntryPage(navController = navController) }
             composable("removalConfirmationPage") { RemovalConfirmationPage(navController = navController) }
             composable("incorrectBl") { IncorrectBl(navController = navController) }
+            composable("incorrectQuantity") { IncorrectQuantity(navController = navController)}
         }
     }
 
@@ -903,6 +919,7 @@ class MainActivity : ComponentActivity() {
                                 { returnedCode ->
                                     if (returnedCode != null) {
                                         ScannedInfo.blNum = returnedCode.blNum.toString()
+                                        ScannedInfo.quantity = returnedCode.quantity.toString()
                                     } else {
                                         ScannedInfo.blNum = "BL not found!"
                                     }
@@ -913,10 +930,12 @@ class MainActivity : ComponentActivity() {
                                     result = returnedCode
                                     val scanTime: String? = returnedCode?.scanTime
                                     if (result == null ) {
-                                        if (ScannedInfo.blNum == userInputViewModel.bl.value) {
+                                        if (ScannedInfo.blNum == userInputViewModel.bl.value && ScannedInfo.quantity == userInputViewModel.quantity.value ) {
                                             navController.navigate("scannedInfoReturn")
-                                        } else {
+                                        } else if (ScannedInfo.blNum != userInputViewModel.bl.value) {
                                             navController.navigate("incorrectBl")
+                                        } else {
+                                            navController.navigate("incorrectQuantity")
                                         }
                                     } else if (scanTime != null) {
                                         Log.d("DEBUG", scanTime)

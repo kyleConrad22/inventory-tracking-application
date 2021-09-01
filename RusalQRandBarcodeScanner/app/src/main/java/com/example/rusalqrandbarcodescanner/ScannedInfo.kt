@@ -30,6 +30,7 @@ object ScannedInfo {
     var workOrder: String = ""
     var loadNum: String = ""
     var loader: String = ""
+    var quantity: String = ""
 
     fun setValues(rawValue: String) {
         val elements = rawValue.split("_").toTypedArray()
@@ -71,6 +72,7 @@ object ScannedInfo {
         packageNum = ""
         scanTime = ""
         blNum = ""
+        quantity = ""
     }
 
     fun toScannedCode(viewModel: UserInputViewModel): ScannedCode{

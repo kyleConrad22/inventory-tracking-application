@@ -43,7 +43,18 @@ class UserInputViewModel(): ViewModel() {
         this.heat.value = heat
     }
 
-    fun 
+    fun removeValues(){
+        this.loader.value = ""
+        this.order.value = ""
+        this.load.value = ""
+        this.bundles.value = ""
+        this.bl.value = ""
+        this.vessel.value = ""
+        this.checker.value = ""
+        this.heat.value = ""
+        this.quantity.value = ""
+    }
+
     class UserInputViewModelFactory(): ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(UserInputViewModel::class.java)) {
