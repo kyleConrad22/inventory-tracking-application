@@ -1,6 +1,7 @@
 package com.example.rusalqrandbarcodescanner.viewModels
 
 import androidx.lifecycle.*
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.rusalqrandbarcodescanner.CodeRepository
 import com.example.rusalqrandbarcodescanner.database.ScannedCode
 import com.google.mlkit.vision.barcode.Barcode
@@ -10,6 +11,7 @@ import java.lang.IllegalArgumentException
 class ScannedCodeViewModel(private val repository: CodeRepository): ViewModel() {
 
     val allCodes: LiveData<List<ScannedCode>> = repository.allCodes.asLiveData()
+    val count: LiveData<Int> = repository.count.asLiveData()
 
     fun insert(scannedCode: ScannedCode) = viewModelScope.launch {
         repository.insert(scannedCode)

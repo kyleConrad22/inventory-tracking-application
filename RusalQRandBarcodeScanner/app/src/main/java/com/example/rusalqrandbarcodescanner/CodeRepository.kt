@@ -1,6 +1,7 @@
 package com.example.rusalqrandbarcodescanner
 
 import androidx.annotation.WorkerThread
+import androidx.lifecycle.LiveData
 import androidx.room.EmptyResultSetException
 import com.example.rusalqrandbarcodescanner.database.ScannedCode
 import com.example.rusalqrandbarcodescanner.database.ScannedCodeDao
@@ -9,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 class CodeRepository(private val scannedCodeDao: ScannedCodeDao) {
 
     val allCodes: Flow<List<ScannedCode>> = scannedCodeDao.getAll()
-
+    val count: Flow<Int> = scannedCodeDao.getRowCount()
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun findByBarcode(barcode: String): ScannedCode? {
@@ -47,4 +48,5 @@ class CodeRepository(private val scannedCodeDao: ScannedCodeDao) {
     suspend fun deleteAll(){
         scannedCodeDao.deleteAll()
     }
+
 }

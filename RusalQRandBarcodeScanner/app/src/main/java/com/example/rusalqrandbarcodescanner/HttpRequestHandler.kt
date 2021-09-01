@@ -1,16 +1,22 @@
 package com.example.rusalqrandbarcodescanner
 
+import android.content.Context
+import android.content.ContextWrapper
 import android.util.Log
-import androidx.annotation.WorkerThread
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.remember
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
+import androidx.lifecycle.viewModelScope
 import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
+import com.example.rusalqrandbarcodescanner.database.ScannedCode
 import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel
+import com.example.rusalqrandbarcodescanner.viewModels.ScannedCodeViewModel
+import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel
 import kotlinx.coroutines.*
 import java.io.*
-import java.lang.NullPointerException
 import java.net.HttpURLConnection
-import java.net.MalformedURLException
 import java.net.URL
+import java.nio.Buffer
 import java.nio.charset.StandardCharsets
 import java.util.stream.Collectors
 
@@ -39,6 +45,43 @@ object HttpRequestHandler {
             }
         }
 
+    private suspend fun updateDatabase(viewModel: ScannedCodeViewModel) = withContext(Dispatchers.IO) {
+        var codes = viewModel.allCodes.value
+        val codeObserver = Observer<List<ScannedCode>>{ it ->
+            codes = it
+        }
+        GlobalScope.launch(Dispatchers.Main) {
+            viewModel.allCodes.observeForever(codeObserver)
+            viewModel.allCodes.removeObserver(codeObserver)
+        }
+
+        for (code in codes!!) {
+            val heatNum = code.heatNum!!.replace("-", "")
+            val workOrder = code.workOrder!!
+            val loadNum = code.loadNum!!
+            val loader = code.loader!!.replace(" ", "_")
+            val loadTime = code.scanTime!!.replace(" ", "_")
+
+            try {
+                val url = URL("http",
+                    "45.22.122.47",
+                    8081,
+                    "/demo/update?heatNum=$heatNum&workOrder=$workOrder&loadNum=$loadNum&loader=$loader&loadTime=$loadTime")
+                val urlConnection = url.openConnection() as HttpURLConnection
+
+                try {
+                    val input: InputStream = BufferedInputStream(urlConnection.inputStream)
+                    val result = BufferedReader(InputStreamReader(input, StandardCharsets.UTF_8)).lines().collect(Collectors.joining("\n"))
+                    Log.d("DEBUG", result)
+                } finally {
+                    urlConnection.disconnect()
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
     private suspend fun addToRepo(viewModel: CurrentInventoryViewModel) = withContext(Dispatchers.IO){
         viewModel.deleteAll()
         currentInventory()
@@ -60,6 +103,10 @@ object HttpRequestHandler {
             var certificateNum: String = ""
             var blNum: String = ""
             var barcode: String = ""
+            var workOrder: String = ""
+            var loadNum: String = ""
+            var loader: String = ""
+            var loadTime: String = ""
 
             for (fieldVal in lineFields) {
                 val fieldValClean = fieldVal.replace("\"", "")
@@ -76,6 +123,10 @@ object HttpRequestHandler {
                     "certificateNum" -> certificateNum = value
                     "blNum" -> blNum = value
                     "barcode" -> barcode = value
+                    "workOrder" -> workOrder = value
+                    "loadNum" -> loadNum = value
+                    "loader" -> loader = value
+                    "loadTime" -> loadTime = value
                     else -> {
                         Log.d("ERROR", "The field $field, with value $value does not match any predefined records")
                     }
@@ -94,7 +145,11 @@ object HttpRequestHandler {
                 grade = grade,
                 certificateNum = certificateNum,
                 blNum = blNum,
-                barcode = barcode
+                barcode = barcode,
+                workOrder = workOrder,
+                loadNum = loadNum,
+                loader = loader,
+                loadTime = loadTime
             ))
         }
     }
@@ -102,6 +157,12 @@ object HttpRequestHandler {
     fun initialize(viewModel: CurrentInventoryViewModel) {
         CoroutineScope(Dispatchers.IO).launch {
             addToRepo(viewModel = viewModel)
+        }
+    }
+
+    fun initUpdate(viewModel: ScannedCodeViewModel) {
+        CoroutineScope(Dispatchers.IO).launch {
+            updateDatabase(viewModel = viewModel)
         }
     }
 

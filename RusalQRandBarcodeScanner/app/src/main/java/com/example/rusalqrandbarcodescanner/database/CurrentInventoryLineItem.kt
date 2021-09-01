@@ -15,5 +15,9 @@ data class CurrentInventoryLineItem (
     @ColumnInfo(name = "grade") val grade: String?,
     @ColumnInfo(name = "certificate_num") val certificateNum: String?,
     @ColumnInfo(name = "bl_num") val blNum: String?,
-    @PrimaryKey val barcode: String
+    @PrimaryKey val barcode: String,
+    @ColumnInfo(name = "work_order") val workOrder: String?,
+    @ColumnInfo(name = "load_num") val loadNum: String?,
+    @ColumnInfo(name = "loader") val loader: String?,
+    @ColumnInfo(name = "load_time") val loadTime: String?
 )

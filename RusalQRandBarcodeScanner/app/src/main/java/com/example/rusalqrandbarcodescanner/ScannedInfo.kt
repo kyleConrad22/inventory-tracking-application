@@ -6,9 +6,11 @@ import android.util.Log
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
 import com.example.rusalqrandbarcodescanner.database.ScannedCode
 import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel
+import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -25,6 +27,9 @@ object ScannedInfo {
     var grossWgtLbs: String = ""
     var scanTime: String = ""
     var blNum: String = ""
+    var workOrder: String = ""
+    var loadNum: String = ""
+    var loader: String = ""
 
     fun setValues(rawValue: String) {
         val elements = rawValue.split("_").toTypedArray()
@@ -68,8 +73,20 @@ object ScannedInfo {
         blNum = ""
     }
 
-    fun toScannedCode(): ScannedCode{
-        return ScannedCode(
+    fun toScannedCode(viewModel: UserInputViewModel): ScannedCode{
+        val orderObserver = Observer<String> { it ->
+            workOrder = it
+        }
+        val loadNumObserver = Observer<String> { it ->
+            loadNum = it
+        }
+        val loaderObserver = Observer<String> { it ->
+            loader = it
+        }
+        viewModel.order.observeForever(orderObserver)
+        viewModel.load.observeForever(loadNumObserver)
+        viewModel.loader.observeForever(loaderObserver)
+        val result = ScannedCode(
             barCode = barCode,
             heatNum = heatNum,
             netWgtKg = netWgtKg,
@@ -77,7 +94,14 @@ object ScannedInfo {
             netWgtLbs = netWgtLbs,
             grossWgtLbs = grossWgtLbs,
             packageNum = packageNum,
-            scanTime = scanTime
+            scanTime = scanTime,
+            workOrder = workOrder,
+            loadNum = loadNum,
+            loader = loader
         )
+        viewModel.order.removeObserver(orderObserver)
+        viewModel.load.removeObserver(loadNumObserver)
+        viewModel.loader.removeObserver(loaderObserver)
+        return result
     }
 }

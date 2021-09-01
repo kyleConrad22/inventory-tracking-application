@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.runtime.*
@@ -31,6 +32,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -228,7 +231,11 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun ConfirmButton(navController: NavHostController, str: String, dest: String) {
-        Button(onClick = { navController.navigate(dest) }) {
+        Button(onClick = {
+            if (str == "Load") {
+                HttpRequestHandler.initUpdate(scannedCodeViewModel)
+            }
+            navController.navigate(dest) }) {
             Text(text = "Confirm $str", modifier = Modifier.padding(16.dp))
         }
     }
@@ -309,7 +316,8 @@ class MainActivity : ComponentActivity() {
         var bundleQty by remember { mutableStateOf(userInputViewModel.bundles.value) }
 
         bundleQty?.let { qty ->
-            OutlinedTextField(maxLines = 1,
+            OutlinedTextField(singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 value = qty,
                 onValueChange = { bundleQty = it },
                 label = { Text(text = "Bundles: ") })
@@ -323,7 +331,8 @@ class MainActivity : ComponentActivity() {
         var bl by remember { mutableStateOf(userInputViewModel.bl.value) }
 
         bl?.let { blNum ->
-            OutlinedTextField(maxLines = 2,
+            OutlinedTextField(singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(capitalization = KeyboardCapitalization.Characters),
                 value = blNum,
                 onValueChange = { bl = it },
                 label = { Text(text = "BL: ") })
@@ -336,7 +345,8 @@ class MainActivity : ComponentActivity() {
         var loader by remember { mutableStateOf(userInputViewModel.loader.value) }
 
         loader?.let { load ->
-            OutlinedTextField(maxLines = 1, value = load,
+            OutlinedTextField(singleLine=true,
+                value = load,
                 onValueChange = { loader = it },
                 label = { Text(text = "Loader: ") })
         }
@@ -348,7 +358,7 @@ class MainActivity : ComponentActivity() {
         var vessel by remember { mutableStateOf(userInputViewModel.vessel.value) }
 
         vessel?.let { ves ->
-            OutlinedTextField(maxLines = 1,
+            OutlinedTextField(singleLine = true,
                 value = ves,
                 onValueChange = { vessel = it },
                 label = { Text(text = "Vessel: ") })
@@ -361,7 +371,8 @@ class MainActivity : ComponentActivity() {
         var checker by remember { mutableStateOf(userInputViewModel.checker.value) }
 
         checker?.let { check ->
-            OutlinedTextField(maxLines = 1, value = check,
+            OutlinedTextField(singleLine = true,
+                value = check,
                 onValueChange = { checker = it },
                 label = { Text(text = "Checker: ") })
         }
@@ -373,7 +384,9 @@ class MainActivity : ComponentActivity() {
         var heat by remember { mutableStateOf(userInputViewModel.heat.value) }
 
         heat?.let { heatNum ->
-            OutlinedTextField(maxLines = 1, value = heatNum,
+            OutlinedTextField(singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                value = heatNum,
                 onValueChange = { heat = it },
                 label = { Text(text = "Heat Number: ") })
         }
@@ -385,7 +398,8 @@ class MainActivity : ComponentActivity() {
         var workOrder by remember { mutableStateOf(userInputViewModel.order.value) }
 
         workOrder?.let { ord ->
-            OutlinedTextField(maxLines = 1,
+            OutlinedTextField(singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(capitalization = KeyboardCapitalization.Characters),
                 value = ord,
                 onValueChange = { workOrder = it },
                 label = { Text(text = "Work Order: ") })
@@ -398,7 +412,8 @@ class MainActivity : ComponentActivity() {
         var loadNum by remember { mutableStateOf(userInputViewModel.load.value) }
 
         loadNum?.let { load ->
-            OutlinedTextField(maxLines = 1,
+            OutlinedTextField(singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 value = load,
                 onValueChange = { loadNum = it },
                 label = { Text(text = "Load Number: ") })
@@ -410,7 +425,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun AddButton(navController: NavHostController) {
         Button(onClick = {
-            scannedCodeViewModel.insert(ScannedInfo.toScannedCode())
+            scannedCodeViewModel.insert(ScannedInfo.toScannedCode(userInputViewModel))
             navController.navigate("bundleAddedPage")
         }) {
             Text(text = "Add", modifier = Modifier.padding(16.dp))
@@ -578,6 +593,7 @@ class MainActivity : ComponentActivity() {
                             userInputViewModel.updateHeat(heat)
                             if (inventoryItem != null) {
                                 ScannedInfo.getValues(inventoryItem)
+                                Log.d("DEBUG", "Retrieved non-null reference")
                                 if (ScannedInfo.blNum == userInputViewModel.bl.value) {
                                     navController.navigate("scannedInfoReturn")
                                 } else {
@@ -624,7 +640,20 @@ class MainActivity : ComponentActivity() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
             BundleAddedText()
-            OkButton(navController = navController, dest = "scannerPage")
+            var count = remember { scannedCodeViewModel.count.value }
+            val countObserver = Observer<Int> { rowCount ->
+                count = rowCount
+            }
+            scannedCodeViewModel.count.observe(this@MainActivity, countObserver)
+            if (count != null) {
+                Text(text = "Bundles Remaining: ${Integer.parseInt(userInputViewModel.bundles.value!!) - count!!}")
+                val dest = if (Integer.parseInt(userInputViewModel.bundles.value!!) - count!! == 0) {
+                    "reviewLoad"
+                } else {
+                    "scannerPage"
+                }
+                OkButton(navController = navController, dest = dest)
+            }
         }
     }
 

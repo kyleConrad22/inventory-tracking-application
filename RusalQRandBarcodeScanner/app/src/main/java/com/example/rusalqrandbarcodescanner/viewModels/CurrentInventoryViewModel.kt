@@ -10,8 +10,8 @@ class CurrentInventoryViewModel(private val repository: CurrentInventoryReposito
 
     val allCodes: LiveData<List<CurrentInventoryLineItem>> = repository.fullInventory.asLiveData()
 
-    fun insert(scannedCode: CurrentInventoryLineItem) = viewModelScope.launch {
-        repository.insert(scannedCode)
+    fun insert(lineItem: CurrentInventoryLineItem) = viewModelScope.launch {
+        repository.insert(lineItem)
     }
 
     fun deleteAll() = viewModelScope.launch {

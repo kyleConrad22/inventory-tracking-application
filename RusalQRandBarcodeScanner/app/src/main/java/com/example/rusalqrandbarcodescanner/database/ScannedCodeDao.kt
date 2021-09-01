@@ -1,5 +1,6 @@
 package com.example.rusalqrandbarcodescanner.database
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -25,6 +26,9 @@ interface ScannedCodeDao {
 
     @Query("DELETE FROM scannedCode")
     suspend fun deleteAll()
+
+    @Query("SELECT COUNT(*) FROM scannedCode")
+    fun getRowCount(): Flow<Int>
 
     @Insert
     suspend fun insert(vararg scannedCodes: ScannedCode)

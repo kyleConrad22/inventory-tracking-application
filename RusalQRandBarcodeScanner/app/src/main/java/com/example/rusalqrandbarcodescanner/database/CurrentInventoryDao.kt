@@ -16,6 +16,7 @@ interface CurrentInventoryDao {
 
     @Query("DELETE FROM current_inventory")
     suspend fun deleteAll()
+
     @Insert
     suspend fun insert(vararg currentInventoryLineItem: CurrentInventoryLineItem)
 

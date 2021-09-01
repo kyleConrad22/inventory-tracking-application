@@ -13,5 +13,8 @@ data class ScannedCode(
     @ColumnInfo(name = "netWgtLbs") val netWgtLbs: String?,
     @ColumnInfo(name = "grossWgtLbs") val grossWgtLbs: String?,
     @ColumnInfo(name = "packageNum") val packageNum: String?,
-    @ColumnInfo(name = "scanTime") val scanTime: String?
+    @ColumnInfo(name = "scanTime") val scanTime: String?,
+    @ColumnInfo(name = "workOrder") val workOrder: String?,
+    @ColumnInfo(name = "loadNum") val loadNum: String?,
+    @ColumnInfo(name = "loader") val loader: String?
 )
