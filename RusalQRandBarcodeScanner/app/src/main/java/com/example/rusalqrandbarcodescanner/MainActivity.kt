@@ -203,14 +203,13 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun LoadConfirmButton(navController: NavHostController, loader: String, workOrder: String, loadNum: String, bundleQty: String, blExp: String
-    ) {
-        val isVisible: Boolean = !(loader == "" || workOrder == "" || loadNum == "" || bundleQty == "" || blExp == "")
+    fun LoadConfirmButton(navController: NavHostController, loader: String, workOrder: String, loadNum: String, bundleQty: String, blExp: String, quantity: String) {
+        val isVisible: Boolean = !(loader == "" || workOrder == "" || loadNum == "" || bundleQty == "" || blExp == "" || quantity == "")
         Button(modifier = Modifier.alpha(if(isVisible){1f} else{0f}), onClick = {
             if (isVisible) {
                 navController.navigate("loadOptionsPage")
             }
-            userInputViewModel.update(loader = loader, order = workOrder, load = loadNum, bundles = bundleQty, bl = blExp, checker = "", vessel = "", heat = "")
+            userInputViewModel.update(loader = loader, order = workOrder, load = loadNum, bundles = bundleQty, bl = blExp, checker = "", vessel = "", heat = "", quantity = quantity)
         }) {
             Text(text = "Confirm Load Info", modifier = Modifier.padding(16.dp))
         }
@@ -223,7 +222,7 @@ class MainActivity : ComponentActivity() {
             if (isVisible) {
                 navController.navigate("receptionOptionsPage")
             }
-            userInputViewModel.update(loader = "", order = "", load = "", bundles = "", bl = "", vessel = vessel, checker = vessel, heat = "")
+            userInputViewModel.update(loader = "", order = "", load = "", bundles = "", bl = "", vessel = vessel, checker = vessel, heat = "", quantity = "")
         }) {
             Text(text = "Confirm Reception Info", modifier = Modifier.padding(16.dp))
         }
@@ -367,6 +366,20 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
+    fun quantityInput(): String? {
+        var quantity by remember { mutableStateOf(userInputViewModel.quantity.value) }
+
+        quantity?.let { quant ->
+            OutlinedTextField(singleLine = true,
+                value = quant,
+                onValueChange = { quantity = it },
+                label = { Text(text = "Quantity: ")}
+            )
+        }
+        return quantity
+    }
+
+    @Composable
     fun checkerInput(): String? {
         var checker by remember { mutableStateOf(userInputViewModel.checker.value) }
 
@@ -443,7 +456,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun MainMenu(navController: NavHostController) {
         scannedCodeViewModel.deleteAll()
-        userInputViewModel.update(loader = "", bundles = "", vessel = "", bl = "", checker = "", order = "", load = "", heat = "")
+        userInputViewModel.update(loader = "", bundles = "", vessel = "", bl = "", checker = "", order = "", load = "", heat = "", quantity = "")
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
@@ -463,18 +476,20 @@ class MainActivity : ComponentActivity() {
             val loadNum = loadNumberInput()
             val bundleQty = bundlesInput()
             val blExp = blInput()
+            val quantity = quantityInput()
             val loader = loaderInput()
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                 BackButton(navController = navController, dest = "mainMenu")
-                if (bundleQty != null && loader != null && loadNum != null && workOrder != null && blExp != null) {
+                if (bundleQty != null && loader != null && loadNum != null && workOrder != null && blExp != null && quantity != null) {
                     LoadConfirmButton(navController = navController,
                         loader = loader,
                         workOrder = workOrder,
                         loadNum = loadNum,
                         bundleQty = bundleQty,
-                        blExp = blExp)
+                        blExp = blExp,
+                        quantity = quantity)
                 } else {
                     throw NullPointerException("One of the assigned values is null!")
                 }

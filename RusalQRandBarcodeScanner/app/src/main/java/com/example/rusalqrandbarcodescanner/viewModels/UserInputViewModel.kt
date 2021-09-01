@@ -15,6 +15,7 @@ class UserInputViewModel(): ViewModel() {
     var vessel: MutableLiveData<String> = MutableLiveData("")
     var checker: MutableLiveData<String> = MutableLiveData("")
     var heat: MutableLiveData<String> = MutableLiveData("")
+    var quantity: MutableLiveData<String> = MutableLiveData("")
 
     fun update(
         loader: String,
@@ -24,7 +25,8 @@ class UserInputViewModel(): ViewModel() {
         bl: String,
         vessel: String,
         checker: String,
-        heat: String
+        heat: String,
+        quantity: String
     ) {
         this.loader.value = loader
         this.order.value = order
@@ -34,12 +36,14 @@ class UserInputViewModel(): ViewModel() {
         this.vessel.value = vessel
         this.checker.value = checker
         this.heat.value = heat
+        this.quantity.value = quantity
     }
 
     fun updateHeat(heat: String){
         this.heat.value = heat
     }
 
+    fun 
     class UserInputViewModelFactory(): ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(UserInputViewModel::class.java)) {
