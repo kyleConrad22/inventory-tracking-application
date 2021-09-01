@@ -373,7 +373,7 @@ class MainActivity : ComponentActivity() {
             OutlinedTextField(singleLine = true,
                 value = quant,
                 onValueChange = { quantity = it },
-                label = { Text(text = "Quantity: ")}
+                label = { Text(text = "Quantity Per Bundle: ")}
             )
         }
         return quantity
@@ -825,7 +825,7 @@ class MainActivity : ComponentActivity() {
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
             Text(text="Incorrect BL!", modifier = Modifier.padding(16.dp))
             Text(text="Requested BL is ${userInputViewModel.bl.value}, the scanned bundle has BL of ${ScannedInfo.blNum}", modifier = Modifier.padding(16.dp))
-            Text(text="Put bundle away and scan another bundle!", modifier = Modifier.padding(16.dp))
+            Text(text="Put bundle away and scan another!", modifier = Modifier.padding(16.dp))
             Button(onClick = {
                 ScannedInfo.clearValues()
                 navController.navigate("scannerPage")
@@ -838,9 +838,9 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun IncorrectQuantity(navController: NavHostController) {
         Column (modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(text="Incorrect quantity!", modifier = Modifier.padding(16.dp))
-            Text(text="Requested quantity is ${userInputViewModel.quantity.value}, the scannned bundle has a quantity of ${ScannedInfo.quantity}", modifier = Modifier.padding(16.dp))
-            Text(text="Put bundle away and scan another bundle!", modifier=Modifier.padding(16.dp))
+            Text(text="Incorrect quantity per bundle!", modifier = Modifier.padding(16.dp))
+            Text(text="Requested quantity per bundle is ${userInputViewModel.quantity.value}, the scanned bundle has a quantity per bundle of ${ScannedInfo.quantity}", modifier = Modifier.padding(16.dp))
+            Text(text="Put bundle away and scan another!", modifier=Modifier.padding(16.dp))
             Button(onClick = {
                 ScannedInfo.clearValues()
                 navController.navigate("scannerPage")
