@@ -604,18 +604,30 @@ class MainActivity : ComponentActivity() {
                 BackButton(navController = navController, dest = "scannerPage")
                 Button(onClick = {
                     if (heat != null){
-                        currentInventoryViewModel.findByHeat(heat.replace("\n", "").replace("-", "").replace(" ", "")).observe(this@MainActivity, { inventoryItem ->
-                            userInputViewModel.updateHeat(heat)
-                            if (inventoryItem != null) {
-                                ScannedInfo.getValues(inventoryItem)
-                                Log.d("DEBUG", "Retrieved non-null reference")
-                                if (ScannedInfo.blNum == userInputViewModel.bl.value) {
-                                    navController.navigate("scannedInfoReturn")
-                                } else {
-                                    navController.navigate("incorrectBl")
-                                }
-                            } else{
-                                Log.d("DEBUG", "Heat number returned a null reference!")
+                        var returnedCode: ScannedCode?
+                        scannedCodeViewModel.findByHeat(heat).observe(this@MainActivity, { code ->
+                            returnedCode = code
+                            if (returnedCode == null) {
+                                currentInventoryViewModel.findByHeat(heat.replace("\n", "")
+                                    .replace("-", "").replace(" ", ""))
+                                    .observe(this@MainActivity, { inventoryItem ->
+                                        userInputViewModel.updateHeat(heat)
+                                        if (inventoryItem != null) {
+                                            ScannedInfo.getValues(inventoryItem)
+                                            Log.d("DEBUG", "Retrieved non-null reference")
+                                            if (ScannedInfo.blNum == userInputViewModel.bl.value && ScannedInfo.quantity == userInputViewModel.quantity.value) {
+                                                navController.navigate("scannedInfoReturn")
+                                            } else if (ScannedInfo.blNum != userInputViewModel.bl.value) {
+                                                navController.navigate("incorrectBl")
+                                            } else {
+                                                navController.navigate("incorrectQuantity")
+                                            }
+                                        } else {
+                                            Log.d("DEBUG", "Heat number returned a null reference!")
+                                        }
+                                    })
+                            } else if (returnedCode?.scanTime != null) {
+                                navController.navigate("duplicateBundlePage/${returnedCode?.scanTime}")
                             }
                         })
                     }

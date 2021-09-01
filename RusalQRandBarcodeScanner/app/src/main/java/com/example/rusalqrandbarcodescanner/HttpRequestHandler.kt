@@ -54,30 +54,33 @@ object HttpRequestHandler {
             viewModel.allCodes.observeForever(codeObserver)
             viewModel.allCodes.removeObserver(codeObserver)
         }
-
-        for (code in codes!!) {
-            val heatNum = code.heatNum!!.replace("-", "")
-            val workOrder = code.workOrder!!
-            val loadNum = code.loadNum!!
-            val loader = code.loader!!.replace(" ", "_")
-            val loadTime = code.scanTime!!.replace(" ", "_")
-
-            try {
-                val url = URL("http",
-                    "45.22.122.47",
-                    8081,
-                    "/demo/update?heatNum=$heatNum&workOrder=$workOrder&loadNum=$loadNum&loader=$loader&loadTime=$loadTime")
-                val urlConnection = url.openConnection() as HttpURLConnection
+        if (codes != null) {
+            for (code in codes!!) {
+                val heatNum = code.heatNum!!.replace("-", "")
+                val workOrder = code.workOrder!!
+                val loadNum = code.loadNum!!
+                val loader = code.loader!!.replace(" ", "_")
+                val loadTime = code.scanTime!!.replace(" ", "_")
 
                 try {
-                    val input: InputStream = BufferedInputStream(urlConnection.inputStream)
-                    val result = BufferedReader(InputStreamReader(input, StandardCharsets.UTF_8)).lines().collect(Collectors.joining("\n"))
-                    Log.d("DEBUG", result)
-                } finally {
-                    urlConnection.disconnect()
+                    val url = URL("http",
+                        "45.22.122.47",
+                        8081,
+                        "/demo/update?heatNum=$heatNum&workOrder=$workOrder&loadNum=$loadNum&loader=$loader&loadTime=$loadTime")
+                    val urlConnection = url.openConnection() as HttpURLConnection
+
+                    try {
+                        val input: InputStream = BufferedInputStream(urlConnection.inputStream)
+                        val result =
+                            BufferedReader(InputStreamReader(input, StandardCharsets.UTF_8)).lines()
+                                .collect(Collectors.joining("\n"))
+                        Log.d("DEBUG", result)
+                    } finally {
+                        urlConnection.disconnect()
+                    }
+                } catch (e: IOException) {
+                    e.printStackTrace()
                 }
-            } catch (e: IOException) {
-                e.printStackTrace()
             }
         }
     }

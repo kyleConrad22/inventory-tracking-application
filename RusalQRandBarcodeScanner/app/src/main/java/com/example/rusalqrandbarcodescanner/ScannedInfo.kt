@@ -58,6 +58,7 @@ object ScannedInfo {
         netWgtKg = currentInventoryLineItem.netWeightKg.toString()
         grossWgtKg = currentInventoryLineItem.grossWeightKg.toString()
         packageNum = currentInventoryLineItem.packageNum.toString()
+        quantity = currentInventoryLineItem.quantity.toString()
         setTime()
     }
 
