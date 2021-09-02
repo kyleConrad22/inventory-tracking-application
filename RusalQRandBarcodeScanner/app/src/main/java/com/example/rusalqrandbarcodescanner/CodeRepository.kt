@@ -11,6 +11,7 @@ class CodeRepository(private val scannedCodeDao: ScannedCodeDao) {
 
     val allCodes: Flow<List<ScannedCode>> = scannedCodeDao.getAll()
     val count: Flow<Int> = scannedCodeDao.getRowCount()
+
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun findByBarcode(barcode: String): ScannedCode? {

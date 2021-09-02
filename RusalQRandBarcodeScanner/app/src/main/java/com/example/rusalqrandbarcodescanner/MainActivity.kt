@@ -44,6 +44,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.room.ColumnInfo
+import androidx.room.PrimaryKey
+import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
 import com.example.rusalqrandbarcodescanner.database.ScannedCode
 import com.example.rusalqrandbarcodescanner.ui.theme.RusalQRAndBarcodeScannerTheme
 import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel
@@ -54,6 +57,8 @@ import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel.UserInputViewModelFactory
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import androidx.camera.view.PreviewView as PreviewView
 
 
@@ -69,6 +74,12 @@ class MainActivity : ComponentActivity() {
 
     private val userInputViewModel : UserInputViewModel by viewModels {
         UserInputViewModelFactory()
+    }
+
+    private fun setTime(): String{
+        val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("MM_dd_yyyy HH:mm:ss")
+        val timeNow: LocalDateTime = LocalDateTime.now()
+        return formatter.format(timeNow)
     }
 
     private class ImageAnalyzer: ImageAnalysis.Analyzer {
@@ -232,7 +243,7 @@ class MainActivity : ComponentActivity() {
     fun ConfirmButton(navController: NavHostController, str: String, dest: String) {
         Button(onClick = {
             if (str == "Load") {
-                HttpRequestHandler.initUpdate(scannedCodeViewModel)
+                HttpRequestHandler.initUpdate(scannedCodeViewModel, currentInventoryViewModel)
             }
             navController.navigate(dest) }) {
             Text(text = "Confirm $str", modifier = Modifier.padding(16.dp))
@@ -597,39 +608,111 @@ class MainActivity : ComponentActivity() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
             Text(text="Manual Heat Number Search: ", modifier = Modifier.padding(16.dp))
-            val heat = heatNumberInput()
+            var heat = heatNumberInput()
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                 BackButton(navController = navController, dest = "scannerPage")
                 Button(onClick = {
-                    if (heat != null){
-                        var returnedCode: ScannedCode?
-                        scannedCodeViewModel.findByHeat(heat).observe(this@MainActivity, { code ->
-                            returnedCode = code
-                            if (returnedCode == null) {
-                                currentInventoryViewModel.findByHeat(heat.replace("\n", "")
-                                    .replace("-", "").replace(" ", ""))
-                                    .observe(this@MainActivity, { inventoryItem ->
-                                        userInputViewModel.updateHeat(heat)
-                                        if (inventoryItem != null) {
-                                            ScannedInfo.getValues(inventoryItem)
-                                            Log.d("DEBUG", "Retrieved non-null reference")
-                                            if (ScannedInfo.blNum == userInputViewModel.bl.value && ScannedInfo.quantity == userInputViewModel.quantity.value) {
-                                                navController.navigate("scannedInfoReturn")
-                                            } else if (ScannedInfo.blNum != userInputViewModel.bl.value) {
-                                                navController.navigate("incorrectBl")
-                                            } else {
-                                                navController.navigate("incorrectQuantity")
+                    if (heat != null) {
+                        userInputViewModel.updateHeat(heat!!.replace("\n", "").replace("-", "")
+                            .replace(" ", ""))
+                        heat = userInputViewModel.heat.value
+                    }
+                    if (heat?.length == 6){
+                        var result: List<CurrentInventoryLineItem>?
+                        currentInventoryViewModel.findByBaseHeat("%${heat!!}%").observe(this@MainActivity, { returnedVal ->
+                            result = returnedVal
+                            if (result != null){
+                                val blList = mutableListOf<String>()
+                                val quantityList = mutableListOf<String>()
+                                for (item in result!!){
+                                    if (item.blNum!! !in blList) {
+                                        blList.add(item.blNum)
+                                    }
+                                    if (item.quantity!! !in quantityList){
+                                        quantityList.add(item.quantity)
+                                    }
+                                }
+                                if (blList.size == 1 && quantityList.size == 1) {
+                                    var barcode: String
+                                    var baseList: List<CurrentInventoryLineItem>?
+                                    currentInventoryViewModel.findByBarcodes("%${heat!!}u%").observe(this@MainActivity, { list ->
+                                        baseList = list
+                                        if (baseList != null) {
+                                            for (item in baseList!!) {
+                                                Log.d("DEBUG", item.barcode)
                                             }
-                                        } else {
-                                            Log.d("DEBUG", "Heat number returned a null reference!")
                                         }
+                                        barcode = if (baseList == null) {
+                                            "${heat!!}u1"
+                                        } else {
+                                            "${heat!!}u${baseList!!.size + 1}"
+                                        }
+                                        Log.d("DEBUG", "Barcode set as $barcode")
+                                        val inventoryLineItem = CurrentInventoryLineItem(
+                                            heatNum = heat,
+                                            packageNum = "N/A",
+                                            grossWeightKg = "N/A",
+                                            netWeightKg = "N/A",
+                                            quantity = quantityList[0],
+                                            dimension = result!![0].dimension,
+                                            grade = result!![0].grade,
+                                            certificateNum = result!![0].certificateNum,
+                                            blNum = blList[0],
+                                            barcode = barcode,
+                                            workOrder = userInputViewModel.order.value,
+                                            loadNum = userInputViewModel.load.value,
+                                            loader = userInputViewModel.loader.value,
+                                            loadTime = setTime()
+                                        )
+                                        ScannedInfo.getValues(inventoryLineItem)
+
+                                        currentInventoryViewModel.insert(inventoryLineItem)
+
+                                        navController.navigate("scannedInfoReturn")
                                     })
-                            } else if (returnedCode?.scanTime != null) {
-                                navController.navigate("duplicateBundlePage/${returnedCode?.scanTime}")
+                                } else if (blList.size != 1) {
+                                    /*TODO*/
+                                    navController.navigate("toBeImplemented")
+                                    /*Present bl options to loader and ask for them to make a selection*/
+                                } else {
+                                    /*TODO*/
+                                    navController.navigate("toBeImplemented")
+                                    /*Ask for loader to verify that there are the requested number of pieces on this bundle, have them type the amount*/
+
+                                }
+                            } else {
+                                Log.d("DEBUG", "Query returned a null value!")
                             }
                         })
+                    } else {
+                        var returnedCode: ScannedCode?
+                        scannedCodeViewModel.findByHeat(heat!!)
+                            .observe(this@MainActivity, { code ->
+                                returnedCode = code
+                                if (returnedCode == null) {
+                                    currentInventoryViewModel.findByHeat(heat!!)
+                                        .observe(this@MainActivity, { inventoryItem ->
+                                            if (inventoryItem != null) {
+                                                ScannedInfo.getValues(inventoryItem)
+                                                Log.d("DEBUG", "Retrieved non-null reference")
+                                                if (ScannedInfo.blNum == userInputViewModel.bl.value && ScannedInfo.quantity == userInputViewModel.quantity.value) {
+                                                    navController.navigate("scannedInfoReturn")
+                                                } else if (ScannedInfo.blNum != userInputViewModel.bl.value) {
+                                                    navController.navigate("incorrectBl")
+                                                } else {
+                                                    navController.navigate("incorrectQuantity")
+                                                }
+                                            } else {
+                                                Log.d("DEBUG",
+                                                    "Heat number returned a null reference!")
+                                            }
+                                        })
+                                } else if (returnedCode?.scanTime != null) {
+                                    navController.navigate("duplicateBundlePage/${returnedCode?.scanTime}")
+                                }
+                            })
                     }
 
                 }){
@@ -863,6 +946,19 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
+    fun ToBeImplemented(navController: NavHostController) {
+        Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
+            Text(text="This feature has yet to be implemented!")
+            Button(onClick={
+                navController.navigate("scannerPage")
+            }) {
+                Text(text="Back to Scanner Live Feed", modifier = Modifier.padding(16.dp))
+            }
+
+        }
+    }
+
+    @Composable
     fun NavigationHost(navController: NavHostController) {
 
         NavHost(navController = navController, startDestination = "mainMenu") {
@@ -887,6 +983,7 @@ class MainActivity : ComponentActivity() {
             composable("removalConfirmationPage") { RemovalConfirmationPage(navController = navController) }
             composable("incorrectBl") { IncorrectBl(navController = navController) }
             composable("incorrectQuantity") { IncorrectQuantity(navController = navController)}
+            composable("toBeImplemented") { ToBeImplemented(navController = navController)}
         }
     }
 

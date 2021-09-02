@@ -45,7 +45,7 @@ object HttpRequestHandler {
             }
         }
 
-    private suspend fun updateDatabase(viewModel: ScannedCodeViewModel) = withContext(Dispatchers.IO) {
+    private suspend fun updateDatabase(viewModel: ScannedCodeViewModel, currentInventoryViewModel: CurrentInventoryViewModel) = withContext(Dispatchers.IO) {
         var codes = viewModel.allCodes.value
         val codeObserver = Observer<List<ScannedCode>>{ it ->
             codes = it
@@ -56,30 +56,74 @@ object HttpRequestHandler {
         }
         if (codes != null) {
             for (code in codes!!) {
-                val heatNum = code.heatNum!!.replace("-", "")
-                val workOrder = code.workOrder!!
-                val loadNum = code.loadNum!!
-                val loader = code.loader!!.replace(" ", "_")
-                val loadTime = code.scanTime!!.replace(" ", "_")
 
-                try {
-                    val url = URL("http",
-                        "45.22.122.47",
-                        8081,
-                        "/demo/update?heatNum=$heatNum&workOrder=$workOrder&loadNum=$loadNum&loader=$loader&loadTime=$loadTime")
-                    val urlConnection = url.openConnection() as HttpURLConnection
+                    val heatNum = code.heatNum!!.replace("-", "")
+                    val workOrder = code.workOrder!!
+                    val loadNum = code.loadNum!!
+                    val loader = code.loader!!.replace(" ", "_")
+                    val loadTime = code.scanTime!!.replace(" ", "_")
+
+                if (!code.barCode.contains('u')) {
+                    try {
+                        val url = URL("http",
+                            "45.22.122.47",
+                            8081,
+                            "/demo/update?heatNum=$heatNum&workOrder=$workOrder&loadNum=$loadNum&loader=$loader&loadTime=$loadTime")
+                        val urlConnection = url.openConnection() as HttpURLConnection
+
+                        try {
+                            val input: InputStream = BufferedInputStream(urlConnection.inputStream)
+                            val result =
+                                BufferedReader(InputStreamReader(input,
+                                    StandardCharsets.UTF_8)).lines()
+                                    .collect(Collectors.joining("\n"))
+                            Log.d("DEBUG", result)
+                        } finally {
+                            urlConnection.disconnect()
+                        }
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                    }
+                } else {
+                    var uniCode = CurrentInventoryLineItem("","","","","","","","","","","","","","")
+                    val uniObserver = Observer<CurrentInventoryLineItem?> { it ->
+                        uniCode = it
+                    }
+                    GlobalScope.launch(Dispatchers.Main){
+                        currentInventoryViewModel.findByBarcode(code.barCode).observeForever(uniObserver)
+                        currentInventoryViewModel.findByBarcode(code.barCode).removeObserver(uniObserver)
+                    }
+                    val grossWeight = code.grossWgtKg!!
+                    val netWeight = code.netWgtKg!!
+                    val packageNum = code.packageNum!!
+                    val dimension = uniCode.dimension
+                    val grade = uniCode.grade
+                    val certificateNum = uniCode.certificateNum
+                    val quantity = uniCode.quantity
+                    val barcode = code.barCode
+                    val blNum = uniCode.blNum
 
                     try {
-                        val input: InputStream = BufferedInputStream(urlConnection.inputStream)
-                        val result =
-                            BufferedReader(InputStreamReader(input, StandardCharsets.UTF_8)).lines()
-                                .collect(Collectors.joining("\n"))
-                        Log.d("DEBUG", result)
-                    } finally {
-                        urlConnection.disconnect()
+                        val url = URL("http",
+                            "45.22.122.47",
+                            8081,
+                            "demo/add?heatNum=$heatNum&packageNum=$packageNum&grossWeightKg=$grossWeight&netWeightKg=$netWeight&quantity=$quantity&dimension=$dimension&grade=$grade&certificateNum=$certificateNum&blNum=$blNum&barcode=$barcode&workOrder=$workOrder&loadNum=$loadNum&loader=$loader&loadTime=$loadTime")
+
+                        val urlConnection = url.openConnection() as HttpURLConnection
+
+                        try {
+                            val input: InputStream = BufferedInputStream(urlConnection.inputStream)
+                            val result =
+                                BufferedReader(InputStreamReader(input,
+                                    StandardCharsets.UTF_8)).lines()
+                                    .collect(Collectors.joining("\n"))
+                            Log.d("DEBUG", result)
+                        } finally {
+                            urlConnection.disconnect()
+                        }
+                    } catch (e: IOException) {
+                        e.printStackTrace()
                     }
-                } catch (e: IOException) {
-                    e.printStackTrace()
                 }
             }
         }
@@ -163,9 +207,9 @@ object HttpRequestHandler {
         }
     }
 
-    fun initUpdate(viewModel: ScannedCodeViewModel) {
+    fun initUpdate(viewModel: ScannedCodeViewModel, currentInventoryViewModel: CurrentInventoryViewModel) {
         CoroutineScope(Dispatchers.IO).launch {
-            updateDatabase(viewModel = viewModel)
+            updateDatabase(viewModel = viewModel, currentInventoryViewModel = currentInventoryViewModel)
         }
     }
 

@@ -10,6 +10,33 @@ class CurrentInventoryViewModel(private val repository: CurrentInventoryReposito
 
     val allCodes: LiveData<List<CurrentInventoryLineItem>> = repository.fullInventory.asLiveData()
 
+    fun findByBaseHeat(heat: String): LiveData<List<CurrentInventoryLineItem>?> {
+        val result = MutableLiveData<List<CurrentInventoryLineItem>?>()
+        viewModelScope.launch {
+            val returnedResult = repository.findByBaseHeat(heat)
+            result.postValue(returnedResult)
+        }
+        return result
+    }
+
+    fun findByBarcode(barcode: String): LiveData<CurrentInventoryLineItem?> {
+        val result = MutableLiveData<CurrentInventoryLineItem?>()
+        viewModelScope.launch {
+            val returnedResult = repository.findByBarcode(barcode)
+            result.postValue(returnedResult)
+        }
+        return result
+    }
+
+    fun findByBarcodes(barcode: String) : LiveData<List<CurrentInventoryLineItem>?> {
+        val result = MutableLiveData<List<CurrentInventoryLineItem>?>()
+        viewModelScope.launch {
+            val codes = repository.findByBarcodes(barcode)
+            result.postValue(codes)
+        }
+        return result
+    }
+
     fun insert(lineItem: CurrentInventoryLineItem) = viewModelScope.launch {
         repository.insert(lineItem)
     }

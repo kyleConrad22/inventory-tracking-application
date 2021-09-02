@@ -17,6 +17,15 @@ interface CurrentInventoryDao {
     @Query("DELETE FROM current_inventory")
     suspend fun deleteAll()
 
+    @Query("SELECT * FROM current_inventory WHERE barcode LIKE :searchBarcode")
+    suspend fun findByBarcodes(searchBarcode: String): List<CurrentInventoryLineItem>?
+
+    @Query("SELECT * FROM current_inventory WHERE barcode LIKE :searchBarcode")
+    suspend fun findByBarcode(searchBarcode: String): CurrentInventoryLineItem?
+
+    @Query("SELECT * FROM current_inventory WHERE heat_num LIKE :searchHeatNum")
+    suspend fun findByBaseHeat(searchHeatNum: String): List<CurrentInventoryLineItem>?
+
     @Insert
     suspend fun insert(vararg currentInventoryLineItem: CurrentInventoryLineItem)
 

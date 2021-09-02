@@ -23,7 +23,11 @@ public class MainController {
             @RequestParam String grade,
             @RequestParam String certificateNum,
             @RequestParam String blNum,
-            @RequestParam String barcode
+            @RequestParam String barcode,
+            @RequestParam String workOrder,
+            @RequestParam String loadNum,
+            @RequestParam String loader,
+            @RequestParam String loadTime
             ) {
 
         RusalLineItem lineItem = new RusalLineItem();
