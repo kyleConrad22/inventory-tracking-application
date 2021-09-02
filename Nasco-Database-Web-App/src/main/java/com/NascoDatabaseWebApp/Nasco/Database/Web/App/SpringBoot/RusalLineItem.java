@@ -9,9 +9,9 @@ public class RusalLineItem {
 
     private String packageNum;
 
-    private String grossWeight;
+    private String grossWeightKg;
 
-    private String netWeight;
+    private String netWeightKg;
 
     private String quantity;
 
@@ -26,6 +26,14 @@ public class RusalLineItem {
     @Id
     private String barcode;
 
+    private String workOrder;
+
+    private String loadNum;
+
+    private String loader;
+
+    private String loadTime;
+
     public String getHeatNum(){
         return heatNum;
     }
@@ -34,12 +42,12 @@ public class RusalLineItem {
         return packageNum;
     }
 
-    public String getGrossWeight() {
-        return grossWeight;
+    public String getGrossWeightKg() {
+        return grossWeightKg;
     }
 
-    public String getNetWeight() {
-        return netWeight;
+    public String getNetWeightKg () {
+        return netWeightKg;
     }
 
     public String getQuantity() {
@@ -66,6 +74,38 @@ public class RusalLineItem {
         return barcode;
     }
 
+    public String getWorkOrder() {
+        if (workOrder != null) {
+            return workOrder;
+        } else {
+            return "null";
+        }
+    }
+
+    public String getLoadNum() {
+        if (loadNum != null) {
+            return loadNum;
+        } else {
+            return "null";
+        }
+    }
+
+    public String getLoader() {
+        if (loader != null) {
+            return loader;
+        } else {
+            return "null";
+        }
+    }
+
+    public String getLoadTime() {
+        if (loadTime != null) {
+            return loadTime;
+        } else {
+            return "null";
+        }
+    }
+
     public void setHeatNum(String heatNum) {
         this.heatNum = heatNum;
     }
@@ -90,12 +130,12 @@ public class RusalLineItem {
         this.grade = grade;
     }
 
-    public void setGrossWeight(String grossWeight) {
-        this.grossWeight = grossWeight;
+    public void setGrossWeightKg(String grossWeightKg) {
+        this.grossWeightKg = grossWeightKg;
     }
 
-    public void setNetWeight(String netWeight) {
-        this.netWeight = netWeight;
+    public void setNetWeightKg(String netWeightKg) {
+        this.netWeightKg = netWeightKg;
     }
 
     public void setPackageNum(String packageNum) {
@@ -104,5 +144,21 @@ public class RusalLineItem {
 
     public void setQuantity(String quantity) {
         this.quantity = quantity;
+    }
+
+    public void setWorkOrder(String workOrder) {
+        this.workOrder = workOrder;
+    }
+
+    public void setLoadNum(String loadNum) {
+        this.loadNum = loadNum;
+    }
+
+    public void setLoader(String loader) {
+        this.loader = loader;
+    }
+
+    public void setLoadTime(String loadTime) {
+        this.loadTime = loadTime;
     }
 }
