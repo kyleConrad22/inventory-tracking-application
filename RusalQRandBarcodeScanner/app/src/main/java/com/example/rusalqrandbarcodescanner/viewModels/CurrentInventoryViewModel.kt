@@ -1,5 +1,6 @@
 package com.example.rusalqrandbarcodescanner.viewModels
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.example.rusalqrandbarcodescanner.CurrentInventoryRepository
 import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
@@ -9,6 +10,7 @@ import java.lang.IllegalArgumentException
 class CurrentInventoryViewModel(private val repository: CurrentInventoryRepository): ViewModel() {
 
     val allCodes: LiveData<List<CurrentInventoryLineItem>> = repository.fullInventory.asLiveData()
+    val blListMediator = MediatorLiveData<List<String>>()
 
     fun findByBaseHeat(heat: String): LiveData<List<CurrentInventoryLineItem>?> {
         val result = MutableLiveData<List<CurrentInventoryLineItem>?>()
@@ -52,6 +54,24 @@ class CurrentInventoryViewModel(private val repository: CurrentInventoryReposito
             result.postValue(returnedCode)
         }
         return result
+    }
+
+    fun getBlList(heat: String): LiveData<List<String>> {
+        val repositoryLiveData = findByBaseHeat("%$heat%")
+        blListMediator.addSource(repositoryLiveData) { items: List<CurrentInventoryLineItem>? ->
+            blListMediator.removeSource(repositoryLiveData)
+            items?.let{
+                val blList = mutableListOf<String>()
+                for (item in items) {
+                    if (blList.find { it == item.blNum } == null) {
+                        blList.add(item.blNum!!)
+                        Log.d("DEBUG", item.blNum)
+                    }
+                }
+                blListMediator.setValue(blList.toList())
+            }
+        }
+        return blListMediator
     }
 
     class CurrentInventoryViewModelFactory(private val repository: CurrentInventoryRepository) :

@@ -33,8 +33,8 @@ public class MainController {
         RusalLineItem lineItem = new RusalLineItem();
         lineItem.setHeatNum(heatNum);
         lineItem.setPackageNum(packageNum);
-        lineItem.setGrossWeight(grossWeight);
-        lineItem.setNetWeight(netWeight);
+        lineItem.setGrossWeightKg(grossWeight);
+        lineItem.setNetWeightKg(netWeight);
         lineItem.setQuantity(quantity);
         lineItem.setDimension(dimension);
         lineItem.setGrade(grade);

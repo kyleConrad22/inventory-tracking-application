@@ -30,6 +30,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -114,7 +115,7 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun GetCodeListView() {
-        var codes = remember { scannedCodeViewModel.allCodes.value}
+        var codes = remember { scannedCodeViewModel.allCodes.value }
         val codeObserver = Observer<List<ScannedCode>> { codeList ->
             codes = codeList
         }
@@ -666,6 +667,7 @@ class MainActivity : ComponentActivity() {
                                             loader = userInputViewModel.loader.value,
                                             loadTime = setTime()
                                         )
+
                                         ScannedInfo.getValues(inventoryLineItem)
 
                                         currentInventoryViewModel.insert(inventoryLineItem)
@@ -674,7 +676,7 @@ class MainActivity : ComponentActivity() {
                                     })
                                 } else if (blList.size != 1) {
                                     /*TODO*/
-                                    navController.navigate("toBeImplemented")
+                                    navController.navigate("blOptions")
                                     /*Present bl options to loader and ask for them to make a selection*/
                                 } else {
                                     /*TODO*/
@@ -959,6 +961,59 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
+    fun BlOptions(navController: NavHostController) {
+        val heat = userInputViewModel.heat.value
+        var blList = remember { currentInventoryViewModel.getBlList(heat!!).value }
+        val blObserver = Observer<List<String>> { items ->
+            blList = items
+        }
+
+        currentInventoryViewModel.getBlList(heat!!).observe(this, blObserver)
+
+        Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
+            Text(text="Retrieved BL numbers:", modifier = Modifier.padding(16.dp))
+            LazyColumn(
+                modifier = Modifier.background(Color.LightGray).size(400.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+
+            ) {
+                if (blList != null) {
+                    Log.d("DEBUG", blList.toString())
+                    items(
+                        items = blList!!,
+                        itemContent = { BlListItem(bl = it) }
+                    )
+                }
+            }
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Bottom){
+                Button(onClick =
+                { navController.navigate("manualEntryPage") } ) {
+                    Text(text="Back to Manual Entry", modifier = Modifier.padding(16.dp))
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun BlListItem(bl: String) {
+        Card(
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp).fillMaxWidth(),
+            elevation = 2.dp,
+            backgroundColor = Color.Black,
+            shape = RoundedCornerShape(corner = CornerSize(16.dp))
+        ) {
+            Row {
+                Column(modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
+                    .align(Alignment.CenterVertically)) {
+                    Text(text=bl, style = typography.h6)
+                }
+            }
+        }
+    }
+
+    @Composable
     fun NavigationHost(navController: NavHostController) {
 
         NavHost(navController = navController, startDestination = "mainMenu") {
@@ -984,6 +1039,7 @@ class MainActivity : ComponentActivity() {
             composable("incorrectBl") { IncorrectBl(navController = navController) }
             composable("incorrectQuantity") { IncorrectQuantity(navController = navController)}
             composable("toBeImplemented") { ToBeImplemented(navController = navController)}
+            composable("blOptions") { BlOptions(navController = navController) }
         }
     }
 
