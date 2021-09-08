@@ -400,14 +400,7 @@ class MainActivity : ComponentActivity() {
         var quantity by remember { mutableStateOf(userInputViewModel.quantity.value) }
 
         quantity?.let { quant ->
-            OutlinedTextField(modifier = Modifier.onKeyEvent { it ->
-                 if (it.key.keyCode == Key.Enter.keyCode) {
-                     focusManager.moveFocus(FocusDirection.Next)
-                     true
-                 } else {
-                     false
-                 }
-                },
+            OutlinedTextField(
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
