@@ -195,26 +195,6 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun NewLoadButton(navController: NavHostController) {
-        Button(onClick = { navController.navigate("loadInfoPage") }) {
-            Text(text = "New Load", modifier = Modifier
-                .padding(16.dp)
-                .size(width = 200.dp, height = 20.dp)
-                .align(Alignment.CenterVertically), textAlign = TextAlign.Center)
-        }
-    }
-
-    @Composable
-    fun NewReceptionButton(navController: NavHostController) {
-        Button(onClick = { navController.navigate("receptionInfoPage") }) {
-            Text(text = "New Reception", modifier = Modifier
-                .padding(16.dp)
-                .size(width = 200.dp, height = 20.dp)
-                .align(Alignment.CenterVertically), textAlign = TextAlign.Center)
-        }
-    }
-
-    @Composable
     fun BackButton(navController: NavHostController, dest: String) {
         Button(onClick = { navController.navigate(dest) }) {
             Text(text = "Back", modifier = Modifier.padding(16.dp))
@@ -484,8 +464,20 @@ class MainActivity : ComponentActivity() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
             Text(text = "Main Menu", modifier = Modifier.padding(16.dp), fontSize = 25.sp)
-            NewLoadButton(navController = navController)
-            NewReceptionButton(navController = navController)
+            Button(onClick = { navController.navigate("loadInfoPage") }) {
+                Text(text="New Load", modifier = Modifier
+                        .padding(16.dp)
+                        .size(width = 200.dp, height = 20.dp)
+                        .align(Alignment.CenterVertically),
+                    textAlign = TextAlign.Center)
+            }
+            Button(onClick = { navController.navigate("receptionInfoPage") }) {
+                Text(text="New Reception", modifier = Modifier
+                        .padding(16.dp)
+                        .size(width = 200.dp, height = 20.dp)
+                        .align(Alignment.CenterVertically),
+                    textAlign = TextAlign.Center)
+            }
         }
     }
 
