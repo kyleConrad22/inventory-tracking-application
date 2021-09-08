@@ -1024,7 +1024,6 @@ class MainActivity : ComponentActivity() {
 
             ) {
                 if (blList != null) {
-                    Log.d("DEBUG", blList.toString())
                     items(
                         items = blList!!,
                         itemContent = { BlListItem(bl = it) }
