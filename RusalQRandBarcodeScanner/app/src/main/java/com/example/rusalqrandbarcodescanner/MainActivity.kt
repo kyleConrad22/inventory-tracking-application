@@ -52,6 +52,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
 import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
 import com.example.rusalqrandbarcodescanner.database.ScannedCode
@@ -294,20 +295,6 @@ class MainActivity : ComponentActivity() {
                 .padding(16.dp)
                 .size(width = 200.dp, height = 20.dp)
                 .align(Alignment.CenterVertically), textAlign = TextAlign.Center)
-        }
-    }
-
-    @Composable
-    fun NoButton(navController: NavHostController, dest: String) {
-        Button(onClick = { navController.navigate(dest) }) {
-            Text(text = "No", modifier = Modifier.padding(16.dp))
-        }
-    }
-
-    @Composable
-    fun YesButton(navController: NavHostController, dest: String) {
-        Button(onClick = { navController.navigate(dest) }) {
-            Text(text = "Yes", modifier = Modifier.padding(16.dp))
         }
     }
 
@@ -811,8 +798,12 @@ class MainActivity : ComponentActivity() {
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
-                NoButton(navController = navController, dest = "loadOptionsPage")
-                YesButton(navController = navController, dest = "confirmResetPage")
+                Button(onClick = { navController.navigate("loadOptionsPage")}) {
+                    Text(text="No", modifier = Modifier.padding(16.dp))
+                }
+                Button(onClick = { navController.navigate("confirmResetPage")}) {
+                    Text(text="Yes", modifier = Modifier.padding(16.dp))
+                }
             }
         }
     }
