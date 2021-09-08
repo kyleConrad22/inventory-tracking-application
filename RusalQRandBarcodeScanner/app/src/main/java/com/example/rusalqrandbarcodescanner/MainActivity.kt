@@ -298,13 +298,6 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun ManualButton(navController: NavHostController) {
-        Button(onClick = { navController.navigate("manualEntryPage") }) {
-            Text(text = "Manual Entry", modifier = Modifier.padding(16.dp))
-        }
-    }
-
-    @Composable
     fun NoButton(navController: NavHostController, dest: String) {
         Button(onClick = { navController.navigate(dest) }) {
             Text(text = "No", modifier = Modifier.padding(16.dp))
@@ -627,7 +620,9 @@ class MainActivity : ComponentActivity() {
                 verticalAlignment = Alignment.Bottom,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                 BackButton(navController = navController, dest = dest)
-                ManualButton(navController = navController)
+                Button(onClick = { navController.navigate("manualEntryPage") }) {
+                    Text(text = "Manual Entry", modifier = Modifier.padding(16.dp))
+                }
                 if (userInputViewModel.loader.value != "") {
                     ConfirmButton(navController = navController, str = "load", dest="reviewLoad")
                 } else {
