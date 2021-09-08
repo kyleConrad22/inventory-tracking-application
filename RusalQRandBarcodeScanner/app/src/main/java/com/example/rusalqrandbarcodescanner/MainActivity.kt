@@ -22,17 +22,25 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.focus.focusModifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -45,8 +53,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.room.ColumnInfo
-import androidx.room.PrimaryKey
 import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
 import com.example.rusalqrandbarcodescanner.database.ScannedCode
 import com.example.rusalqrandbarcodescanner.ui.theme.RusalQRAndBarcodeScannerTheme
@@ -62,7 +68,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import androidx.camera.view.PreviewView as PreviewView
 
-
+@ExperimentalComposeUiApi
 class MainActivity : ComponentActivity() {
 
     private val scannedCodeViewModel : ScannedCodeViewModel by viewModels {
@@ -322,13 +328,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @ExperimentalComposeUiApi
     @Composable
-    fun bundlesInput(): String? {
+    fun bundlesInput(focusManager: FocusManager): String? {
         var bundleQty by remember { mutableStateOf(userInputViewModel.bundles.value) }
 
         bundleQty?.let { qty ->
             OutlinedTextField(singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
                 value = qty,
                 onValueChange = { bundleQty = it },
                 label = { Text(text = "Bundles: ") })
@@ -337,13 +345,16 @@ class MainActivity : ComponentActivity() {
         return bundleQty
     }
 
+    @ExperimentalComposeUiApi
     @Composable
-    fun blInput(): String? {
+    fun blInput(focusManager: FocusManager): String? {
         var bl by remember { mutableStateOf(userInputViewModel.bl.value) }
 
         bl?.let { blNum ->
-            OutlinedTextField(singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(capitalization = KeyboardCapitalization.Characters),
+            OutlinedTextField(
+                singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
                 value = blNum,
                 onValueChange = { bl = it },
                 label = { Text(text = "BL: ") })
@@ -351,12 +362,15 @@ class MainActivity : ComponentActivity() {
         return bl
     }
 
+    @ExperimentalComposeUiApi
     @Composable
-    fun loaderInput(): String? {
+    fun loaderInput(focusManager: FocusManager): String? {
         var loader by remember { mutableStateOf(userInputViewModel.loader.value) }
 
         loader?.let { load ->
             OutlinedTextField(singleLine=true,
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext = { focusManager.clearFocus(true) }),
                 value = load,
                 onValueChange = { loader = it },
                 label = { Text(text = "Loader: ") })
@@ -364,12 +378,15 @@ class MainActivity : ComponentActivity() {
         return loader
     }
 
+    @ExperimentalComposeUiApi
     @Composable
-    fun vesselInput(): String? {
+    fun vesselInput(focusManager: FocusManager): String? {
         var vessel by remember { mutableStateOf(userInputViewModel.vessel.value) }
 
         vessel?.let { ves ->
             OutlinedTextField(singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
                 value = ves,
                 onValueChange = { vessel = it },
                 label = { Text(text = "Vessel: ") })
@@ -377,26 +394,40 @@ class MainActivity : ComponentActivity() {
         return vessel
     }
 
+    @ExperimentalComposeUiApi
     @Composable
-    fun quantityInput(): String? {
+    fun quantityInput(focusManager: FocusManager): String? {
         var quantity by remember { mutableStateOf(userInputViewModel.quantity.value) }
 
         quantity?.let { quant ->
-            OutlinedTextField(singleLine = true,
+            OutlinedTextField(modifier = Modifier.onKeyEvent { it ->
+                 if (it.key.keyCode == Key.Enter.keyCode) {
+                     focusManager.moveFocus(FocusDirection.Next)
+                     true
+                 } else {
+                     false
+                 }
+                },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
                 value = quant,
-                onValueChange = { quantity = it },
+                onValueChange = { it -> quantity = it },
                 label = { Text(text = "Quantity Per Bundle: ")}
             )
         }
         return quantity
     }
 
+    @ExperimentalComposeUiApi
     @Composable
-    fun checkerInput(): String? {
+    fun checkerInput(focusManager: FocusManager): String? {
         var checker by remember { mutableStateOf(userInputViewModel.checker.value) }
 
         checker?.let { check ->
             OutlinedTextField(singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext = { focusManager.clearFocus(true) }),
                 value = check,
                 onValueChange = { checker = it },
                 label = { Text(text = "Checker: ") })
@@ -404,13 +435,16 @@ class MainActivity : ComponentActivity() {
         return checker
     }
 
+    @ExperimentalComposeUiApi
     @Composable
-    fun heatNumberInput(): String? {
+    fun heatNumberInput(focusManager: FocusManager): String? {
         var heat by remember { mutableStateOf(userInputViewModel.heat.value) }
 
         heat?.let { heatNum ->
-            OutlinedTextField(singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+            OutlinedTextField(
+                singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext = { focusManager.clearFocus(true) }),
                 value = heatNum,
                 onValueChange = { heat = it },
                 label = { Text(text = "Heat Number: ") })
@@ -418,13 +452,15 @@ class MainActivity : ComponentActivity() {
         return heat
     }
 
+    @ExperimentalComposeUiApi
     @Composable
-    fun workOrderInput(): String? {
+    fun workOrderInput(focusManager: FocusManager): String? {
         var workOrder by remember { mutableStateOf(userInputViewModel.order.value) }
 
         workOrder?.let { ord ->
             OutlinedTextField(singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(capitalization = KeyboardCapitalization.Characters),
+                keyboardOptions = KeyboardOptions.Default.copy(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions( onNext = { focusManager.moveFocus(FocusDirection.Down) }),
                 value = ord,
                 onValueChange = { workOrder = it },
                 label = { Text(text = "Work Order: ") })
@@ -432,13 +468,15 @@ class MainActivity : ComponentActivity() {
         return workOrder
     }
 
+    @ExperimentalComposeUiApi
     @Composable
-    fun loadNumberInput(): String? {
+    fun loadNumberInput(focusManager: FocusManager): String? {
         var loadNum by remember { mutableStateOf(userInputViewModel.load.value) }
 
         loadNum?.let { load ->
             OutlinedTextField(singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext =  { focusManager.moveFocus(FocusDirection.Down) }),
                 value = load,
                 onValueChange = { loadNum = it },
                 label = { Text(text = "Load Number: ") })
@@ -478,18 +516,21 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @OptIn(ExperimentalComposeUiApi::class)
     @Composable
     fun LoadInfoPage(navController: NavHostController) {
+        val focusManager = LocalFocusManager.current
+
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
             Text(text = "Load Info:")
-            val workOrder = workOrderInput()
-            val loadNum = loadNumberInput()
-            val bundleQty = bundlesInput()
-            val blExp = blInput()
-            val quantity = quantityInput()
-            val loader = loaderInput()
+            val workOrder = workOrderInput(focusManager)
+            val loadNum = loadNumberInput(focusManager)
+            val bundleQty = bundlesInput(focusManager)
+            val blExp = blInput(focusManager)
+            val quantity = quantityInput(focusManager)
+            val loader = loaderInput(focusManager)
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -530,12 +571,13 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun ReceptionInfoPage(navController: NavHostController) {
+        val focusManager = LocalFocusManager.current
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
             Text(text = "Reception Info:")
-            var vessel = vesselInput()
-            var checker = checkerInput()
+            var vessel = vesselInput(focusManager)
+            var checker = checkerInput(focusManager)
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -605,11 +647,13 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun ManualEntryPage(navController: NavHostController) {
+        val focusManager = LocalFocusManager.current
+
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
             Text(text="Manual Heat Number Search: ", modifier = Modifier.padding(16.dp))
-            var heat = heatNumberInput()
+            var heat = heatNumberInput(focusManager)
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -848,6 +892,8 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun RemoveEntryPage(navController: NavHostController) {
+        val focusManager = LocalFocusManager.current
+
         val backDest: String = if (userInputViewModel.loader.value != "") {
             "loadOptionsPage"
         } else {
@@ -858,7 +904,7 @@ class MainActivity : ComponentActivity() {
             verticalArrangement = Arrangement.SpaceEvenly) {
             Text(text = "Enter Heat / Cast Number of Entry to be Removed:",
                 modifier = Modifier.padding(16.dp))
-            val heat = heatNumberInput()
+            val heat = heatNumberInput(focusManager)
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -1013,6 +1059,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @OptIn(ExperimentalComposeUiApi::class)
     @Composable
     fun NavigationHost(navController: NavHostController) {
 
