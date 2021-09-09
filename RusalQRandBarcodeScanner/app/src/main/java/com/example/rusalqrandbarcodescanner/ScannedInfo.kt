@@ -86,6 +86,7 @@ object ScannedInfo {
         val loaderObserver = Observer<String> { it ->
             loader = it
         }
+
         viewModel.order.observeForever(orderObserver)
         viewModel.load.observeForever(loadNumObserver)
         viewModel.loader.observeForever(loaderObserver)
@@ -100,7 +101,8 @@ object ScannedInfo {
             scanTime = scanTime,
             workOrder = workOrder,
             loadNum = loadNum,
-            loader = loader
+            loader = loader,
+            bl = blNum
         )
         viewModel.order.removeObserver(orderObserver)
         viewModel.load.removeObserver(loadNumObserver)
