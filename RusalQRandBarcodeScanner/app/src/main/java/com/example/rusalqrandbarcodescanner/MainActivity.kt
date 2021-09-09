@@ -300,7 +300,7 @@ class MainActivity : ComponentActivity() {
     // TextField which takes user input and assigns it to the bundles variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
-    fun bundlesInput(focusManager: FocusManager) {
+    fun BundlesInput(focusManager: FocusManager) {
         var bundleQty by remember { mutableStateOf(userInputViewModel.bundles.value) }
         val bundleObserver = Observer<String> { it ->
             bundleQty = it
@@ -320,7 +320,7 @@ class MainActivity : ComponentActivity() {
     // TextField which takes user input and assigns it to the bl variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
-    fun blInput(focusManager: FocusManager) {
+    fun BlInput(focusManager: FocusManager) {
         var bl by remember { mutableStateOf(userInputViewModel.bl.value) }
         val blObserver = Observer<String>{ it ->
             bl = it
@@ -341,7 +341,7 @@ class MainActivity : ComponentActivity() {
     // TextField which takes user input and assigns it to the loader variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
-    fun loaderInput(focusManager: FocusManager) {
+    fun LoaderInput(focusManager: FocusManager) {
         var loader by remember { mutableStateOf(userInputViewModel.loader.value) }
         val loaderObserver = Observer<String>{ it ->
             loader = it
@@ -361,7 +361,7 @@ class MainActivity : ComponentActivity() {
     // TextField which takes user input and assigns it to the vessel variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
-    fun vesselInput(focusManager: FocusManager) {
+    fun VesselInput(focusManager: FocusManager) {
         var vessel by remember { mutableStateOf(userInputViewModel.vessel.value) }
         val vesselObserver = Observer<String> { it ->
             vessel = it
@@ -381,7 +381,7 @@ class MainActivity : ComponentActivity() {
     // TextField which takes user input and assigns it to the quantity variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
-    fun quantityInput(focusManager: FocusManager) {
+    fun QuantityInput(focusManager: FocusManager) {
         var quantity by remember { mutableStateOf(userInputViewModel.quantity.value) }
         val quantityObserver = Observer<String> { it ->
             quantity = it
@@ -403,7 +403,7 @@ class MainActivity : ComponentActivity() {
     // TextField which takes user input and assigns it to the checker variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
-    fun checkerInput(focusManager: FocusManager) {
+    fun CheckerInput(focusManager: FocusManager) {
         var checker by remember { mutableStateOf(userInputViewModel.checker.value) }
         val checkerObserver = Observer<String> { it ->
             checker = it
@@ -445,7 +445,7 @@ class MainActivity : ComponentActivity() {
     // TextField which takes user input and assigns it to the order variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
-    fun workOrderInput(focusManager: FocusManager) {
+    fun WorkOrderInput(focusManager: FocusManager) {
         var workOrder by remember { mutableStateOf(userInputViewModel.order.value) }
         val orderObserver = Observer<String>{ it ->
             workOrder = it
@@ -465,7 +465,7 @@ class MainActivity : ComponentActivity() {
     //TextField which takes user input and assigns it to the load variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
-    fun loadNumberInput(focusManager: FocusManager) {
+    fun LoadNumberInput(focusManager: FocusManager) {
         var loadNum by remember { mutableStateOf(userInputViewModel.load.value) }
         val loadObserver = Observer<String> { it ->
             loadNum = it
@@ -536,12 +536,12 @@ class MainActivity : ComponentActivity() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
             Text(text = "Load Info:")
-            workOrderInput(focusManager)
-            loadNumberInput(focusManager)
-            bundlesInput(focusManager)
-            blInput(focusManager)
-            quantityInput(focusManager)
-            loaderInput(focusManager)
+            WorkOrderInput(focusManager)
+            LoadNumberInput(focusManager)
+            BundlesInput(focusManager)
+            BlInput(focusManager)
+            QuantityInput(focusManager)
+            LoaderInput(focusManager)
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -580,8 +580,8 @@ class MainActivity : ComponentActivity() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
             Text(text = "Reception Info:")
-            vesselInput(focusManager)
-            checkerInput(focusManager)
+            VesselInput(focusManager)
+            CheckerInput(focusManager)
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
