@@ -161,7 +161,7 @@ class MainActivity : ComponentActivity() {
                     .padding(16.dp)
                     .fillMaxWidth()
                     .align(Alignment.CenterVertically)) {
-                    scannedCode.heatNum?.let { Text(text = it, style = typography.h6) }
+                Text(text = "Heat: ${scannedCode.heatNum!!} || BL: TO BE IMPLEMENTED" , style = typography.h6)
                 }
             }
         }
