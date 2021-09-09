@@ -494,23 +494,23 @@ class MainActivity : ComponentActivity() {
             Text(text = "Main Menu", modifier = Modifier.padding(16.dp), fontSize = 25.sp)
             Button(onClick = { navController.navigate("loadInfoPage") }) {
                 Text(text="New Load", modifier = Modifier
-                        .padding(16.dp)
-                        .size(width = 200.dp, height = 20.dp)
-                        .align(Alignment.CenterVertically),
+                    .padding(16.dp)
+                    .size(width = 200.dp, height = 20.dp)
+                    .align(Alignment.CenterVertically),
                     textAlign = TextAlign.Center)
             }
             Button(onClick = { navController.navigate("receptionInfoPage") }) {
                 Text(text="New Reception", modifier = Modifier
-                        .padding(16.dp)
-                        .size(width = 200.dp, height = 20.dp)
-                        .align(Alignment.CenterVertically),
+                    .padding(16.dp)
+                    .size(width = 200.dp, height = 20.dp)
+                    .align(Alignment.CenterVertically),
                     textAlign = TextAlign.Center)
             }
             Button(onClick = { navController.navigate("scannerPage") }) {
                 Text(text="Get Bundle Info", modifier = Modifier
-                        .padding(16.dp)
-                        .size(width = 200.dp, height = 20.dp)
-                        .align(Alignment.CenterVertically),
+                    .padding(16.dp)
+                    .size(width = 200.dp, height = 20.dp)
+                    .align(Alignment.CenterVertically),
                     textAlign = TextAlign.Center)
             }
         }
@@ -669,6 +669,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun ManualEntryPage(navController: NavHostController) {
         val focusManager = LocalFocusManager.current
+        var openDialog = remember { mutableStateOf(false) }
 
         var uiHeat by remember { mutableStateOf(userInputViewModel.heat.value) }
         val heatObserver = Observer<String> { it ->
@@ -749,19 +750,21 @@ class MainActivity : ComponentActivity() {
                                                     navController.navigate("scannedInfoReturn")
                                                 })
 
-                                        } else if (blList!!.size != 1) {
+                                        } else if (blList!!.size > 1) {
                                             /*TODO*/
                                             navController.navigate("blOptions")
                                             /*Present bl options to loader and ask for them to make a selection*/
 
-                                        } else if (quantList!!.size != 1){
+                                        } else if (quantList!!.size > 1) {
                                             /*TODO*/
                                             navController.navigate("toBeImplemented")
                                             /*Ask for loader to verify that there are the requested number of pieces on this bundle, have them type the amount*/
 
+                                        } else {
+                                            openDialog.value = true
                                         }
                                     } else {
-                                        Log.d("DEBUG", "Query returned a null value!")
+                                        openDialog.value = true
                                     }
                                 })
                         } else {
@@ -783,8 +786,7 @@ class MainActivity : ComponentActivity() {
                                                         navController.navigate("incorrectQuantity")
                                                     }
                                                 } else {
-                                                    Log.d("DEBUG",
-                                                        "Heat number returned a null reference!")
+                                                    openDialog.value = true
                                                 }
                                             })
                                     } else if (returnedCode?.scanTime != null) {
@@ -792,9 +794,24 @@ class MainActivity : ComponentActivity() {
                                     }
                                 })
                         }
-
                     }) {
                         Text(text = "Retrieve Bundle Info", modifier = Modifier.padding(16.dp))
+                    }
+                    if (openDialog.value) {
+                        AlertDialog(onDismissRequest = {
+                            openDialog.value = false
+                        }, buttons = {
+                            Button(onClick = {
+                                openDialog.value = false
+                            }, modifier = Modifier
+                                .align(Alignment.CenterVertically)) {
+                                Text(text = "Dismiss", modifier = Modifier.padding(16.dp))
+                            }
+                        }, title = {
+                            Text("Invalid Heat Number")
+                        }, text = {
+                            Text("The given heat number was not found in the system!")
+                        })
                     }
                 }
             }
@@ -930,6 +947,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun RemoveEntryPage(navController: NavHostController) {
         val focusManager = LocalFocusManager.current
+        val openDialog = remember { mutableStateOf(false)}
 
         var uiHeat by remember { mutableStateOf(userInputViewModel.heat.value) }
         val uiHeatObserver = Observer<String> { it ->
@@ -942,30 +960,46 @@ class MainActivity : ComponentActivity() {
         } else {
             "receptionOptionsPage"
         }
-
-        Column(modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(text = "Enter Heat / Cast Number of Entry to be Removed:",
-                modifier = Modifier.padding(16.dp))
-            heatNumberInput(focusManager)
-            Row(modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly) {
-                BackButton(navController = navController, dest = backDest)
-                if (uiHeat != null && uiHeat!!.length >= 6) {
-                    Button(onClick = {
-                        scannedCodeViewModel.findByHeat(uiHeat!!)
-                            .observe(this@MainActivity, { item ->
-                                if (item != null) {
-                                    scannedCodeViewModel.delete(item)
-                                    navController.navigate(backDest)
-                                } else {
-                                    Log.d("DEBUG", "Heat number returned a null value!")
-                                }
-                            })
-                    }) {
-                        Text(text = "Confirm Removal")
+        MaterialTheme {
+            Column(modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceEvenly) {
+                Text(text = "Enter Heat / Cast Number of Entry to be Removed:",
+                    modifier = Modifier.padding(16.dp))
+                heatNumberInput(focusManager)
+                Row(modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly) {
+                    BackButton(navController = navController, dest = backDest)
+                    if (uiHeat != null && uiHeat!!.length >= 6) {
+                        Button(onClick = {
+                            scannedCodeViewModel.findByHeat(uiHeat!!)
+                                .observe(this@MainActivity, { item ->
+                                    if (item != null) {
+                                        scannedCodeViewModel.delete(item)
+                                        navController.navigate(backDest)
+                                    } else {
+                                        openDialog.value = true
+                                    }
+                                })
+                        }) {
+                            Text(text = "Confirm Removal", modifier = Modifier.padding(16.dp))
+                        }
+                        if (openDialog.value) {
+                            AlertDialog(
+                                onDismissRequest = {
+                                    openDialog.value = false
+                                }, title = {
+                                    Text(text = "Invalid Heat Number")
+                                }, text = {
+                                    Text("The given heat number was not found in the system!")
+                                }, buttons = {
+                                    Button(onClick = { openDialog.value = false },
+                                        modifier = Modifier.align(Alignment.CenterVertically)) {
+                                        Text(text = "Dismiss", modifier = Modifier.padding(16.dp))
+                                    }
+                                })
+                        }
                     }
                 }
             }
@@ -1064,7 +1098,9 @@ class MainActivity : ComponentActivity() {
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
             Text(text="Retrieved BL numbers:", modifier = Modifier.padding(16.dp))
             LazyColumn(
-                modifier = Modifier.background(Color.LightGray).size(400.dp),
+                modifier = Modifier
+                    .background(Color.LightGray)
+                    .size(400.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
 
             ) {
@@ -1087,7 +1123,9 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun BlListItem(bl: String) {
         Card(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(horizontal = 8.dp, vertical = 8.dp)
+                .fillMaxWidth(),
             elevation = 2.dp,
             backgroundColor = Color.Black,
             shape = RoundedCornerShape(corner = CornerSize(16.dp))
