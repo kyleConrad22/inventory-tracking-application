@@ -401,7 +401,7 @@ class MainActivity : ComponentActivity() {
     // TextField which takes user input and assigns it to the heat variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
-    fun heatNumberInput(focusManager: FocusManager): String? {
+    fun heatNumberInput(focusManager: FocusManager) {
         var heat by remember { mutableStateOf(userInputViewModel.heat.value) }
         val heatObserver = Observer<String>{ it ->
             heat = it
@@ -419,7 +419,6 @@ class MainActivity : ComponentActivity() {
                     userInputViewModel.refresh() },
                 label = { Text(text = "Heat Number: ") })
         }
-        return heat
     }
 
     // TextField which takes user input and assigns it to the order variable in userInputViewModel
@@ -932,34 +931,42 @@ class MainActivity : ComponentActivity() {
     fun RemoveEntryPage(navController: NavHostController) {
         val focusManager = LocalFocusManager.current
 
+        var uiHeat by remember { mutableStateOf(userInputViewModel.heat.value) }
+        val uiHeatObserver = Observer<String> { it ->
+            uiHeat = it
+        }
+        userInputViewModel.heat.observe(this@MainActivity, uiHeatObserver)
+
         val backDest: String = if (userInputViewModel.loader.value != "") {
             "loadOptionsPage"
         } else {
             "receptionOptionsPage"
         }
+
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
             Text(text = "Enter Heat / Cast Number of Entry to be Removed:",
                 modifier = Modifier.padding(16.dp))
-            val heat = heatNumberInput(focusManager)
+            heatNumberInput(focusManager)
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                 BackButton(navController = navController, dest = backDest)
-                Button(onClick = {
-                    if( heat != null) {
-                        scannedCodeViewModel.findByHeat(heat).observe(this@MainActivity, {item ->
-                            if (item != null) {
-                                scannedCodeViewModel.delete(item)
-                                navController.navigate(backDest)
-                            } else {
-                                Log.d("DEBUG", "Heat number returned a null value!")
-                            }
-                        })
+                if (uiHeat != null && uiHeat!!.length >= 6) {
+                    Button(onClick = {
+                        scannedCodeViewModel.findByHeat(uiHeat!!)
+                            .observe(this@MainActivity, { item ->
+                                if (item != null) {
+                                    scannedCodeViewModel.delete(item)
+                                    navController.navigate(backDest)
+                                } else {
+                                    Log.d("DEBUG", "Heat number returned a null value!")
+                                }
+                            })
+                    }) {
+                        Text(text = "Confirm Removal")
                     }
-                }) {
-                    Text(text="Confirm Removal")
                 }
             }
         }
