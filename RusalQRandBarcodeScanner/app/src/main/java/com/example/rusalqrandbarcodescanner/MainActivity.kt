@@ -545,21 +545,17 @@ class MainActivity : ComponentActivity() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
             Text(text = "Load Info:")
-            val workOrder = workOrderInput(focusManager)
-            val loadNum = loadNumberInput(focusManager)
-            val bundleQty = bundlesInput(focusManager)
-            val blExp = blInput(focusManager)
-            val quantity = quantityInput(focusManager)
-            val loader = loaderInput(focusManager)
+            workOrderInput(focusManager)
+            loadNumberInput(focusManager)
+            bundlesInput(focusManager)
+            blInput(focusManager)
+            quantityInput(focusManager)
+            loaderInput(focusManager)
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                 BackButton(navController = navController, dest = "mainMenu")
-                if (bundleQty != null && loader != null && loadNum != null && workOrder != null && blExp != null && quantity != null) {
-                    LoadConfirmButton(navController = navController)
-                } else {
-                    throw NullPointerException("One of the assigned values is null!")
-                }
+                LoadConfirmButton(navController = navController)
             }
         }
     }
@@ -593,15 +589,13 @@ class MainActivity : ComponentActivity() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
             Text(text = "Reception Info:")
-            val vessel = vesselInput(focusManager)
-            val checker = checkerInput(focusManager)
+            vesselInput(focusManager)
+            checkerInput(focusManager)
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                 BackButton(navController = navController, dest = "mainMenu")
-                if (vessel != null && checker != null){
-                    ReceptionConfirmButton(navController = navController)
-                } else { throw NullPointerException("One of the assigned values is null!")}
+                ReceptionConfirmButton(navController = navController)
             }
         }
     }
