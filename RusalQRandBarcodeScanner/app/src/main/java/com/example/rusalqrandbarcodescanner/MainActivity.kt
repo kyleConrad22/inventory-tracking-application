@@ -300,7 +300,7 @@ class MainActivity : ComponentActivity() {
     // TextField which takes user input and assigns it to the bundles variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
-    fun bundlesInput(focusManager: FocusManager): String? {
+    fun bundlesInput(focusManager: FocusManager) {
         var bundleQty by remember { mutableStateOf(userInputViewModel.bundles.value) }
         val bundleObserver = Observer<String> { it ->
             bundleQty = it
@@ -315,14 +315,12 @@ class MainActivity : ComponentActivity() {
                 onValueChange = { userInputViewModel.bundles.value = it },
                 label = { Text(text = "Bundles: ") })
         }
-
-        return bundleQty
     }
 
     // TextField which takes user input and assigns it to the bl variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
-    fun blInput(focusManager: FocusManager): String? {
+    fun blInput(focusManager: FocusManager) {
         var bl by remember { mutableStateOf(userInputViewModel.bl.value) }
         val blObserver = Observer<String>{ it ->
             bl = it
@@ -338,13 +336,12 @@ class MainActivity : ComponentActivity() {
                 onValueChange = { userInputViewModel.bl.value = it },
                 label = { Text(text = "BL: ") })
         }
-        return bl
     }
 
     // TextField which takes user input and assigns it to the loader variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
-    fun loaderInput(focusManager: FocusManager): String? {
+    fun loaderInput(focusManager: FocusManager) {
         var loader by remember { mutableStateOf(userInputViewModel.loader.value) }
         val loaderObserver = Observer<String>{ it ->
             loader = it
@@ -359,13 +356,12 @@ class MainActivity : ComponentActivity() {
                 onValueChange = { userInputViewModel.loader.value = it },
                 label = { Text(text = "Loader: ") })
         }
-        return loader
     }
 
     // TextField which takes user input and assigns it to the vessel variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
-    fun vesselInput(focusManager: FocusManager): String? {
+    fun vesselInput(focusManager: FocusManager) {
         var vessel by remember { mutableStateOf(userInputViewModel.vessel.value) }
         val vesselObserver = Observer<String> { it ->
             vessel = it
@@ -380,13 +376,12 @@ class MainActivity : ComponentActivity() {
                 onValueChange = { userInputViewModel.vessel.value = it },
                 label = { Text(text = "Vessel: ") })
         }
-        return vessel
     }
 
     // TextField which takes user input and assigns it to the quantity variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
-    fun quantityInput(focusManager: FocusManager): String? {
+    fun quantityInput(focusManager: FocusManager) {
         var quantity by remember { mutableStateOf(userInputViewModel.quantity.value) }
         val quantityObserver = Observer<String> { it ->
             quantity = it
@@ -403,13 +398,12 @@ class MainActivity : ComponentActivity() {
                 label = { Text(text = "Quantity Per Bundle: ")}
             )
         }
-        return quantity
     }
 
     // TextField which takes user input and assigns it to the checker variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
-    fun checkerInput(focusManager: FocusManager): String? {
+    fun checkerInput(focusManager: FocusManager) {
         var checker by remember { mutableStateOf(userInputViewModel.checker.value) }
         val checkerObserver = Observer<String> { it ->
             checker = it
@@ -424,7 +418,6 @@ class MainActivity : ComponentActivity() {
                 onValueChange = { userInputViewModel.checker.value = it },
                 label = { Text(text = "Checker: ") })
         }
-        return checker
     }
 
     // TextField which takes user input and assigns it to the heat variable in userInputViewModel
@@ -452,7 +445,7 @@ class MainActivity : ComponentActivity() {
     // TextField which takes user input and assigns it to the order variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
-    fun workOrderInput(focusManager: FocusManager): String? {
+    fun workOrderInput(focusManager: FocusManager) {
         var workOrder by remember { mutableStateOf(userInputViewModel.order.value) }
         val orderObserver = Observer<String>{ it ->
             workOrder = it
@@ -467,13 +460,12 @@ class MainActivity : ComponentActivity() {
                 onValueChange = { userInputViewModel.order.value = it },
                 label = { Text(text = "Work Order: ") })
         }
-        return workOrder
     }
 
     //TextField which takes user input and assigns it to the load variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
-    fun loadNumberInput(focusManager: FocusManager): String? {
+    fun loadNumberInput(focusManager: FocusManager) {
         var loadNum by remember { mutableStateOf(userInputViewModel.load.value) }
         val loadObserver = Observer<String> { it ->
             loadNum = it
@@ -488,7 +480,6 @@ class MainActivity : ComponentActivity() {
                 onValueChange = { userInputViewModel.load.value = it },
                 label = { Text(text = "Load Number: ") })
         }
-        return loadNum
     }
 
 
