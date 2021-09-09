@@ -203,22 +203,6 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun LoadConfirmButton(navController: NavHostController) {
-        Button(onClick = { navController.navigate("loadOptionsPage") }) {
-            Text(text = "Confirm Load Info", modifier = Modifier.padding(16.dp))
-        }
-    }
-
-    @Composable
-    fun ReceptionConfirmButton(navController: NavHostController) {
-        Button(onClick = {
-            navController.navigate("receptionOptionsPage")
-        }) {
-            Text(text = "Confirm Reception Info", modifier = Modifier.padding(16.dp))
-        }
-    }
-
-    @Composable
     fun ConfirmButton(navController: NavHostController, str: String, dest: String) {
         Button(onClick = {
             if (str == "Load") {
@@ -555,7 +539,9 @@ class MainActivity : ComponentActivity() {
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                 BackButton(navController = navController, dest = "mainMenu")
                 if (loadConfirmVis != null && loadConfirmVis == true) {
-                    LoadConfirmButton(navController = navController)
+                    Button(onClick = { navController.navigate("loadOptionsPage")}) {
+                        Text(text="Confirm Load Info", modifier = Modifier.padding(16.dp))
+                    }
                 }
             }
         }
@@ -604,7 +590,9 @@ class MainActivity : ComponentActivity() {
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                 BackButton(navController = navController, dest = "mainMenu")
                 if (receptionConfirmVis != null && receptionConfirmVis == true) {
-                    ReceptionConfirmButton(navController = navController)
+                    Button(onClick = { navController.navigate("receptionOptionsPage")}) {
+                        Text(text="Confirm Reception Info", modifier = Modifier.padding(16.dp))
+                    }
                 }
             }
         }
