@@ -204,33 +204,15 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun LoadConfirmButton(navController: NavHostController) {
-        var loadConfirmVis = remember { userInputViewModel.loadConfirmIsVisible().value }
-        val loadObserver = Observer<Boolean> { it ->
-            loadConfirmVis = it
-        }
-        userInputViewModel.loadConfirmIsVisible().observe(this@MainActivity, loadObserver)
-
-        Button(modifier = Modifier.alpha(if(loadConfirmVis!!){1f} else{0f}), onClick = {
-            if (loadConfirmVis!!) {
-                navController.navigate("loadOptionsPage")
-            }
-        }) {
+        Button(onClick = { navController.navigate("loadOptionsPage") }) {
             Text(text = "Confirm Load Info", modifier = Modifier.padding(16.dp))
         }
     }
 
     @Composable
     fun ReceptionConfirmButton(navController: NavHostController) {
-        var receptionIsVis = remember { userInputViewModel.receptionConfirmIsVisible().value }
-        val receptionObserver = Observer<Boolean> { it ->
-            receptionIsVis = it
-        }
-        userInputViewModel.receptionConfirmIsVisible().observe(this@MainActivity, receptionObserver)
-
-        Button(modifier = Modifier.alpha(if(receptionIsVis!!){1f} else{0f}), onClick = {
-            if (receptionIsVis!!) {
-                navController.navigate("receptionOptionsPage")
-            }
+        Button(onClick = {
+            navController.navigate("receptionOptionsPage")
         }) {
             Text(text = "Confirm Reception Info", modifier = Modifier.padding(16.dp))
         }
@@ -312,7 +294,9 @@ class MainActivity : ComponentActivity() {
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
                 value = qty,
-                onValueChange = { userInputViewModel.bundles.value = it },
+                onValueChange = {
+                    userInputViewModel.bundles.value = it
+                    userInputViewModel.refresh()},
                 label = { Text(text = "Bundles: ") })
         }
     }
@@ -333,7 +317,9 @@ class MainActivity : ComponentActivity() {
                 keyboardOptions = KeyboardOptions.Default.copy(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
                 value = blNum,
-                onValueChange = { userInputViewModel.bl.value = it },
+                onValueChange = {
+                    userInputViewModel.bl.value = it
+                    userInputViewModel.refresh()},
                 label = { Text(text = "BL: ") })
         }
     }
@@ -353,7 +339,9 @@ class MainActivity : ComponentActivity() {
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(onNext = { focusManager.clearFocus(true) }),
                 value = loadIt,
-                onValueChange = { userInputViewModel.loader.value = it },
+                onValueChange = {
+                    userInputViewModel.loader.value = it
+                    userInputViewModel.refresh()},
                 label = { Text(text = "Loader: ") })
         }
     }
@@ -373,7 +361,9 @@ class MainActivity : ComponentActivity() {
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
                 value = ves,
-                onValueChange = { userInputViewModel.vessel.value = it },
+                onValueChange = {
+                    userInputViewModel.vessel.value = it
+                    userInputViewModel.refresh()},
                 label = { Text(text = "Vessel: ") })
         }
     }
@@ -394,7 +384,9 @@ class MainActivity : ComponentActivity() {
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
                 value = quant,
-                onValueChange = { userInputViewModel.quantity.value = it },
+                onValueChange = {
+                    userInputViewModel.quantity.value = it
+                    userInputViewModel.refresh()},
                 label = { Text(text = "Quantity Per Bundle: ")}
             )
         }
@@ -415,7 +407,9 @@ class MainActivity : ComponentActivity() {
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(onNext = { focusManager.clearFocus(true) }),
                 value = check,
-                onValueChange = { userInputViewModel.checker.value = it },
+                onValueChange = {
+                    userInputViewModel.checker.value = it
+                    userInputViewModel.refresh()},
                 label = { Text(text = "Checker: ") })
         }
     }
@@ -457,7 +451,9 @@ class MainActivity : ComponentActivity() {
                 keyboardOptions = KeyboardOptions.Default.copy(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions( onNext = { focusManager.moveFocus(FocusDirection.Down) }),
                 value = ord,
-                onValueChange = { userInputViewModel.order.value = it },
+                onValueChange = {
+                    userInputViewModel.order.value = it
+                    userInputViewModel.refresh()},
                 label = { Text(text = "Work Order: ") })
         }
     }
@@ -477,7 +473,9 @@ class MainActivity : ComponentActivity() {
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(onNext =  { focusManager.moveFocus(FocusDirection.Down) }),
                 value = load,
-                onValueChange = { userInputViewModel.load.value = it },
+                onValueChange = {
+                    userInputViewModel.load.value = it
+                    userInputViewModel.refresh()},
                 label = { Text(text = "Load Number: ") })
         }
     }
@@ -532,21 +530,33 @@ class MainActivity : ComponentActivity() {
     fun LoadInfoPage(navController: NavHostController) {
         val focusManager = LocalFocusManager.current
 
+        var loadConfirmVis by remember { mutableStateOf(userInputViewModel.loadVis.value) }
+        val loadObserver = Observer<Boolean> { it ->
+            loadConfirmVis = it
+        }
+
+        userInputViewModel.loadVis.observe(this@MainActivity, loadObserver)
+
+
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
             Text(text = "Load Info:")
+
             WorkOrderInput(focusManager)
             LoadNumberInput(focusManager)
             BundlesInput(focusManager)
             BlInput(focusManager)
             QuantityInput(focusManager)
             LoaderInput(focusManager)
+
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                 BackButton(navController = navController, dest = "mainMenu")
-                LoadConfirmButton(navController = navController)
+                if (loadConfirmVis != null && loadConfirmVis == true) {
+                    LoadConfirmButton(navController = navController)
+                }
             }
         }
     }
@@ -576,6 +586,13 @@ class MainActivity : ComponentActivity() {
     fun ReceptionInfoPage(navController: NavHostController) {
         val focusManager = LocalFocusManager.current
 
+        var receptionConfirmVis by remember { mutableStateOf(userInputViewModel.receptionVis.value) }
+        val receptionVisObserver = Observer<Boolean> { it ->
+            receptionConfirmVis = it
+        }
+
+        userInputViewModel.receptionVis.observe(this@MainActivity, receptionVisObserver)
+
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
@@ -586,7 +603,9 @@ class MainActivity : ComponentActivity() {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                 BackButton(navController = navController, dest = "mainMenu")
-                ReceptionConfirmButton(navController = navController)
+                if (receptionConfirmVis != null && receptionConfirmVis == true) {
+                    ReceptionConfirmButton(navController = navController)
+                }
             }
         }
     }

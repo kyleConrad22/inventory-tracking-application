@@ -4,51 +4,62 @@ import androidx.lifecycle.*
 import java.lang.IllegalArgumentException
 
 class UserInputViewModel(): ViewModel() {
-    var loader: MutableLiveData<String> = MutableLiveData("")
-    var order: MutableLiveData<String> = MutableLiveData("")
-    var load: MutableLiveData<String> = MutableLiveData("")
-    var bundles: MutableLiveData<String> = MutableLiveData("")
-    var bl: MutableLiveData<String> = MutableLiveData("")
-    var vessel: MutableLiveData<String> = MutableLiveData("")
-    var checker: MutableLiveData<String> = MutableLiveData("")
-    var heat: MutableLiveData<String> = MutableLiveData("")
-    var quantity: MutableLiveData<String> = MutableLiveData("")
+    val loader: MutableLiveData<String> = MutableLiveData("")
+    val order: MutableLiveData<String> = MutableLiveData("")
+    val load: MutableLiveData<String> = MutableLiveData("")
+    val bundles: MutableLiveData<String> = MutableLiveData("")
+    val bl: MutableLiveData<String> = MutableLiveData("")
+    val vessel: MutableLiveData<String> = MutableLiveData("")
+    val checker: MutableLiveData<String> = MutableLiveData("")
+    val heat: MutableLiveData<String> = MutableLiveData("")
+    val quantity: MutableLiveData<String> = MutableLiveData("")
 
     fun updateHeat(heat: String){
         this.heat.value = heat
     }
 
-    fun loadConfirmIsVisible(): LiveData<Boolean> {
+    private val triggerLoader = MutableLiveData<Unit>()
+
+    fun refresh() {
+        triggerLoader.value = Unit
+    }
+
+    val loadVis: LiveData<Boolean> = triggerLoader.switchMap{ loadLoadConfirmVis() }
+
+    private fun loadLoadConfirmVis(): LiveData<Boolean> {
         val mediatorLiveData = MediatorLiveData<Boolean>()
 
         mediatorLiveData.addSource(order) { ord ->
-            mediatorLiveData.removeSource(order)
             mediatorLiveData.value = ord != ""
 
-            if (mediatorLiveData.value == true) {
+            if (ord != "") {
+                mediatorLiveData.removeSource(order)
                 mediatorLiveData.addSource(load) { loadIt ->
-                    mediatorLiveData.removeSource(load)
                     mediatorLiveData.value = loadIt != ""
 
-                    if (mediatorLiveData.value == true) {
+                    if (loadIt != "") {
+                        mediatorLiveData.removeSource(load)
                         mediatorLiveData.addSource(bundles) { bund ->
-                            mediatorLiveData.removeSource(bundles)
                             mediatorLiveData.value = bund != ""
 
-                            if (mediatorLiveData.value == true) {
+                            if (bund != "") {
+                                mediatorLiveData.removeSource(bundles)
                                 mediatorLiveData.addSource(bl) { blIt ->
-                                    mediatorLiveData.removeSource(bl)
                                     mediatorLiveData.value = blIt != ""
 
-                                    if (mediatorLiveData.value == true) {
+                                    if (blIt != "") {
+                                        mediatorLiveData.removeSource(bl)
                                         mediatorLiveData.addSource(quantity) { quant ->
-                                            mediatorLiveData.removeSource(quantity)
                                             mediatorLiveData.value = quant != ""
 
-                                            if (mediatorLiveData.value == true) {
+                                            if (quant != "") {
+                                                mediatorLiveData.removeSource(quantity)
                                                 mediatorLiveData.addSource(loader) { loaderIt ->
-                                                    mediatorLiveData.removeSource(loader)
                                                     mediatorLiveData.value = loaderIt != ""
+
+                                                    if (loaderIt != "") {
+                                                        mediatorLiveData.removeSource(loader)
+                                                    }
                                                 }
                                             }
                                         }
@@ -60,21 +71,25 @@ class UserInputViewModel(): ViewModel() {
                 }
             }
         }
-
         return mediatorLiveData
     }
 
-    fun receptionConfirmIsVisible(): LiveData<Boolean> {
+    val receptionVis: LiveData<Boolean> = triggerLoader.switchMap { loadReceptionConfirmVis() }
+
+    private fun loadReceptionConfirmVis(): LiveData<Boolean> {
         val mediatorLiveData = MediatorLiveData<Boolean>()
 
         mediatorLiveData.addSource(vessel) { ves ->
-            mediatorLiveData.removeSource(vessel)
             mediatorLiveData.value = ves != ""
 
-            if (mediatorLiveData.value == true) {
+            if (ves != "") {
+                mediatorLiveData.removeSource(vessel)
                 mediatorLiveData.addSource(checker) { check ->
-                    mediatorLiveData.removeSource(checker)
                     mediatorLiveData.value = check != ""
+
+                    if (check != "") {
+                        mediatorLiveData.removeSource(checker)
+                    }
                 }
             }
         }
