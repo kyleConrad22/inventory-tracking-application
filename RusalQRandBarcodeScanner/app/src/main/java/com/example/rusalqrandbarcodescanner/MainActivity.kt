@@ -297,6 +297,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // TextField which takes user input and assigns it to the bundles variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
     fun bundlesInput(focusManager: FocusManager): String? {
@@ -318,6 +319,7 @@ class MainActivity : ComponentActivity() {
         return bundleQty
     }
 
+    // TextField which takes user input and assigns it to the bl variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
     fun blInput(focusManager: FocusManager): String? {
@@ -339,6 +341,7 @@ class MainActivity : ComponentActivity() {
         return bl
     }
 
+    // TextField which takes user input and assigns it to the loader variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
     fun loaderInput(focusManager: FocusManager): String? {
@@ -359,6 +362,7 @@ class MainActivity : ComponentActivity() {
         return loader
     }
 
+    // TextField which takes user input and assigns it to the vessel variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
     fun vesselInput(focusManager: FocusManager): String? {
@@ -379,6 +383,7 @@ class MainActivity : ComponentActivity() {
         return vessel
     }
 
+    // TextField which takes user input and assigns it to the quantity variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
     fun quantityInput(focusManager: FocusManager): String? {
@@ -401,6 +406,7 @@ class MainActivity : ComponentActivity() {
         return quantity
     }
 
+    // TextField which takes user input and assigns it to the checker variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
     fun checkerInput(focusManager: FocusManager): String? {
@@ -421,6 +427,7 @@ class MainActivity : ComponentActivity() {
         return checker
     }
 
+    // TextField which takes user input and assigns it to the heat variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
     fun heatNumberInput(focusManager: FocusManager): String? {
@@ -442,6 +449,7 @@ class MainActivity : ComponentActivity() {
         return heat
     }
 
+    // TextField which takes user input and assigns it to the order variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
     fun workOrderInput(focusManager: FocusManager): String? {
@@ -462,6 +470,7 @@ class MainActivity : ComponentActivity() {
         return workOrder
     }
 
+    //TextField which takes user input and assigns it to the load variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
     fun loadNumberInput(focusManager: FocusManager): String? {
@@ -526,7 +535,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @OptIn(ExperimentalComposeUiApi::class)
+    // Page which takes user input necessary to create a new load
+    @ExperimentalComposeUiApi
     @Composable
     fun LoadInfoPage(navController: NavHostController) {
         val focusManager = LocalFocusManager.current
@@ -554,6 +564,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // Page which shows the options currently available to the user on the current load
     @Composable
     fun LoadOptionsPage(navController: NavHostController) {
         Column(modifier = Modifier.fillMaxSize(),
@@ -573,15 +584,17 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // Page which prompts takes user input necessary to create a new reception
     @Composable
     fun ReceptionInfoPage(navController: NavHostController) {
         val focusManager = LocalFocusManager.current
+
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
             Text(text = "Reception Info:")
-            var vessel = vesselInput(focusManager)
-            var checker = checkerInput(focusManager)
+            val vessel = vesselInput(focusManager)
+            val checker = checkerInput(focusManager)
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -593,6 +606,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // Page which shows the options currently available to the user on the current reception
     @Composable
     fun ReceptionOptionsPage(navController: NavHostController) {
         Column(modifier = Modifier.fillMaxSize(),
