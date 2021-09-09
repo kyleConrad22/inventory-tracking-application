@@ -10,8 +10,8 @@ import java.lang.IllegalArgumentException
 class CurrentInventoryViewModel(private val repository: CurrentInventoryRepository): ViewModel() {
 
     val allCodes: LiveData<List<CurrentInventoryLineItem>> = repository.fullInventory.asLiveData()
-    val blListMediator = MediatorLiveData<List<String>>()
-    val quantListMediator = MediatorLiveData<List<String>>()
+    val blListMediator = MediatorLiveData<List<String>?>()
+    val quantListMediator = MediatorLiveData<List<String>?>()
 
     fun findByBaseHeat(heat: String): LiveData<List<CurrentInventoryLineItem>?> {
         val result = MutableLiveData<List<CurrentInventoryLineItem>?>()
@@ -57,35 +57,49 @@ class CurrentInventoryViewModel(private val repository: CurrentInventoryReposito
         return result
     }
 
-    fun getQuantList(heat: String): LiveData<List<String>> {
-        val repositoryLiveData = findByBaseHeat("%$heat%")
-        quantListMediator.addSource(repositoryLiveData) { items: List<CurrentInventoryLineItem>? ->
-            quantListMediator.removeSource(repositoryLiveData)
-            items?.let{
-                val quantList = mutableListOf<String>()
-                for (item in items) {
-                    if (quantList.find { it == item.quantity!! } == null) {
-                        quantList.add(item.quantity!!)
+    fun getQuantList(heat: String?): LiveData<List<String>?> {
+        if (heat == null) {
+            quantListMediator.value = null
+
+        } else {
+            val repositoryLiveData = findByBaseHeat("%$heat%")
+            quantListMediator.addSource(repositoryLiveData) { items: List<CurrentInventoryLineItem>? ->
+                quantListMediator.removeSource(repositoryLiveData)
+
+                items?.let {
+                    val quantList = mutableListOf<String>()
+
+                    for (item in items) {
+                        if (quantList.find { it == item.quantity!! } == null) {
+                            quantList.add(item.quantity!!)
+                        }
                     }
+                    quantListMediator.setValue(quantList.toList())
                 }
-                quantListMediator.setValue(quantList.toList())
             }
         }
         return quantListMediator
     }
 
-    fun getBlList(heat: String): LiveData<List<String>> {
-        val repositoryLiveData = findByBaseHeat("%$heat%")
-        blListMediator.addSource(repositoryLiveData) { items: List<CurrentInventoryLineItem>? ->
-            blListMediator.removeSource(repositoryLiveData)
-            items?.let{
-                val blList = mutableListOf<String>()
-                for (item in items) {
-                    if (blList.find { it == item.blNum } == null) {
-                        blList.add(item.blNum!!)
+    fun getBlList(heat: String?): LiveData<List<String>?> {
+        if (heat == null){
+            blListMediator.value = null
+
+        } else {
+            val repositoryLiveData = findByBaseHeat("%$heat%")
+            blListMediator.addSource(repositoryLiveData) { items: List<CurrentInventoryLineItem>? ->
+                blListMediator.removeSource(repositoryLiveData)
+
+                items?.let {
+                    val blList = mutableListOf<String>()
+
+                    for (item in items) {
+                        if (blList.find { it == item.blNum } == null) {
+                            blList.add(item.blNum!!)
+                        }
                     }
+                    blListMediator.setValue(blList.toList())
                 }
-                blListMediator.setValue(blList.toList())
             }
         }
         return blListMediator

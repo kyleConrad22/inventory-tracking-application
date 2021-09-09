@@ -280,7 +280,7 @@ class MainActivity : ComponentActivity() {
                 value = qty,
                 onValueChange = {
                     userInputViewModel.bundles.value = it
-                    userInputViewModel.refresh()},
+                    userInputViewModel.refresh() },
                 label = { Text(text = "Bundles: ") })
         }
     }
@@ -303,7 +303,7 @@ class MainActivity : ComponentActivity() {
                 value = blNum,
                 onValueChange = {
                     userInputViewModel.bl.value = it
-                    userInputViewModel.refresh()},
+                    userInputViewModel.refresh() },
                 label = { Text(text = "BL: ") })
         }
     }
@@ -325,7 +325,7 @@ class MainActivity : ComponentActivity() {
                 value = loadIt,
                 onValueChange = {
                     userInputViewModel.loader.value = it
-                    userInputViewModel.refresh()},
+                    userInputViewModel.refresh() },
                 label = { Text(text = "Loader: ") })
         }
     }
@@ -347,7 +347,7 @@ class MainActivity : ComponentActivity() {
                 value = ves,
                 onValueChange = {
                     userInputViewModel.vessel.value = it
-                    userInputViewModel.refresh()},
+                    userInputViewModel.refresh() },
                 label = { Text(text = "Vessel: ") })
         }
     }
@@ -370,7 +370,7 @@ class MainActivity : ComponentActivity() {
                 value = quant,
                 onValueChange = {
                     userInputViewModel.quantity.value = it
-                    userInputViewModel.refresh()},
+                    userInputViewModel.refresh() },
                 label = { Text(text = "Quantity Per Bundle: ")}
             )
         }
@@ -393,7 +393,7 @@ class MainActivity : ComponentActivity() {
                 value = check,
                 onValueChange = {
                     userInputViewModel.checker.value = it
-                    userInputViewModel.refresh()},
+                    userInputViewModel.refresh() },
                 label = { Text(text = "Checker: ") })
         }
     }
@@ -414,7 +414,9 @@ class MainActivity : ComponentActivity() {
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(onNext = { focusManager.clearFocus(true) }),
                 value = heatNum,
-                onValueChange = { userInputViewModel.heat.value = it },
+                onValueChange = {
+                    userInputViewModel.heat.value = it
+                    userInputViewModel.refresh() },
                 label = { Text(text = "Heat Number: ") })
         }
         return heat
@@ -437,7 +439,7 @@ class MainActivity : ComponentActivity() {
                 value = ord,
                 onValueChange = {
                     userInputViewModel.order.value = it
-                    userInputViewModel.refresh()},
+                    userInputViewModel.refresh() },
                 label = { Text(text = "Work Order: ") })
         }
     }
@@ -459,7 +461,7 @@ class MainActivity : ComponentActivity() {
                 value = load,
                 onValueChange = {
                     userInputViewModel.load.value = it
-                    userInputViewModel.refresh()},
+                    userInputViewModel.refresh() },
                 label = { Text(text = "Load Number: ") })
         }
     }
@@ -669,120 +671,132 @@ class MainActivity : ComponentActivity() {
     fun ManualEntryPage(navController: NavHostController) {
         val focusManager = LocalFocusManager.current
 
+        var uiHeat by remember { mutableStateOf(userInputViewModel.heat.value) }
+        val heatObserver = Observer<String> { it ->
+            uiHeat = it
+        }
+        userInputViewModel.heat.observe(this@MainActivity, heatObserver)
+
+        var blList by remember { mutableStateOf(currentInventoryViewModel.getBlList(uiHeat).value) }
+        val blListObserver = Observer<List<String>?> { it ->
+            blList = it
+        }
+        currentInventoryViewModel.getBlList(uiHeat).observe(this@MainActivity, blListObserver)
+
+        var quantList by remember { mutableStateOf(currentInventoryViewModel.getQuantList(uiHeat).value) }
+        val quantListObserver = Observer<List<String>?> { it ->
+            quantList = it
+        }
+        currentInventoryViewModel.getQuantList(uiHeat).observe(this@MainActivity, quantListObserver)
+
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
             Text(text="Manual Heat Number Search: ", modifier = Modifier.padding(16.dp))
-            var heat = heatNumberInput(focusManager)
+            heatNumberInput(focusManager)
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                 BackButton(navController = navController, dest = "scannerPage")
-                Button(onClick = {
-                    if (heat != null) {
-                        userInputViewModel.updateHeat(heat!!.replace("\n", "").replace("-", "")
-                            .replace(" ", ""))
-                        heat = userInputViewModel.heat.value
-                    }
-                    if (heat?.length == 6){
-                        var result: List<CurrentInventoryLineItem>?
-                        currentInventoryViewModel.findByBaseHeat("%${heat!!}%").observe(this@MainActivity, { returnedVal ->
-                            result = returnedVal
-                            if (result != null){
-                                val blList = mutableListOf<String>()
-                                val quantityList = mutableListOf<String>()
-                                for (item in result!!){
-                                    if (item.blNum!! !in blList) {
-                                        blList.add(item.blNum)
-                                    }
-                                    if (item.quantity!! !in quantityList){
-                                        quantityList.add(item.quantity)
-                                    }
-                                }
-                                if (blList.size == 1 && quantityList.size == 1) {
-                                    var barcode: String
-                                    var baseList: List<CurrentInventoryLineItem>?
-                                    currentInventoryViewModel.findByBarcodes("%${heat!!}u%").observe(this@MainActivity, { list ->
-                                        baseList = list
-                                        if (baseList != null) {
-                                            for (item in baseList!!) {
-                                                Log.d("DEBUG", item.barcode)
-                                            }
-                                        }
-                                        barcode = if (baseList == null) {
-                                            "${heat!!}u1"
-                                        } else {
-                                            "${heat!!}u${baseList!!.size + 1}"
-                                        }
-                                        Log.d("DEBUG", "Barcode set as $barcode")
-                                        val inventoryLineItem = CurrentInventoryLineItem(
-                                            heatNum = heat,
-                                            packageNum = "N/A",
-                                            grossWeightKg = "N/A",
-                                            netWeightKg = "N/A",
-                                            quantity = quantityList[0],
-                                            dimension = result!![0].dimension,
-                                            grade = result!![0].grade,
-                                            certificateNum = result!![0].certificateNum,
-                                            blNum = blList[0],
-                                            barcode = barcode,
-                                            workOrder = userInputViewModel.order.value,
-                                            loadNum = userInputViewModel.load.value,
-                                            loader = userInputViewModel.loader.value,
-                                            loadTime = setTime()
-                                        )
+                if (uiHeat != null && uiHeat!!.length >= 6) {
+                    Button(onClick = {
+                        if (uiHeat?.length == 6) {
+                            var result: List<CurrentInventoryLineItem>?
+                            currentInventoryViewModel.findByBaseHeat("%${uiHeat!!}%")
+                                .observe(this@MainActivity, { returnedVal ->
+                                    result = returnedVal
 
-                                        ScannedInfo.getValues(inventoryLineItem)
+                                    if (result != null) {
+                                        if (blList!!.size == 1 && quantList!!.size == 1) {
+                                            var barcode: String
+                                            var baseList: List<CurrentInventoryLineItem>?
+                                            currentInventoryViewModel.findByBarcodes("%${uiHeat!!}u%")
+                                                .observe(this@MainActivity, { list ->
+                                                    baseList = list
+                                                    if (baseList != null) {
+                                                        for (item in baseList!!) {
+                                                            Log.d("DEBUG", item.barcode)
+                                                        }
+                                                    }
+                                                    barcode = if (baseList == null) {
+                                                        "${uiHeat!!}u1"
+                                                    } else {
+                                                        "${uiHeat!!}u${baseList!!.size + 1}"
+                                                    }
+                                                    Log.d("DEBUG", "Barcode set as $barcode")
+                                                    val inventoryLineItem =
+                                                        CurrentInventoryLineItem(
+                                                            heatNum = uiHeat,
+                                                            packageNum = "N/A",
+                                                            grossWeightKg = "N/A",
+                                                            netWeightKg = "N/A",
+                                                            quantity = quantList!![0],
+                                                            dimension = result!![0].dimension,
+                                                            grade = result!![0].grade,
+                                                            certificateNum = result!![0].certificateNum,
+                                                            blNum = blList!![0],
+                                                            barcode = barcode,
+                                                            workOrder = userInputViewModel.order.value,
+                                                            loadNum = userInputViewModel.load.value,
+                                                            loader = userInputViewModel.loader.value,
+                                                            loadTime = setTime()
+                                                        )
 
-                                        currentInventoryViewModel.insert(inventoryLineItem)
+                                                    ScannedInfo.getValues(inventoryLineItem)
 
-                                        navController.navigate("scannedInfoReturn")
-                                    })
-                                } else if (blList.size != 1) {
-                                    /*TODO*/
-                                    navController.navigate("blOptions")
-                                    /*Present bl options to loader and ask for them to make a selection*/
-                                } else {
-                                    /*TODO*/
-                                    navController.navigate("toBeImplemented")
-                                    /*Ask for loader to verify that there are the requested number of pieces on this bundle, have them type the amount*/
+                                                    currentInventoryViewModel.insert(
+                                                        inventoryLineItem)
 
-                                }
-                            } else {
-                                Log.d("DEBUG", "Query returned a null value!")
-                            }
-                        })
-                    } else {
-                        var returnedCode: ScannedCode?
-                        scannedCodeViewModel.findByHeat(heat!!)
-                            .observe(this@MainActivity, { code ->
-                                returnedCode = code
-                                if (returnedCode == null) {
-                                    currentInventoryViewModel.findByHeat(heat!!)
-                                        .observe(this@MainActivity, { inventoryItem ->
-                                            if (inventoryItem != null) {
-                                                ScannedInfo.getValues(inventoryItem)
-                                                Log.d("DEBUG", "Retrieved non-null reference")
-                                                if (ScannedInfo.blNum == userInputViewModel.bl.value && ScannedInfo.quantity == userInputViewModel.quantity.value) {
                                                     navController.navigate("scannedInfoReturn")
-                                                } else if (ScannedInfo.blNum != userInputViewModel.bl.value) {
-                                                    navController.navigate("incorrectBl")
-                                                } else {
-                                                    navController.navigate("incorrectQuantity")
-                                                }
-                                            } else {
-                                                Log.d("DEBUG",
-                                                    "Heat number returned a null reference!")
-                                            }
-                                        })
-                                } else if (returnedCode?.scanTime != null) {
-                                    navController.navigate("duplicateBundlePage/${returnedCode?.scanTime}")
-                                }
-                            })
-                    }
+                                                })
 
-                }){
-                    Text(text="Retrieve Bundle Info", modifier = Modifier.padding(16.dp))
+                                        } else if (blList!!.size != 1) {
+                                            /*TODO*/
+                                            navController.navigate("blOptions")
+                                            /*Present bl options to loader and ask for them to make a selection*/
+
+                                        } else if (quantList!!.size != 1){
+                                            /*TODO*/
+                                            navController.navigate("toBeImplemented")
+                                            /*Ask for loader to verify that there are the requested number of pieces on this bundle, have them type the amount*/
+
+                                        }
+                                    } else {
+                                        Log.d("DEBUG", "Query returned a null value!")
+                                    }
+                                })
+                        } else {
+                            var returnedCode: ScannedCode?
+                            scannedCodeViewModel.findByHeat(uiHeat!!)
+                                .observe(this@MainActivity, { code ->
+                                    returnedCode = code
+                                    if (returnedCode == null) {
+                                        currentInventoryViewModel.findByHeat(uiHeat!!)
+                                            .observe(this@MainActivity, { inventoryItem ->
+                                                if (inventoryItem != null) {
+                                                    ScannedInfo.getValues(inventoryItem)
+                                                    Log.d("DEBUG", "Retrieved non-null reference")
+                                                    if (ScannedInfo.blNum == userInputViewModel.bl.value && ScannedInfo.quantity == userInputViewModel.quantity.value) {
+                                                        navController.navigate("scannedInfoReturn")
+                                                    } else if (ScannedInfo.blNum != userInputViewModel.bl.value) {
+                                                        navController.navigate("incorrectBl")
+                                                    } else {
+                                                        navController.navigate("incorrectQuantity")
+                                                    }
+                                                } else {
+                                                    Log.d("DEBUG",
+                                                        "Heat number returned a null reference!")
+                                                }
+                                            })
+                                    } else if (returnedCode?.scanTime != null) {
+                                        navController.navigate("duplicateBundlePage/${returnedCode?.scanTime}")
+                                    }
+                                })
+                        }
+
+                    }) {
+                        Text(text = "Retrieve Bundle Info", modifier = Modifier.padding(16.dp))
+                    }
                 }
             }
         }
@@ -1034,7 +1048,7 @@ class MainActivity : ComponentActivity() {
     fun BlOptions(navController: NavHostController) {
         val heat = userInputViewModel.heat.value
         var blList = remember { currentInventoryViewModel.getBlList(heat!!).value }
-        val blObserver = Observer<List<String>> { items ->
+        val blObserver = Observer<List<String>?> { items ->
             blList = items
         }
 
