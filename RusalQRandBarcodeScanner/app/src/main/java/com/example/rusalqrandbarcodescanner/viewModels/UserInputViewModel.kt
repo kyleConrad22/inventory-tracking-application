@@ -1,9 +1,6 @@
 package com.example.rusalqrandbarcodescanner.viewModels
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import java.lang.IllegalArgumentException
 
 class UserInputViewModel(): ViewModel() {
@@ -41,6 +38,70 @@ class UserInputViewModel(): ViewModel() {
 
     fun updateHeat(heat: String){
         this.heat.value = heat
+    }
+
+    fun loadConfirmIsVisible(): LiveData<Boolean> {
+        val mediatorLiveData = MediatorLiveData<Boolean>()
+
+        mediatorLiveData.addSource(order) { ord ->
+            mediatorLiveData.removeSource(order)
+            mediatorLiveData.value = ord != ""
+
+            if (mediatorLiveData.value == true) {
+                mediatorLiveData.addSource(load) { loadIt ->
+                    mediatorLiveData.removeSource(load)
+                    mediatorLiveData.value = loadIt != ""
+
+                    if (mediatorLiveData.value == true) {
+                        mediatorLiveData.addSource(bundles) { bund ->
+                            mediatorLiveData.removeSource(bundles)
+                            mediatorLiveData.value = bund != ""
+
+                            if (mediatorLiveData.value == true) {
+                                mediatorLiveData.addSource(bl) { blIt ->
+                                    mediatorLiveData.removeSource(bl)
+                                    mediatorLiveData.value = blIt != ""
+
+                                    if (mediatorLiveData.value == true) {
+                                        mediatorLiveData.addSource(quantity) { quant ->
+                                            mediatorLiveData.removeSource(quantity)
+                                            mediatorLiveData.value = quant != ""
+
+                                            if (mediatorLiveData.value == true) {
+                                                mediatorLiveData.addSource(loader) { loaderIt ->
+                                                    mediatorLiveData.removeSource(loader)
+                                                    mediatorLiveData.value = loaderIt != ""
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return mediatorLiveData
+    }
+
+    fun receptionConfirmIsVisible(): LiveData<Boolean> {
+        val mediatorLiveData = MediatorLiveData<Boolean>()
+
+        mediatorLiveData.addSource(vessel) { ves ->
+            mediatorLiveData.removeSource(vessel)
+            mediatorLiveData.value = ves != ""
+
+            if (mediatorLiveData.value == true) {
+                mediatorLiveData.addSource(checker) { check ->
+                    mediatorLiveData.removeSource(checker)
+                    mediatorLiveData.value = check != ""
+                }
+            }
+        }
+
+        return mediatorLiveData
     }
 
     fun removeValues(){

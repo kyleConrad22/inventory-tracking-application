@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -202,26 +203,34 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun LoadConfirmButton(navController: NavHostController, loader: String, workOrder: String, loadNum: String, bundleQty: String, blExp: String, quantity: String) {
-        val isVisible: Boolean = !(loader == "" || workOrder == "" || loadNum == "" || bundleQty == "" || blExp == "" || quantity == "")
-        Button(modifier = Modifier.alpha(if(isVisible){1f} else{0f}), onClick = {
-            if (isVisible) {
+    fun LoadConfirmButton(navController: NavHostController) {
+        var loadConfirmVis = remember { userInputViewModel.loadConfirmIsVisible().value }
+        val loadObserver = Observer<Boolean> { it ->
+            loadConfirmVis = it
+        }
+        userInputViewModel.loadConfirmIsVisible().observe(this@MainActivity, loadObserver)
+
+        Button(modifier = Modifier.alpha(if(loadConfirmVis!!){1f} else{0f}), onClick = {
+            if (loadConfirmVis!!) {
                 navController.navigate("loadOptionsPage")
             }
-            userInputViewModel.update(loader = loader, order = workOrder, load = loadNum, bundles = bundleQty, bl = blExp, checker = "", vessel = "", heat = "", quantity = quantity)
         }) {
             Text(text = "Confirm Load Info", modifier = Modifier.padding(16.dp))
         }
     }
 
     @Composable
-    fun ReceptionConfirmButton(navController: NavHostController, checker: String, vessel: String) {
-        val isVisible: Boolean = !(checker == "" || vessel == "")
-        Button(modifier = Modifier.alpha(if(isVisible){1f} else{0f}), onClick = {
-            if (isVisible) {
+    fun ReceptionConfirmButton(navController: NavHostController) {
+        var receptionIsVis = remember { userInputViewModel.receptionConfirmIsVisible().value }
+        val receptionObserver = Observer<Boolean> { it ->
+            receptionIsVis = it
+        }
+        userInputViewModel.receptionConfirmIsVisible().observe(this@MainActivity, receptionObserver)
+
+        Button(modifier = Modifier.alpha(if(receptionIsVis!!){1f} else{0f}), onClick = {
+            if (receptionIsVis!!) {
                 navController.navigate("receptionOptionsPage")
             }
-            userInputViewModel.update(loader = "", order = "", load = "", bundles = "", bl = "", vessel = vessel, checker = vessel, heat = "", quantity = "")
         }) {
             Text(text = "Confirm Reception Info", modifier = Modifier.padding(16.dp))
         }
@@ -292,13 +301,17 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun bundlesInput(focusManager: FocusManager): String? {
         var bundleQty by remember { mutableStateOf(userInputViewModel.bundles.value) }
+        val bundleObserver = Observer<String> { it ->
+            bundleQty = it
+        }
+        userInputViewModel.bundles.observe(this@MainActivity, bundleObserver)
 
         bundleQty?.let { qty ->
             OutlinedTextField(singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
                 value = qty,
-                onValueChange = { bundleQty = it },
+                onValueChange = { userInputViewModel.bundles.value = it },
                 label = { Text(text = "Bundles: ") })
         }
 
@@ -309,6 +322,10 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun blInput(focusManager: FocusManager): String? {
         var bl by remember { mutableStateOf(userInputViewModel.bl.value) }
+        val blObserver = Observer<String>{ it ->
+            bl = it
+        }
+        userInputViewModel.bl.observe(this@MainActivity, blObserver)
 
         bl?.let { blNum ->
             OutlinedTextField(
@@ -316,7 +333,7 @@ class MainActivity : ComponentActivity() {
                 keyboardOptions = KeyboardOptions.Default.copy(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
                 value = blNum,
-                onValueChange = { bl = it },
+                onValueChange = { userInputViewModel.bl.value = it },
                 label = { Text(text = "BL: ") })
         }
         return bl
@@ -326,13 +343,17 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun loaderInput(focusManager: FocusManager): String? {
         var loader by remember { mutableStateOf(userInputViewModel.loader.value) }
+        val loaderObserver = Observer<String>{ it ->
+            loader = it
+        }
+        userInputViewModel.loader.observe(this@MainActivity, loaderObserver)
 
-        loader?.let { load ->
+        loader?.let { loadIt ->
             OutlinedTextField(singleLine=true,
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(onNext = { focusManager.clearFocus(true) }),
-                value = load,
-                onValueChange = { loader = it },
+                value = loadIt,
+                onValueChange = { userInputViewModel.loader.value = it },
                 label = { Text(text = "Loader: ") })
         }
         return loader
@@ -342,13 +363,17 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun vesselInput(focusManager: FocusManager): String? {
         var vessel by remember { mutableStateOf(userInputViewModel.vessel.value) }
+        val vesselObserver = Observer<String> { it ->
+            vessel = it
+        }
+        userInputViewModel.vessel.observe(this@MainActivity, vesselObserver)
 
         vessel?.let { ves ->
             OutlinedTextField(singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
                 value = ves,
-                onValueChange = { vessel = it },
+                onValueChange = { userInputViewModel.vessel.value = it },
                 label = { Text(text = "Vessel: ") })
         }
         return vessel
@@ -358,6 +383,10 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun quantityInput(focusManager: FocusManager): String? {
         var quantity by remember { mutableStateOf(userInputViewModel.quantity.value) }
+        val quantityObserver = Observer<String> { it ->
+            quantity = it
+        }
+        userInputViewModel.quantity.observe(this@MainActivity, quantityObserver)
 
         quantity?.let { quant ->
             OutlinedTextField(
@@ -365,7 +394,7 @@ class MainActivity : ComponentActivity() {
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
                 value = quant,
-                onValueChange = { it -> quantity = it },
+                onValueChange = { userInputViewModel.quantity.value = it },
                 label = { Text(text = "Quantity Per Bundle: ")}
             )
         }
@@ -376,13 +405,17 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun checkerInput(focusManager: FocusManager): String? {
         var checker by remember { mutableStateOf(userInputViewModel.checker.value) }
+        val checkerObserver = Observer<String> { it ->
+            checker = it
+        }
+        userInputViewModel.checker.observe(this@MainActivity, checkerObserver)
 
         checker?.let { check ->
             OutlinedTextField(singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(onNext = { focusManager.clearFocus(true) }),
                 value = check,
-                onValueChange = { checker = it },
+                onValueChange = { userInputViewModel.checker.value = it },
                 label = { Text(text = "Checker: ") })
         }
         return checker
@@ -392,6 +425,10 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun heatNumberInput(focusManager: FocusManager): String? {
         var heat by remember { mutableStateOf(userInputViewModel.heat.value) }
+        val heatObserver = Observer<String>{ it ->
+            heat = it
+        }
+        userInputViewModel.heat.observe(this@MainActivity, heatObserver)
 
         heat?.let { heatNum ->
             OutlinedTextField(
@@ -399,7 +436,7 @@ class MainActivity : ComponentActivity() {
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(onNext = { focusManager.clearFocus(true) }),
                 value = heatNum,
-                onValueChange = { heat = it },
+                onValueChange = { userInputViewModel.heat.value = it },
                 label = { Text(text = "Heat Number: ") })
         }
         return heat
@@ -409,13 +446,17 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun workOrderInput(focusManager: FocusManager): String? {
         var workOrder by remember { mutableStateOf(userInputViewModel.order.value) }
+        val orderObserver = Observer<String>{ it ->
+            workOrder = it
+        }
+        userInputViewModel.order.observe(this@MainActivity, orderObserver)
 
         workOrder?.let { ord ->
             OutlinedTextField(singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions( onNext = { focusManager.moveFocus(FocusDirection.Down) }),
                 value = ord,
-                onValueChange = { workOrder = it },
+                onValueChange = { userInputViewModel.order.value = it },
                 label = { Text(text = "Work Order: ") })
         }
         return workOrder
@@ -425,13 +466,17 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun loadNumberInput(focusManager: FocusManager): String? {
         var loadNum by remember { mutableStateOf(userInputViewModel.load.value) }
+        val loadObserver = Observer<String> { it ->
+            loadNum = it
+        }
+        userInputViewModel.load.observe(this@MainActivity, loadObserver)
 
         loadNum?.let { load ->
             OutlinedTextField(singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(onNext =  { focusManager.moveFocus(FocusDirection.Down) }),
                 value = load,
-                onValueChange = { loadNum = it },
+                onValueChange = { userInputViewModel.load.value = it },
                 label = { Text(text = "Load Number: ") })
         }
         return loadNum
@@ -501,13 +546,7 @@ class MainActivity : ComponentActivity() {
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                 BackButton(navController = navController, dest = "mainMenu")
                 if (bundleQty != null && loader != null && loadNum != null && workOrder != null && blExp != null && quantity != null) {
-                    LoadConfirmButton(navController = navController,
-                        loader = loader,
-                        workOrder = workOrder,
-                        loadNum = loadNum,
-                        bundleQty = bundleQty,
-                        blExp = blExp,
-                        quantity = quantity)
+                    LoadConfirmButton(navController = navController)
                 } else {
                     throw NullPointerException("One of the assigned values is null!")
                 }
@@ -548,9 +587,7 @@ class MainActivity : ComponentActivity() {
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                 BackButton(navController = navController, dest = "mainMenu")
                 if (vessel != null && checker != null){
-                    ReceptionConfirmButton(navController = navController,
-                        vessel = vessel,
-                        checker = checker)
+                    ReceptionConfirmButton(navController = navController)
                 } else { throw NullPointerException("One of the assigned values is null!")}
             }
         }
