@@ -505,6 +505,13 @@ class MainActivity : ComponentActivity() {
                         .align(Alignment.CenterVertically),
                     textAlign = TextAlign.Center)
             }
+            Button(onClick = { navController.navigate("scannerPage") }) {
+                Text(text="Get Bundle Info", modifier = Modifier
+                        .padding(16.dp)
+                        .size(width = 200.dp, height = 20.dp)
+                        .align(Alignment.CenterVertically),
+                    textAlign = TextAlign.Center)
+            }
         }
     }
 
@@ -622,8 +629,10 @@ class MainActivity : ComponentActivity() {
     fun ScannerPage(navController: NavHostController) {
         val dest: String = if (userInputViewModel.loader.value != "") {
             "loadOptionsPage"
-        } else {
+        } else if (userInputViewModel.vessel.value != ""){
             "receptionOptionsPage"
+        } else {
+            "mainMenu"
         }
         CameraPreview(modifier = Modifier.fillMaxSize(), navController = navController)
         Column(modifier = Modifier.fillMaxSize(),
@@ -645,9 +654,10 @@ class MainActivity : ComponentActivity() {
                 Button(onClick = { navController.navigate("manualEntryPage") }) {
                     Text(text = "Manual Entry", modifier = Modifier.padding(16.dp))
                 }
+
                 if (userInputViewModel.loader.value != "") {
                     ConfirmButton(navController = navController, str = "load", dest="reviewLoad")
-                } else {
+                } else if (userInputViewModel.vessel.value != ""){
                     ConfirmButton(navController = navController, str = "reception", dest = "reviewReception")
                 }
             }
