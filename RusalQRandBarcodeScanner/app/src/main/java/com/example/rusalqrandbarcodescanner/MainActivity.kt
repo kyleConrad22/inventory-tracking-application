@@ -553,6 +553,12 @@ class MainActivity : ComponentActivity() {
     // Page which shows the options currently available to the user on the current load
     @Composable
     fun LoadOptionsPage(navController: NavHostController) {
+        var codes by remember { mutableStateOf(scannedCodeViewModel.allCodes.value) }
+        val codesObserver = Observer<List<ScannedCode>?> { it ->
+            codes = it
+        }
+        scannedCodeViewModel.allCodes.observe(this@MainActivity, codesObserver)
+
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
@@ -560,7 +566,9 @@ class MainActivity : ComponentActivity() {
             Text(text = userInputViewModel.loader.value + userInputViewModel.order.value + " Load " + userInputViewModel.load.value)
             ScanButton(navController = navController)
             ResetLoadButton(navController = navController)
-            RemoveEntryButton(navController = navController)
+            if (codes != null && codes!!.isNotEmpty()) {
+                RemoveEntryButton(navController = navController)
+            }
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -703,48 +711,10 @@ class MainActivity : ComponentActivity() {
 
                                     if (result != null) {
                                         if (blList!!.size == 1 && quantList!!.size == 1) {
-                                            var barcode: String
-                                            var baseList: List<CurrentInventoryLineItem>?
-                                            currentInventoryViewModel.findByBarcodes("%${uiHeat!!}u%")
-                                                .observe(this@MainActivity, { list ->
-                                                    baseList = list
-                                                    if (baseList != null) {
-                                                        for (item in baseList!!) {
-                                                            Log.d("DEBUG", item.barcode)
-                                                        }
-                                                    }
-                                                    barcode = if (baseList == null) {
-                                                        "${uiHeat!!}u1"
-                                                    } else {
-                                                        "${uiHeat!!}u${baseList!!.size + 1}"
-                                                    }
-                                                    Log.d("DEBUG", "Barcode set as $barcode")
-                                                    val inventoryLineItem =
-                                                        CurrentInventoryLineItem(
-                                                            heatNum = uiHeat,
-                                                            packageNum = "N/A",
-                                                            grossWeightKg = "N/A",
-                                                            netWeightKg = "N/A",
-                                                            quantity = quantList!![0],
-                                                            dimension = result!![0].dimension,
-                                                            grade = result!![0].grade,
-                                                            certificateNum = result!![0].certificateNum,
-                                                            blNum = blList!![0],
-                                                            barcode = barcode,
-                                                            workOrder = userInputViewModel.order.value,
-                                                            loadNum = userInputViewModel.load.value,
-                                                            loader = userInputViewModel.loader.value,
-                                                            loadTime = setTime()
-                                                        )
-
-                                                    ScannedInfo.getValues(inventoryLineItem)
-
-                                                    currentInventoryViewModel.insert(
-                                                        inventoryLineItem)
-
-                                                    navController.navigate("scannedInfoReturn")
-                                                })
-
+                                            currentInventoryViewModel.addNewItemByBaseHeat(uiHeat!!, userInputViewModel).observe(this@MainActivity){
+                                                if (it) { Log.d("DEBUG", "Successfully set new item") }
+                                            }
+                                            navController.navigate("scannedInfoReturn")
                                         } else if (blList!!.size > 1) {
                                             /*TODO*/
                                             navController.navigate("blOptions")
@@ -752,7 +722,7 @@ class MainActivity : ComponentActivity() {
 
                                         } else if (quantList!!.size > 1) {
                                             /*TODO*/
-                                            navController.navigate("toBeImplemented")
+                                            navController.navigate("quantOptions")
                                             /*Ask for loader to verify that there are the requested number of pieces on this bundle, have them type the amount*/
 
                                         } else {
@@ -809,6 +779,33 @@ class MainActivity : ComponentActivity() {
                         })
                     }
                 }
+            }
+        }
+    }
+
+    @Composable
+    fun quantOptions(navController: NavHostController) {
+        val heat = userInputViewModel.heat.value
+        val quantity = userInputViewModel.quantity.value
+        var blList by remember { mutableStateOf(currentInventoryViewModel.getBlList(heat).value)}
+        val blListObserver = Observer<List<String>?>{ it ->
+            blList = it
+        }
+        currentInventoryViewModel.getBlList(heat).observe(this@MainActivity, blListObserver)
+
+        if (blList != null) {
+            Column(modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceEvenly) {
+                Text(text = """
+                    Heat $heat is available in multiple quantities for BL ${blList!![0]}!
+                    Ensure that the bundle being loaded is of quantity $quantity!
+                    Would you like to add this bundle to the load?
+                    """.trimMargin(), modifier = Modifier.padding(16.dp))
+                Button(onClick = { navController.navigate("manualEntryPage")} ) {
+                    Text(text="Back", modifier = Modifier.padding(16.dp))
+                }
+                AddButton(navController = navController)
             }
         }
     }
