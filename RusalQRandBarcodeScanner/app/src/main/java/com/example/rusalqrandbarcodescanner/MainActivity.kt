@@ -18,6 +18,7 @@ import androidx.activity.viewModels
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CornerSize
@@ -117,7 +118,7 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun GetCodeListView() {
+    fun GetCodeListView(navController: NavHostController) {
         var codes = remember { scannedCodeViewModel.allCodes.value }
         val codeObserver = Observer<List<ScannedCode>> { codeList ->
             codes = codeList
@@ -134,7 +135,7 @@ class MainActivity : ComponentActivity() {
                 items(
                     items = codes!!,
                     itemContent = {
-                        CodeListItem(scannedCode = it)
+                        CodeListItem(scannedCode = it, navController)
                     }
                 )
             }
@@ -142,10 +143,14 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun CodeListItem(scannedCode: ScannedCode) {
+    fun CodeListItem(scannedCode: ScannedCode, navController: NavHostController) {
         Card(
             modifier= Modifier
                 .padding(horizontal = 8.dp, vertical = 8.dp)
+                .clickable(onClick = {
+
+                    navController.navigate("bundleInfo/${scannedCode.barCode}")
+                })
                 .fillMaxWidth(),
             elevation = 2.dp,
             backgroundColor = Color.Black,
@@ -157,6 +162,70 @@ class MainActivity : ComponentActivity() {
                     .fillMaxWidth()
                     .align(Alignment.CenterVertically)) {
                 Text(text = "Heat: ${scannedCode.heatNum!!} || BL: ${scannedCode.bl!!}" , style = typography.h6)
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun BundleInfo(barcode: String?, navController: NavHostController) {
+        var scannedCode by remember { mutableStateOf(scannedCodeViewModel.findByBarcode(barcode!!).value) }
+        val codeObserver = Observer<ScannedCode?> { it ->
+            scannedCode = it
+        }
+        scannedCodeViewModel.findByBarcode(barcode!!).observe(this@MainActivity, codeObserver)
+
+        var openDialog by remember { mutableStateOf(false) }
+
+        Column(modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceEvenly,
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text="Heat Number: ${scannedCode?.heatNum}")
+            Text(text="BL Number: ${scannedCode?.bl}")
+            Text(text="Quantity: ${scannedCode?.quantity}")
+            Text(text="Net Weight Kg: ${scannedCode?.netWgtKg}")
+            Text(text="Gross Weight Kg: ${scannedCode?.grossWgtKg}")
+            Text(text="Barcode: $barcode")
+            Row(modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly) {
+                Button(onClick = {
+                    navController.navigate(navController.previousBackStackEntry?.destination?.route!!)
+                }) {
+                    Text(text = "Dismiss", modifier = Modifier.padding(16.dp))
+                }
+                Button(onClick = {
+                    openDialog = true
+                }) {
+                    Text(text = "Remove From Shipment", modifier = Modifier.padding(16.dp))
+                }
+                if (openDialog) {
+                    AlertDialog(onDismissRequest = {
+                            openDialog = false
+                        }, title = {
+                            Text(text = "Removal Confirmation", modifier = Modifier.padding(16.dp))
+                        }, text = {
+                            Text(text = "Are you sure you would like to remove this bundle from the load?",
+                                modifier = Modifier.padding(16.dp))
+                        }, buttons = {
+                            Row(modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceEvenly) {
+                                Button(onClick = {
+                                    openDialog = false
+                                }) {
+                                    Text(text = "Deny Removal", modifier = Modifier.padding(16.dp))
+                                }
+                                Button(onClick = {
+                                    scannedCodeViewModel.delete(scannedCode!!)
+                                    openDialog = false
+                                    navController.navigate(navController.previousBackStackEntry?.destination?.route!!)
+                                }) {
+                                    Text(text = "Confirm Removal", modifier = Modifier.padding(16.dp))
+                                }
+                            }
+                        }
+                    )
                 }
             }
         }
@@ -717,6 +786,7 @@ class MainActivity : ComponentActivity() {
                                             navController.navigate("scannedInfoReturn")
                                         } else if (blList!!.size > 1) {
                                             /*TODO*/
+                                                /*Make BL List Clickable with the requested bl being sent to scanned info return*/
                                             navController.navigate("blOptions")
                                             /*Present bl options to loader and ask for them to make a selection*/
 
@@ -891,7 +961,7 @@ class MainActivity : ComponentActivity() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
             Text(text = "Review Load:", modifier = Modifier.padding(16.dp))
-            GetCodeListView()
+            GetCodeListView(navController)
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -909,7 +979,7 @@ class MainActivity : ComponentActivity() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
             Text(text = "Review Reception:", modifier = Modifier.padding(16.dp))
-            GetCodeListView()
+            GetCodeListView(navController)
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -1133,14 +1203,17 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @OptIn(ExperimentalComposeUiApi::class)
+    @ExperimentalComposeUiApi
     @Composable
     fun NavigationHost(navController: NavHostController) {
 
         NavHost(navController = navController, startDestination = "mainMenu") {
             composable("mainMenu") { MainMenu(navController = navController) }
-            composable("duplicateBundlePage/{scanTime}") {backStackEntry ->
+            composable("duplicateBundlePage/{scanTime}") { backStackEntry ->
                 DuplicateBundlePage(navController = navController, backStackEntry.arguments?.getString("scanTime"))
+            }
+            composable("bundleInfo/{barcode}") { backStackEntry ->
+                BundleInfo(navController = navController, barcode = backStackEntry.arguments?.getString("barcode"))
             }
             composable("ConfirmationPage") { ConfirmationPage(navController = navController) }
             composable("reviewReception") { ReviewReception(navController = navController) }

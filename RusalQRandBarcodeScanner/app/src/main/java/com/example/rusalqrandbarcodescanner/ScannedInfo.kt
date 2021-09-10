@@ -42,6 +42,7 @@ object ScannedInfo {
         netWgtLbs = elements[7].split("/")[0]
         grossWgtLbs = elements[7].split("/")[1]
         packageNum = elements[9]
+        quantity = elements[11]
         setTime()
     }
 
@@ -102,7 +103,8 @@ object ScannedInfo {
             workOrder = workOrder,
             loadNum = loadNum,
             loader = loader,
-            bl = blNum
+            bl = blNum,
+            quantity = quantity
         )
         viewModel.order.removeObserver(orderObserver)
         viewModel.load.removeObserver(loadNumObserver)

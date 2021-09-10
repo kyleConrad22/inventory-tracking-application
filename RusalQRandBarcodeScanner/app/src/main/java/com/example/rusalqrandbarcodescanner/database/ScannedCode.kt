@@ -17,5 +17,6 @@ data class ScannedCode(
     @ColumnInfo(name = "workOrder") val workOrder: String?,
     @ColumnInfo(name = "loadNum") val loadNum: String?,
     @ColumnInfo(name = "loader") val loader: String?,
-    @ColumnInfo(name = "bl") val bl: String?
+    @ColumnInfo(name = "bl") val bl: String?,
+    @ColumnInfo(name = "quantity") val quantity: String?
 )
