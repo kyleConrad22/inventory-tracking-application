@@ -26,6 +26,12 @@ class UserInputViewModel(): ViewModel() {
 
     val loadVis: LiveData<Boolean> = triggerLoader.switchMap{ loadLoadConfirmVis() }
 
+    val isALoad: LiveData<Boolean> = triggerLoader.switchMap { isLoad() }
+
+    fun isLoad(): LiveData<Boolean> {
+        val result = MutableLiveData<Boolean>(true)
+        return result
+    }
     private fun loadLoadConfirmVis(): LiveData<Boolean> {
         val mediatorLiveData = MediatorLiveData<Boolean>()
 

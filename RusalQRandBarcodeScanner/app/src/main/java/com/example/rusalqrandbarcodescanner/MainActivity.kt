@@ -173,6 +173,16 @@ class MainActivity : ComponentActivity() {
         val codeObserver = Observer<ScannedCode?> { it ->
             scannedCode = it
         }
+        var count by remember { mutableStateOf(scannedCodeViewModel.count.value) }
+        val countObserver = Observer<Int> { it ->
+            count = it
+        }
+        var isLoad by remember { mutableStateOf(userInputViewModel.isALoad.value) }
+        val isLoadObserver = Observer<Boolean> { it->
+            isLoad = it
+        }
+        userInputViewModel.isALoad.observe(this@MainActivity, isLoadObserver)
+        scannedCodeViewModel.count.observe(this@MainActivity, countObserver)
         scannedCodeViewModel.findByBarcode(barcode!!).observe(this@MainActivity, codeObserver)
 
         var openDialog by remember { mutableStateOf(false) }
@@ -219,7 +229,16 @@ class MainActivity : ComponentActivity() {
                                 Button(onClick = {
                                     scannedCodeViewModel.delete(scannedCode!!)
                                     openDialog = false
-                                    navController.navigate(navController.previousBackStackEntry?.destination?.route!!)
+                                    if (count != null && count!! > 1) {
+                                        navController.navigateUp()
+                                    } else {
+                                        if (isLoad!!){
+                                            navController.popBackStack("loadOptionsPage", inclusive = false)
+                                        } else {
+                                            navController.popBackStack("receptionOptionsPage", inclusive = false)
+                                        }
+                                    }
+
                                 }) {
                                     Text(text = "Confirm Removal", modifier = Modifier.padding(16.dp))
                                 }
