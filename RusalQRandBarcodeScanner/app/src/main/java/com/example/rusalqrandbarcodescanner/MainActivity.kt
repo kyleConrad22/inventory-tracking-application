@@ -622,11 +622,11 @@ class MainActivity : ComponentActivity() {
     // Page which shows the options currently available to the user on the current load
     @Composable
     fun LoadOptionsPage(navController: NavHostController) {
-        var codes by remember { mutableStateOf(scannedCodeViewModel.allCodes.value) }
-        val codesObserver = Observer<List<ScannedCode>?> { it ->
-            codes = it
+        var count by remember { mutableStateOf(scannedCodeViewModel.count.value) }
+        val countObserver = Observer<Int> { it ->
+            count = it
         }
-        scannedCodeViewModel.allCodes.observe(this@MainActivity, codesObserver)
+        scannedCodeViewModel.count.observe(this@MainActivity, countObserver)
 
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -635,14 +635,16 @@ class MainActivity : ComponentActivity() {
             Text(text = userInputViewModel.loader.value + userInputViewModel.order.value + " Load " + userInputViewModel.load.value)
             ScanButton(navController = navController)
             ResetLoadButton(navController = navController)
-            if (codes != null && codes!!.isNotEmpty()) {
+            if (count != null && count!! > 0) {
                 RemoveEntryButton(navController = navController)
             }
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                 BackButton(navController = navController, dest = "loadInfoPage")
-                ConfirmButton(navController = navController, str = "Load", dest = "reviewLoad")
+                if (count != null && count!! >0) {
+                    ConfirmButton(navController = navController, str = "Load", dest = "reviewLoad")
+                }
             }
         }
     }
@@ -681,25 +683,41 @@ class MainActivity : ComponentActivity() {
     // Page which shows the options currently available to the user on the current reception
     @Composable
     fun ReceptionOptionsPage(navController: NavHostController) {
+        var count by remember { mutableStateOf(scannedCodeViewModel.count.value) }
+        val countObserver = Observer<Int> { it ->
+            count = it
+        }
+        scannedCodeViewModel.count.observe(this@MainActivity, countObserver)
+
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
             Text(text = "Reception Options:")
             ScanButton(navController = navController)
-            RemoveEntryButton(navController = navController)
+            if (count != null && count!! > 0) {
+                RemoveEntryButton(navController = navController)
+            }
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                 BackButton(navController = navController, dest = "receptionInfoPage")
-                ConfirmButton(navController = navController,
-                    str = "Reception",
-                    dest = "reviewReception")
+                if (count != null && count!! > 0) {
+                    ConfirmButton(navController = navController,
+                        str = "Reception",
+                        dest = "reviewReception")
+                }
             }
         }
     }
 
     @Composable
     fun ScannerPage(navController: NavHostController) {
+        var count by remember { mutableStateOf(scannedCodeViewModel.count.value) }
+        val countObserver = Observer<Int>{ it ->
+            count = it
+        }
+        scannedCodeViewModel.count.observe(this@MainActivity, countObserver)
+
         val dest: String = if (userInputViewModel.loader.value != "") {
             "loadOptionsPage"
         } else if (userInputViewModel.vessel.value != ""){
@@ -727,11 +745,16 @@ class MainActivity : ComponentActivity() {
                 Button(onClick = { navController.navigate("manualEntryPage") }) {
                     Text(text = "Manual Entry", modifier = Modifier.padding(16.dp))
                 }
-
-                if (userInputViewModel.loader.value != "") {
-                    ConfirmButton(navController = navController, str = "load", dest="reviewLoad")
-                } else if (userInputViewModel.vessel.value != ""){
-                    ConfirmButton(navController = navController, str = "reception", dest = "reviewReception")
+                if (count != null && count!! > 0) {
+                    if (userInputViewModel.loader.value != "") {
+                        ConfirmButton(navController = navController,
+                            str = "load",
+                            dest = "reviewLoad")
+                    } else if (userInputViewModel.vessel.value != "") {
+                        ConfirmButton(navController = navController,
+                            str = "reception",
+                            dest = "reviewReception")
+                    }
                 }
             }
             Spacer(modifier = Modifier.padding(30.dp))
@@ -954,6 +977,7 @@ class MainActivity : ComponentActivity() {
             OkButton(navController = navController, dest = "loadInfoPage")
         }
     }
+
 
     @Composable
     fun ReviewLoad(navController: NavHostController) {
