@@ -42,7 +42,11 @@ object ScannedInfo {
         netWgtLbs = elements[7].split("/")[0]
         grossWgtLbs = elements[7].split("/")[1]
         packageNum = elements[9]
-        quantity = elements[11]
+        try {
+            quantity = elements[11]
+        } catch (e: ArrayIndexOutOfBoundsException) {
+            quantity = "5"
+        }
         setTime()
     }
 

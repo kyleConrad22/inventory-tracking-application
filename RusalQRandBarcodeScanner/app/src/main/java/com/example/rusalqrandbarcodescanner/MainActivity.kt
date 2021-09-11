@@ -45,6 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.navigation.NavHostController
@@ -279,13 +280,6 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun BackButton(navController: NavHostController, dest: String) {
-        Button(onClick = { navController.navigate(dest) }) {
-            Text(text = "Back", modifier = Modifier.padding(16.dp))
-        }
-    }
-
-    @Composable
     fun ConfirmButton(navController: NavHostController, str: String, dest: String) {
         Button(onClick = {
             if (str == "Load") {
@@ -310,16 +304,6 @@ class MainActivity : ComponentActivity() {
     fun ScanButton(navController: NavHostController) {
         Button(onClick = { navController.navigate("scannerPage") }) {
             Text(text = "Scan Code", modifier = Modifier
-                .padding(16.dp)
-                .size(width = 200.dp, height = 20.dp)
-                .align(Alignment.CenterVertically), textAlign = TextAlign.Center)
-        }
-    }
-
-    @Composable
-    fun ResetLoadButton(navController: NavHostController) {
-        Button(onClick = { navController.navigate("resetConfirmationPage") }) {
-            Text(text = "Reset Load", modifier = Modifier
                 .padding(16.dp)
                 .size(width = 200.dp, height = 20.dp)
                 .align(Alignment.CenterVertically), textAlign = TextAlign.Center)
@@ -628,7 +612,11 @@ class MainActivity : ComponentActivity() {
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
-                BackButton(navController = navController, dest = "mainMenu")
+                Button(onClick = {
+                    navController.popBackStack("mainMenu", inclusive = false)
+                }) {
+                    Text(text="Back", modifier = Modifier.padding(16.dp))
+                }
                 if (loadConfirmVis != null && loadConfirmVis == true) {
                     Button(onClick = { navController.navigate("loadOptionsPage")}) {
                         Text(text="Confirm Load Info", modifier = Modifier.padding(16.dp))
@@ -641,6 +629,7 @@ class MainActivity : ComponentActivity() {
     // Page which shows the options currently available to the user on the current load
     @Composable
     fun LoadOptionsPage(navController: NavHostController) {
+        var resetDialog = remember { mutableStateOf(false) }
         var count by remember { mutableStateOf(scannedCodeViewModel.count.value) }
         val countObserver = Observer<Int> { it ->
             count = it
@@ -653,16 +642,51 @@ class MainActivity : ComponentActivity() {
             Text(text = "Load Options:")
             Text(text = userInputViewModel.loader.value + userInputViewModel.order.value + " Load " + userInputViewModel.load.value)
             ScanButton(navController = navController)
-            ResetLoadButton(navController = navController)
             if (count != null && count!! > 0) {
+                Button(onClick = {
+                    resetDialog.value = true
+                }) {
+                    Text(text="Reset Load", modifier = Modifier
+                        .padding(16.dp)
+                        .size(width = 200.dp, height = 20.dp)
+                        .align(Alignment.CenterVertically), textAlign = TextAlign.Center)
+                }
                 RemoveEntryButton(navController = navController)
             }
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
-                BackButton(navController = navController, dest = "loadInfoPage")
+                Button(onClick = {
+                    navController.navigateUp()
+                }) {
+                    Text(text="Back", modifier= Modifier.padding(16.dp))
+                }
                 if (count != null && count!! >0) {
                     ConfirmButton(navController = navController, str = "Load", dest = "reviewLoad")
+                }
+                if (resetDialog.value){
+                    AlertDialog(onDismissRequest = {
+                            resetDialog.value = false
+                        }, title = {
+                            Text(text="Reset Load Confirmation")
+                        }, text = {
+                            Text(text="Are you sure you would like to remove all bundles from this load? This cannot be undone.")
+                        }, buttons = {
+                             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                                 Button(onClick = {
+                                     resetDialog.value = false
+                                 }) {
+                                     Text(text="Deny Reset", modifier = Modifier.padding(16.dp))
+                                 }
+                                 Button(onClick = {
+                                     resetDialog.value = false
+                                     scannedCodeViewModel.deleteAll()
+                                 }) {
+                                     Text(text="Confirm Reset", modifier = Modifier.padding(16.dp))
+                                 }
+                             }
+                        }
+                    )
                 }
             }
         }
@@ -689,7 +713,11 @@ class MainActivity : ComponentActivity() {
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
-                BackButton(navController = navController, dest = "mainMenu")
+                Button(onClick = {
+                    navController.popBackStack("mainMenu", inclusive = false)
+                }) {
+                    Text(text="Back", modifier = Modifier.padding(16.dp))
+                }
                 if (receptionConfirmVis != null && receptionConfirmVis == true) {
                     Button(onClick = { navController.navigate("receptionOptionsPage")}) {
                         Text(text="Confirm Reception Info", modifier = Modifier.padding(16.dp))
@@ -719,7 +747,11 @@ class MainActivity : ComponentActivity() {
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
-                BackButton(navController = navController, dest = "receptionInfoPage")
+                Button(onClick = {
+                    navController.navigateUp()
+                }) {
+                    Text(text="Back", modifier = Modifier.padding(16.dp))
+                }
                 if (count != null && count!! > 0) {
                     ConfirmButton(navController = navController,
                         str = "Reception",
@@ -735,6 +767,7 @@ class MainActivity : ComponentActivity() {
         val countObserver = Observer<Int>{ it ->
             count = it
         }
+        var isLoad by remember { mutableStateOf(true) }
         scannedCodeViewModel.count.observe(this@MainActivity, countObserver)
 
         val dest: String = if (userInputViewModel.loader.value != "") {
@@ -744,6 +777,7 @@ class MainActivity : ComponentActivity() {
         } else {
             "mainMenu"
         }
+
         CameraPreview(modifier = Modifier.fillMaxSize(), navController = navController)
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -760,7 +794,15 @@ class MainActivity : ComponentActivity() {
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.Bottom,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
-                BackButton(navController = navController, dest = dest)
+                Button(onClick = {
+                    if (isLoad) {
+                        navController.popBackStack("loadOptionsPage", inclusive = false)
+                    } else {
+                        navController.popBackStack("receptionOptionsPage", inclusive = false)
+                    }
+                }) {
+                    Text(text="Back", modifier = Modifier.padding(16.dp))
+                }
                 Button(onClick = { navController.navigate("manualEntryPage") }) {
                     Text(text = "Manual Entry", modifier = Modifier.padding(16.dp))
                 }
@@ -811,7 +853,11 @@ class MainActivity : ComponentActivity() {
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
-                BackButton(navController = navController, dest = "scannerPage")
+                Button(onClick = {
+                    navController.navigateUp()
+                }) {
+                    Text(text = "Back", modifier = Modifier.padding(16.dp))
+                }
                 if (uiHeat != null && uiHeat!!.length >= 6) {
                     Button(onClick = {
                         if (uiHeat?.length == 6) {
@@ -968,37 +1014,6 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun ConfirmResetPage(navController: NavHostController) {
-        Column(modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(text = "Are you sure you would like to reset this load?",
-                modifier = Modifier.padding(16.dp))
-            Row(modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly) {
-                Button(onClick = { navController.navigate("loadOptionsPage")}) {
-                    Text(text="No", modifier = Modifier.padding(16.dp))
-                }
-                Button(onClick = { navController.navigate("confirmResetPage")}) {
-                    Text(text="Yes", modifier = Modifier.padding(16.dp))
-                }
-            }
-        }
-    }
-
-    @Composable
-    fun ResetConfirmationPage(navController: NavHostController) {
-        Column(modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(text = "Reset Complete", modifier = Modifier.padding(16.dp))
-            OkButton(navController = navController, dest = "loadInfoPage")
-        }
-    }
-
-
-    @Composable
     fun ReviewLoad(navController: NavHostController) {
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -1008,7 +1023,11 @@ class MainActivity : ComponentActivity() {
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
-                BackButton(navController = navController, dest = "loadOptionsPage")
+                Button(onClick = {
+                    navController.navigateUp()
+                }) {
+                    Text(text="Back", modifier = Modifier.padding(16.dp))
+                }
                 ConfirmButton(navController = navController,
                     str = "Load",
                     dest = "ConfirmationPage")
@@ -1026,7 +1045,11 @@ class MainActivity : ComponentActivity() {
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
-                BackButton(navController = navController, dest = "receptionOptionsPage")
+                Button(onClick = {
+                    navController.navigateUp()
+                }) {
+                    Text(text = "Back", modifier = Modifier.padding(16.dp))
+                }
                 ConfirmButton(navController = navController,
                     str = "Reception",
                     dest = "ConfirmationPage")
@@ -1045,26 +1068,37 @@ class MainActivity : ComponentActivity() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
             Text(text = text, modifier = Modifier.padding(16.dp))
-            OkButton(navController = navController, dest = "mainMenu")
+            Button(onClick = {
+                navController.popBackStack("mainMenu", inclusive = false)
+            }) {
+                Text(text = "Ok", modifier = Modifier.padding(16.dp))
+            }
         }
     }
 
     @Composable
     fun RemoveEntryPage(navController: NavHostController) {
         val focusManager = LocalFocusManager.current
-        val openDialog = remember { mutableStateOf(false)}
+        val openDialog = remember { mutableStateOf(false) }
+        val removalDialog = remember { mutableStateOf(false) }
 
         var uiHeat by remember { mutableStateOf(userInputViewModel.heat.value) }
         val uiHeatObserver = Observer<String> { it ->
             uiHeat = it
         }
-        userInputViewModel.heat.observe(this@MainActivity, uiHeatObserver)
-
-        val backDest: String = if (userInputViewModel.loader.value != "") {
-            "loadOptionsPage"
-        } else {
-            "receptionOptionsPage"
+        var isLoad by remember { mutableStateOf(userInputViewModel.isALoad.value) }
+        val isLoadObserver = Observer<Boolean> { it ->
+            isLoad = it
         }
+        var code by remember { mutableStateOf(scannedCodeViewModel.findByHeat(uiHeat!!).value) }
+        val codeObserver = Observer<ScannedCode?> { it ->
+            code = it
+        }
+
+        userInputViewModel.isALoad.observe(this@MainActivity, isLoadObserver)
+        userInputViewModel.heat.observe(this@MainActivity, uiHeatObserver)
+        scannedCodeViewModel.findByHeat(uiHeat!!).observe(this@MainActivity, codeObserver)
+
         MaterialTheme {
             Column(modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -1075,20 +1109,49 @@ class MainActivity : ComponentActivity() {
                 Row(modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly) {
-                    BackButton(navController = navController, dest = backDest)
+                    Button(onClick = {
+                        if (isLoad!!){
+                            navController.popBackStack("loadOptionsPage", inclusive = false)
+                        } else {
+                            navController.popBackStack("receptionOptionsPage", inclusive = false)
+                        }
+                    }) {
+                        Text(text = "Back", modifier = Modifier.padding(16.dp))
+                    }
                     if (uiHeat != null && uiHeat!!.length >= 6) {
                         Button(onClick = {
-                            scannedCodeViewModel.findByHeat(uiHeat!!)
-                                .observe(this@MainActivity, { item ->
-                                    if (item != null) {
-                                        scannedCodeViewModel.delete(item)
-                                        navController.navigate(backDest)
-                                    } else {
-                                        openDialog.value = true
-                                    }
-                                })
-                        }) {
+                                if (code != null) {
+                                    removalDialog.value = true
+                                } else {
+                                    openDialog.value = true
+                                }
+                            }) {
                             Text(text = "Confirm Removal", modifier = Modifier.padding(16.dp))
+                        }
+                        if (removalDialog.value) {
+                            AlertDialog(onDismissRequest = {
+                                    removalDialog.value = false
+                                }, title = {
+                                    Text(text = "Confirm Removal", modifier = Modifier.padding(16.dp))
+                                }, text = {
+                                    Text(text = "Are you sure you would like to remove the bundle given by $uiHeat?", modifier = Modifier.padding(16.dp))
+                                }, buttons = {
+                                    Row(modifier = Modifier.fillMaxWidth()) {
+                                        Button(onClick = {
+                                            removalDialog.value = false
+                                        }) {
+                                            Text(text = "Deny Removal")
+                                        }
+                                        Button(onClick = {
+                                            removalDialog.value = false
+                                            scannedCodeViewModel.delete(code!!)
+                                            userInputViewModel.heat.value = ""
+                                        }) {
+                                            Text(text = "Confirm Removal")
+                                        }
+                                    }
+                                }
+                            )
                         }
                         if (openDialog.value) {
                             AlertDialog(
@@ -1108,26 +1171,6 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
-        }
-    }
-
-    @Composable
-    fun RemovalConfirmationPage(navController: NavHostController) {
-        val dest: String
-        val text: String
-        if (userInputViewModel.loader.value != "") {
-            dest = "loadOptionsPage"
-            text = "load"
-        } else {
-            dest = "receptionOptionsPage"
-            text = "load"
-        }
-        Column(modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(text = "${userInputViewModel.heat.value} has been removed from $text.",
-                modifier = Modifier.padding(16.dp))
-            OkButton(navController = navController, dest = dest)
         }
     }
 
@@ -1261,8 +1304,6 @@ class MainActivity : ComponentActivity() {
             composable("ConfirmationPage") { ConfirmationPage(navController = navController) }
             composable("reviewReception") { ReviewReception(navController = navController) }
             composable("reviewLoad") { ReviewLoad(navController = navController) }
-            composable("resetConfirmationPage") { ResetConfirmationPage(navController = navController) }
-            composable("confirmResetPage") { ConfirmResetPage(navController = navController) }
             composable("bundleAddedPage") { BundleAddedPage(navController = navController) }
             composable("scannedInfoReturn") { ScannedInfoReturn(navController = navController) }
             composable("manualEntryPage") { ManualEntryPage(navController = navController) }
@@ -1272,7 +1313,6 @@ class MainActivity : ComponentActivity() {
             composable("receptionInfoPage") { ReceptionInfoPage(navController = navController) }
             composable("loadInfoPage") { LoadInfoPage(navController = navController) }
             composable("removeEntryPage") { RemoveEntryPage(navController = navController) }
-            composable("removalConfirmationPage") { RemovalConfirmationPage(navController = navController) }
             composable("incorrectBl") { IncorrectBl(navController = navController) }
             composable("incorrectQuantity") { IncorrectQuantity(navController = navController)}
             composable("toBeImplemented") { ToBeImplemented(navController = navController)}
