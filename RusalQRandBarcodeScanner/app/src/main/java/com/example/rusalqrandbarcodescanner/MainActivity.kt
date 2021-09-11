@@ -596,7 +596,6 @@ class MainActivity : ComponentActivity() {
 
         userInputViewModel.loadVis.observe(this@MainActivity, loadObserver)
 
-
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
@@ -803,11 +802,11 @@ class MainActivity : ComponentActivity() {
                     Text(text = "Manual Entry", modifier = Modifier.padding(16.dp))
                 }
                 if (count != null && count!! > 0) {
-                    if (userInputViewModel.loader.value != "") {
+                    if (isLoad!!) {
                         ConfirmButton(navController = navController,
                             str = "load",
                             dest = "reviewLoad")
-                    } else if (userInputViewModel.vessel.value != "") {
+                    } else {
                         ConfirmButton(navController = navController,
                             str = "reception",
                             dest = "reviewReception")
