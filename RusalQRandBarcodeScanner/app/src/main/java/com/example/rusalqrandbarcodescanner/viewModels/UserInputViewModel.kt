@@ -14,10 +14,6 @@ class UserInputViewModel(): ViewModel() {
     val heat: MutableLiveData<String> = MutableLiveData("")
     val quantity: MutableLiveData<String> = MutableLiveData("")
 
-    fun updateHeat(heat: String){
-        this.heat.value = heat
-    }
-
     private val triggerLoader = MutableLiveData<Unit>()
 
     fun refresh() {
@@ -26,12 +22,14 @@ class UserInputViewModel(): ViewModel() {
 
     val loadVis: LiveData<Boolean> = triggerLoader.switchMap{ loadLoadConfirmVis() }
 
-    val isALoad: LiveData<Boolean> = triggerLoader.switchMap { isLoad() }
-
     fun isLoad(): LiveData<Boolean> {
-        val result = MutableLiveData<Boolean>(true)
-        return result
+        val mediatorLiveData = MediatorLiveData<Boolean>()
+        mediatorLiveData.addSource(load) { it ->
+            mediatorLiveData.value = (it != null && it != "")
+        }
+        return mediatorLiveData
     }
+
     private fun loadLoadConfirmVis(): LiveData<Boolean> {
         val mediatorLiveData = MediatorLiveData<Boolean>()
 

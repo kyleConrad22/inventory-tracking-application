@@ -178,11 +178,11 @@ class MainActivity : ComponentActivity() {
         val countObserver = Observer<Int> { it ->
             count = it
         }
-        var isLoad by remember { mutableStateOf(userInputViewModel.isALoad.value) }
+        var isLoad by remember { mutableStateOf(userInputViewModel.isLoad().value) }
         val isLoadObserver = Observer<Boolean> { it->
             isLoad = it
         }
-        userInputViewModel.isALoad.observe(this@MainActivity, isLoadObserver)
+        userInputViewModel.isLoad().observe(this@MainActivity, isLoadObserver)
         scannedCodeViewModel.count.observe(this@MainActivity, countObserver)
         scannedCodeViewModel.findByBarcode(barcode!!).observe(this@MainActivity, codeObserver)
 
@@ -767,16 +767,12 @@ class MainActivity : ComponentActivity() {
         val countObserver = Observer<Int>{ it ->
             count = it
         }
-        var isLoad by remember { mutableStateOf(true) }
-        scannedCodeViewModel.count.observe(this@MainActivity, countObserver)
-
-        val dest: String = if (userInputViewModel.loader.value != "") {
-            "loadOptionsPage"
-        } else if (userInputViewModel.vessel.value != ""){
-            "receptionOptionsPage"
-        } else {
-            "mainMenu"
+        var isLoad by remember { mutableStateOf(userInputViewModel.isLoad().value) }
+        val loadObserver = Observer<Boolean> { it ->
+            isLoad = it
         }
+        userInputViewModel.isLoad().observe(this@MainActivity, loadObserver)
+        scannedCodeViewModel.count.observe(this@MainActivity, countObserver)
 
         CameraPreview(modifier = Modifier.fillMaxSize(), navController = navController)
         Column(modifier = Modifier.fillMaxSize(),
@@ -795,7 +791,7 @@ class MainActivity : ComponentActivity() {
                 verticalAlignment = Alignment.Bottom,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                 Button(onClick = {
-                    if (isLoad) {
+                    if (isLoad!!) {
                         navController.popBackStack("loadOptionsPage", inclusive = false)
                     } else {
                         navController.popBackStack("receptionOptionsPage", inclusive = false)
@@ -1086,7 +1082,7 @@ class MainActivity : ComponentActivity() {
         val uiHeatObserver = Observer<String> { it ->
             uiHeat = it
         }
-        var isLoad by remember { mutableStateOf(userInputViewModel.isALoad.value) }
+        var isLoad by remember { mutableStateOf(userInputViewModel.isLoad().value) }
         val isLoadObserver = Observer<Boolean> { it ->
             isLoad = it
         }
@@ -1095,7 +1091,7 @@ class MainActivity : ComponentActivity() {
             code = it
         }
 
-        userInputViewModel.isALoad.observe(this@MainActivity, isLoadObserver)
+        userInputViewModel.isLoad().observe(this@MainActivity, isLoadObserver)
         userInputViewModel.heat.observe(this@MainActivity, uiHeatObserver)
         scannedCodeViewModel.findByHeat(uiHeat!!).observe(this@MainActivity, codeObserver)
 
