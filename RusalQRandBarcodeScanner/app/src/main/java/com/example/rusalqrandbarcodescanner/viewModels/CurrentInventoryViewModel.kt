@@ -1,9 +1,8 @@
 package com.example.rusalqrandbarcodescanner.viewModels
 
-import android.provider.MediaStore
 import android.util.Log
 import androidx.lifecycle.*
-import com.example.rusalqrandbarcodescanner.CurrentInventoryRepository
+import com.example.rusalqrandbarcodescanner.repositories.CurrentInventoryRepository
 import com.example.rusalqrandbarcodescanner.ScannedInfo
 import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
 import kotlinx.coroutines.launch

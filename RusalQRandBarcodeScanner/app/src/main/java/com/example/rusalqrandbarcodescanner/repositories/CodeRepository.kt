@@ -1,4 +1,4 @@
-package com.example.rusalqrandbarcodescanner
+package com.example.rusalqrandbarcodescanner.repositories
 
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData

@@ -1,10 +1,8 @@
 package com.example.rusalqrandbarcodescanner.viewModels
 
 import androidx.lifecycle.*
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.rusalqrandbarcodescanner.CodeRepository
+import com.example.rusalqrandbarcodescanner.repositories.CodeRepository
 import com.example.rusalqrandbarcodescanner.database.ScannedCode
-import com.google.mlkit.vision.barcode.Barcode
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 
