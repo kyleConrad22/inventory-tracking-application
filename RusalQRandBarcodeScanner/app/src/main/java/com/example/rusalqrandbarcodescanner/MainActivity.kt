@@ -934,19 +934,6 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun ToBeImplemented(navController: NavHostController) {
-        Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(text="This feature has yet to be implemented!")
-            Button(onClick={
-                navController.navigate("scannerPage")
-            }) {
-                Text(text="Back to Scanner Live Feed", modifier = Modifier.padding(16.dp))
-            }
-
-        }
-    }
-
-    @Composable
     fun BlOptions(navController: NavHostController) {
         val heat = userInputViewModel.heat.value
         var blList = remember { currentInventoryViewModel.getBlList(heat!!).value }
