@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Observer
 import androidx.navigation.NavHostController
@@ -49,73 +50,77 @@ fun RemoveEntryScreen(navController: NavHostController, userInputViewModel: User
     scannedCodeViewModel.findByHeat(uiHeat!!).observe(lifecycleOwner, codeObserver)
 
     MaterialTheme {
-        Column(modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(text = "Enter Heat / Cast Number of Entry to be Removed:",
-                modifier = Modifier.padding(16.dp))
-            HeatNumberInput(focusManager, userInputViewModel)
-            Row(modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly) {
-                Button(onClick = {
-                    if (isLoad!!){
-                        navController.popBackStack("loadOptionsPage", inclusive = false)
-                    } else {
-                        navController.popBackStack("receptionOptionsPage", inclusive = false)
-                    }
-                }) {
-                    Text(text = "Back", modifier = Modifier.padding(16.dp))
-                }
-                if (uiHeat != null && uiHeat!!.length >= 6) {
+        Scaffold(topBar = { TopAppBar(title = { Text("Remove Entry", textAlign = TextAlign.Center) }) }) {
+            Column(modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceEvenly) {
+                Text(text = "Enter Heat / Cast Number of Entry to be Removed:",
+                    modifier = Modifier.padding(16.dp))
+                HeatNumberInput(focusManager, userInputViewModel)
+                Row(modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly) {
                     Button(onClick = {
-                        if (code != null) {
-                            removalDialog.value = true
+                        if (isLoad!!) {
+                            navController.popBackStack("loadOptionsPage", inclusive = false)
                         } else {
-                            openDialog.value = true
+                            navController.popBackStack("receptionOptionsPage", inclusive = false)
                         }
                     }) {
-                        Text(text = "Confirm Removal", modifier = Modifier.padding(16.dp))
+                        Text(text = "Back", modifier = Modifier.padding(16.dp))
                     }
-                    if (removalDialog.value) {
-                        AlertDialog(onDismissRequest = {
-                            removalDialog.value = false
-                        }, title = {
+                    if (uiHeat != null && uiHeat!!.length >= 6) {
+                        Button(onClick = {
+                            if (code != null) {
+                                removalDialog.value = true
+                            } else {
+                                openDialog.value = true
+                            }
+                        }) {
                             Text(text = "Confirm Removal", modifier = Modifier.padding(16.dp))
-                        }, text = {
-                            Text(text = "Are you sure you would like to remove the bundle given by $uiHeat?", modifier = Modifier.padding(16.dp))
-                        }, buttons = {
-                            Row(modifier = Modifier.fillMaxWidth()) {
-                                Button(onClick = {
-                                    removalDialog.value = false
-                                }) {
-                                    Text(text = "Deny Removal")
-                                }
-                                Button(onClick = {
-                                    removalDialog.value = false
-                                    scannedCodeViewModel.delete(code!!)
-                                    userInputViewModel.heat.value = ""
-                                }) {
-                                    Text(text = "Confirm Removal")
+                        }
+                        if (removalDialog.value) {
+                            AlertDialog(onDismissRequest = {
+                                removalDialog.value = false
+                            }, title = {
+                                Text(text = "Confirm Removal", modifier = Modifier.padding(16.dp))
+                            }, text = {
+                                Text(text = "Are you sure you would like to remove the bundle given by $uiHeat?",
+                                    modifier = Modifier.padding(16.dp))
+                            }, buttons = {
+                                Row(modifier = Modifier.fillMaxWidth()) {
+                                    Button(onClick = {
+                                        removalDialog.value = false
+                                    }) {
+                                        Text(text = "Deny Removal")
+                                    }
+                                    Button(onClick = {
+                                        removalDialog.value = false
+                                        scannedCodeViewModel.delete(code!!)
+                                        userInputViewModel.heat.value = ""
+                                    }) {
+                                        Text(text = "Confirm Removal")
+                                    }
                                 }
                             }
+                            )
                         }
-                        )
-                    }
-                    if (openDialog.value) {
-                        AlertDialog(
-                            onDismissRequest = {
-                                openDialog.value = false
-                            }, title = {
-                                Text(text = "Invalid Heat Number")
-                            }, text = {
-                                Text("The given heat number was not found in the system!")
-                            }, buttons = {
-                                Button(onClick = { openDialog.value = false },
-                                    modifier = Modifier.align(Alignment.CenterVertically)) {
-                                    Text(text = "Dismiss", modifier = Modifier.padding(16.dp))
+                        if (openDialog.value) {
+                            AlertDialog(
+                                onDismissRequest = {
+                                    openDialog.value = false
+                                }, title = {
+                                    Text(text = "Invalid Heat Number")
+                                }, text = {
+                                    Text("The given heat number was not found in the system!")
+                                }, buttons = {
+                                    Button(onClick = { openDialog.value = false },
+                                        modifier = Modifier.align(Alignment.CenterVertically)) {
+                                        Text(text = "Dismiss", modifier = Modifier.padding(16.dp))
+                                    }
                                 }
-                            })
+                            )
+                        }
                     }
                 }
             }
@@ -132,13 +137,13 @@ fun HeatNumberInput(focusManager: FocusManager, userInputViewModel: UserInputVie
     }
     userInputViewModel.heat.observe(LocalLifecycleOwner.current, heatObserver)
 
-    heat?.let { heatNum ->
+    heat?.let { heatIt ->
         OutlinedTextField(
             singleLine = true,
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusManager.clearFocus(true) }),
-            value = heatNum,
-            onValueChange = {
+            value = heatIt,
+            onValueChange = { it ->
                 userInputViewModel.heat.value = it
                 userInputViewModel.refresh() },
             label = { Text(text = "Heat Number: ") })
