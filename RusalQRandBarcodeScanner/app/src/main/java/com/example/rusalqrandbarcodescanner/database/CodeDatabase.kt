@@ -8,7 +8,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@Database (entities = arrayOf(ScannedCode::class, CurrentInventoryLineItem::class, UserInput::class), version = 9)
+@Database (entities = arrayOf(ScannedCode::class, CurrentInventoryLineItem::class, UserInput::class), version = 10)
 abstract class CodeDatabase: RoomDatabase() {
     abstract fun scannedCodeDao(): ScannedCodeDao
     abstract fun currentInventoryDao(): CurrentInventoryDao

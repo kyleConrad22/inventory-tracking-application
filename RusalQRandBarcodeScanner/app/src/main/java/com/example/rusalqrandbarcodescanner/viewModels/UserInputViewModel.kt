@@ -142,8 +142,8 @@ class UserInputViewModel(private val repository: UserInputRepository): ViewModel
         this.quantity.value = ""
     }
 
-    class UserInputViewModelFactory(private val repository: UserInputRepository): ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+    class UserInputViewModelFactory(private val repository : UserInputRepository) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass : Class<T>) : T {
             if (modelClass.isAssignableFrom(UserInputViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")
                 return UserInputViewModel(repository) as T
