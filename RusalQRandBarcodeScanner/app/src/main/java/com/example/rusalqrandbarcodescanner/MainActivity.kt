@@ -33,17 +33,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
@@ -51,10 +48,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.rusalqrandbarcodescanner.screens.*
 import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
 import com.example.rusalqrandbarcodescanner.database.ScannedCode
 import com.example.rusalqrandbarcodescanner.screens.LoadInfoInputScreen
 import com.example.rusalqrandbarcodescanner.screens.MainMenuScreen
+import com.example.rusalqrandbarcodescanner.screens.ReceptionInfoInputScreen
+import com.example.rusalqrandbarcodescanner.screens.ScannerScreen
 import com.example.rusalqrandbarcodescanner.ui.theme.RusalQRAndBarcodeScannerTheme
 import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel.CurrentInventoryViewModelFactory
@@ -330,50 +330,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // TextField which takes user input and assigns it to the vessel variable in userInputViewModel
-    @ExperimentalComposeUiApi
-    @Composable
-    fun VesselInput(focusManager: FocusManager) {
-        var vessel by remember { mutableStateOf(userInputViewModel.vessel.value) }
-        val vesselObserver = Observer<String> { it ->
-            vessel = it
-        }
-        userInputViewModel.vessel.observe(this@MainActivity, vesselObserver)
-
-        vessel?.let { ves ->
-            OutlinedTextField(singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
-                value = ves,
-                onValueChange = {
-                    userInputViewModel.vessel.value = it
-                    userInputViewModel.refresh() },
-                label = { Text(text = "Vessel: ") })
-        }
-    }
-
-    // TextField which takes user input and assigns it to the checker variable in userInputViewModel
-    @ExperimentalComposeUiApi
-    @Composable
-    fun CheckerInput(focusManager: FocusManager) {
-        var checker by remember { mutableStateOf(userInputViewModel.checker.value) }
-        val checkerObserver = Observer<String> { it ->
-            checker = it
-        }
-        userInputViewModel.checker.observe(this@MainActivity, checkerObserver)
-
-        checker?.let { check ->
-            OutlinedTextField(singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions(onNext = { focusManager.clearFocus(true) }),
-                value = check,
-                onValueChange = {
-                    userInputViewModel.checker.value = it
-                    userInputViewModel.refresh() },
-                label = { Text(text = "Checker: ") })
-        }
-    }
-
     // TextField which takes user input and assigns it to the heat variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
@@ -476,41 +432,6 @@ class MainActivity : ComponentActivity() {
                              }
                         }
                     )
-                }
-            }
-        }
-    }
-
-    // Page which prompts takes user input necessary to create a new reception
-    @Composable
-    fun ReceptionInfoPage(navController: NavHostController) {
-        val focusManager = LocalFocusManager.current
-
-        var receptionConfirmVis by remember { mutableStateOf(userInputViewModel.receptionVis.value) }
-        val receptionVisObserver = Observer<Boolean> { it ->
-            receptionConfirmVis = it
-        }
-
-        userInputViewModel.receptionVis.observe(this@MainActivity, receptionVisObserver)
-
-        Column(modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(text = "Reception Info:")
-            VesselInput(focusManager)
-            CheckerInput(focusManager)
-            Row(modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly) {
-                Button(onClick = {
-                    navController.popBackStack(Screen.MainMenuScreen.title, inclusive = false)
-                }) {
-                    Text(text="Back", modifier = Modifier.padding(16.dp))
-                }
-                if (receptionConfirmVis != null && receptionConfirmVis == true) {
-                    Button(onClick = { navController.navigate("receptionOptionsPage")}) {
-                        Text(text="Confirm Reception Info", modifier = Modifier.padding(16.dp))
-                    }
                 }
             }
         }
@@ -1255,10 +1176,10 @@ class MainActivity : ComponentActivity() {
                 composable("bundleAddedPage") { BundleAddedPage(navController = navController) }
                 composable("scannedInfoReturn") { ScannedInfoReturn(navController = navController) }
                 composable("manualEntryPage") { ManualEntryPage(navController = navController) }
-                composable("scannerPage") { ScannerPage(navController = navController) }
+                composable(Screen.ScannerScreen.title) { ScannerScreen(navController = navController) }
                 composable("receptionOptionsPage") { ReceptionOptionsPage(navController = navController) }
                 composable("loadOptionsPage") { LoadOptionsPage(navController = navController) }
-                composable("receptionInfoPage") { ReceptionInfoPage(navController = navController) }
+                composable(Screen.ReceptionInfoInputScreen.title) { ReceptionInfoInputScreen(navController = navController, userInputViewModel = userInputViewModel) }
                 composable(Screen.LoadInfoInputScreen.title) { LoadInfoInputScreen(navController = navController, userInputViewModel = userInputViewModel) }
                 composable("removeEntryPage") { RemoveEntryPage(navController = navController) }
                 composable("incorrectBl") { IncorrectBl(navController = navController) }

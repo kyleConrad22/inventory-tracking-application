@@ -1,4 +1,8 @@
 package com.example.rusalqrandbarcodescanner.screens
 
-class ScannerScreen {
+import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
+
+@Composable
+fun ScannerScreen(navController: NavHostController) {
 }
