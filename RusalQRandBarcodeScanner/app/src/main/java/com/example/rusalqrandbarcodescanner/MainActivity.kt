@@ -771,25 +771,6 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun ConfirmationPage(navController: NavHostController) {
-        val text: String = if (userInputViewModel.loader.value != "") {
-            "Load Confirmed"
-        } else {
-            "Reception Confirmed"
-        }
-        Column(modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(text = text, modifier = Modifier.padding(16.dp))
-            Button(onClick = {
-                navController.popBackStack(Screen.MainMenuScreen.title, inclusive = false)
-            }) {
-                Text(text = "Ok", modifier = Modifier.padding(16.dp))
-            }
-        }
-    }
-
-    @Composable
     fun RemoveEntryPage(navController: NavHostController) {
         val focusManager = LocalFocusManager.current
         val openDialog = remember { mutableStateOf(false) }
