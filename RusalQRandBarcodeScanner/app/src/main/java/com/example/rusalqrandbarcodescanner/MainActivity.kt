@@ -181,29 +181,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // TextField which takes user input and assigns it to the heat variable in userInputViewModel
-    @ExperimentalComposeUiApi
-    @Composable
-    fun heatNumberInput(focusManager: FocusManager) {
-        var heat by remember { mutableStateOf(userInputViewModel.heat.value) }
-        val heatObserver = Observer<String>{ it ->
-            heat = it
-        }
-        userInputViewModel.heat.observe(this@MainActivity, heatObserver)
-
-        heat?.let { heatNum ->
-            OutlinedTextField(
-                singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions(onNext = { focusManager.clearFocus(true) }),
-                value = heatNum,
-                onValueChange = {
-                    userInputViewModel.heat.value = it
-                    userInputViewModel.refresh() },
-                label = { Text(text = "Heat Number: ") })
-        }
-    }
-
     @Composable
     fun AddButton(navController: NavHostController) {
         Button(onClick = {
@@ -341,125 +318,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
             Spacer(modifier = Modifier.padding(30.dp))
-        }
-    }
-
-    @Composable
-    fun ManualEntryPage(navController: NavHostController) {
-        val focusManager = LocalFocusManager.current
-        var openDialog = remember { mutableStateOf(false) }
-
-        var uiHeat by remember { mutableStateOf(userInputViewModel.heat.value) }
-        val heatObserver = Observer<String> { it ->
-            uiHeat = it
-        }
-        userInputViewModel.heat.observe(this@MainActivity, heatObserver)
-
-        var blList by remember { mutableStateOf(currentInventoryViewModel.getBlList(uiHeat).value) }
-        val blListObserver = Observer<List<String>?> { it ->
-            blList = it
-        }
-        currentInventoryViewModel.getBlList(uiHeat).observe(this@MainActivity, blListObserver)
-
-        var quantList by remember { mutableStateOf(currentInventoryViewModel.getQuantList(uiHeat).value) }
-        val quantListObserver = Observer<List<String>?> { it ->
-            quantList = it
-        }
-        currentInventoryViewModel.getQuantList(uiHeat).observe(this@MainActivity, quantListObserver)
-
-        Column(modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(text="Manual Heat Number Search: ", modifier = Modifier.padding(16.dp))
-            heatNumberInput(focusManager)
-            Row(modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly) {
-                Button(onClick = {
-                    navController.navigateUp()
-                }) {
-                    Text(text = "Back", modifier = Modifier.padding(16.dp))
-                }
-                if (uiHeat != null && uiHeat!!.length >= 6) {
-                    Button(onClick = {
-                        if (uiHeat?.length == 6) {
-                            var result: List<CurrentInventoryLineItem>?
-                            currentInventoryViewModel.findByBaseHeat("%${uiHeat!!}%")
-                                .observe(this@MainActivity, { returnedVal ->
-                                    result = returnedVal
-
-                                    if (result != null) {
-                                        if (blList!!.size == 1 && quantList!!.size == 1) {
-                                            currentInventoryViewModel.addNewItemByBaseHeat(uiHeat!!, userInputViewModel).observe(this@MainActivity){
-                                                if (it) { Log.d("DEBUG", "Successfully set new item") }
-                                            }
-                                            navController.navigate("scannedInfoReturn")
-                                        } else if (blList!!.size > 1) {
-                                            /*TODO*/
-                                                /*Make BL List Clickable with the requested bl being sent to scanned info return*/
-                                            navController.navigate("blOptions")
-                                            /*Present bl options to loader and ask for them to make a selection*/
-
-                                        } else if (quantList!!.size > 1) {
-                                            /*TODO*/
-                                            navController.navigate("quantOptions")
-                                            /*Ask for loader to verify that there are the requested number of pieces on this bundle, have them type the amount*/
-
-                                        } else {
-                                            openDialog.value = true
-                                        }
-                                    } else {
-                                        openDialog.value = true
-                                    }
-                                })
-                        } else {
-                            var returnedCode: ScannedCode?
-                            scannedCodeViewModel.findByHeat(uiHeat!!)
-                                .observe(this@MainActivity, { code ->
-                                    returnedCode = code
-                                    if (returnedCode == null) {
-                                        currentInventoryViewModel.findByHeat(uiHeat!!)
-                                            .observe(this@MainActivity, { inventoryItem ->
-                                                if (inventoryItem != null) {
-                                                    ScannedInfo.getValues(inventoryItem)
-                                                    Log.d("DEBUG", "Retrieved non-null reference")
-                                                    if (ScannedInfo.blNum == userInputViewModel.bl.value && ScannedInfo.quantity == userInputViewModel.quantity.value) {
-                                                        navController.navigate("scannedInfoReturn")
-                                                    } else if (ScannedInfo.blNum != userInputViewModel.bl.value) {
-                                                        navController.navigate("incorrectBl")
-                                                    } else {
-                                                        navController.navigate("incorrectQuantity")
-                                                    }
-                                                } else {
-                                                    openDialog.value = true
-                                                }
-                                            })
-                                    } else if (returnedCode?.scanTime != null) {
-                                        navController.navigate("duplicateBundlePage/${returnedCode?.scanTime}")
-                                    }
-                                })
-                        }
-                    }) {
-                        Text(text = "Retrieve Bundle Info", modifier = Modifier.padding(16.dp))
-                    }
-                    if (openDialog.value) {
-                        AlertDialog(onDismissRequest = {
-                            openDialog.value = false
-                        }, buttons = {
-                            Button(onClick = {
-                                openDialog.value = false
-                            }, modifier = Modifier
-                                .align(Alignment.CenterVertically)) {
-                                Text(text = "Dismiss", modifier = Modifier.padding(16.dp))
-                            }
-                        }, title = {
-                            Text("Invalid Heat Number")
-                        }, text = {
-                            Text("The given heat number was not found in the system!")
-                        })
-                    }
-                }
-            }
         }
     }
 
@@ -673,29 +531,29 @@ class MainActivity : ComponentActivity() {
 
         RusalQRAndBarcodeScannerTheme() {
             NavHost(navController = navController, startDestination = (Screen.MainMenuScreen.title)) {
-                composable(Screen.MainMenuScreen.title) { MainMenuScreen(navController = navController, userInputViewModel = userInputViewModel, scannedCodeViewModel = scannedCodeViewModel) }
+                composable(Screen.MainMenuScreen.title) { MainMenuScreen(navController = navController, userInputViewModel, scannedCodeViewModel) }
                 composable( Screen.DuplicateBundleScreen.title + "/{scanTime}") { backStackEntry ->
-                    DuplicateBundleScreen(navController = navController, scanTime = backStackEntry.arguments?.getString("scanTime"), scannedCodeViewModel =  scannedCodeViewModel, userInputViewModel = userInputViewModel)
+                    DuplicateBundleScreen(navController = navController, scanTime = backStackEntry.arguments?.getString("scanTime"), scannedCodeViewModel, userInputViewModel)
                 }
                 composable(Screen.BundleInfoScreen.title + "/{barcode}") { backStackEntry ->
-                    BundleInfoScreen(navController = navController, barcode = backStackEntry.arguments?.getString("barcode"), scannedCodeViewModel = scannedCodeViewModel, userInputViewModel = userInputViewModel)
+                    BundleInfoScreen(navController = navController, barcode = backStackEntry.arguments?.getString("barcode"), scannedCodeViewModel, userInputViewModel)
                 }
-                composable(Screen.ConfirmationScreen.title) { ConfirmationScreen(navController = navController, userInputViewModel = userInputViewModel) }
-                composable(Screen.ReceptionReviewScreen.title) { ReceptionReviewScreen(navController = navController, scannedCodeViewModel = scannedCodeViewModel) }
-                composable(Screen.LoadReviewScreen.title) { LoadReviewScreen(navController = navController, scannedCodeViewModel = scannedCodeViewModel, currentInventoryViewModel = currentInventoryViewModel) }
-                composable(Screen.BundleAddedScreen.title) { BundleAddedScreen(navController = navController, scannedCodeViewModel = scannedCodeViewModel, userInputViewModel = userInputViewModel) }
-                composable(Screen.ScannedInfoScreen.title) { ScannedInfoScreen(navController = navController) }
-                composable(Screen.ManualEntryScreen.title) { ManualEntryScreen(navController = navController) }
-                composable(Screen.ScannerScreen.title) { ScannerScreen(navController = navController) }
-                composable(Screen.ReceptionOptionsScreen.title) { ReceptionOptionsScreen(navController = navController, scannedCodeViewModel = scannedCodeViewModel) }
-                composable(Screen.LoadOptionsScreen.title) { LoadOptionsScreen(navController = navController) }
-                composable(Screen.ReceptionInfoInputScreen.title) { ReceptionInfoInputScreen(navController = navController, userInputViewModel = userInputViewModel) }
-                composable(Screen.LoadInfoInputScreen.title) { LoadInfoInputScreen(navController = navController, userInputViewModel = userInputViewModel) }
-                composable(Screen.RemoveEntryScreen.title) { RemoveEntryScreen(navController = navController, userInputViewModel = userInputViewModel, scannedCodeViewModel = scannedCodeViewModel) }
-                composable(Screen.IncorrectBlScreen.title) { IncorrectBlScreen(navController = navController, userInputViewModel = userInputViewModel) }
-                composable(Screen.IncorrectQuantityScreen.title) { IncorrectQuantityScreen(navController = navController, userInputViewModel = userInputViewModel) }
-                composable(Screen.ToBeImplementedScreen.title) { ToBeImplementedScreen(navController = navController)}
-                composable(Screen.BlOptionsScreen.title) { BlOptionsScreen(navController = navController, currentInventoryViewModel = currentInventoryViewModel, userInputViewModel = userInputViewModel) }
+                composable(Screen.ConfirmationScreen.title) { ConfirmationScreen(navController, userInputViewModel) }
+                composable(Screen.ReceptionReviewScreen.title) { ReceptionReviewScreen(navController, scannedCodeViewModel) }
+                composable(Screen.LoadReviewScreen.title) { LoadReviewScreen(navController, scannedCodeViewModel, currentInventoryViewModel) }
+                composable(Screen.BundleAddedScreen.title) { BundleAddedScreen(navController, scannedCodeViewModel, userInputViewModel) }
+                composable(Screen.ScannedInfoScreen.title) { ScannedInfoScreen(navController) }
+                composable(Screen.ManualEntryScreen.title) { ManualEntryScreen(navController, userInputViewModel, currentInventoryViewModel, scannedCodeViewModel) }
+                composable(Screen.ScannerScreen.title) { ScannerScreen(navController) }
+                composable(Screen.ReceptionOptionsScreen.title) { ReceptionOptionsScreen(navController, scannedCodeViewModel) }
+                composable(Screen.LoadOptionsScreen.title) { LoadOptionsScreen(navController) }
+                composable(Screen.ReceptionInfoInputScreen.title) { ReceptionInfoInputScreen(navController, userInputViewModel) }
+                composable(Screen.LoadInfoInputScreen.title) { LoadInfoInputScreen(navController, userInputViewModel) }
+                composable(Screen.RemoveEntryScreen.title) { RemoveEntryScreen(navController, userInputViewModel, scannedCodeViewModel) }
+                composable(Screen.IncorrectBlScreen.title) { IncorrectBlScreen(navController, userInputViewModel) }
+                composable(Screen.IncorrectQuantityScreen.title) { IncorrectQuantityScreen(navController, userInputViewModel) }
+                composable(Screen.ToBeImplementedScreen.title) { ToBeImplementedScreen(navController)}
+                composable(Screen.BlOptionsScreen.title) { BlOptionsScreen(navController, currentInventoryViewModel, userInputViewModel) }
             }
         }
     }

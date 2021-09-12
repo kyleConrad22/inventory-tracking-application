@@ -130,7 +130,7 @@ fun RemoveEntryScreen(navController: NavHostController, userInputViewModel: User
 
 @ExperimentalComposeUiApi
 @Composable
-fun HeatNumberInput(focusManager: FocusManager, userInputViewModel: UserInputViewModel) {
+private fun HeatNumberInput(focusManager: FocusManager, userInputViewModel: UserInputViewModel) {
     var heat by remember { mutableStateOf(userInputViewModel.heat.value) }
     val heatObserver = Observer<String>{ it ->
         heat = it
