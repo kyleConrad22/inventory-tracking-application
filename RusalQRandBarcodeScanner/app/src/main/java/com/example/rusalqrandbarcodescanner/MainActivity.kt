@@ -172,16 +172,6 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun DenyButton(navController: NavHostController) {
-        Button(onClick = {
-            ScannedInfo.clearValues()
-            navController.navigate("scannerPage")
-        }) {
-            Text(text = "Deny", modifier = Modifier.padding(16.dp))
-        }
-    }
-
-    @Composable
     fun AddButton(navController: NavHostController) {
         Button(onClick = {
             scannedCodeViewModel.insert(ScannedInfo.toScannedCode(userInputViewModel))
@@ -343,28 +333,6 @@ class MainActivity : ComponentActivity() {
                 Button(onClick = { navController.navigate("manualEntryPage")} ) {
                     Text(text="Back", modifier = Modifier.padding(16.dp))
                 }
-                AddButton(navController = navController)
-            }
-        }
-    }
-
-    @Composable
-    fun ScannedInfoReturn(navController: NavHostController) {
-
-        Column(modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly) {
-            Text("Scanned Bundle Information:", modifier = Modifier.padding(16.dp))
-            val heatNum = ScannedInfo.heatNum
-            val blNum = ScannedInfo.blNum
-            Text("Heat / Cast Number: $heatNum")
-            Text("BL: $blNum")
-            val addType = if (userInputViewModel.loader.value != "") { "load" } else { "reception" }
-            Text(text = "Add to ${addType}?", modifier = Modifier.padding(16.dp))
-            Row(modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly) {
-                DenyButton(navController = navController)
                 AddButton(navController = navController)
             }
         }
@@ -542,7 +510,7 @@ class MainActivity : ComponentActivity() {
                 composable(Screen.ReceptionReviewScreen.title) { ReceptionReviewScreen(navController, scannedCodeViewModel) }
                 composable(Screen.LoadReviewScreen.title) { LoadReviewScreen(navController, scannedCodeViewModel, currentInventoryViewModel) }
                 composable(Screen.BundleAddedScreen.title) { BundleAddedScreen(navController, scannedCodeViewModel, userInputViewModel) }
-                composable(Screen.ScannedInfoScreen.title) { ScannedInfoScreen(navController) }
+                composable(Screen.ScannedInfoScreen.title) { ScannedInfoScreen(navController, userInputViewModel, scannedCodeViewModel) }
                 composable(Screen.ManualEntryScreen.title) { ManualEntryScreen(navController, userInputViewModel, currentInventoryViewModel, scannedCodeViewModel) }
                 composable(Screen.ScannerScreen.title) { ScannerScreen(navController) }
                 composable(Screen.ReceptionOptionsScreen.title) { ReceptionOptionsScreen(navController, scannedCodeViewModel) }
