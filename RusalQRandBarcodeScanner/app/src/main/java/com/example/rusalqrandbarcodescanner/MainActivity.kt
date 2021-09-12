@@ -83,12 +83,6 @@ class MainActivity : ComponentActivity() {
         UserInputViewModelFactory((application as CodeApplication).userRepository)
     }
 
-    private fun setTime(): String{
-        val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("MM_dd_yyyy HH:mm:ss")
-        val timeNow: LocalDateTime = LocalDateTime.now()
-        return formatter.format(timeNow)
-    }
-
     private class ImageAnalyzer: ImageAnalysis.Analyzer {
         @SuppressLint("UnsafeOptInUsageError")
         override fun analyze(imageProxy: ImageProxy) {
@@ -115,56 +109,6 @@ class MainActivity : ComponentActivity() {
                         Log.e("Exceptions", "QR Code not found exception")
                     }
                     .addOnCompleteListener {imageProxy.close()}
-            }
-        }
-    }
-
-    @Composable
-    fun GetCodeListView(navController: NavHostController) {
-        var codes = remember { scannedCodeViewModel.allCodes.value }
-        val codeObserver = Observer<List<ScannedCode>> { codeList ->
-            codes = codeList
-        }
-        scannedCodeViewModel.allCodes.observe(this, codeObserver)
-
-        LazyColumn (
-            modifier= Modifier
-                .background(Color.LightGray)
-                .size(400.dp),
-            contentPadding= PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-        ) {
-            if (codes != null) {
-                items(
-                    items = codes!!,
-                    itemContent = {
-                        CodeListItem(scannedCode = it, navController)
-                    }
-                )
-            }
-        }
-    }
-
-    @Composable
-    fun CodeListItem(scannedCode: ScannedCode, navController: NavHostController) {
-        Card(
-            modifier= Modifier
-                .padding(horizontal = 8.dp, vertical = 8.dp)
-                .clickable(onClick = {
-
-                    navController.navigate("bundleInfo/${scannedCode.barCode}")
-                })
-                .fillMaxWidth(),
-            elevation = 2.dp,
-            backgroundColor = Color.Black,
-            shape = RoundedCornerShape(corner = CornerSize(16.dp))
-        ) {
-            Row {
-                Column(modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()
-                    .align(Alignment.CenterVertically)) {
-                Text(text = "Heat: ${scannedCode.heatNum!!} || BL: ${scannedCode.bl!!}" , style = typography.h6)
-                }
             }
         }
     }
