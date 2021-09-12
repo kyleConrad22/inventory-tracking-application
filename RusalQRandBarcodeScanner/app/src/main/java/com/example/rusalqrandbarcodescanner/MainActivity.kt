@@ -79,7 +79,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private val userInputViewModel : UserInputViewModel by viewModels {
-        UserInputViewModelFactory()
+        UserInputViewModelFactory((application as CodeApplication).userRepository)
     }
 
     private fun setTime(): String{
