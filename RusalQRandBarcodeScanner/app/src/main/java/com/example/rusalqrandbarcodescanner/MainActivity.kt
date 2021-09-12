@@ -53,6 +53,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
 import com.example.rusalqrandbarcodescanner.database.ScannedCode
+import com.example.rusalqrandbarcodescanner.screens.LoadInfoInputScreen
 import com.example.rusalqrandbarcodescanner.screens.MainMenuScreen
 import com.example.rusalqrandbarcodescanner.ui.theme.RusalQRAndBarcodeScannerTheme
 import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel
@@ -329,73 +330,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // TextField which takes user input and assigns it to the bundles variable in userInputViewModel
-    @ExperimentalComposeUiApi
-    @Composable
-    fun BundlesInput(focusManager: FocusManager) {
-        var bundleQty by remember { mutableStateOf(userInputViewModel.bundles.value) }
-        val bundleObserver = Observer<String> { it ->
-            bundleQty = it
-        }
-        userInputViewModel.bundles.observe(this@MainActivity, bundleObserver)
-
-        bundleQty?.let { qty ->
-            OutlinedTextField(singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
-                value = qty,
-                onValueChange = {
-                    userInputViewModel.bundles.value = it
-                    userInputViewModel.refresh() },
-                label = { Text(text = "Bundles: ") })
-        }
-    }
-
-    // TextField which takes user input and assigns it to the bl variable in userInputViewModel
-    @ExperimentalComposeUiApi
-    @Composable
-    fun BlInput(focusManager: FocusManager) {
-        var bl by remember { mutableStateOf(userInputViewModel.bl.value) }
-        val blObserver = Observer<String>{ it ->
-            bl = it
-        }
-        userInputViewModel.bl.observe(this@MainActivity, blObserver)
-
-        bl?.let { blNum ->
-            OutlinedTextField(
-                singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
-                value = blNum,
-                onValueChange = {
-                    userInputViewModel.bl.value = it
-                    userInputViewModel.refresh() },
-                label = { Text(text = "BL: ") })
-        }
-    }
-
-    // TextField which takes user input and assigns it to the loader variable in userInputViewModel
-    @ExperimentalComposeUiApi
-    @Composable
-    fun LoaderInput(focusManager: FocusManager) {
-        var loader by remember { mutableStateOf(userInputViewModel.loader.value) }
-        val loaderObserver = Observer<String>{ it ->
-            loader = it
-        }
-        userInputViewModel.loader.observe(this@MainActivity, loaderObserver)
-
-        loader?.let { loadIt ->
-            OutlinedTextField(singleLine=true,
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions(onNext = { focusManager.clearFocus(true) }),
-                value = loadIt,
-                onValueChange = {
-                    userInputViewModel.loader.value = it
-                    userInputViewModel.refresh() },
-                label = { Text(text = "Loader: ") })
-        }
-    }
-
     // TextField which takes user input and assigns it to the vessel variable in userInputViewModel
     @ExperimentalComposeUiApi
     @Composable
@@ -415,30 +349,6 @@ class MainActivity : ComponentActivity() {
                     userInputViewModel.vessel.value = it
                     userInputViewModel.refresh() },
                 label = { Text(text = "Vessel: ") })
-        }
-    }
-
-    // TextField which takes user input and assigns it to the quantity variable in userInputViewModel
-    @ExperimentalComposeUiApi
-    @Composable
-    fun QuantityInput(focusManager: FocusManager) {
-        var quantity by remember { mutableStateOf(userInputViewModel.quantity.value) }
-        val quantityObserver = Observer<String> { it ->
-            quantity = it
-        }
-        userInputViewModel.quantity.observe(this@MainActivity, quantityObserver)
-
-        quantity?.let { quant ->
-            OutlinedTextField(
-                singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
-                value = quant,
-                onValueChange = {
-                    userInputViewModel.quantity.value = it
-                    userInputViewModel.refresh() },
-                label = { Text(text = "Quantity Per Bundle: ")}
-            )
         }
     }
 
@@ -487,51 +397,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // TextField which takes user input and assigns it to the order variable in userInputViewModel
-    @ExperimentalComposeUiApi
-    @Composable
-    fun WorkOrderInput(focusManager: FocusManager) {
-        var workOrder by remember { mutableStateOf(userInputViewModel.order.value) }
-        val orderObserver = Observer<String>{ it ->
-            workOrder = it
-        }
-        userInputViewModel.order.observe(this@MainActivity, orderObserver)
-
-        workOrder?.let { ord ->
-            OutlinedTextField(singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions( onNext = { focusManager.moveFocus(FocusDirection.Down) }),
-                value = ord,
-                onValueChange = {
-                    userInputViewModel.order.value = it
-                    userInputViewModel.refresh() },
-                label = { Text(text = "Work Order: ") })
-        }
-    }
-
-    //TextField which takes user input and assigns it to the load variable in userInputViewModel
-    @ExperimentalComposeUiApi
-    @Composable
-    fun LoadNumberInput(focusManager: FocusManager) {
-        var loadNum by remember { mutableStateOf(userInputViewModel.load.value) }
-        val loadObserver = Observer<String> { it ->
-            loadNum = it
-        }
-        userInputViewModel.load.observe(this@MainActivity, loadObserver)
-
-        loadNum?.let { load ->
-            OutlinedTextField(singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions(onNext =  { focusManager.moveFocus(FocusDirection.Down) }),
-                value = load,
-                onValueChange = {
-                    userInputViewModel.load.value = it
-                    userInputViewModel.refresh() },
-                label = { Text(text = "Load Number: ") })
-        }
-    }
-
-
     @Composable
     fun AddButton(navController: NavHostController) {
         Button(onClick = {
@@ -548,48 +413,6 @@ class MainActivity : ComponentActivity() {
         val addType = if (userInputViewModel.loader.value != "") { "load" } else { "reception" }
 
         Text(text = "Bundle $heat added to $addType")
-    }
-
-    // Page which takes user input necessary to create a new load
-    @ExperimentalComposeUiApi
-    @Composable
-    fun LoadInfoPage(navController: NavHostController) {
-        val focusManager = LocalFocusManager.current
-
-        var loadConfirmVis by remember { mutableStateOf(userInputViewModel.loadVis.value) }
-        val loadObserver = Observer<Boolean> { it ->
-            loadConfirmVis = it
-        }
-
-        userInputViewModel.loadVis.observe(this@MainActivity, loadObserver)
-
-        Column(modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(text = "Load Info:")
-
-            WorkOrderInput(focusManager)
-            LoadNumberInput(focusManager)
-            BundlesInput(focusManager)
-            BlInput(focusManager)
-            QuantityInput(focusManager)
-            LoaderInput(focusManager)
-
-            Row(modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly) {
-                Button(onClick = {
-                    navController.popBackStack(Screen.MainMenuScreen.title, inclusive = false)
-                }) {
-                    Text(text="Back", modifier = Modifier.padding(16.dp))
-                }
-                if (loadConfirmVis != null && loadConfirmVis == true) {
-                    Button(onClick = { navController.navigate("loadOptionsPage")}) {
-                        Text(text="Confirm Load Info", modifier = Modifier.padding(16.dp))
-                    }
-                }
-            }
-        }
     }
 
     // Page which shows the options currently available to the user on the current load
@@ -1436,7 +1259,7 @@ class MainActivity : ComponentActivity() {
                 composable("receptionOptionsPage") { ReceptionOptionsPage(navController = navController) }
                 composable("loadOptionsPage") { LoadOptionsPage(navController = navController) }
                 composable("receptionInfoPage") { ReceptionInfoPage(navController = navController) }
-                composable("loadInfoPage") { LoadInfoPage(navController = navController) }
+                composable(Screen.LoadInfoInputScreen.title) { LoadInfoInputScreen(navController = navController, userInputViewModel = userInputViewModel) }
                 composable("removeEntryPage") { RemoveEntryPage(navController = navController) }
                 composable("incorrectBl") { IncorrectBl(navController = navController) }
                 composable("incorrectQuantity") { IncorrectQuantity(navController = navController)}
