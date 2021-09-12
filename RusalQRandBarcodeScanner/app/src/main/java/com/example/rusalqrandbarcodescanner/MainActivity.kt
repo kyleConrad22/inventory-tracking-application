@@ -884,62 +884,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @Composable
-    fun BlOptions(navController: NavHostController) {
-        val heat = userInputViewModel.heat.value
-        var blList = remember { currentInventoryViewModel.getBlList(heat!!).value }
-        val blObserver = Observer<List<String>?> { items ->
-            blList = items
-        }
-
-        currentInventoryViewModel.getBlList(heat!!).observe(this, blObserver)
-
-        Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(text="Retrieved BL numbers:", modifier = Modifier.padding(16.dp))
-            LazyColumn(
-                modifier = Modifier
-                    .background(Color.LightGray)
-                    .size(400.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-
-            ) {
-                if (blList != null) {
-                    items(
-                        items = blList!!,
-                        itemContent = { BlListItem(bl = it) }
-                    )
-                }
-            }
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Bottom){
-                Button(onClick =
-                { navController.navigate("manualEntryPage") } ) {
-                    Text(text="Back to Manual Entry", modifier = Modifier.padding(16.dp))
-                }
-            }
-        }
-    }
-
-    @Composable
-    fun BlListItem(bl: String) {
-        Card(
-            modifier = Modifier
-                .padding(horizontal = 8.dp, vertical = 8.dp)
-                .fillMaxWidth(),
-            elevation = 2.dp,
-            backgroundColor = Color.Black,
-            shape = RoundedCornerShape(corner = CornerSize(16.dp))
-        ) {
-            Row {
-                Column(modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()
-                    .align(Alignment.CenterVertically)) {
-                    Text(text=bl, style = typography.h6)
-                }
-            }
-        }
-    }
-
 //Add tp setContent() method to see a full-screen preview
 //Don't have to manage camera session state or dispose of images, binding to lifecycle is sufficient
 
@@ -1108,7 +1052,7 @@ class MainActivity : ComponentActivity() {
                 composable(Screen.BundleInfoScreen.title + "/{barcode}") { backStackEntry ->
                     BundleInfoScreen(navController = navController, barcode = backStackEntry.arguments?.getString("barcode"))
                 }
-                composable(Screen.ConfirmationScreen.title) { ConfirmationScreen(navController = navController) }
+                composable(Screen.ConfirmationScreen.title) { ConfirmationScreen(navController = navController, userInputViewModel = userInputViewModel) }
                 composable(Screen.ReceptionReviewScreen.title) { ReceptionReviewScreen(navController = navController) }
                 composable(Screen.LoadReviewScreen.title) { LoadReviewScreen(navController = navController) }
                 composable(Screen.BundleAddedScreen.title) { BundleAddedScreen(navController = navController) }
@@ -1123,7 +1067,7 @@ class MainActivity : ComponentActivity() {
                 composable(Screen.IncorrectBlScreen.title) { IncorrectBlScreen(navController = navController, userInputViewModel = userInputViewModel) }
                 composable(Screen.IncorrectQuantityScreen.title) { IncorrectQuantityScreen(navController = navController, userInputViewModel = userInputViewModel) }
                 composable(Screen.ToBeImplementedScreen.title) { ToBeImplementedScreen(navController = navController)}
-                composable(Screen.BlOptionsScreen.title) { BlOptionsScreen(navController = navController) }
+                composable(Screen.BlOptionsScreen.title) { BlOptionsScreen(navController = navController, currentInventoryViewModel = currentInventoryViewModel, userInputViewModel = userInputViewModel) }
             }
         }
     }
