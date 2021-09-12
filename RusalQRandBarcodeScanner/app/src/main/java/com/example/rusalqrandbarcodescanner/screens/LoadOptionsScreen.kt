@@ -27,6 +27,7 @@ fun LoadOptionsScreen(navController: NavHostController, scannedCodeViewModel: Sc
     }
     scannedCodeViewModel.count.observe(LocalLifecycleOwner.current, countObserver)
 
+
     Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly) {
@@ -65,7 +66,7 @@ fun LoadOptionsScreen(navController: NavHostController, scannedCodeViewModel: Sc
             if (count != null && count!! >0) {
                 Button(onClick = {
                     HttpRequestHandler.initUpdate(scannedCodeViewModel, currentInventoryViewModel)
-                    navController.navigate(Screen.LoadReviewScreen.title) }) {
+                    navController.navigate(Screen.ReviewScreen.title) }) {
                     Text(text = "Confirm Load", modifier = Modifier.padding(16.dp))
                 }
             }

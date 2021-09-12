@@ -56,6 +56,8 @@ fun ScannerScreen(navController: NavHostController, scannedCodeViewModel: Scanne
     userInputViewModel.isReception().observe(lifecycleOwner, receptionObserver)
     scannedCodeViewModel.count.observe(lifecycleOwner, countObserver)
 
+    val type = if (isLoad != null && isLoad!!) { "Load" } else { "Reception" }
+
     CameraPreview(modifier = Modifier.fillMaxSize(), navController = navController, currentInventoryViewModel = currentInventoryViewModel, scannedCodeViewModel = scannedCodeViewModel, userInputViewModel = userInputViewModel)
     Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -91,18 +93,10 @@ fun ScannerScreen(navController: NavHostController, scannedCodeViewModel: Scanne
                 Text(text = "Manual Entry", modifier = Modifier.padding(16.dp))
             }
             if (count != null && count!! > 0) {
-                if (isLoad != null && isLoad!!) {
-                    Button(onClick = {
-                        navController.navigate(Screen.LoadReviewScreen.title)
-                    }) {
-                        Text("Confirm Load", modifier = Modifier.padding(16.dp))
-                    }
-                } else {
-                    Button(onClick = {
-                        navController.navigate(Screen.ReceptionReviewScreen.title)
-                    }) {
-                        Text("Confirm Reception", modifier = Modifier.padding(16.dp))
-                    }
+                Button(onClick = {
+                    navController.navigate(Screen.ReviewScreen.title)
+                }) {
+                    Text("Confirm $type", modifier = Modifier.padding(16.dp))
                 }
             }
         }
