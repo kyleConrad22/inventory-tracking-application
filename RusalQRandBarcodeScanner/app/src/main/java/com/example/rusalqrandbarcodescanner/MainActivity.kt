@@ -235,16 +235,6 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun OkButton(navController: NavHostController, dest: String) {
-        Button(onClick = { navController.navigate(dest)
-        if (dest == "scannerPage") {
-            ScannedInfo.clearValues()
-        }}) {
-            Text(text = "OK", modifier = Modifier.padding(16.dp))
-        }
-    }
-
-    @Composable
     fun ScanButton(navController: NavHostController) {
         Button(onClick = { navController.navigate("scannerPage") }) {
             Text(text = "Scan Code", modifier = Modifier
@@ -305,14 +295,6 @@ class MainActivity : ComponentActivity() {
         }) {
             Text(text = "Add", modifier = Modifier.padding(16.dp))
         }
-    }
-
-    @Composable
-    fun BundleAddedText() {
-        val heat = ScannedInfo.heatNum
-        val addType = if (userInputViewModel.loader.value != "") { "load" } else { "reception" }
-
-        Text(text = "Bundle $heat added to $addType")
     }
 
     // Page which shows the options currently available to the user on the current load
@@ -647,29 +629,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @Composable
-    fun BundleAddedPage(navController: NavHostController) {
-        Column(modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly) {
-            BundleAddedText()
-            var count = remember { scannedCodeViewModel.count.value }
-            val countObserver = Observer<Int> { rowCount ->
-                count = rowCount
-            }
-            scannedCodeViewModel.count.observe(this@MainActivity, countObserver)
-            if (count != null) {
-                Text(text = "Bundles Remaining: ${Integer.parseInt(userInputViewModel.bundles.value!!) - count!!}")
-                val dest = if (Integer.parseInt(userInputViewModel.bundles.value!!) - count!! == 0) {
-                    "reviewLoad"
-                } else {
-                    "scannerPage"
-                }
-                OkButton(navController = navController, dest = dest)
-            }
-        }
-    }
-
 //Add tp setContent() method to see a full-screen preview
 //Don't have to manage camera session state or dispose of images, binding to lifecycle is sufficient
 
@@ -841,7 +800,7 @@ class MainActivity : ComponentActivity() {
                 composable(Screen.ConfirmationScreen.title) { ConfirmationScreen(navController = navController, userInputViewModel = userInputViewModel) }
                 composable(Screen.ReceptionReviewScreen.title) { ReceptionReviewScreen(navController = navController, scannedCodeViewModel = scannedCodeViewModel) }
                 composable(Screen.LoadReviewScreen.title) { LoadReviewScreen(navController = navController, scannedCodeViewModel = scannedCodeViewModel, currentInventoryViewModel = currentInventoryViewModel) }
-                composable(Screen.BundleAddedScreen.title) { BundleAddedScreen(navController = navController) }
+                composable(Screen.BundleAddedScreen.title) { BundleAddedScreen(navController = navController, scannedCodeViewModel = scannedCodeViewModel, userInputViewModel = userInputViewModel) }
                 composable(Screen.ScannedInfoScreen.title) { ScannedInfoScreen(navController = navController) }
                 composable(Screen.ManualEntryScreen.title) { ManualEntryScreen(navController = navController) }
                 composable(Screen.ScannerScreen.title) { ScannerScreen(navController = navController) }
