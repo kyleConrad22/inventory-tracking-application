@@ -11,8 +11,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,13 +24,21 @@ import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.database.ScannedCode
 import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.ScannedCodeViewModel
+import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel
 
 @Composable
-fun LoadReviewScreen(navController: NavHostController, scannedCodeViewModel: ScannedCodeViewModel, currentInventoryViewModel: CurrentInventoryViewModel) {
+fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: ScannedCodeViewModel, currentInventoryViewModel: CurrentInventoryViewModel, userInputViewModel: UserInputViewModel) {
+    var isLoad by remember { mutableStateOf(userInputViewModel.isLoad().value) }
+    val isLoadObserver = Observer<Boolean> { it ->
+        isLoad = it
+    }
+    userInputViewModel.isLoad().observe(LocalLifecycleOwner.current, isLoadObserver)
+
+    val type = if (isLoad != null && isLoad!!) {"Load"} else {"Reception"}
     Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly) {
-        Text(text = "Review Load:", modifier = Modifier.padding(16.dp))
+        Text(text = "Review $type:", modifier = Modifier.padding(16.dp))
         GetCodeListView(navController, scannedCodeViewModel = scannedCodeViewModel)
         Row(modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -42,10 +49,14 @@ fun LoadReviewScreen(navController: NavHostController, scannedCodeViewModel: Sca
                 Text(text="Back", modifier = Modifier.padding(16.dp))
             }
             Button(onClick = {
-                HttpRequestHandler.initUpdate(scannedCodeViewModel, currentInventoryViewModel)
+                if (isLoad != null && isLoad!!) {
+                    HttpRequestHandler.initUpdate(scannedCodeViewModel, currentInventoryViewModel)
+                } else {
+                    /*TODO - Add Reception Confirmation Logic */
+                }
                 navController.popBackStack(Screen.MainMenuScreen.title, inclusive = false)
             }) {
-                Text(text="Confirm Load", modifier = Modifier.padding(16.dp))
+                Text(text="Confirm $type", modifier = Modifier.padding(16.dp))
             }
         }
     }

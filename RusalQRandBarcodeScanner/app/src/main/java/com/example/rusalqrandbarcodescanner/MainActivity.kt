@@ -138,14 +138,11 @@ class MainActivity : ComponentActivity() {
                     ConfirmationScreen(navController,
                         userInputViewModel)
                 }
-                composable(Screen.ReceptionReviewScreen.title) {
-                    ReceptionReviewScreen(navController,
-                        scannedCodeViewModel)
-                }
-                composable(Screen.LoadReviewScreen.title) {
-                    LoadReviewScreen(navController,
+                composable(Screen.ReviewScreen.title) {
+                    ReviewScreen(navController,
                         scannedCodeViewModel,
-                        currentInventoryViewModel)
+                        currentInventoryViewModel,
+                        userInputViewModel)
                 }
                 composable(Screen.BundleAddedScreen.title) {
                     BundleAddedScreen(navController,
@@ -235,7 +232,6 @@ sealed class Screen(val title: String) {
     object RemoveEntryScreen: Screen("RemoveEntry")
     object ScannedInfoScreen: Screen("ScannedInfo")
     object ToBeImplementedScreen: Screen("ToBeImplemented")
-    object ReceptionReviewScreen: Screen("ReceptionReview")
-    object LoadReviewScreen: Screen("LoadReview")
+    object ReviewScreen: Screen("Review")
     object QuantityOptionsScreen: Screen("QuantityOptionsScreen")
 }
