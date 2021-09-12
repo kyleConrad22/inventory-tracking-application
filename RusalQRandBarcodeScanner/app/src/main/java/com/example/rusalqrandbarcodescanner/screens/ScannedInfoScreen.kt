@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.ScannedInfo
+import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.viewModels.ScannedCodeViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel
 
@@ -35,7 +36,7 @@ fun ScannedInfoScreen(navController: NavHostController, userInputViewModel: User
             }
             Button(onClick = {
                 scannedCodeViewModel.insert(ScannedInfo.toScannedCode(userInputViewModel))
-                navController.popBackStack()
+                navController.navigate(Screen.BundleAddedScreen.title)
             }) {
                 Text("Add", modifier = Modifier.padding())
             }

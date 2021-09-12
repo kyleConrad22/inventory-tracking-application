@@ -171,16 +171,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @Composable
-    fun AddButton(navController: NavHostController) {
-        Button(onClick = {
-            scannedCodeViewModel.insert(ScannedInfo.toScannedCode(userInputViewModel))
-            navController.navigate("bundleAddedPage")
-        }) {
-            Text(text = "Add", modifier = Modifier.padding(16.dp))
-        }
-    }
-
     // Page which shows the options currently available to the user on the current load
     @Composable
     fun LoadOptionsPage(navController: NavHostController) {
@@ -308,33 +298,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
             Spacer(modifier = Modifier.padding(30.dp))
-        }
-    }
-
-    @Composable
-    fun quantOptions(navController: NavHostController) {
-        val heat = userInputViewModel.heat.value
-        val quantity = userInputViewModel.quantity.value
-        var blList by remember { mutableStateOf(currentInventoryViewModel.getBlList(heat).value)}
-        val blListObserver = Observer<List<String>?>{ it ->
-            blList = it
-        }
-        currentInventoryViewModel.getBlList(heat).observe(this@MainActivity, blListObserver)
-
-        if (blList != null) {
-            Column(modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceEvenly) {
-                Text(text = """
-                    Heat $heat is available in multiple quantities for BL ${blList!![0]}!
-                    Ensure that the bundle being loaded is of quantity $quantity!
-                    Would you like to add this bundle to the load?
-                    """.trimMargin(), modifier = Modifier.padding(16.dp))
-                Button(onClick = { navController.navigate("manualEntryPage")} ) {
-                    Text(text="Back", modifier = Modifier.padding(16.dp))
-                }
-                AddButton(navController = navController)
-            }
         }
     }
 
@@ -522,6 +485,7 @@ class MainActivity : ComponentActivity() {
                 composable(Screen.IncorrectQuantityScreen.title) { IncorrectQuantityScreen(navController, userInputViewModel) }
                 composable(Screen.ToBeImplementedScreen.title) { ToBeImplementedScreen(navController)}
                 composable(Screen.BlOptionsScreen.title) { BlOptionsScreen(navController, currentInventoryViewModel, userInputViewModel) }
+                composable(Screen.QuantityOptionsScreen.title) { QuantityOptionsScreen(navController, currentInventoryViewModel, userInputViewModel, scannedCodeViewModel) }
             }
         }
     }
@@ -560,4 +524,5 @@ sealed class Screen(val title: String) {
     object ToBeImplementedScreen: Screen("ToBeImplemented")
     object ReceptionReviewScreen: Screen("ReceptionReview")
     object LoadReviewScreen: Screen("LoadReview")
+    object QuantityOptionsScreen: Screen("QuantityOptionsScreen")
 }
