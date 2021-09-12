@@ -8,10 +8,11 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@Database (entities = arrayOf(ScannedCode::class, CurrentInventoryLineItem::class), version = 8)
+@Database (entities = arrayOf(ScannedCode::class, CurrentInventoryLineItem::class), version = 9)
 abstract class CodeDatabase: RoomDatabase() {
     abstract fun scannedCodeDao(): ScannedCodeDao
     abstract fun currentInventoryDao(): CurrentInventoryDao
+    abstract fun userInputDao(): UserInputDao
 
     private class CodeDatabaseCallback (
         private val scope: CoroutineScope
@@ -22,8 +23,10 @@ abstract class CodeDatabase: RoomDatabase() {
                 scope.launch {
                     val scannedCodeDao = database.scannedCodeDao()
                     val currentInventoryDao = database.currentInventoryDao()
+                    val userInputDao = database.userInputDao()
                     scannedCodeDao.deleteAll()
                     currentInventoryDao.deleteAll()
+                    userInputDao.deleteAll()
                 }
             }
         }
