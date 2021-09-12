@@ -45,7 +45,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.navigation.NavHostController
@@ -272,8 +271,7 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     )
-
-                    RusalScannerDriver()
+                    MainLayout()
                 }
             }
         }
@@ -1284,37 +1282,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @ExperimentalComposeUiApi
-    @Composable
-    fun NavigationHost(navController: NavHostController) {
-
-        NavHost(navController = navController, startDestination = "mainMenu") {
-            composable("mainMenu") { MainMenu(navController = navController) }
-            composable("duplicateBundlePage/{scanTime}") { backStackEntry ->
-                DuplicateBundlePage(navController = navController, backStackEntry.arguments?.getString("scanTime"))
-            }
-            composable("bundleInfo/{barcode}") { backStackEntry ->
-                BundleInfo(navController = navController, barcode = backStackEntry.arguments?.getString("barcode"))
-            }
-            composable("ConfirmationPage") { ConfirmationPage(navController = navController) }
-            composable("reviewReception") { ReviewReception(navController = navController) }
-            composable("reviewLoad") { ReviewLoad(navController = navController) }
-            composable("bundleAddedPage") { BundleAddedPage(navController = navController) }
-            composable("scannedInfoReturn") { ScannedInfoReturn(navController = navController) }
-            composable("manualEntryPage") { ManualEntryPage(navController = navController) }
-            composable("scannerPage") { ScannerPage(navController = navController) }
-            composable("receptionOptionsPage") { ReceptionOptionsPage(navController = navController) }
-            composable("loadOptionsPage") { LoadOptionsPage(navController = navController) }
-            composable("receptionInfoPage") { ReceptionInfoPage(navController = navController) }
-            composable("loadInfoPage") { LoadInfoPage(navController = navController) }
-            composable("removeEntryPage") { RemoveEntryPage(navController = navController) }
-            composable("incorrectBl") { IncorrectBl(navController = navController) }
-            composable("incorrectQuantity") { IncorrectQuantity(navController = navController)}
-            composable("toBeImplemented") { ToBeImplemented(navController = navController)}
-            composable("blOptions") { BlOptions(navController = navController) }
-        }
-    }
-
 //Add tp setContent() method to see a full-screen preview
 //Don't have to manage camera session state or dispose of images, binding to lifecycle is sufficient
 
@@ -1471,11 +1438,35 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun RusalScannerDriver() {
+    fun MainLayout() {
         val navController = rememberNavController()
 
         RusalQRAndBarcodeScannerTheme() {
-            NavigationHost(navController = navController)
+            NavHost(navController = navController, startDestination = "mainMenu") {
+                composable("mainMenu") { MainMenu(navController = navController) }
+                composable("duplicateBundlePage/{scanTime}") { backStackEntry ->
+                    DuplicateBundlePage(navController = navController, backStackEntry.arguments?.getString("scanTime"))
+                }
+                composable("bundleInfo/{barcode}") { backStackEntry ->
+                    BundleInfo(navController = navController, barcode = backStackEntry.arguments?.getString("barcode"))
+                }
+                composable("ConfirmationPage") { ConfirmationPage(navController = navController) }
+                composable("reviewReception") { ReviewReception(navController = navController) }
+                composable("reviewLoad") { ReviewLoad(navController = navController) }
+                composable("bundleAddedPage") { BundleAddedPage(navController = navController) }
+                composable("scannedInfoReturn") { ScannedInfoReturn(navController = navController) }
+                composable("manualEntryPage") { ManualEntryPage(navController = navController) }
+                composable("scannerPage") { ScannerPage(navController = navController) }
+                composable("receptionOptionsPage") { ReceptionOptionsPage(navController = navController) }
+                composable("loadOptionsPage") { LoadOptionsPage(navController = navController) }
+                composable("receptionInfoPage") { ReceptionInfoPage(navController = navController) }
+                composable("loadInfoPage") { LoadInfoPage(navController = navController) }
+                composable("removeEntryPage") { RemoveEntryPage(navController = navController) }
+                composable("incorrectBl") { IncorrectBl(navController = navController) }
+                composable("incorrectQuantity") { IncorrectQuantity(navController = navController)}
+                composable("toBeImplemented") { ToBeImplemented(navController = navController)}
+                composable("blOptions") { BlOptions(navController = navController) }
+            }
         }
     }
 
@@ -1491,4 +1482,26 @@ class MainActivity : ComponentActivity() {
         }
 
     }
+}
+
+sealed class Screen(val title: String) {
+    object MainMenuScreen: Screen("MainMenu")
+    object ScannerScreen: Screen("Scanner")
+    object LoadInfoInputScreen: Screen("LoadInfoInput")
+    object ReceptionInfoInputScreen: Screen("ReceptionInfoInput")
+    object BlOptionsScreen: Screen("BlOptions")
+    object BundleAddedScreen: Screen("BundleAdded")
+    object BundleInfoScreen: Screen("BundleInfo")
+    object ConfirmationScreen: Screen("Confirmation")
+    object DuplicateBundleScreen: Screen("DuplicateBundle")
+    object IncorrectBlScreen: Screen("IncorrectBl")
+    object IncorrectQuantityScreen: Screen("IncorrectQuantity")
+    object LoadOptionsScreen: Screen("LoadOptions")
+    object ReceptionOptionsScreen: Screen("ReviewOptions")
+    object ManualEntryScreen: Screen("ManualEntry")
+    object RemoveEntryScreen: Screen("RemoveEntry")
+    object ScannedInfoScreen: Screen("ScannedInfo")
+    object ToBeImplementedScreen: Screen("ToBeImplemented")
+    object ReceptionReviewScreen: Screen("ReceptionReview")
+    object LoadReviewScreen: Screen("LoadReview")
 }
