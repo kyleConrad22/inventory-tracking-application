@@ -50,7 +50,7 @@ fun ReceptionReviewScreen(navController: NavHostController, scannedCodeViewModel
 }
 
 @Composable
-fun GetCodeListView(navController: NavHostController, scannedCodeViewModel: ScannedCodeViewModel) {
+private fun GetCodeListView(navController: NavHostController, scannedCodeViewModel: ScannedCodeViewModel) {
     var codes = remember { scannedCodeViewModel.allCodes.value }
     val codeObserver = Observer<List<ScannedCode>> { codeList ->
         codes = codeList
@@ -75,7 +75,7 @@ fun GetCodeListView(navController: NavHostController, scannedCodeViewModel: Scan
 }
 
 @Composable
-fun CodeListItem(scannedCode: ScannedCode, navController: NavHostController) {
+private fun CodeListItem(scannedCode: ScannedCode, navController: NavHostController) {
     Card(
         modifier= Modifier
             .padding(horizontal = 8.dp, vertical = 8.dp)

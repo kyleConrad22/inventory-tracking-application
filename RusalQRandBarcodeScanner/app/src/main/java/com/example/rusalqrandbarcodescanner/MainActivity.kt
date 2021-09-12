@@ -726,50 +726,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @Composable
-    fun ReviewLoad(navController: NavHostController) {
-        Column(modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(text = "Review Load:", modifier = Modifier.padding(16.dp))
-            GetCodeListView(navController)
-            Row(modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly) {
-                Button(onClick = {
-                    navController.navigateUp()
-                }) {
-                    Text(text="Back", modifier = Modifier.padding(16.dp))
-                }
-                ConfirmButton(navController = navController,
-                    str = "Load",
-                    dest = "ConfirmationPage")
-            }
-        }
-    }
-
-    @Composable
-    fun ReviewReception(navController: NavHostController) {
-        Column(modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(text = "Review Reception:", modifier = Modifier.padding(16.dp))
-            GetCodeListView(navController)
-            Row(modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly) {
-                Button(onClick = {
-                    navController.navigateUp()
-                }) {
-                    Text(text = "Back", modifier = Modifier.padding(16.dp))
-                }
-                ConfirmButton(navController = navController,
-                    str = "Reception",
-                    dest = "ConfirmationPage")
-            }
-        }
-    }
-
 //Add tp setContent() method to see a full-screen preview
 //Don't have to manage camera session state or dispose of images, binding to lifecycle is sufficient
 
@@ -940,7 +896,7 @@ class MainActivity : ComponentActivity() {
                 }
                 composable(Screen.ConfirmationScreen.title) { ConfirmationScreen(navController = navController, userInputViewModel = userInputViewModel) }
                 composable(Screen.ReceptionReviewScreen.title) { ReceptionReviewScreen(navController = navController, scannedCodeViewModel = scannedCodeViewModel) }
-                composable(Screen.LoadReviewScreen.title) { LoadReviewScreen(navController = navController) }
+                composable(Screen.LoadReviewScreen.title) { LoadReviewScreen(navController = navController, scannedCodeViewModel = scannedCodeViewModel, currentInventoryViewModel = currentInventoryViewModel) }
                 composable(Screen.BundleAddedScreen.title) { BundleAddedScreen(navController = navController) }
                 composable(Screen.ScannedInfoScreen.title) { ScannedInfoScreen(navController = navController) }
                 composable(Screen.ManualEntryScreen.title) { ManualEntryScreen(navController = navController) }
