@@ -53,6 +53,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
 import com.example.rusalqrandbarcodescanner.database.ScannedCode
+import com.example.rusalqrandbarcodescanner.screens.MainMenuScreen
 import com.example.rusalqrandbarcodescanner.ui.theme.RusalQRAndBarcodeScannerTheme
 import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel.CurrentInventoryViewModelFactory
@@ -549,38 +550,6 @@ class MainActivity : ComponentActivity() {
         Text(text = "Bundle $heat added to $addType")
     }
 
-    @Composable
-    fun MainMenu(navController: NavHostController) {
-        scannedCodeViewModel.deleteAll()
-        userInputViewModel.removeValues()
-        Column(modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(text = "Main Menu", modifier = Modifier.padding(16.dp), fontSize = 25.sp)
-            Button(onClick = { navController.navigate("loadInfoPage") }) {
-                Text(text="New Load", modifier = Modifier
-                    .padding(16.dp)
-                    .size(width = 200.dp, height = 20.dp)
-                    .align(Alignment.CenterVertically),
-                    textAlign = TextAlign.Center)
-            }
-            Button(onClick = { navController.navigate("receptionInfoPage") }) {
-                Text(text="New Reception", modifier = Modifier
-                    .padding(16.dp)
-                    .size(width = 200.dp, height = 20.dp)
-                    .align(Alignment.CenterVertically),
-                    textAlign = TextAlign.Center)
-            }
-            Button(onClick = { navController.navigate("scannerPage") }) {
-                Text(text="Get Bundle Info", modifier = Modifier
-                    .padding(16.dp)
-                    .size(width = 200.dp, height = 20.dp)
-                    .align(Alignment.CenterVertically),
-                    textAlign = TextAlign.Center)
-            }
-        }
-    }
-
     // Page which takes user input necessary to create a new load
     @ExperimentalComposeUiApi
     @Composable
@@ -610,7 +579,7 @@ class MainActivity : ComponentActivity() {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                 Button(onClick = {
-                    navController.popBackStack("mainMenu", inclusive = false)
+                    navController.popBackStack(Screen.MainMenuScreen.title, inclusive = false)
                 }) {
                     Text(text="Back", modifier = Modifier.padding(16.dp))
                 }
@@ -711,7 +680,7 @@ class MainActivity : ComponentActivity() {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                 Button(onClick = {
-                    navController.popBackStack("mainMenu", inclusive = false)
+                    navController.popBackStack(Screen.MainMenuScreen.title, inclusive = false)
                 }) {
                     Text(text="Back", modifier = Modifier.padding(16.dp))
                 }
@@ -798,7 +767,7 @@ class MainActivity : ComponentActivity() {
                     } else if (isReception!!) {
                         navController.popBackStack("receptionOptionsPage", inclusive = false)
                     } else {
-                        navController.popBackStack("mainMenu", inclusive = false)
+                        navController.popBackStack(Screen.MainMenuScreen.title, inclusive = false)
                     }
                 }) {
                     Text(text="Back", modifier = Modifier.padding(16.dp))
@@ -1069,7 +1038,7 @@ class MainActivity : ComponentActivity() {
             verticalArrangement = Arrangement.SpaceEvenly) {
             Text(text = text, modifier = Modifier.padding(16.dp))
             Button(onClick = {
-                navController.popBackStack("mainMenu", inclusive = false)
+                navController.popBackStack(Screen.MainMenuScreen.title, inclusive = false)
             }) {
                 Text(text = "Ok", modifier = Modifier.padding(16.dp))
             }
@@ -1449,8 +1418,8 @@ class MainActivity : ComponentActivity() {
         val navController = rememberNavController()
 
         RusalQRAndBarcodeScannerTheme() {
-            NavHost(navController = navController, startDestination = "mainMenu") {
-                composable("mainMenu") { MainMenu(navController = navController) }
+            NavHost(navController = navController, startDestination = (Screen.MainMenuScreen.title)) {
+                composable(Screen.MainMenuScreen.title) { MainMenuScreen(navController = navController, userInputViewModel = userInputViewModel, scannedCodeViewModel = scannedCodeViewModel) }
                 composable("duplicateBundlePage/{scanTime}") { backStackEntry ->
                     DuplicateBundlePage(navController = navController, backStackEntry.arguments?.getString("scanTime"))
                 }
@@ -1485,7 +1454,7 @@ class MainActivity : ComponentActivity() {
         val navController = rememberNavController()
 
         RusalQRAndBarcodeScannerTheme {
-            MainMenu(navController = navController)
+            MainMenuScreen(navController = navController, userInputViewModel = userInputViewModel, scannedCodeViewModel = scannedCodeViewModel)
         }
 
     }
