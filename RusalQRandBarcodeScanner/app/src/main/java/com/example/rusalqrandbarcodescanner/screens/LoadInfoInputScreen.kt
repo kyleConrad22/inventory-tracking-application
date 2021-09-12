@@ -49,7 +49,7 @@ fun LoadInfoInputScreen(navController: NavHostController, userInputViewModel: Us
                     Text(text = "Back", modifier = Modifier.padding(14.dp))
                 }
                 if (loadVis != null && loadVis!!) {
-                    Button (onClick = { navController.navigate(Screen.ScannerScreen.title) }) {
+                    Button (onClick = { navController.navigate(Screen.LoadOptionsScreen.title) }) {
                         Text(text = "Confirm Load Info", modifier = Modifier.padding(14.dp))
                     }
                 }

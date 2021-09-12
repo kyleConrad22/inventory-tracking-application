@@ -30,13 +30,13 @@ fun MainMenuScreen(navController: NavHostController, userInputViewModel: UserInp
                         .align(Alignment.CenterVertically),
                     textAlign = TextAlign.Center)
             }
-            Button(onClick = { navController.navigate("receptionOptionsPage") }) {
+            Button(onClick = { navController.navigate(Screen.ReceptionInfoInputScreen.title) }) {
                 Text(text = "New Reception",
                     modifier = Modifier.padding(16.dp).size(width = 200.dp, height = 20.dp)
                         .align(Alignment.CenterVertically),
                     textAlign = TextAlign.Center)
             }
-            Button(onClick = { navController.navigate("scannerPage") }) {
+            Button(onClick = { navController.navigate(Screen.ScannerScreen.title) }) {
                 Text(text = "Get Bundle Info",
                     modifier = Modifier.padding(16.dp).size(width = 200.dp, height = 20.dp)
                         .align(Alignment.CenterVertically),
