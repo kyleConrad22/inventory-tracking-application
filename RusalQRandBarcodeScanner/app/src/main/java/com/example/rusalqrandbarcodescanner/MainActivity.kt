@@ -868,22 +868,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @Composable
-    fun DuplicateBundlePage(navController: NavHostController, scanTime: String?) {
-        Column(modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly){
-            Text(text="Bundle ${ScannedInfo.heatNum} has already been scanned!", modifier = Modifier.padding(16.dp))
-            Text(text="Last scan was at: $scanTime", modifier = Modifier.padding(16.dp))
-            Row(modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly) {
-                DenyButton(navController = navController)
-                AddButton(navController = navController)
-            }
-        }
-    }
-
 //Add tp setContent() method to see a full-screen preview
 //Don't have to manage camera session state or dispose of images, binding to lifecycle is sufficient
 
@@ -1047,7 +1031,7 @@ class MainActivity : ComponentActivity() {
             NavHost(navController = navController, startDestination = (Screen.MainMenuScreen.title)) {
                 composable(Screen.MainMenuScreen.title) { MainMenuScreen(navController = navController, userInputViewModel = userInputViewModel, scannedCodeViewModel = scannedCodeViewModel) }
                 composable( Screen.DuplicateBundleScreen.title + "/{scanTime}") { backStackEntry ->
-                    DuplicateBundleScreen(navController = navController, scanTime = backStackEntry.arguments?.getString("scanTime"))
+                    DuplicateBundleScreen(navController = navController, scanTime = backStackEntry.arguments?.getString("scanTime"), scannedCodeViewModel =  scannedCodeViewModel, userInputViewModel = userInputViewModel)
                 }
                 composable(Screen.BundleInfoScreen.title + "/{barcode}") { backStackEntry ->
                     BundleInfoScreen(navController = navController, barcode = backStackEntry.arguments?.getString("barcode"))
