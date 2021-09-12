@@ -51,6 +51,14 @@ class UserInputViewModel(private val repository: UserInputRepository): ViewModel
         return mediatorLiveData
     }
 
+    fun isReception(): LiveData<Boolean> {
+        val mediatorLiveData = MediatorLiveData<Boolean>()
+        mediatorLiveData.addSource(load) { it ->
+            mediatorLiveData.value = (it != null && it != "")
+        }
+        return mediatorLiveData
+    }
+
     private fun loadLoadConfirmVis(): LiveData<Boolean> {
         val mediatorLiveData = MediatorLiveData<Boolean>()
 

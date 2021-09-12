@@ -768,7 +768,12 @@ class MainActivity : ComponentActivity() {
         val loadObserver = Observer<Boolean> { it ->
             isLoad = it
         }
+        var isReception by remember { mutableStateOf(userInputViewModel.isReception().value) }
+        val receptionObserver = Observer<Boolean> { it ->
+            isReception = it
+        }
         userInputViewModel.isLoad().observe(this@MainActivity, loadObserver)
+        userInputViewModel.isReception().observe(this@MainActivity, receptionObserver)
         scannedCodeViewModel.count.observe(this@MainActivity, countObserver)
 
         CameraPreview(modifier = Modifier.fillMaxSize(), navController = navController)
@@ -790,8 +795,10 @@ class MainActivity : ComponentActivity() {
                 Button(onClick = {
                     if (isLoad!!) {
                         navController.popBackStack("loadOptionsPage", inclusive = false)
-                    } else {
+                    } else if (isReception!!) {
                         navController.popBackStack("receptionOptionsPage", inclusive = false)
+                    } else {
+                        navController.popBackStack("mainMenu", inclusive = false)
                     }
                 }) {
                     Text(text="Back", modifier = Modifier.padding(16.dp))
