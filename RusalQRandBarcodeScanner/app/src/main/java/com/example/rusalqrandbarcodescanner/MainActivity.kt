@@ -280,40 +280,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // Page which shows the options currently available to the user on the current reception
-    @Composable
-    fun ReceptionOptionsPage(navController: NavHostController) {
-        var count by remember { mutableStateOf(scannedCodeViewModel.count.value) }
-        val countObserver = Observer<Int> { it ->
-            count = it
-        }
-        scannedCodeViewModel.count.observe(this@MainActivity, countObserver)
-
-        Column(modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(text = "Reception Options:")
-            ScanButton(navController = navController)
-            if (count != null && count!! > 0) {
-                RemoveEntryButton(navController = navController)
-            }
-            Row(modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly) {
-                Button(onClick = {
-                    navController.navigateUp()
-                }) {
-                    Text(text="Back", modifier = Modifier.padding(16.dp))
-                }
-                if (count != null && count!! > 0) {
-                    ConfirmButton(navController = navController,
-                        str = "Reception",
-                        dest = "reviewReception")
-                }
-            }
-        }
-    }
-
     @Composable
     fun ScannerPage(navController: NavHostController) {
         var count by remember { mutableStateOf(scannedCodeViewModel.count.value) }
@@ -721,7 +687,7 @@ class MainActivity : ComponentActivity() {
                 composable(Screen.ScannedInfoScreen.title) { ScannedInfoScreen(navController = navController) }
                 composable(Screen.ManualEntryScreen.title) { ManualEntryScreen(navController = navController) }
                 composable(Screen.ScannerScreen.title) { ScannerScreen(navController = navController) }
-                composable(Screen.ReceptionOptionsScreen.title) { ReceptionOptionsScreen(navController = navController) }
+                composable(Screen.ReceptionOptionsScreen.title) { ReceptionOptionsScreen(navController = navController, scannedCodeViewModel = scannedCodeViewModel) }
                 composable(Screen.LoadOptionsScreen.title) { LoadOptionsScreen(navController = navController) }
                 composable(Screen.ReceptionInfoInputScreen.title) { ReceptionInfoInputScreen(navController = navController, userInputViewModel = userInputViewModel) }
                 composable(Screen.LoadInfoInputScreen.title) { LoadInfoInputScreen(navController = navController, userInputViewModel = userInputViewModel) }
