@@ -919,21 +919,6 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun IncorrectQuantity(navController: NavHostController) {
-        Column (modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(text="Incorrect quantity per bundle!", modifier = Modifier.padding(16.dp))
-            Text(text="Requested quantity per bundle is ${userInputViewModel.quantity.value}, the scanned bundle has a quantity per bundle of ${ScannedInfo.quantity}", modifier = Modifier.padding(16.dp))
-            Text(text="Put bundle away and scan another!", modifier=Modifier.padding(16.dp))
-            Button(onClick = {
-                ScannedInfo.clearValues()
-                navController.navigate("scannerPage")
-            }) {
-                Text(text = "Back to Scanner Live Feed", modifier = Modifier.padding(16.dp))
-            }
-        }
-    }
-
-    @Composable
     fun BlOptions(navController: NavHostController) {
         val heat = userInputViewModel.heat.value
         var blList = remember { currentInventoryViewModel.getBlList(heat!!).value }
@@ -1170,7 +1155,7 @@ class MainActivity : ComponentActivity() {
                 composable(Screen.LoadInfoInputScreen.title) { LoadInfoInputScreen(navController = navController, userInputViewModel = userInputViewModel) }
                 composable(Screen.RemoveEntryScreen.title) { RemoveEntryScreen(navController = navController) }
                 composable(Screen.IncorrectBlScreen.title) { IncorrectBlScreen(navController = navController) }
-                composable(Screen.IncorrectQuantityScreen.title) { IncorrectQuantityScreen(navController = navController)}
+                composable(Screen.IncorrectQuantityScreen.title) { IncorrectQuantityScreen(navController = navController, userInputViewModel = userInputViewModel) }
                 composable(Screen.ToBeImplementedScreen.title) { ToBeImplementedScreen(navController = navController)}
                 composable(Screen.BlOptionsScreen.title) { BlOptionsScreen(navController = navController) }
             }
