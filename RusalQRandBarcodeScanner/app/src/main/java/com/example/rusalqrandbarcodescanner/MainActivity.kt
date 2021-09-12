@@ -939,7 +939,7 @@ class MainActivity : ComponentActivity() {
                     BundleInfoScreen(navController = navController, barcode = backStackEntry.arguments?.getString("barcode"))
                 }
                 composable(Screen.ConfirmationScreen.title) { ConfirmationScreen(navController = navController, userInputViewModel = userInputViewModel) }
-                composable(Screen.ReceptionReviewScreen.title) { ReceptionReviewScreen(navController = navController) }
+                composable(Screen.ReceptionReviewScreen.title) { ReceptionReviewScreen(navController = navController, scannedCodeViewModel = scannedCodeViewModel) }
                 composable(Screen.LoadReviewScreen.title) { LoadReviewScreen(navController = navController) }
                 composable(Screen.BundleAddedScreen.title) { BundleAddedScreen(navController = navController) }
                 composable(Screen.ScannedInfoScreen.title) { ScannedInfoScreen(navController = navController) }
@@ -949,7 +949,7 @@ class MainActivity : ComponentActivity() {
                 composable(Screen.LoadOptionsScreen.title) { LoadOptionsScreen(navController = navController) }
                 composable(Screen.ReceptionInfoInputScreen.title) { ReceptionInfoInputScreen(navController = navController, userInputViewModel = userInputViewModel) }
                 composable(Screen.LoadInfoInputScreen.title) { LoadInfoInputScreen(navController = navController, userInputViewModel = userInputViewModel) }
-                composable(Screen.RemoveEntryScreen.title) { RemoveEntryScreen(navController = navController) }
+                composable(Screen.RemoveEntryScreen.title) { RemoveEntryScreen(navController = navController, userInputViewModel = userInputViewModel, scannedCodeViewModel = scannedCodeViewModel) }
                 composable(Screen.IncorrectBlScreen.title) { IncorrectBlScreen(navController = navController, userInputViewModel = userInputViewModel) }
                 composable(Screen.IncorrectQuantityScreen.title) { IncorrectQuantityScreen(navController = navController, userInputViewModel = userInputViewModel) }
                 composable(Screen.ToBeImplementedScreen.title) { ToBeImplementedScreen(navController = navController)}
