@@ -152,92 +152,6 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun ScanButton(navController: NavHostController) {
-        Button(onClick = { navController.navigate("scannerPage") }) {
-            Text(text = "Scan Code", modifier = Modifier
-                .padding(16.dp)
-                .size(width = 200.dp, height = 20.dp)
-                .align(Alignment.CenterVertically), textAlign = TextAlign.Center)
-        }
-    }
-
-    @Composable
-    fun RemoveEntryButton(navController: NavHostController) {
-        Button(onClick = { navController.navigate("removeEntryPage") }) {
-            Text(text = "Remove Entry", modifier = Modifier
-                .padding(16.dp)
-                .size(width = 200.dp, height = 20.dp)
-                .align(Alignment.CenterVertically), textAlign = TextAlign.Center)
-        }
-    }
-
-    // Page which shows the options currently available to the user on the current load
-    @Composable
-    fun LoadOptionsPage(navController: NavHostController) {
-        var resetDialog = remember { mutableStateOf(false) }
-        var count by remember { mutableStateOf(scannedCodeViewModel.count.value) }
-        val countObserver = Observer<Int> { it ->
-            count = it
-        }
-        scannedCodeViewModel.count.observe(this@MainActivity, countObserver)
-
-        Column(modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(text = "Load Options:")
-            Text(text = userInputViewModel.loader.value + userInputViewModel.order.value + " Load " + userInputViewModel.load.value)
-            ScanButton(navController = navController)
-            if (count != null && count!! > 0) {
-                Button(onClick = {
-                    resetDialog.value = true
-                }) {
-                    Text(text="Reset Load", modifier = Modifier
-                        .padding(16.dp)
-                        .size(width = 200.dp, height = 20.dp)
-                        .align(Alignment.CenterVertically), textAlign = TextAlign.Center)
-                }
-                RemoveEntryButton(navController = navController)
-            }
-            Row(modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly) {
-                Button(onClick = {
-                    navController.navigateUp()
-                }) {
-                    Text(text="Back", modifier= Modifier.padding(16.dp))
-                }
-                if (count != null && count!! >0) {
-                    ConfirmButton(navController = navController, str = "Load", dest = "reviewLoad")
-                }
-                if (resetDialog.value){
-                    AlertDialog(onDismissRequest = {
-                            resetDialog.value = false
-                        }, title = {
-                            Text(text="Reset Load Confirmation")
-                        }, text = {
-                            Text(text="Are you sure you would like to remove all bundles from this load? This cannot be undone.")
-                        }, buttons = {
-                             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                                 Button(onClick = {
-                                     resetDialog.value = false
-                                 }) {
-                                     Text(text="Deny Reset", modifier = Modifier.padding(16.dp))
-                                 }
-                                 Button(onClick = {
-                                     resetDialog.value = false
-                                     scannedCodeViewModel.deleteAll()
-                                 }) {
-                                     Text(text="Confirm Reset", modifier = Modifier.padding(16.dp))
-                                 }
-                             }
-                        }
-                    )
-                }
-            }
-        }
-    }
-
-    @Composable
     fun ScannerPage(navController: NavHostController) {
         var count by remember { mutableStateOf(scannedCodeViewModel.count.value) }
         val countObserver = Observer<Int>{ it ->
@@ -477,7 +391,7 @@ class MainActivity : ComponentActivity() {
                 composable(Screen.ManualEntryScreen.title) { ManualEntryScreen(navController, userInputViewModel, currentInventoryViewModel, scannedCodeViewModel) }
                 composable(Screen.ScannerScreen.title) { ScannerScreen(navController) }
                 composable(Screen.ReceptionOptionsScreen.title) { ReceptionOptionsScreen(navController, scannedCodeViewModel) }
-                composable(Screen.LoadOptionsScreen.title) { LoadOptionsScreen(navController) }
+                composable(Screen.LoadOptionsScreen.title) { LoadOptionsScreen(navController, scannedCodeViewModel, userInputViewModel, currentInventoryViewModel) }
                 composable(Screen.ReceptionInfoInputScreen.title) { ReceptionInfoInputScreen(navController, userInputViewModel) }
                 composable(Screen.LoadInfoInputScreen.title) { LoadInfoInputScreen(navController, userInputViewModel) }
                 composable(Screen.RemoveEntryScreen.title) { RemoveEntryScreen(navController, userInputViewModel, scannedCodeViewModel) }

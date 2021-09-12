@@ -38,7 +38,7 @@ fun QuantityOptionsScreen(navController: NavController, currentInventoryViewMode
                     Ensure that the bundle being loaded is of quantity $quantity!
                     Would you like to add this bundle to the load?
                     """.trimMargin(), modifier = Modifier.padding(16.dp))
-            Button(onClick = { 
+            Button(onClick = {
                 navController.popBackStack()
             }) {
                 Text(text="Back", modifier = Modifier.padding(16.dp))
