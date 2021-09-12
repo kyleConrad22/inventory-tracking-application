@@ -1,4 +1,8 @@
 package com.example.rusalqrandbarcodescanner.screens
 
-class IncorrectQuantityScreen {
+import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
+
+@Composable
+fun IncorrectQuantityScreen(navController: NavHostController) {
 }

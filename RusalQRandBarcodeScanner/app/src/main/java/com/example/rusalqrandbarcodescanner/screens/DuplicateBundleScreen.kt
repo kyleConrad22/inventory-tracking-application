@@ -1,4 +1,8 @@
 package com.example.rusalqrandbarcodescanner.screens
 
-class DuplicateBundleScreen {
+import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
+
+@Composable
+fun DuplicateBundleScreen(navController: NavHostController, scanTime: String?) {
 }

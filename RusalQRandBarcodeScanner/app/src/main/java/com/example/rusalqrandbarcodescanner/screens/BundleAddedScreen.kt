@@ -1,4 +1,8 @@
 package com.example.rusalqrandbarcodescanner.screens
 
-class BundleAddedScreen {
+import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
+
+@Composable
+fun BundleAddedScreen(navController: NavHostController) {
 }

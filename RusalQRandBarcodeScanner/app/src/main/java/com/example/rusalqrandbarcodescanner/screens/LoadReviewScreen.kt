@@ -1,4 +1,8 @@
 package com.example.rusalqrandbarcodescanner.screens
 
-class LoadReviewScreen {
+import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
+
+@Composable
+fun LoadReviewScreen(navController: NavHostController) {
 }

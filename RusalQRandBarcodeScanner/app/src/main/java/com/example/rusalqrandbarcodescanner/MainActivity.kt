@@ -1165,7 +1165,7 @@ class MainActivity : ComponentActivity() {
             NavHost(navController = navController, startDestination = (Screen.MainMenuScreen.title)) {
                 composable(Screen.MainMenuScreen.title) { MainMenuScreen(navController = navController, userInputViewModel = userInputViewModel, scannedCodeViewModel = scannedCodeViewModel) }
                 composable( Screen.DuplicateBundleScreen.title + "/{scanTime}") { backStackEntry ->
-                    DuplicateBundleScreen(navController = navController, backStackEntry.arguments?.getString("scanTime"))
+                    DuplicateBundleScreen(navController = navController, scanTime = backStackEntry.arguments?.getString("scanTime"))
                 }
                 composable(Screen.BundleInfoScreen.title + "/{barcode}") { backStackEntry ->
                     BundleInfoScreen(navController = navController, barcode = backStackEntry.arguments?.getString("barcode"))
