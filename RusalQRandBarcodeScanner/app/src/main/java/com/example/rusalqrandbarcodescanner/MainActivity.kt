@@ -1164,28 +1164,28 @@ class MainActivity : ComponentActivity() {
         RusalQRAndBarcodeScannerTheme() {
             NavHost(navController = navController, startDestination = (Screen.MainMenuScreen.title)) {
                 composable(Screen.MainMenuScreen.title) { MainMenuScreen(navController = navController, userInputViewModel = userInputViewModel, scannedCodeViewModel = scannedCodeViewModel) }
-                composable("duplicateBundlePage/{scanTime}") { backStackEntry ->
-                    DuplicateBundlePage(navController = navController, backStackEntry.arguments?.getString("scanTime"))
+                composable( Screen.DuplicateBundleScreen.title + "/{scanTime}") { backStackEntry ->
+                    DuplicateBundleScreen(navController = navController, backStackEntry.arguments?.getString("scanTime"))
                 }
-                composable("bundleInfo/{barcode}") { backStackEntry ->
-                    BundleInfo(navController = navController, barcode = backStackEntry.arguments?.getString("barcode"))
+                composable(Screen.BundleInfoScreen.title + "/{barcode}") { backStackEntry ->
+                    BundleInfoScreen(navController = navController, barcode = backStackEntry.arguments?.getString("barcode"))
                 }
-                composable("ConfirmationPage") { ConfirmationPage(navController = navController) }
-                composable("reviewReception") { ReviewReception(navController = navController) }
-                composable("reviewLoad") { ReviewLoad(navController = navController) }
-                composable("bundleAddedPage") { BundleAddedPage(navController = navController) }
-                composable("scannedInfoReturn") { ScannedInfoReturn(navController = navController) }
-                composable("manualEntryPage") { ManualEntryPage(navController = navController) }
+                composable(Screen.ConfirmationScreen.title) { ConfirmationScreen(navController = navController) }
+                composable(Screen.ReceptionReviewScreen.title) { ReceptionReviewScreen(navController = navController) }
+                composable(Screen.LoadReviewScreen.title) { LoadReviewScreen(navController = navController) }
+                composable(Screen.BundleAddedScreen.title) { BundleAddedScreen(navController = navController) }
+                composable(Screen.ScannedInfoScreen.title) { ScannedInfoScreen(navController = navController) }
+                composable(Screen.ManualEntryScreen.title) { ManualEntryScreen(navController = navController) }
                 composable(Screen.ScannerScreen.title) { ScannerScreen(navController = navController) }
-                composable("receptionOptionsPage") { ReceptionOptionsPage(navController = navController) }
-                composable("loadOptionsPage") { LoadOptionsPage(navController = navController) }
+                composable(Screen.ReceptionOptionsScreen.title) { ReceptionOptionsScreen(navController = navController) }
+                composable(Screen.LoadOptionsScreen.title) { LoadOptionsScreen(navController = navController) }
                 composable(Screen.ReceptionInfoInputScreen.title) { ReceptionInfoInputScreen(navController = navController, userInputViewModel = userInputViewModel) }
                 composable(Screen.LoadInfoInputScreen.title) { LoadInfoInputScreen(navController = navController, userInputViewModel = userInputViewModel) }
-                composable("removeEntryPage") { RemoveEntryPage(navController = navController) }
-                composable("incorrectBl") { IncorrectBl(navController = navController) }
-                composable("incorrectQuantity") { IncorrectQuantity(navController = navController)}
-                composable("toBeImplemented") { ToBeImplemented(navController = navController)}
-                composable("blOptions") { BlOptions(navController = navController) }
+                composable(Screen.RemoveEntryScreen.title) { RemoveEntryScreen(navController = navController) }
+                composable(Screen.IncorrectBlScreen.title) { IncorrectBlScreen(navController = navController) }
+                composable(Screen.IncorrectQuantityScreen.title) { IncorrectQuantityScreen(navController = navController)}
+                composable(Screen.ToBeImplementedScreen.title) { ToBeImplementedScreen(navController = navController)}
+                composable(Screen.BlOptionsScreen.title) { BlOptionsScreen(navController = navController) }
             }
         }
     }
