@@ -2,59 +2,22 @@ package com.example.rusalqrandbarcodescanner
 
 import com.google.accompanist.permissions.*
 
-import android.annotation.SuppressLint
-import androidx.compose.foundation.lazy.items
-import android.content.ContentValues.TAG
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
-import android.util.Size
-import android.view.ViewGroup
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.camera.core.*
-import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.rusalqrandbarcodescanner.screens.*
-import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
-import com.example.rusalqrandbarcodescanner.database.ScannedCode
-import com.example.rusalqrandbarcodescanner.screens.LoadInfoInputScreen
-import com.example.rusalqrandbarcodescanner.screens.MainMenuScreen
-import com.example.rusalqrandbarcodescanner.screens.ReceptionInfoInputScreen
-import com.example.rusalqrandbarcodescanner.screens.ScannerScreen
 import com.example.rusalqrandbarcodescanner.ui.theme.RusalQRAndBarcodeScannerTheme
 import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel.CurrentInventoryViewModelFactory
@@ -62,11 +25,6 @@ import com.example.rusalqrandbarcodescanner.viewModels.ScannedCodeViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.ScannedCodeViewModel.ScannedCodeViewModelFactory
 import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel.UserInputViewModelFactory
-import com.google.mlkit.vision.barcode.BarcodeScanning
-import com.google.mlkit.vision.common.InputImage
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import androidx.camera.view.PreviewView as PreviewView
 
 @ExperimentalComposeUiApi
 class MainActivity : ComponentActivity() {
@@ -174,12 +132,8 @@ class MainActivity : ComponentActivity() {
                         userInputViewModel,
                         currentInventoryViewModel)
                 }
-                composable(Screen.ReceptionInfoInputScreen.title) {
-                    ReceptionInfoInputScreen(navController,
-                        userInputViewModel)
-                }
-                composable(Screen.LoadInfoInputScreen.title) {
-                    LoadInfoInputScreen(navController,
+                composable(Screen.InfoInputScreen.title) {
+                    InfoInputScreen(navController,
                         userInputViewModel)
                 }
                 composable(Screen.RemoveEntryScreen.title) {
@@ -215,8 +169,7 @@ class MainActivity : ComponentActivity() {
 sealed class Screen(val title: String) {
     object MainMenuScreen: Screen("MainMenu")
     object ScannerScreen: Screen("Scanner")
-    object LoadInfoInputScreen: Screen("LoadInfoInput")
-    object ReceptionInfoInputScreen: Screen("ReceptionInfoInput")
+    object InfoInputScreen: Screen("InfoInput")
     object BlOptionsScreen: Screen("BlOptions")
     object BundleAddedScreen: Screen("BundleAdded")
     object BundleInfoScreen: Screen("BundleInfo")

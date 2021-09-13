@@ -43,12 +43,8 @@ fun LoadOptionsScreen(navController: NavHostController, scannedCodeViewModel: Sc
     Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly) {
-        if(type != null && type!!) {
-            Text("HEYA IT WORKED")
-        } else {
-            Text("IT ALSO WORKED")
-        }
         Text(text = "Load Options:")
+        Text("${type.toString()}")
         Text(text = userInputViewModel.loader.value + userInputViewModel.order.value + " Load " + userInputViewModel.load.value)
         Button(onClick = { navController.navigate(Screen.ScannerScreen.title) }) {
             Text(text = "Scan Code", modifier = Modifier
@@ -76,7 +72,7 @@ fun LoadOptionsScreen(navController: NavHostController, scannedCodeViewModel: Sc
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly) {
             Button(onClick = {
-                navController.navigateUp()
+                navController.navigate(Screen.InfoInputScreen.title)
             }) {
                 Text(text="Back", modifier= Modifier.padding(16.dp))
             }

@@ -1,6 +1,5 @@
 package com.example.rusalqrandbarcodescanner.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Scaffold
@@ -12,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -25,20 +23,22 @@ import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel
 
 @Composable
 fun MainMenuScreen(navController: NavHostController) {
-    val mainMenuViewModel: MainMenuViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "mainMenuVM", factory = MainMenuViewModelFactory((LocalContext.current.applicationContext as CodeApplication).userRepository))
-        /*
-    val scannedCodeViewModel: ScannedCodeViewModel = viewModel()
-    val userInputViewModel: UserInputViewModel = viewModel()
+    val application = LocalContext.current.applicationContext
+    val viewModelStoreOwner = LocalViewModelStoreOwner.current!!
+
+    val mainMenuViewModel: MainMenuViewModel = viewModel(viewModelStoreOwner = viewModelStoreOwner, key = "mainMenuVM", factory = MainMenuViewModelFactory((application as CodeApplication).userRepository))
+    val scannedCodeViewModel: ScannedCodeViewModel = viewModel(viewModelStoreOwner = viewModelStoreOwner, key = "scannedCodeVM", factory = ScannedCodeViewModel.ScannedCodeViewModelFactory((application as CodeApplication).repository))
+    val userInputViewModel: UserInputViewModel = viewModel(viewModelStoreOwner = viewModelStoreOwner, key = "userInputVM", factory = UserInputViewModel.UserInputViewModelFactory((application as CodeApplication).userRepository))
 
     scannedCodeViewModel.deleteAll()
     userInputViewModel.removeValues()
-*/
+
     Scaffold(topBar = { TopAppBar(title = { Text(text="Main Menu", textAlign = TextAlign.Center) }) }) {
 
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
             Button(onClick = {
                 mainMenuViewModel.isLoad(isLoad = true)
-                navController.navigate(Screen.LoadInfoInputScreen.title)
+                navController.navigate(Screen.InfoInputScreen.title)
             }) {
                 Text(text = "New Load",
                     modifier = Modifier
@@ -49,8 +49,7 @@ fun MainMenuScreen(navController: NavHostController) {
             }
             Button(onClick = {
                 mainMenuViewModel.isLoad(isLoad = false)
-                /*Log.d("DEBUG", userInputViewModel.currentInput.value.toString())*/
-                navController.navigate(Screen.ReceptionInfoInputScreen.title)
+                navController.navigate(Screen.InfoInputScreen.title)
             }) {
                 Text(text = "New Reception",
                     modifier = Modifier

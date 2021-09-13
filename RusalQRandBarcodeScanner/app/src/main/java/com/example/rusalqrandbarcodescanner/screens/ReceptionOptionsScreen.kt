@@ -38,11 +38,6 @@ fun ReceptionOptionsScreen(navController: NavHostController, scannedCodeViewMode
     Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly) {
-        if(type != null && type!!) {
-            Text("HEYA IT WORKED")
-        } else {
-            Text("IT ALSO WORKED")
-        }
         Text(text = "Reception Options:")
 
         Button(onClick = { navController.navigate(Screen.ScannerScreen.title) }) {
