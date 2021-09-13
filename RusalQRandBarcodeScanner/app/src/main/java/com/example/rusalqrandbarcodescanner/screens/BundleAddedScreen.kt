@@ -45,14 +45,9 @@ fun BundleAddedScreen(navController: NavHostController, scannedCodeViewModel: Sc
 
             if (count != null) {
                 Text(text = "Bundles Remaining: ${Integer.parseInt(userInputViewModel.bundles.value!!) - count!!}")
-                val dest = if (Integer.parseInt(userInputViewModel.bundles.value!!) - count!! == 0) {
-                    Screen.LoadReviewScreen.title
-                } else {
-                    Screen.ScannerScreen.title
-                }
                 Button(onClick = {
                     if (Integer.parseInt(userInputViewModel.bundles.value!!) - count!! == 0) {
-                        navController.navigate(Screen.LoadReviewScreen.title)
+                        navController.navigate(Screen.ReviewScreen.title)
                     } else {
                         ScannedInfo.clearValues()
                         navController.popBackStack(Screen.ScannerScreen.title, inclusive = false)

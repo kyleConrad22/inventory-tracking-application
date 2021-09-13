@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName="userInput")
 data class UserInput (
-    @PrimaryKey val id: Int = 1,
+    @PrimaryKey val id: String,
     @ColumnInfo val order: String? = "",
     @ColumnInfo val load: String? = "",
     @ColumnInfo val loader: String? = "",

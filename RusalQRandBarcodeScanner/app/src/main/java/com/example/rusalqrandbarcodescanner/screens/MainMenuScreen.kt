@@ -1,5 +1,6 @@
 package com.example.rusalqrandbarcodescanner.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Scaffold
@@ -8,25 +9,30 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.viewModels.MainMenuViewModel
+import com.example.rusalqrandbarcodescanner.viewModels.MainMenuViewModel.MainMenuViewModelFactory
 import com.example.rusalqrandbarcodescanner.viewModels.ScannedCodeViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel
 
 @Composable
 fun MainMenuScreen(navController: NavHostController) {
-    val mainMenuViewModel: MainMenuViewModel = viewModel()
+    val mainMenuViewModel: MainMenuViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "mainMenuVM", factory = MainMenuViewModelFactory((LocalContext.current.applicationContext as CodeApplication).userRepository))
+        /*
     val scannedCodeViewModel: ScannedCodeViewModel = viewModel()
     val userInputViewModel: UserInputViewModel = viewModel()
 
     scannedCodeViewModel.deleteAll()
     userInputViewModel.removeValues()
-
+*/
     Scaffold(topBar = { TopAppBar(title = { Text(text="Main Menu", textAlign = TextAlign.Center) }) }) {
 
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
@@ -42,7 +48,8 @@ fun MainMenuScreen(navController: NavHostController) {
                     textAlign = TextAlign.Center)
             }
             Button(onClick = {
-                mainMenuViewModel.isLoad(isLoad = true)
+                mainMenuViewModel.isLoad(isLoad = false)
+                /*Log.d("DEBUG", userInputViewModel.currentInput.value.toString())*/
                 navController.navigate(Screen.ReceptionInfoInputScreen.title)
             }) {
                 Text(text = "New Reception",

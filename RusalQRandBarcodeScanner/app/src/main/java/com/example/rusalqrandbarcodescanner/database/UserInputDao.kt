@@ -14,7 +14,7 @@ interface UserInputDao {
     @Update
     suspend fun update(vararg  userInput: UserInput)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(vararg userInput: UserInput)
 
     @Delete
