@@ -85,9 +85,9 @@ fun BundleInfoScreen(navController: NavHostController, barcode: String?, scanned
                                 navController.navigateUp()
                             } else {
                                 if (isLoad!!){
-                                    navController.popBackStack(Screen.LoadOptionsScreen.title, inclusive = false)
+                                    navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)
                                 } else {
-                                    navController.popBackStack(Screen.ReceptionOptionsScreen.title, inclusive = false)
+                                    navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)
                                 }
                             }
 

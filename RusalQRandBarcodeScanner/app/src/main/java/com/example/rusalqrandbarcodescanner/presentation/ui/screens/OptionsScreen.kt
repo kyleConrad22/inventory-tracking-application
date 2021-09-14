@@ -87,26 +87,19 @@ fun OptionsScreen(navController: NavHostController) {
                         }
                     }
                     if (resetDialog.value) {
-                        AlertDialog(onDismissRequest = {
-                            resetDialog.value = false
-                        }, title = {
-                            Text(text = "Reset $type Confirmation")
-                        }, text = {
-                            Text(text = "Are you sure you would like to remove all bundles from this Load? This cannot be undone.")
-                        }, buttons = {
-                            Row(modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceEvenly) {
+                        AlertDialog(
+                            onDismissRequest = { resetDialog.value = false },
+                            title = { Text(text = "Reset $type Confirmation") },
+                            text = { Text(text = "Are you sure you would like to remove all bundles from this Load? This cannot be undone.") },
+                            buttons = {
+                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                                 Button(onClick = {
                                     resetDialog.value = false
-                                }) {
-                                    Text(text = "Deny Reset", modifier = Modifier.padding(16.dp))
-                                }
+                                }) { Text(text = "Deny Reset", modifier = Modifier.padding(16.dp)) }
                                 Button(onClick = {
                                     resetDialog.value = false
                                     optionsViewModel.deleteAll()
-                                }) {
-                                    Text(text = "Confirm Reset", modifier = Modifier.padding(16.dp))
-                                }
+                                }) { Text(text = "Confirm Reset", modifier = Modifier.padding(16.dp)) }
                             }
                         })
                     }

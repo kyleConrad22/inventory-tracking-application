@@ -4,9 +4,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.rusalqrandbarcodescanner.repositories.CodeRepository
 import com.example.rusalqrandbarcodescanner.repositories.CurrentInventoryRepository
 import com.example.rusalqrandbarcodescanner.repositories.UserInputRepository
+import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 
 class ReviewViewModel(private val codeRepository : CodeRepository, private val inventoryRepository: CurrentInventoryRepository, private val userRepository: UserInputRepository) : ViewModel() {
@@ -15,6 +17,10 @@ class ReviewViewModel(private val codeRepository : CodeRepository, private val i
 
     val isLoad = mutableStateOf(currentInput.value!![0].type == "Load")
     val loadType = mutableStateOf(currentInput.value!![0].type)
+
+    fun deleteAll() = viewModelScope.launch {
+        codeRepository.deleteAll()
+    }
 
     class ReviewViewModelFactory(private val codeRepository: CodeRepository, private val inventoryRepository: CurrentInventoryRepository, private val userRepository: UserInputRepository) : ViewModelProvider.Factory {
         override fun<T : ViewModel> create(modelClass : Class<T>) : T {

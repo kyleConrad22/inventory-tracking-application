@@ -86,10 +86,6 @@ class MainActivity : ComponentActivity() {
                         scannedCodeViewModel,
                         userInputViewModel)
                 }
-                composable(Screen.ConfirmationScreen.title) {
-                    ConfirmationScreen(navController,
-                        userInputViewModel)
-                }
                 composable(Screen.ReviewScreen.title) {
                     ReviewScreen(navController,
                         scannedCodeViewModel,
@@ -161,7 +157,6 @@ sealed class Screen(val title: String) {
     object BlOptionsScreen: Screen("BlOptions")
     object BundleAddedScreen: Screen("BundleAdded")
     object BundleInfoScreen: Screen("BundleInfo")
-    object ConfirmationScreen: Screen("Confirmation")
     object DuplicateBundleScreen: Screen("DuplicateBundle")
     object IncorrectBlScreen: Screen("IncorrectBl")
     object IncorrectQuantityScreen: Screen("IncorrectQuantity")

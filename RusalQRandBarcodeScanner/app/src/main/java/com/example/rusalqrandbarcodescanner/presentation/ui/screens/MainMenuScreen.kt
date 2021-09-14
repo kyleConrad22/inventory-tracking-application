@@ -31,8 +31,6 @@ fun MainMenuScreen(navController: NavHostController) {
     val userInputViewModel: UserInputViewModel = viewModel(viewModelStoreOwner = viewModelStoreOwner, key = "userInputVM", factory = UserInputViewModel.UserInputViewModelFactory((application as CodeApplication).userRepository))
 
     scannedCodeViewModel.deleteAll()
-    userInputViewModel.removeValues()
-
 
     Scaffold(topBar = { TopAppBar(title = { Text(text="Main Menu", textAlign = TextAlign.Center) }) }) {
 

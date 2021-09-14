@@ -7,10 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +28,7 @@ import com.example.rusalqrandbarcodescanner.viewModels.ReviewViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.ReviewViewModel.ReviewViewModelFactory
 import com.example.rusalqrandbarcodescanner.viewModels.ScannedCodeViewModel
 
+
 @Composable
 fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: ScannedCodeViewModel, currentInventoryViewModel: CurrentInventoryViewModel) {
     val application = LocalContext.current.applicationContext
@@ -39,6 +37,8 @@ fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: Scanned
 
     val isLoad = reviewViewModel.isLoad.value
     val loadType = reviewViewModel.loadType.value
+
+    val confirmDialog = remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -59,13 +59,33 @@ fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: Scanned
                 } else {
                     /*TODO - Add Reception Confirmation Logic */
                 }
-                navController.popBackStack(Screen.MainMenuScreen.title, inclusive = false)
+                reviewViewModel.deleteAll()
+                confirmDialog.value = true
             }) {
                 Text(text="Confirm $loadType", modifier = Modifier.padding(16.dp))
             }
         }
     }
+    if (confirmDialog.value) {
+        AlertDialog(
+            onDismissRequest = {
+                navController.popBackStack(Screen.MainMenuScreen.title, inclusive = true)
+            },
+            title = { Text(text = "$loadType Confirmation") },
+            text = { Text(text = "$loadType Confirmed") },
+            buttons = {
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly) {
+                    Button(onClick = {
+                        navController.popBackStack(Screen.MainMenuScreen.title, inclusive = true)
+                    }) { Text(text = "Ok", modifier = Modifier.padding(16.dp)) }
+                }
+            }
+        )
+    }
 }
+
+
 
 @Composable
 private fun GetCodeListView(navController: NavHostController) {

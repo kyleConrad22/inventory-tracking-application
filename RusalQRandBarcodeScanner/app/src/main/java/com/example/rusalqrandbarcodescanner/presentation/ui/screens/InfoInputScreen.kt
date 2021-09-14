@@ -93,11 +93,7 @@ fun InfoInputScreen(navController: NavHostController, userInputViewModel: UserIn
                     if (confirmVis != null && confirmVis!!) {
                         Button(onClick = {
                             infoInputViewModel.update()
-                            navController.navigate(if (isLoad!!) {
-                                Screen.LoadOptionsScreen.title
-                            } else {
-                                Screen.ReceptionOptionsScreen.title
-                            })
+                            navController.navigate(Screen.OptionsScreen.title)
                         }) {
                             Text(text = "Confirm $type Info", modifier = Modifier.padding(14.dp))
                         }

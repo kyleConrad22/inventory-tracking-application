@@ -12,7 +12,6 @@ import java.time.format.DateTimeFormatter
 
 class CurrentInventoryViewModel(private val repository: CurrentInventoryRepository): ViewModel() {
 
-    val allCodes: LiveData<List<CurrentInventoryLineItem>> = repository.fullInventory.asLiveData()
     private val blListMediator = MediatorLiveData<List<String>?>()
     private val quantListMediator = MediatorLiveData<List<String>?>()
 
