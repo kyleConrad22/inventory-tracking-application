@@ -1,4 +1,4 @@
-package com.example.rusalqrandbarcodescanner.screens
+package com.example.rusalqrandbarcodescanner.presentation.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.rusalqrandbarcodescanner.CircularIndeterminateProgressBar
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.viewModels.MainMenuViewModel

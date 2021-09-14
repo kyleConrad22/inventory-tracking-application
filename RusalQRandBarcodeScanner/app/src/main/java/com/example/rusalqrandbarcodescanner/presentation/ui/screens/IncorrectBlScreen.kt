@@ -1,4 +1,4 @@
-package com.example.rusalqrandbarcodescanner.screens
+package com.example.rusalqrandbarcodescanner.presentation.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,20 +18,20 @@ import com.example.rusalqrandbarcodescanner.ScannedInfo
 import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel
 
 @Composable
-fun IncorrectQuantityScreen(navController: NavHostController, userInputViewModel: UserInputViewModel) {
-    Scaffold(topBar = { TopAppBar(title = { Text("Incorrect Quantity", textAlign = TextAlign.Center) }) }) {
+fun IncorrectBlScreen(navController: NavHostController, userInputViewModel: UserInputViewModel) {
+    Scaffold(topBar = { TopAppBar(title = { Text("Incorrect Bl", textAlign = TextAlign.Center) }) }) {
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(text = "Incorrect quantity per bundle!", modifier = Modifier.padding(16.dp))
-            Text(text = "Requested quantity per bundle is ${userInputViewModel.quantity.value}, the scanned bundle has a quantity per bundle of ${ScannedInfo.quantity}",
+            Text(text = "Incorrect BL!", modifier = Modifier.padding(16.dp))
+            Text(text = "Requested BL is ${userInputViewModel.bl.value}, the scanned bundle has BL of ${ScannedInfo.blNum}",
                 modifier = Modifier.padding(16.dp))
             Text(text = "Put bundle away and scan another!", modifier = Modifier.padding(16.dp))
             Button(onClick = {
                 ScannedInfo.clearValues()
-                navController.popBackStack()
+                navController.navigate("scannerPage")
             }) {
-                Text(text = "Back", modifier = Modifier.padding(16.dp))
+                Text(text = "Back to Scanner Live Feed", modifier = Modifier.padding(16.dp))
             }
         }
     }

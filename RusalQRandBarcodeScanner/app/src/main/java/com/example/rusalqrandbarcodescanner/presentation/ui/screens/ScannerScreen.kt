@@ -1,4 +1,4 @@
-package com.example.rusalqrandbarcodescanner.screens
+package com.example.rusalqrandbarcodescanner.presentation.ui.screens
 
 import android.annotation.SuppressLint
 import android.content.ContentValues
@@ -25,7 +25,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.navigation.NavHostController
-import com.example.rusalqrandbarcodescanner.MainActivity
 import com.example.rusalqrandbarcodescanner.ScannedInfo
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.database.ScannedCode

@@ -1,7 +1,5 @@
 package com.example.rusalqrandbarcodescanner
 
-import com.google.accompanist.permissions.*
-
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -9,15 +7,13 @@ import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.camera.core.*
-import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.rusalqrandbarcodescanner.screens.*
+import com.example.rusalqrandbarcodescanner.presentation.ui.screens.*
 import com.example.rusalqrandbarcodescanner.ui.theme.RusalQRAndBarcodeScannerTheme
 import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel.CurrentInventoryViewModelFactory

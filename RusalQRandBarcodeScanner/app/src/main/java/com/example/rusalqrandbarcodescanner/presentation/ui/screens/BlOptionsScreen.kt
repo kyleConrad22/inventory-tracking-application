@@ -1,4 +1,4 @@
-package com.example.rusalqrandbarcodescanner.screens
+package com.example.rusalqrandbarcodescanner.presentation.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
