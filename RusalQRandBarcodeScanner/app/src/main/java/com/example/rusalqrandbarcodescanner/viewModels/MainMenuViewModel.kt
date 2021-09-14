@@ -1,9 +1,11 @@
 package com.example.rusalqrandbarcodescanner.viewModels
 
-import android.util.Log
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.*
 import com.example.rusalqrandbarcodescanner.database.UserInput
 import com.example.rusalqrandbarcodescanner.repositories.UserInputRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 

@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.rusalqrandbarcodescanner.CircularIndeterminateProgressBar
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.viewModels.MainMenuViewModel
@@ -33,6 +34,7 @@ fun MainMenuScreen(navController: NavHostController) {
     scannedCodeViewModel.deleteAll()
     userInputViewModel.removeValues()
 
+
     Scaffold(topBar = { TopAppBar(title = { Text(text="Main Menu", textAlign = TextAlign.Center) }) }) {
 
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
@@ -49,6 +51,7 @@ fun MainMenuScreen(navController: NavHostController) {
             }
             Button(onClick = {
                 mainMenuViewModel.isLoad(isLoad = false)
+
                 navController.navigate(Screen.InfoInputScreen.title)
             }) {
                 Text(text = "New Reception",

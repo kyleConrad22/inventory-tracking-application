@@ -22,6 +22,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.rusalqrandbarcodescanner.CircularIndeterminateProgressBar
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.viewModels.InfoInputViewModel
@@ -47,18 +48,21 @@ fun InfoInputScreen(navController: NavHostController, userInputViewModel: UserIn
     }
     infoInputViewModel.confirmVis.observe(lifecycleOwner, confirmVisObserver)
 
-    var type = if (isLoad != null) {
-        if (isLoad!!) { "Input" } else { "Reception" }
-    } else { "" }
+    val loading = infoInputViewModel.loading.value
 
-    if (isLoad != null) {
+    if (isLoad == null) {
+        CircularIndeterminateProgressBar(isDisplayed = loading)
+    } else {
+        val type = if (isLoad != null) {
+            if (isLoad!!) { "Input" } else { "Reception" }
+        } else { "" }
+
         Scaffold(topBar = {
             TopAppBar(title = {
                 Text(text = "$type Info Input",
                     textAlign = TextAlign.Center)
             })
         }) {
-
             Column(modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceEvenly) {

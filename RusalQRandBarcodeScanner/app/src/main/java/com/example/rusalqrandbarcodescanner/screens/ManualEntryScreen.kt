@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Observer
 import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.ScannedInfo
+import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
 import com.example.rusalqrandbarcodescanner.database.ScannedCode
 import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel
@@ -79,16 +80,16 @@ fun ManualEntryScreen(navController: NavHostController, userInputViewModel: User
                                         currentInventoryViewModel.addNewItemByBaseHeat(uiHeat!!, userInputViewModel).observe(lifecycleOwner){
                                             if (it) { Log.d("DEBUG", "Successfully set new item") }
                                         }
-                                        navController.navigate("scannedInfoReturn")
+                                        navController.navigate(Screen.ScannedInfoScreen.title)
                                     } else if (blList!!.size > 1) {
                                         /*TODO*/
                                         /*Make BL List Clickable with the requested bl being sent to scanned info return*/
-                                        navController.navigate("blOptions")
+                                        navController.navigate(Screen.BlOptionsScreen.title)
                                         /*Present bl options to loader and ask for them to make a selection*/
 
                                     } else if (quantList!!.size > 1) {
                                         /*TODO*/
-                                        navController.navigate("quantOptions")
+                                        navController.navigate(Screen.QuantityOptionsScreen.title)
                                         /*Ask for loader to verify that there are the requested number of pieces on this bundle, have them type the amount*/
 
                                     } else {
@@ -110,18 +111,18 @@ fun ManualEntryScreen(navController: NavHostController, userInputViewModel: User
                                                 ScannedInfo.getValues(inventoryItem)
                                                 Log.d("DEBUG", "Retrieved non-null reference")
                                                 if (ScannedInfo.blNum == userInputViewModel.bl.value && ScannedInfo.quantity == userInputViewModel.quantity.value) {
-                                                    navController.navigate("scannedInfoReturn")
+                                                    navController.navigate(Screen.ScannedInfoScreen.title)
                                                 } else if (ScannedInfo.blNum != userInputViewModel.bl.value) {
-                                                    navController.navigate("incorrectBl")
+                                                    navController.navigate(Screen.IncorrectBlScreen.title)
                                                 } else {
-                                                    navController.navigate("incorrectQuantity")
+                                                    navController.navigate(Screen.IncorrectQuantityScreen.title)
                                                 }
                                             } else {
                                                 openDialog.value = true
                                             }
                                         })
                                 } else if (returnedCode?.scanTime != null) {
-                                    navController.navigate("duplicateBundlePage/${returnedCode?.scanTime}")
+                                    navController.navigate("${Screen.DuplicateBundleScreen.title}/${returnedCode?.scanTime}")
                                 }
                             })
                     }

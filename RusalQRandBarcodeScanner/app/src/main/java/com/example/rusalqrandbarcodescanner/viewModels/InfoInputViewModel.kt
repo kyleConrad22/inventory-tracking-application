@@ -1,6 +1,8 @@
 package com.example.rusalqrandbarcodescanner.viewModels
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
 import com.example.rusalqrandbarcodescanner.database.UserInput
 import com.example.rusalqrandbarcodescanner.repositories.UserInputRepository
@@ -23,6 +25,7 @@ class InfoInputViewModel(private val repository : UserInputRepository) : ViewMod
     val heat: MutableLiveData<String> = MutableLiveData("")
     val quantity: MutableLiveData<String> = MutableLiveData("")
 
+    val loading = mutableStateOf(false)
 
     fun isLoad() : LiveData<Boolean> {
         val mediatorLiveData = MediatorLiveData<Boolean>()
@@ -39,8 +42,11 @@ class InfoInputViewModel(private val repository : UserInputRepository) : ViewMod
                     it[0].type == "Reception" -> {
                         false
                     }
-                    else -> null
+                    else -> {
+                        null
+                    }
                 }
+            loading.value = mediatorLiveData.value == null
         }
         return mediatorLiveData
     }

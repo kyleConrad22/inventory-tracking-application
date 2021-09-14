@@ -122,15 +122,8 @@ class MainActivity : ComponentActivity() {
                         userInputViewModel,
                         currentInventoryViewModel)
                 }
-                composable(Screen.ReceptionOptionsScreen.title) {
-                    ReceptionOptionsScreen(navController,
-                        scannedCodeViewModel)
-                }
-                composable(Screen.LoadOptionsScreen.title) {
-                    LoadOptionsScreen(navController,
-                        scannedCodeViewModel,
-                        userInputViewModel,
-                        currentInventoryViewModel)
+                composable(Screen.OptionsScreen.title) {
+                    OptionsScreen(navController)
                 }
                 composable(Screen.InfoInputScreen.title) {
                     InfoInputScreen(navController,
@@ -177,8 +170,7 @@ sealed class Screen(val title: String) {
     object DuplicateBundleScreen: Screen("DuplicateBundle")
     object IncorrectBlScreen: Screen("IncorrectBl")
     object IncorrectQuantityScreen: Screen("IncorrectQuantity")
-    object LoadOptionsScreen: Screen("LoadOptions")
-    object ReceptionOptionsScreen: Screen("ReviewOptions")
+    object OptionsScreen: Screen("Options")
     object ManualEntryScreen: Screen("ManualEntry")
     object RemoveEntryScreen: Screen("RemoveEntry")
     object ScannedInfoScreen: Screen("ScannedInfo")

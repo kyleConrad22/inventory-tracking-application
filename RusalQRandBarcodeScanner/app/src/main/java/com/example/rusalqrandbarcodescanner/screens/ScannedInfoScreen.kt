@@ -38,7 +38,7 @@ fun ScannedInfoScreen(navController: NavHostController, userInputViewModel: User
                 scannedCodeViewModel.insert(ScannedInfo.toScannedCode(userInputViewModel))
                 navController.navigate(Screen.BundleAddedScreen.title)
             }) {
-                Text("Add", modifier = Modifier.padding())
+                Text("Add", modifier = Modifier.padding(16.dp))
             }
         }
     }
