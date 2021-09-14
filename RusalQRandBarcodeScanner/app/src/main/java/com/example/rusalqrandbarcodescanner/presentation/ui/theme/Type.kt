@@ -1,4 +1,4 @@
-package com.example.rusalqrandbarcodescanner.ui.theme
+package com.example.rusalqrandbarcodescanner.presentation.ui.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle

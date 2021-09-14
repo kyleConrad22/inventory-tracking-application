@@ -1,4 +1,4 @@
-package com.example.rusalqrandbarcodescanner.ui.theme
+package com.example.rusalqrandbarcodescanner.presentation.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
