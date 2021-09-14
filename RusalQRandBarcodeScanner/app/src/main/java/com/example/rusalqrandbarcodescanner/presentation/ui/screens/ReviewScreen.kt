@@ -15,31 +15,36 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Observer
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.HttpRequestHandler
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.database.ScannedCode
 import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel
+import com.example.rusalqrandbarcodescanner.viewModels.ReviewViewModel
+import com.example.rusalqrandbarcodescanner.viewModels.ReviewViewModel.ReviewViewModelFactory
 import com.example.rusalqrandbarcodescanner.viewModels.ScannedCodeViewModel
-import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel
 
 @Composable
-fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: ScannedCodeViewModel, currentInventoryViewModel: CurrentInventoryViewModel, userInputViewModel: UserInputViewModel) {
-    var isLoad by remember { mutableStateOf(userInputViewModel.isLoad().value) }
-    val isLoadObserver = Observer<Boolean> { it ->
-        isLoad = it
-    }
-    userInputViewModel.isLoad().observe(LocalLifecycleOwner.current, isLoadObserver)
+fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: ScannedCodeViewModel, currentInventoryViewModel: CurrentInventoryViewModel) {
+    val application = LocalContext.current.applicationContext
 
-    val type = if (isLoad != null && isLoad!!) {"Load"} else {"Reception"}
+    val reviewViewModel : ReviewViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "reviewVM", factory = ReviewViewModelFactory((application as CodeApplication).repository, application.invRepository, application.userRepository))
+
+    val isLoad = reviewViewModel.isLoad.value
+    val loadType = reviewViewModel.loadType.value
+
     Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly) {
-        Text(text = "Review $type:", modifier = Modifier.padding(16.dp))
-        GetCodeListView(navController, scannedCodeViewModel = scannedCodeViewModel)
+        Text(text = "Review $loadType:", modifier = Modifier.padding(16.dp))
+        GetCodeListView(navController)
         Row(modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -49,26 +54,30 @@ fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: Scanned
                 Text(text="Back", modifier = Modifier.padding(16.dp))
             }
             Button(onClick = {
-                if (isLoad != null && isLoad!!) {
+                if (isLoad) {
                     HttpRequestHandler.initUpdate(scannedCodeViewModel, currentInventoryViewModel)
                 } else {
                     /*TODO - Add Reception Confirmation Logic */
                 }
                 navController.popBackStack(Screen.MainMenuScreen.title, inclusive = false)
             }) {
-                Text(text="Confirm $type", modifier = Modifier.padding(16.dp))
+                Text(text="Confirm $loadType", modifier = Modifier.padding(16.dp))
             }
         }
     }
 }
 
 @Composable
-private fun GetCodeListView(navController: NavHostController, scannedCodeViewModel: ScannedCodeViewModel) {
-    var codes = remember { scannedCodeViewModel.allCodes.value }
+private fun GetCodeListView(navController: NavHostController) {
+    val application = LocalContext.current.applicationContext
+
+    val reviewViewModel : ReviewViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "reviewVM", factory = ReviewViewModelFactory((application as CodeApplication).repository, application.invRepository, application.userRepository))
+
+    var codes = remember { reviewViewModel.codes.value }
     val codeObserver = Observer<List<ScannedCode>> { codeList ->
         codes = codeList
     }
-    scannedCodeViewModel.allCodes.observe(LocalLifecycleOwner.current, codeObserver)
+    reviewViewModel.codes.observe(LocalLifecycleOwner.current, codeObserver)
 
     LazyColumn (
         modifier= Modifier
@@ -94,7 +103,7 @@ private fun CodeListItem(scannedCode: ScannedCode, navController: NavHostControl
             .padding(horizontal = 8.dp, vertical = 8.dp)
             .clickable(onClick = {
 
-                navController.navigate("bundleInfo/${scannedCode.barCode}")
+                navController.navigate("${Screen.BundleInfoScreen.title}/${scannedCode.barCode}")
             })
             .fillMaxWidth(),
         elevation = 2.dp,

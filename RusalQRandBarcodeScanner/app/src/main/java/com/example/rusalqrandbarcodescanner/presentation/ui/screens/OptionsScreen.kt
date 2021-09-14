@@ -81,8 +81,6 @@ fun OptionsScreen(navController: NavHostController) {
                     }
                     if (displayCountButtons) {
                         Button(onClick = {
-                            //HttpRequestHandler.initUpdate(scannedCodeViewModel,
-                              //  currentInventoryViewModel)
                             navController.navigate(Screen.ReviewScreen.title)
                         }) {
                             Text(text = "Confirm $type", modifier = Modifier.padding(16.dp))

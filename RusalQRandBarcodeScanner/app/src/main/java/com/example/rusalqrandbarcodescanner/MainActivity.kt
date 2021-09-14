@@ -93,8 +93,7 @@ class MainActivity : ComponentActivity() {
                 composable(Screen.ReviewScreen.title) {
                     ReviewScreen(navController,
                         scannedCodeViewModel,
-                        currentInventoryViewModel,
-                        userInputViewModel)
+                        currentInventoryViewModel)
                 }
                 composable(Screen.BundleAddedScreen.title) {
                     BundleAddedScreen(navController,

@@ -76,10 +76,10 @@ fun ScannerScreen(navController: NavHostController, scannedCodeViewModel: Scanne
             Button(onClick = {
                 when {
                     isLoad!! -> {
-                        navController.popBackStack(Screen.LoadOptionsScreen.title, inclusive = false)
+                        navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)
                     }
                     isReception!! -> {
-                        navController.popBackStack(Screen.ReceptionOptionsScreen.title, inclusive = false)
+                        navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)
                     }
                     else -> {
                         navController.popBackStack(Screen.MainMenuScreen.title, inclusive = false)
