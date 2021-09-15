@@ -5,27 +5,42 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
 import com.example.rusalqrandbarcodescanner.database.UserInput
 import com.example.rusalqrandbarcodescanner.repositories.UserInputRepository
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
 
 class MainMenuViewModel(private val repository : UserInputRepository) : ViewModel() {
     private val currentInput = repository.currentInput.asLiveData()
 
-    val loading = mutableStateOf(true)
+    val loading = mutableStateOf(false)
 
-    fun isLoad(isLoad: Boolean) = viewModelScope.launch {
-        Log.d("DEBUG", "userInput")
-        val userInput: UserInput = if (isLoad) {
-            UserInput(type = "Load", id = "data")
-        } else {
-            UserInput(type = "Reception", id = "data")
+    fun getIsLoad(isLoad : Boolean) {
+        loading.value = true
+        GlobalScope.launch(Dispatchers.Main) {
+            isLoad(isLoad)
         }
-        if (hasData()) {
-            repository.update(userInput)
-        } else {
-            Log.d("DEBUG", "insert")
-            repository.insert(userInput)
+    }
+    suspend fun isLoad(isLoad: Boolean) {
+        loading.value = true
+        val value = GlobalScope.async {
+            withContext(Dispatchers.Main) {
+                Log.d("DEBUG", "userInput")
+                val userInput: UserInput =
+                if (isLoad) {
+                    UserInput(type = "Load", id = "data")
+                } else {
+                    UserInput(type = "Reception", id = "data")
+                }
+                if (hasData()) {
+                    repository.update(userInput)
+                } else {
+                    Log.d("DEBUG", "insert")
+                    val inner = GlobalScope.async { withContext(Dispatchers.Main) {repository.insert(userInput) } }
+                    println(inner.await())
+                }
+            }
         }
+        println(value.await()) // wait for worker thread to finish
+        loading.value = false
     }
 
     private fun hasData(): Boolean {
