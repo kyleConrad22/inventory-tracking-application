@@ -182,6 +182,7 @@ class ManualEntryViewModel(private val userRepository : UserInputRepository, pri
         println(value.await())
         loading.value = false
     }
+
     // Returns list of all BLs found for given heat number, by base heat only
     private fun getBlList(repoData : List<CurrentInventoryLineItem>?) : List<String> {
         val blList = mutableListOf<String>()
@@ -196,7 +197,7 @@ class ManualEntryViewModel(private val userRepository : UserInputRepository, pri
         return blList
     }
 
-    // Returns list of all BLs found for given heat number, by base heat only
+    // Returns list of all quantities found for given heat number, by base heat only
     private fun getQuantityList(repoData : List<CurrentInventoryLineItem>?) : List<String> {
         val quantityList = mutableListOf<String>()
         if (!repoData.isNullOrEmpty()) {

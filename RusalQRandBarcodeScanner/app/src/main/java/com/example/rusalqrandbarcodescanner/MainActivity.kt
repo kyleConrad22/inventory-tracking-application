@@ -72,9 +72,7 @@ class MainActivity : ComponentActivity() {
         RusalQRAndBarcodeScannerTheme() {
             NavHost(navController = navController,
                 startDestination = (Screen.SplashScreen.title)) {
-                composable(Screen.MainMenuScreen.title) {
-                    MainMenuScreen(navController)
-                }
+                composable(Screen.MainMenuScreen.title) { MainMenuScreen(navController) }
                 composable(Screen.DuplicateBundleScreen.title + "/{scanTime}") { backStackEntry ->
                     DuplicateBundleScreen(navController = navController,
                         scanTime = backStackEntry.arguments?.getString("scanTime"),
@@ -114,12 +112,8 @@ class MainActivity : ComponentActivity() {
                         userInputViewModel,
                         currentInventoryViewModel)
                 }
-                composable(Screen.OptionsScreen.title) {
-                    OptionsScreen(navController)
-                }
-                composable(Screen.InfoInputScreen.title) {
-                    InfoInputScreen(navController)
-                }
+                composable(Screen.OptionsScreen.title) { OptionsScreen(navController) }
+                composable(Screen.InfoInputScreen.title) { InfoInputScreen(navController) }
                 composable(Screen.RemoveEntryScreen.title) {
                     RemoveEntryScreen(navController,
                         userInputViewModel,
@@ -134,20 +128,14 @@ class MainActivity : ComponentActivity() {
                         userInputViewModel)
                 }
                 composable(Screen.ToBeImplementedScreen.title) { ToBeImplementedScreen(navController) }
-                composable(Screen.BlOptionsScreen.title) {
-                    BlOptionsScreen(navController,
-                        currentInventoryViewModel,
-                        userInputViewModel)
-                }
+                composable(Screen.BlOptionsScreen.title) { BlOptionsScreen(navController) }
                 composable(Screen.QuantityOptionsScreen.title) {
                     QuantityOptionsScreen(navController,
                         currentInventoryViewModel,
                         userInputViewModel,
                         scannedCodeViewModel)
                 }
-                composable(Screen.SplashScreen.title) {
-                    SplashScreen(navController)
-                }
+                composable(Screen.SplashScreen.title) { SplashScreen(navController) }
             }
         }
     }
