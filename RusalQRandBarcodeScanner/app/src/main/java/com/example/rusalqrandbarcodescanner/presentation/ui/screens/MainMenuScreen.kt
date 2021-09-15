@@ -87,7 +87,6 @@ fun MainMenuScreen(navController: NavHostController) {
             }
         }
         if (!loading && isClicked.value){
-            Log.d("Debug", "here?")
             navController.navigate(Screen.InfoInputScreen.title)
             isClicked.value = false
         }

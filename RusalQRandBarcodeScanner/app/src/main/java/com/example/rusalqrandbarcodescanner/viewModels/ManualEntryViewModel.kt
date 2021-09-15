@@ -6,27 +6,28 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
 import com.example.rusalqrandbarcodescanner.ScannedInfo
+import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
 import com.example.rusalqrandbarcodescanner.database.UserInput
 import com.example.rusalqrandbarcodescanner.repositories.CodeRepository
 import com.example.rusalqrandbarcodescanner.repositories.CurrentInventoryRepository
 import com.example.rusalqrandbarcodescanner.repositories.UserInputRepository
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class ManualEntryViewModel(private val userRepository : UserInputRepository, private val codeRepository : CodeRepository, private val inventoryRepository : CurrentInventoryRepository) : ViewModel() {
-    val currentInput = userRepository.currentInput.asLiveData()
+    private val currentInput = userRepository.currentInput.asLiveData()
     val heat: MutableLiveData<String> = MutableLiveData("")
-    val blList = MediatorLiveData<List<String>?>()
-    val quantityList = MediatorLiveData<List<String>?>()
 
     private fun setTime(): String{
         val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("MM_dd_yyyy HH:mm:ss")
         val timeNow: LocalDateTime = LocalDateTime.now()
         return formatter.format(timeNow)
     }
+
+    val destination = mutableStateOf("")
 
     private val triggerLoader = MutableLiveData<Unit>()
 
@@ -35,6 +36,8 @@ class ManualEntryViewModel(private val userRepository : UserInputRepository, pri
     }
 
     val isSearchVis = mutableStateOf(false)
+
+    val loading = mutableStateOf(false)
 
     val isBaseHeat = triggerLoader.switchMap { isBaseHeatLogic() }
 
@@ -53,12 +56,15 @@ class ManualEntryViewModel(private val userRepository : UserInputRepository, pri
         return mediatorLiveData
     }
 
-    fun findByBaseHeat(heat: String): LiveData<List<CurrentInventoryLineItem>?> {
-        val result = MutableLiveData<List<CurrentInventoryLineItem>?>()
-        viewModelScope.launch {
-            val returnedResult = inventoryRepository.findByBaseHeat(heat)
-            result.postValue(returnedResult)
+    // Makes synchronous call for database query of returning line items by their base heat
+    private suspend fun findByBaseHeat(heat: String): List<CurrentInventoryLineItem>? {
+        var result : List<CurrentInventoryLineItem>? = null
+        val value = GlobalScope.async {
+            withContext(Dispatchers.Main) {
+            result = inventoryRepository.findByBaseHeat("%$heat%")
+            }
         }
+        println(value.await())
         return result
     }
 
@@ -110,7 +116,9 @@ class ManualEntryViewModel(private val userRepository : UserInputRepository, pri
         inventoryRepository.insert(lineItem)
     }
 
-    fun addNewItemByBaseHeat() {
+    /*
+    private suspend fun addNewItemByBaseHeat() {
+        loading.value = true
         val lineItem = newItemByBaseHeat()
         val mediatorLiveData = MediatorLiveData<Boolean>()
         mediatorLiveData.addSource(lineItem) {
@@ -122,7 +130,7 @@ class ManualEntryViewModel(private val userRepository : UserInputRepository, pri
         }
     }
 
-    private fun newItemByBaseHeat(): LiveData<CurrentInventoryLineItem>{
+    private suspend fun newItemByBaseHeat(): LiveData<CurrentInventoryLineItem>{
         val listByHeat = findByBaseHeat("%${heat.value}%")
         val mediatorLiveData = MediatorLiveData<CurrentInventoryLineItem>()
         mediatorLiveData.addSource(listByHeat) {byHeat ->
@@ -184,65 +192,69 @@ class ManualEntryViewModel(private val userRepository : UserInputRepository, pri
         }
         return mediatorLiveData
     }
+     */
 
-    fun getReturnType() : LiveData<String> {
-        val mediatorLiveData = MediatorLiveData<String>()
-        mediatorLiveData.addSource(getBlList()) { blList ->
 
-            when {
-                blList.isNullOrEmpty() -> mediatorLiveData.value = "Null"
-                blList.isNotEmpty() -> {
-                    mediatorLiveData.removeSource(getBlList())
+    // Returns destination for NavController
+    fun setDestination() {
+        loading.value = true
 
-                    mediatorLiveData.addSource(getQuantityList()) { quantityList ->
+        GlobalScope.launch(Dispatchers.Main) { // Launches coroutine in main thread
+            setDestinationLogic()
+        }
+    }
 
-                        when {
-                            quantityList.isNullOrEmpty() -> mediatorLiveData.value = "Null"
-                            quantityList.isNotEmpty() -> {
-                                mediatorLiveData.removeSource(getQuantityList())
-                                when {
-                                    blList.size == 1 && quantityList.size == 1 -> {
-                                        mediatorLiveData.value = "Single Return"
-                                        addNewItemByBaseHeat()
-                                        ScannedInfo.setValues(heat.value!!, blNum = blList[0])
-                                        Log.d("DEBUG", "THe VALUE IS ${blList[0]}")
-                                    }
-                                    blList.size > 1 && quantityList.size == 1 -> mediatorLiveData.value = "Multiple Bls"
+    // Encapsulates methods to get destination for synchronous calls
+    private suspend fun setDestinationLogic() {
+        val repoData = findByBaseHeat(heat.value!!)
 
-                                    blList.size == 1 && quantityList.size > 1 -> mediatorLiveData.value = "Multiple Quantities"
-                                    else -> mediatorLiveData.value = "Multiple Bls and Quantities"
-                                }
-                            }
-                        }
+        val value = GlobalScope.async {
+            withContext(Dispatchers.Main) {
+                val blList = getBlList(repoData)
+                val quantityList = getQuantityList(repoData)
+
+                destination.value =
+                    when {
+                        blList.isNullOrEmpty() || quantityList.isNullOrEmpty() -> "N/A"
+                        blList.size == 1 && quantityList.size == 1 -> Screen.ScannedInfoScreen.title
+                        blList.size > 1 && quantityList.size == 1 -> Screen.BlOptionsScreen.title
+                        blList.size == 1 && quantityList.size > 1 -> Screen.QuantityOptionsScreen.title
+                        blList.size > 1 && quantityList.size > 1 -> Screen.ToBeImplementedScreen.title
+                        else -> "N/A"
                     }
+                if (destination.value != "N/A"){
+                    saveHeatInput()
+                }
+                if (destination.value == Screen.ScannedInfoScreen.title) {
+                    //addNewItemByBaseHeat()
                 }
             }
         }
-        return mediatorLiveData
+        println(value.await())
+        loading.value = false
+    }
+    // Returns list of all BLs found for given heat number, by base heat only
+    private fun getBlList(repoData : List<CurrentInventoryLineItem>?) : List<String> {
+        val blList = mutableListOf<String>()
+        if (!repoData.isNullOrEmpty()) {
+            for (lineItem in repoData) {
+                if (blList.find { it == lineItem.blNum } == null) {
+                    Log.d("DEBUG", lineItem.blNum.toString())
+                    blList.add(lineItem.blNum!!)
+                }
+            }
+        }
+        return blList
     }
 
-    private fun getQuantityList(): LiveData<List<String>?> {
-
-        if (isSearchVis.value) {
-            val repositoryLiveData = findByBaseHeat("%${heat.value}%")
-
-            quantityList.addSource(repositoryLiveData) { items: List<CurrentInventoryLineItem>? ->
-                if (repositoryLiveData.value.isNullOrEmpty() || repositoryLiveData.value!!.isEmpty()) {
-                    quantityList.value = null
-                } else {
-                    quantityList.removeSource(repositoryLiveData)
-
-                    items?.let {
-                        val quantityList = mutableListOf<String>()
-
-                        for (item in items) {
-                            if (quantityList.find { it == item.quantity!! } == null) {
-                                Log.d("DEBUG", "quantity")
-                                quantityList.add(item.quantity!!)
-                            }
-                        }
-                       this.quantityList.value = quantityList.toList()
-                    }
+    // Returns list of all BLs found for given heat number, by base heat only
+    private fun getQuantityList(repoData : List<CurrentInventoryLineItem>?) : List<String> {
+        val quantityList = mutableListOf<String>()
+        if (!repoData.isNullOrEmpty()) {
+            for (lineItem in repoData) {
+                if (quantityList.find { it == lineItem.quantity } == null) {
+                    Log.d("DEBUG", lineItem.quantity.toString())
+                    quantityList.add(lineItem.quantity!!)
                 }
             }
         }
@@ -256,34 +268,6 @@ class ManualEntryViewModel(private val userRepository : UserInputRepository, pri
             result.postValue(codes)
         }
         return result
-    }
-
-    private fun getBlList(): LiveData<List<String>?> {
-        if (isSearchVis.value) {
-            val repositoryLiveData = findByBaseHeat("%${heat.value}%")
-
-            blList.addSource(repositoryLiveData) { items: List<CurrentInventoryLineItem>? ->
-                if (repositoryLiveData.value.isNullOrEmpty()) {
-                    blList.value = null
-                } else {
-                    blList.removeSource(repositoryLiveData)
-
-                    items?.let {
-                        val blList = mutableListOf<String>()
-
-
-                        for (item in items) {
-                            if (blList.find { it == item.blNum } == null) {
-                                Log.d("DEBUG", "bl")
-                                blList.add(item.blNum!!)
-                            }
-                        }
-                        this.blList.value = blList.toList()
-                    }
-                }
-            }
-        }
-        return blList
     }
 
     class ManualEntryViewModelFactory(private val userRepository : UserInputRepository, private val codeRepository : CodeRepository, private val inventoryRepository : CurrentInventoryRepository) : ViewModelProvider.Factory {
