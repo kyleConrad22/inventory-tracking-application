@@ -1,7 +1,5 @@
 package com.example.rusalqrandbarcodescanner.viewModels
 
-import android.util.Log
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
 import com.example.rusalqrandbarcodescanner.database.UserInput
@@ -9,6 +7,7 @@ import com.example.rusalqrandbarcodescanner.repositories.UserInputRepository
 import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
 
+@DelicateCoroutinesApi
 class InfoInputViewModel(private val repository : UserInputRepository) : ViewModel() {
     private val currentInput = repository.currentInput.asLiveData()
     private val triggerLoader = MutableLiveData<Unit>()

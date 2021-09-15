@@ -8,6 +8,9 @@ interface UserInputDao {
     @Query("SELECT * FROM userInput")
     fun getValue(): Flow<List<UserInput>>
 
+    @Query("SELECT * FROM userInput")
+    suspend fun getInputSuspend() : List<UserInput>
+
     @Query("DELETE FROM userInput")
     suspend fun deleteAll()
 

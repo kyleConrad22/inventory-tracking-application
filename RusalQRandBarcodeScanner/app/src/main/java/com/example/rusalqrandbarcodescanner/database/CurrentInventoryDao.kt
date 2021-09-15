@@ -11,6 +11,9 @@ interface CurrentInventoryDao {
     @Query("SELECT * FROM current_inventory")
     fun getAll(): Flow<List<CurrentInventoryLineItem>>
 
+    @Query ("SELECT * FROM current_inventory")
+    suspend fun getAllSuspend() : List<CurrentInventoryLineItem>
+
     @Query("SELECT * FROM current_inventory WHERE heat_num LIKE :searchHeatNum")
     suspend fun findByHeat(searchHeatNum: String): CurrentInventoryLineItem?
 

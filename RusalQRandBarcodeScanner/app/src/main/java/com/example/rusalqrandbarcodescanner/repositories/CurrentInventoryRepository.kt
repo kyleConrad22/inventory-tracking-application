@@ -11,6 +11,16 @@ class CurrentInventoryRepository(private val currentInventoryDao: CurrentInvento
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
+    suspend fun getAllSuspend() : List<CurrentInventoryLineItem>? {
+        return try {
+            currentInventoryDao.getAllSuspend()
+        } catch (exc : EmptyResultSetException) {
+            null
+        }
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
     suspend fun findByHeat(heat: String): CurrentInventoryLineItem? {
         return try {
             currentInventoryDao.findByHeat(heat)

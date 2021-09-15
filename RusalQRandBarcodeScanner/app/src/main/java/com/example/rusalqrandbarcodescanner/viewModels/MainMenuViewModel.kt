@@ -8,6 +8,7 @@ import com.example.rusalqrandbarcodescanner.repositories.UserInputRepository
 import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
 
+@DelicateCoroutinesApi
 class MainMenuViewModel(private val repository : UserInputRepository) : ViewModel() {
     private val currentInput = repository.currentInput.asLiveData()
 

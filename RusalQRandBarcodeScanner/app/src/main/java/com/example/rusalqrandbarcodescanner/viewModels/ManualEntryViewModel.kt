@@ -1,8 +1,6 @@
 package com.example.rusalqrandbarcodescanner.viewModels
 
-import android.provider.MediaStore
 import android.util.Log
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
 import com.example.rusalqrandbarcodescanner.ScannedInfo
@@ -17,9 +15,17 @@ import java.lang.IllegalArgumentException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+@DelicateCoroutinesApi
 class ManualEntryViewModel(private val userRepository : UserInputRepository, private val codeRepository : CodeRepository, private val inventoryRepository : CurrentInventoryRepository) : ViewModel() {
-    private val currentInput = userRepository.currentInput.asLiveData()
+    private val list : List<UserInput> = listOf()
+    private var currentInput = mutableStateOf(list)
+    private val triggerLoader = MutableLiveData<Unit>()
+
     val heat: MutableLiveData<String> = MutableLiveData("")
+    val destination = mutableStateOf("")
+    val isSearchVis = mutableStateOf(false)
+    val loading = mutableStateOf(false)
+    val isBaseHeat = triggerLoader.switchMap { isBaseHeatLogic() }
 
     private fun setTime(): String{
         val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("MM_dd_yyyy HH:mm:ss")
@@ -27,19 +33,9 @@ class ManualEntryViewModel(private val userRepository : UserInputRepository, pri
         return formatter.format(timeNow)
     }
 
-    val destination = mutableStateOf("")
-
-    private val triggerLoader = MutableLiveData<Unit>()
-
     fun refresh() {
         triggerLoader.value = Unit
     }
-
-    val isSearchVis = mutableStateOf(false)
-
-    val loading = mutableStateOf(false)
-
-    val isBaseHeat = triggerLoader.switchMap { isBaseHeatLogic() }
 
     private fun isBaseHeatLogic() : LiveData<Boolean> {
         val mediatorLiveData = MediatorLiveData<Boolean>()
@@ -61,17 +57,36 @@ class ManualEntryViewModel(private val userRepository : UserInputRepository, pri
         var result : List<CurrentInventoryLineItem>? = null
         val value = GlobalScope.async {
             withContext(Dispatchers.Main) {
-            result = inventoryRepository.findByBaseHeat("%$heat%")
+                result = inventoryRepository.findByBaseHeat("%$heat%")
             }
         }
         println(value.await())
         return result
     }
 
-    fun saveHeatInput() = viewModelScope.launch {
+    private suspend fun update(userInput : UserInput) {
+        val value = GlobalScope.async {
+            withContext(Dispatchers.Main) {
+                userRepository.update(userInput)
+            }
+        }
+        println(value.await())
+    }
+
+    private suspend fun getInput() {
+        val value = GlobalScope.async {
+            withContext(Dispatchers.Main) {
+                currentInput.value = userRepository.getInputSuspend()!!
+            }
+        }
+        println(value.await())
+    }
+
+    private suspend fun saveHeatInput() {
         var userInput : UserInput? = null
-        if (currentInput.value != null) {
-            val input = currentInput.value!![0]
+        getInput()
+        if (!currentInput.value.isNullOrEmpty()) {
+            val input = currentInput.value[0]
             userInput = UserInput(
                 id = "data",
                 load = input.load,
@@ -85,120 +100,54 @@ class ManualEntryViewModel(private val userRepository : UserInputRepository, pri
                 pieceCount = input.pieceCount,
                 type = input.type
             )
-        } else {
-            val mediatorLiveData = MediatorLiveData<UserInput>()
-            mediatorLiveData.addSource(currentInput) { it ->
-                if (!it.isNullOrEmpty()) {
-                    mediatorLiveData.removeSource(currentInput)
-                    val input = it[0]
-                    userInput = UserInput(
-                        id = "data",
-                        load = input.load,
-                        order = input.order,
-                        loader = input.loader,
-                        checker = input.checker,
-                        vessel = input.vessel,
-                        bl = input.bl,
-                        bundleQuantity = input.bundleQuantity,
-                        heatNum = heat.value,
-                        pieceCount = input.pieceCount,
-                        type = input.type
-                    )
-                }
+        }
+        update(userInput!!)
+    }
+
+    // Synchronous call to repository to insert line item
+    suspend fun insert(lineItem: CurrentInventoryLineItem) {
+        val value = GlobalScope.async {
+            withContext(Dispatchers.Main) {
+                inventoryRepository.insert(lineItem)
             }
         }
-        if (userInput != null) {
-            userRepository.update(userInput!!)
-        }
+        println(value.await())
     }
 
-    fun insert(lineItem: CurrentInventoryLineItem) = viewModelScope.launch {
-        inventoryRepository.insert(lineItem)
-    }
-
-    /*
+    // Creates and adds new CurrentInventoryLineItem to be added to the database ScannedInfo
     private suspend fun addNewItemByBaseHeat() {
-        loading.value = true
-        val lineItem = newItemByBaseHeat()
-        val mediatorLiveData = MediatorLiveData<Boolean>()
-        mediatorLiveData.addSource(lineItem) {
-            mediatorLiveData.removeSource(lineItem)
-            mediatorLiveData.value = it.blNum != "N/A"
+        var result : CurrentInventoryLineItem? = null
+        val listByHeat = findByBaseHeat(heat.value!!)
+        println("HERE")
+        if (!listByHeat.isNullOrEmpty()) {
+            println("AND HERE")
+            val listByBarcode = findByBarcodes("${heat.value}u")
+            val barcode = if (!listByBarcode.isNullOrEmpty()) { "${heat.value}u1" } else { "${heat.value}u${listByBarcode!!.size + 1}" }
 
-            ScannedInfo.getValues(it)
-            insert(it)
+            result = CurrentInventoryLineItem(
+                heatNum = heat.value!!,
+                packageNum = "N/A",
+                grossWeightKg = "N/A",
+                netWeightKg = "N/A",
+                quantity = listByHeat[0].quantity,
+                dimension = listByHeat[0].dimension,
+                grade = listByHeat[0].grade,
+                certificateNum = listByHeat[0].certificateNum,
+                blNum = listByHeat[0].blNum,
+                barcode = barcode,
+                workOrder = currentInput.value[0].order,
+                loadNum = currentInput.value[0].load,
+                loader = currentInput.value[0].loader,
+                loadTime = setTime()
+            )
         }
+        ScannedInfo.getValues(result!!)
+        insert(result)
     }
-
-    private suspend fun newItemByBaseHeat(): LiveData<CurrentInventoryLineItem>{
-        val listByHeat = findByBaseHeat("%${heat.value}%")
-        val mediatorLiveData = MediatorLiveData<CurrentInventoryLineItem>()
-        mediatorLiveData.addSource(listByHeat) {byHeat ->
-            mediatorLiveData.removeSource(listByHeat)
-
-            Log.d("DEBUG", "made it here")
-            if (byHeat != null) {
-                val listByBarcode = findByBarcodes("%${heat.value}u%")
-                mediatorLiveData.addSource(listByBarcode) { byBarcode ->
-                    mediatorLiveData.removeSource(listByBarcode)
-
-                    val blList = blList.value
-                    val quantList = quantityList.value
-
-                    val barcode = if (byBarcode == null) { "${heat.value}u1" } else { "${heat.value}u${byBarcode.size + 1}" }
-                    Log.d("DEBUG",  barcode)
-                    val bl = blList!![0]
-                    val quantity = quantList!![0]
-                    val dimension = byHeat[0].dimension
-                    val grade = byHeat[0].grade
-                    val certificateNum = byHeat[0].certificateNum
-
-                    mediatorLiveData.value = CurrentInventoryLineItem(
-                        heatNum = heat.value!!,
-                        packageNum = "N/A",
-                        grossWeightKg = "N/A",
-                        netWeightKg = "N/A",
-                        quantity = quantity,
-                        dimension = dimension,
-                        grade = grade,
-                        certificateNum = certificateNum,
-                        blNum = bl,
-                        barcode = barcode,
-                        workOrder = currentInput.value!![0].order,
-                        loadNum = currentInput.value!![0].load,
-                        loader = currentInput.value!![0].loader,
-                        loadTime = setTime()
-                    )
-                }
-            } else {
-                mediatorLiveData.value =
-                    CurrentInventoryLineItem(
-                        heatNum = heat.value!!,
-                        packageNum = "N/A",
-                        grossWeightKg = "N/A",
-                        netWeightKg = "N/A",
-                        quantity = "N/A",
-                        dimension = "N/A",
-                        grade = "N/A",
-                        certificateNum = "N/A",
-                        blNum = "N/A",
-                        barcode = "N/A",
-                        workOrder = currentInput.value!![0].order,
-                        loadNum = currentInput.value!![0].load,
-                        loader = currentInput.value!![0].loader,
-                        loadTime = setTime()
-                    )
-            }
-        }
-        return mediatorLiveData
-    }
-     */
-
 
     // Returns destination for NavController
     fun setDestination() {
         loading.value = true
-
         GlobalScope.launch(Dispatchers.Main) { // Launches coroutine in main thread
             setDestinationLogic()
         }
@@ -226,7 +175,7 @@ class ManualEntryViewModel(private val userRepository : UserInputRepository, pri
                     saveHeatInput()
                 }
                 if (destination.value == Screen.ScannedInfoScreen.title) {
-                    //addNewItemByBaseHeat()
+                    addNewItemByBaseHeat()
                 }
             }
         }
@@ -261,12 +210,14 @@ class ManualEntryViewModel(private val userRepository : UserInputRepository, pri
         return quantityList
     }
 
-    private fun findByBarcodes(barcode: String) : LiveData<List<CurrentInventoryLineItem>?> {
-        val result = MutableLiveData<List<CurrentInventoryLineItem>?>()
-        viewModelScope.launch {
-            val codes = inventoryRepository.findByBarcodes(barcode)
-            result.postValue(codes)
+    private suspend fun findByBarcodes(barcode: String) : List<CurrentInventoryLineItem>? {
+        var result : List<CurrentInventoryLineItem>? = null
+        val value = GlobalScope.async {
+            withContext(Dispatchers.Main) {
+                result = inventoryRepository.findByBarcodes("%$barcode%")
+            }
         }
+        println(value.await())
         return result
     }
 
