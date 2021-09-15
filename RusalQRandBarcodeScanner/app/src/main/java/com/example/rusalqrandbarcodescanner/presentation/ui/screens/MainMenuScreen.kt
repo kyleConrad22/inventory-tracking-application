@@ -27,10 +27,6 @@ fun MainMenuScreen(navController: NavHostController) {
     val viewModelStoreOwner = LocalViewModelStoreOwner.current!!
 
     val mainMenuViewModel: MainMenuViewModel = viewModel(viewModelStoreOwner = viewModelStoreOwner, key = "mainMenuVM", factory = MainMenuViewModelFactory((application as CodeApplication).userRepository))
-    val scannedCodeViewModel: ScannedCodeViewModel = viewModel(viewModelStoreOwner = viewModelStoreOwner, key = "scannedCodeVM", factory = ScannedCodeViewModel.ScannedCodeViewModelFactory((application as CodeApplication).repository))
-    val userInputViewModel: UserInputViewModel = viewModel(viewModelStoreOwner = viewModelStoreOwner, key = "userInputVM", factory = UserInputViewModel.UserInputViewModelFactory((application as CodeApplication).userRepository))
-
-    scannedCodeViewModel.deleteAll()
 
     Scaffold(topBar = { TopAppBar(title = { Text(text="Main Menu", textAlign = TextAlign.Center) }) }) {
 

@@ -13,18 +13,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Observer
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.navArgument
+import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.ScannedInfo
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
 import com.example.rusalqrandbarcodescanner.database.ScannedCode
 import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel
+import com.example.rusalqrandbarcodescanner.viewModels.ManualEntryViewModel
+import com.example.rusalqrandbarcodescanner.viewModels.ManualEntryViewModel.ManualEntryViewModelFactory
 import com.example.rusalqrandbarcodescanner.viewModels.ScannedCodeViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel
 
@@ -33,32 +40,36 @@ import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel
 fun ManualEntryScreen(navController: NavHostController, userInputViewModel: UserInputViewModel, currentInventoryViewModel: CurrentInventoryViewModel, scannedCodeViewModel: ScannedCodeViewModel) {
     val focusManager = LocalFocusManager.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val application = LocalContext.current.applicationContext
 
-    var openDialog = remember { mutableStateOf(false) }
+    val manualEntryViewModel : ManualEntryViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "manualEntryVM", ManualEntryViewModelFactory((application as CodeApplication).userRepository, application.repository, application.invRepository))
 
-    var uiHeat by remember { mutableStateOf(userInputViewModel.heat.value) }
+    val isSearchVis = manualEntryViewModel.isSearchVis.value
+    val openDialog = remember { mutableStateOf(false) }
+
+    var isBaseHeat by remember { mutableStateOf(false) }
+    val isBaseHeatObserver = Observer<Boolean> { it ->
+        isBaseHeat = it
+    }
+    manualEntryViewModel.isBaseHeat.observe(lifecycleOwner, isBaseHeatObserver)
+
+    var heat by remember { mutableStateOf(userInputViewModel.heat.value) }
     val heatObserver = Observer<String> { it ->
-        uiHeat = it
+        heat = it
     }
-    userInputViewModel.heat.observe(lifecycleOwner, heatObserver)
+    manualEntryViewModel.heat.observe(lifecycleOwner, heatObserver)
 
-    var blList by remember { mutableStateOf(currentInventoryViewModel.getBlList(uiHeat).value) }
-    val blListObserver = Observer<List<String>?> { it ->
-        blList = it
+    var returnType by remember { mutableStateOf("") }
+    val returnTypeObserver = Observer<String> { it ->
+        returnType = it
     }
-    currentInventoryViewModel.getBlList(uiHeat).observe(lifecycleOwner, blListObserver)
-
-    var quantList by remember { mutableStateOf(currentInventoryViewModel.getQuantList(uiHeat).value) }
-    val quantListObserver = Observer<List<String>?> { it ->
-        quantList = it
-    }
-    currentInventoryViewModel.getQuantList(uiHeat).observe(lifecycleOwner, quantListObserver)
+    manualEntryViewModel.getReturnType().observe(lifecycleOwner, returnTypeObserver)
 
     Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly) {
         Text(text="Manual Heat Number Search: ", modifier = Modifier.padding(16.dp))
-        HeatNumberInput(focusManager, userInputViewModel)
+        HeatNumberInput(focusManager, manualEntryViewModel)
         Row(modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -67,45 +78,44 @@ fun ManualEntryScreen(navController: NavHostController, userInputViewModel: User
             }) {
                 Text(text = "Back", modifier = Modifier.padding(16.dp))
             }
-            if (uiHeat != null && uiHeat!!.length >= 6) {
+            if (isSearchVis) {
                 Button(onClick = {
-                    if (uiHeat?.length == 6) {
-                        var result: List<CurrentInventoryLineItem>?
-                        currentInventoryViewModel.findByBaseHeat("%${uiHeat!!}%")
-                            .observe(lifecycleOwner, { returnedVal ->
-                                result = returnedVal
-
-                                if (result != null) {
-                                    if (blList!!.size == 1 && quantList!!.size == 1) {
-                                        currentInventoryViewModel.addNewItemByBaseHeat(uiHeat!!, userInputViewModel).observe(lifecycleOwner){
-                                            if (it) { Log.d("DEBUG", "Successfully set new item") }
-                                        }
-                                        navController.navigate(Screen.ScannedInfoScreen.title)
-                                    } else if (blList!!.size > 1) {
-                                        /*TODO*/
-                                        /*Make BL List Clickable with the requested bl being sent to scanned info return*/
-                                        navController.navigate(Screen.BlOptionsScreen.title)
-                                        /*Present bl options to loader and ask for them to make a selection*/
-
-                                    } else if (quantList!!.size > 1) {
-                                        /*TODO*/
-                                        navController.navigate(Screen.QuantityOptionsScreen.title)
-                                        /*Ask for loader to verify that there are the requested number of pieces on this bundle, have them type the amount*/
-
-                                    } else {
-                                        openDialog.value = true
-                                    }
-                                } else {
-                                    openDialog.value = true
+                    if (isBaseHeat) {
+                        if (returnType != "Null") {
+                            var destination : String = ""
+                            when (returnType) {
+                                "Single Return" -> {
+                                    destination = Screen.ScannedInfoScreen.title
                                 }
-                            })
+                                "Multiple Bls" -> {
+                                    /*TODO*/
+                                    destination = Screen.BlOptionsScreen.title
+                                    /*Present bl options to loader and ask for them to confirm BL being loaded is correct*/
+
+                                }
+                                "Multiple Quantities" -> {
+                                    /*TODO*/
+                                    destination = Screen.QuantityOptionsScreen.title
+                                    /*Ask for loader to verify that there are the requested number of pieces on this bundle, have them type the amount*/
+
+                                }
+                                "Multiple Bls and Quantities" -> {
+                                    /*TODO*/
+                                    destination = Screen.ToBeImplementedScreen.title
+                                    /*Ask for loader to verify requested amount of pieces and confirm that the BL being loaded is correct.*/
+                                }
+                            }
+                            navController.navigate(destination)
+                        } else {
+                            openDialog.value = true
+                        }
                     } else {
                         var returnedCode: ScannedCode?
-                        scannedCodeViewModel.findByHeat(uiHeat!!)
+                        scannedCodeViewModel.findByHeat(heat!!)
                             .observe(lifecycleOwner, { code ->
                                 returnedCode = code
                                 if (returnedCode == null) {
-                                    currentInventoryViewModel.findByHeat(uiHeat!!)
+                                    currentInventoryViewModel.findByHeat(heat!!)
                                         .observe(lifecycleOwner, { inventoryItem ->
                                             if (inventoryItem != null) {
                                                 ScannedInfo.getValues(inventoryItem)
@@ -150,14 +160,13 @@ fun ManualEntryScreen(navController: NavHostController, userInputViewModel: User
     }
 }
 
-@ExperimentalComposeUiApi
 @Composable
-private fun HeatNumberInput(focusManager: FocusManager, userInputViewModel: UserInputViewModel) {
-    var heat by remember { mutableStateOf(userInputViewModel.heat.value) }
+private fun HeatNumberInput(focusManager : FocusManager, manualEntryViewModel : ManualEntryViewModel) {
+    var heat by remember { mutableStateOf(manualEntryViewModel.heat.value) }
     val heatObserver = Observer<String>{ it ->
         heat = it
     }
-    userInputViewModel.heat.observe(LocalLifecycleOwner.current, heatObserver)
+    manualEntryViewModel.heat.observe(LocalLifecycleOwner.current, heatObserver)
 
     heat?.let { heatIt ->
         OutlinedTextField(
@@ -166,8 +175,8 @@ private fun HeatNumberInput(focusManager: FocusManager, userInputViewModel: User
             keyboardActions = KeyboardActions(onNext = { focusManager.clearFocus(true) }),
             value = heatIt,
             onValueChange = { it ->
-                userInputViewModel.heat.value = it
-                userInputViewModel.refresh() },
+                manualEntryViewModel.heat.value = it
+                manualEntryViewModel.refresh() },
             label = { Text(text = "Heat Number: ") })
     }
 }

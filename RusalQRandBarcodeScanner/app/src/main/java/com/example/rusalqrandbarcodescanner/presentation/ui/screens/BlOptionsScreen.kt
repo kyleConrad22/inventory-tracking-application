@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Observer
 import androidx.navigation.NavHostController
+import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel
 
@@ -52,7 +53,7 @@ fun BlOptionsScreen(navController: NavHostController, currentInventoryViewModel:
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.Bottom) {
                 Button(onClick =
-                { navController.navigate("manualEntryPage") }) {
+                { navController.popBackStack(Screen.ManualEntryScreen.title, inclusive = false) }) {
                     Text(text = "Back to Manual Entry", modifier = Modifier.padding(16.dp))
                 }
             }

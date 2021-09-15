@@ -3,6 +3,7 @@ package com.example.rusalqrandbarcodescanner
 import android.content.Context
 import android.content.ContextWrapper
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
@@ -23,6 +24,8 @@ import java.util.stream.Collectors
 object HttpRequestHandler {
 
     private var output: String = ""
+
+    val loading = mutableStateOf(true)
 
     private suspend fun currentInventory() = withContext(Dispatchers.IO) {
             try {
@@ -130,7 +133,7 @@ object HttpRequestHandler {
     }
 
     private suspend fun addToRepo(viewModel: CurrentInventoryViewModel) = withContext(Dispatchers.IO){
-        viewModel.deleteAll()
+        //viewModel.deleteAll()
         currentInventory()
         val lines = output.split("},{").toTypedArray()
         lines[0] = lines[0].replace("[{", "")

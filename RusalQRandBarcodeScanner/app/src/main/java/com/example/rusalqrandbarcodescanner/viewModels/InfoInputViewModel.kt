@@ -22,24 +22,24 @@ class InfoInputViewModel(private val repository : UserInputRepository) : ViewMod
     val bl: MutableLiveData<String> = MutableLiveData("")
     val vessel: MutableLiveData<String> = MutableLiveData("")
     val checker: MutableLiveData<String> = MutableLiveData("")
-    val heat: MutableLiveData<String> = MutableLiveData("")
     val quantity: MutableLiveData<String> = MutableLiveData("")
 
-    val loading = mutableStateOf(false)
+    val loading = mutableStateOf(true)
 
     fun isLoad() : LiveData<Boolean> {
         val mediatorLiveData = MediatorLiveData<Boolean>()
         mediatorLiveData.addSource(currentInput) { it ->
-            mediatorLiveData.removeSource(currentInput)
             mediatorLiveData.value =
                 when {
-                    it.isEmpty() -> {
+                    it.isNullOrEmpty() -> {
                         null
                     }
                     it[0].type == "Load" -> {
+                        mediatorLiveData.removeSource(currentInput)
                         true
                     }
                     it[0].type == "Reception" -> {
+                        mediatorLiveData.removeSource(currentInput)
                         false
                     }
                     else -> {
@@ -68,7 +68,7 @@ class InfoInputViewModel(private val repository : UserInputRepository) : ViewMod
             pieceCount = quantity.value,
             checker = checker.value,
             vessel = vessel.value,
-            heatNum = checker.value,
+            heatNum = "",
             type = type
         )
         repository.update(userInput)

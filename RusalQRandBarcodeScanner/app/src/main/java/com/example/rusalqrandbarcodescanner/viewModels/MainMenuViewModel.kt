@@ -1,18 +1,20 @@
 package com.example.rusalqrandbarcodescanner.viewModels
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.*
 import com.example.rusalqrandbarcodescanner.database.UserInput
 import com.example.rusalqrandbarcodescanner.repositories.UserInputRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 
 class MainMenuViewModel(private val repository : UserInputRepository) : ViewModel() {
     private val currentInput = repository.currentInput.asLiveData()
 
-    fun isLoad(isLoad: Boolean) = viewModelScope.launch {
+    val loading = mutableStateOf(true)
+
+    suspend fun isLoad(isLoad: Boolean) = viewModelScope.launch {
+        Log.d("DEBUG", "userInput")
         val userInput: UserInput = if (isLoad) {
             UserInput(type = "Load", id = "data")
         } else {
@@ -21,12 +23,13 @@ class MainMenuViewModel(private val repository : UserInputRepository) : ViewMode
         if (hasData()) {
             repository.update(userInput)
         } else {
+            Log.d("DEBUG", "insert")
             repository.insert(userInput)
         }
     }
 
     private fun hasData(): Boolean {
-        return (currentInput.value != null) && currentInput.value!!.isNotEmpty() && (currentInput.value!![0].id == "data")
+        return !currentInput.value.isNullOrEmpty() && (currentInput.value!![0].id == "data")
     }
 
     class MainMenuViewModelFactory(private val repository: UserInputRepository) : ViewModelProvider.Factory {

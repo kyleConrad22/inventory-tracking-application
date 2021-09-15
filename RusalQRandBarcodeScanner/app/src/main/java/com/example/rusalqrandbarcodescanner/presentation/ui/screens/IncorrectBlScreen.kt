@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.ScannedInfo
+import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel
 
 @Composable
@@ -29,7 +30,7 @@ fun IncorrectBlScreen(navController: NavHostController, userInputViewModel: User
             Text(text = "Put bundle away and scan another!", modifier = Modifier.padding(16.dp))
             Button(onClick = {
                 ScannedInfo.clearValues()
-                navController.navigate("scannerPage")
+                navController.popBackStack(Screen.ScannerScreen.title, inclusive = false)
             }) {
                 Text(text = "Back to Scanner Live Feed", modifier = Modifier.padding(16.dp))
             }

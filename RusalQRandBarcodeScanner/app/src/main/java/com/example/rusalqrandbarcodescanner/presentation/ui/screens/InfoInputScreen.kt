@@ -50,7 +50,7 @@ fun InfoInputScreen(navController: NavHostController, userInputViewModel: UserIn
 
     val loading = infoInputViewModel.loading.value
 
-    if (isLoad == null) {
+    if (isLoad == null || loading) {
         CircularIndeterminateProgressBar(isDisplayed = loading)
     } else {
         val type = if (isLoad != null) {

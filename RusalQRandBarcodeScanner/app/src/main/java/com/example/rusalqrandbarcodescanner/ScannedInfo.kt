@@ -11,6 +11,7 @@ import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
 import com.example.rusalqrandbarcodescanner.database.ScannedCode
 import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel
+import com.google.mlkit.vision.barcode.Barcode
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -65,6 +66,28 @@ object ScannedInfo {
         packageNum = currentInventoryLineItem.packageNum.toString()
         quantity = currentInventoryLineItem.quantity.toString()
         setTime()
+    }
+
+    fun setValues(
+        heatNum : String,
+        blNum : String,
+        barcode : String = "",
+        packageNum : String = "",
+        netWeightKg : String = "",
+        grossWeightKg : String = "",
+        netWeightLbs : String = "",
+        grossWeightLbs : String = "",
+        quantity : String = "",
+    ) {
+        this.heatNum = heatNum
+        this.barCode = barcode
+        this.grossWgtKg = grossWeightKg
+        this.netWgtKg = netWeightKg
+        this.packageNum = packageNum
+        this.netWgtLbs = netWeightLbs
+        this.grossWgtLbs = grossWeightLbs
+        this.quantity = quantity
+        this.blNum = blNum
     }
 
     fun clearValues(){

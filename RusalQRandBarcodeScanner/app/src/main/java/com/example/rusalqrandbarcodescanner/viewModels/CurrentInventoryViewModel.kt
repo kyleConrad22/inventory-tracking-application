@@ -141,7 +141,7 @@ class CurrentInventoryViewModel(private val repository: CurrentInventoryReposito
         return mediatorLiveData
     }
 
-    fun getQuantList(heat: String?): LiveData<List<String>?> {
+    fun getQuantityList(heat: String?): LiveData<List<String>?> {
         if (heat == null) {
             quantListMediator.value = null
 
