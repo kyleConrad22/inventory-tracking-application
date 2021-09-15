@@ -20,8 +20,7 @@ class MainMenuViewModel(private val repository : UserInputRepository) : ViewMode
         }
     }
     suspend fun isLoad(isLoad: Boolean) {
-        loading.value = true
-        val value = GlobalScope.async {
+        val value = GlobalScope.async { // Create worker thread
             withContext(Dispatchers.Main) {
                 Log.d("DEBUG", "userInput")
                 val userInput: UserInput =
@@ -34,12 +33,11 @@ class MainMenuViewModel(private val repository : UserInputRepository) : ViewMode
                     repository.update(userInput)
                 } else {
                     Log.d("DEBUG", "insert")
-                    val inner = GlobalScope.async { withContext(Dispatchers.Main) {repository.insert(userInput) } }
-                    println(inner.await())
+                     repository.insert(userInput)
                 }
             }
         }
-        println(value.await()) // wait for worker thread to finish
+        println(value.await()) // Wait for worker thread to finish
         loading.value = false
     }
 

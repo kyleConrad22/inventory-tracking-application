@@ -118,8 +118,7 @@ class MainActivity : ComponentActivity() {
                     OptionsScreen(navController)
                 }
                 composable(Screen.InfoInputScreen.title) {
-                    InfoInputScreen(navController,
-                        userInputViewModel)
+                    InfoInputScreen(navController)
                 }
                 composable(Screen.RemoveEntryScreen.title) {
                     RemoveEntryScreen(navController,

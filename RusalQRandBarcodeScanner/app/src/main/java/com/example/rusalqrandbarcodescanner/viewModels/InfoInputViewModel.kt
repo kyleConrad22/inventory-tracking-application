@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
 import com.example.rusalqrandbarcodescanner.database.UserInput
 import com.example.rusalqrandbarcodescanner.repositories.UserInputRepository
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
 
 class InfoInputViewModel(private val repository : UserInputRepository) : ViewModel() {
@@ -24,7 +24,7 @@ class InfoInputViewModel(private val repository : UserInputRepository) : ViewMod
     val checker: MutableLiveData<String> = MutableLiveData("")
     val quantity: MutableLiveData<String> = MutableLiveData("")
 
-    val loading = mutableStateOf(true)
+    val loading = mutableStateOf(false)
 
     fun isLoad() : LiveData<Boolean> {
         val mediatorLiveData = MediatorLiveData<Boolean>()
@@ -46,7 +46,6 @@ class InfoInputViewModel(private val repository : UserInputRepository) : ViewMod
                         null
                     }
                 }
-            loading.value = mediatorLiveData.value == null
         }
         return mediatorLiveData
     }
@@ -55,23 +54,36 @@ class InfoInputViewModel(private val repository : UserInputRepository) : ViewMod
         return currentInput.value!![0].type
     }
 
-    fun update() = viewModelScope.launch {
-        val type = getLoadVal().toString()
+    fun getUpdate() {
+        loading.value = true
+        GlobalScope.launch(Dispatchers.Main) {
+            update()
+        }
+    }
 
-        val userInput = UserInput(
-            id = "data",
-            order = order.value,
-            load = load.value,
-            loader = loader.value,
-            bundleQuantity = bundles.value,
-            bl = bl.value,
-            pieceCount = quantity.value,
-            checker = checker.value,
-            vessel = vessel.value,
-            heatNum = "",
-            type = type
-        )
-        repository.update(userInput)
+    private suspend fun update() {
+        val value = GlobalScope.async {
+            withContext(Dispatchers.Main) {
+                val type = getLoadVal().toString()
+
+                val userInput = UserInput(
+                    id = "data",
+                    order = order.value,
+                    load = load.value,
+                    loader = loader.value,
+                    bundleQuantity = bundles.value,
+                    bl = bl.value,
+                    pieceCount = quantity.value,
+                    checker = checker.value,
+                    vessel = vessel.value,
+                    heatNum = "",
+                    type = type
+                )
+                repository.update(userInput)
+            }
+        }
+        println(value.await())
+        loading.value = false
     }
 
     fun refresh() {

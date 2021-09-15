@@ -20,6 +20,7 @@ import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.CircularIndeterminateProgressBar
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
+import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.viewModels.MainMenuViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.MainMenuViewModel.MainMenuViewModelFactory
 import com.example.rusalqrandbarcodescanner.viewModels.ScannedCodeViewModel
@@ -36,17 +37,20 @@ fun MainMenuScreen(navController: NavHostController) {
     val mainMenuViewModel: MainMenuViewModel = viewModel(viewModelStoreOwner = viewModelStoreOwner, key = "mainMenuVM", factory = MainMenuViewModelFactory((application as CodeApplication).userRepository))
 
     val loading = mainMenuViewModel.loading.value
-    val isClicked = remember { mutableStateOf(false)}
+    val isClicked = remember { mutableStateOf(false) }
+
     Scaffold(topBar = { TopAppBar(title = { Text(text="Main Menu", textAlign = TextAlign.Center) }) }) {
 
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
+
             if (loading || isClicked.value) {
-                Text(text="Loading please wait...", modifier = Modifier.padding(16.dp))
-                CircularIndeterminateProgressBar(isDisplayed = loading)
+                LoadingDialog(isDisplayed = loading)
+
             } else {
                 Button(onClick = {
+                    isClicked.value = true
                     mainMenuViewModel.getIsLoad(true)
                     isClicked.value = true
                 }) {
@@ -68,7 +72,11 @@ fun MainMenuScreen(navController: NavHostController) {
                             .align(Alignment.CenterVertically),
                         textAlign = TextAlign.Center)
                 }
-                Button(onClick = { navController.navigate(Screen.ScannerScreen.title) }) {
+                Button(onClick = {
+                    if (!isClicked.value) {
+                        navController.navigate(Screen.ScannerScreen.title)
+                    }
+                }) {
                     Text(text = "Get Bundle Info",
                         modifier = Modifier
                             .padding(16.dp)
@@ -77,11 +85,11 @@ fun MainMenuScreen(navController: NavHostController) {
                         textAlign = TextAlign.Center)
                 }
             }
-            if (!loading && isClicked.value){
-                Log.d("Debug", "here?")
-                navController.navigate(Screen.InfoInputScreen.title)
-                isClicked.value = false
-            }
+        }
+        if (!loading && isClicked.value){
+            Log.d("Debug", "here?")
+            navController.navigate(Screen.InfoInputScreen.title)
+            isClicked.value = false
         }
     }
 }

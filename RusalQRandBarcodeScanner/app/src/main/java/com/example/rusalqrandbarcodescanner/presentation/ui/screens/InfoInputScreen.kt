@@ -1,5 +1,6 @@
 package com.example.rusalqrandbarcodescanner.presentation.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -25,12 +26,13 @@ import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.CircularIndeterminateProgressBar
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
+import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.viewModels.InfoInputViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel
 
 @ExperimentalComposeUiApi
 @Composable
-fun InfoInputScreen(navController: NavHostController, userInputViewModel: UserInputViewModel) {
+fun InfoInputScreen(navController: NavHostController) {
     val infoInputViewModel: InfoInputViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "infoInputVM", factory = InfoInputViewModel.InfoInputViewModelFactory((LocalContext.current.applicationContext as CodeApplication).userRepository))
 
     val focusManager = LocalFocusManager.current
@@ -49,6 +51,7 @@ fun InfoInputScreen(navController: NavHostController, userInputViewModel: UserIn
     infoInputViewModel.confirmVis.observe(lifecycleOwner, confirmVisObserver)
 
     val loading = infoInputViewModel.loading.value
+    val isClicked = remember { mutableStateOf(false) }
 
     if (isLoad == null || loading) {
         CircularIndeterminateProgressBar(isDisplayed = loading)
@@ -57,51 +60,63 @@ fun InfoInputScreen(navController: NavHostController, userInputViewModel: UserIn
             if (isLoad!!) { "Input" } else { "Reception" }
         } else { "" }
 
-        Scaffold(topBar = {
-            TopAppBar(title = {
-                Text(text = "$type Info Input",
-                    textAlign = TextAlign.Center)
-            })
-        }) {
+        Scaffold(topBar = { TopAppBar(title = { Text(text = "$type Info Input", textAlign = TextAlign.Center) }) }) {
+
             Column(modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceEvenly) {
 
-                if (isLoad != null) {
-                    if (isLoad!!) {
-                        OrderInput(focusManager, infoInputViewModel)
-                        LoadInput(focusManager, infoInputViewModel)
-                        LoaderInput(focusManager, infoInputViewModel)
-                        BlInput(focusManager, infoInputViewModel)
-                        QuantityInput(focusManager, infoInputViewModel)
-                        BundlesInput(focusManager, infoInputViewModel)
-                    } else {
-                        VesselInput(focusManager, infoInputViewModel)
-                        CheckerInput(focusManager, infoInputViewModel)
-                    }
-                }
+                if (loading || isClicked.value) {
+                    Log.d("DEBUG", loading.toString())
+                    LoadingDialog(isDisplayed = true)
 
-                Row(modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly) {
-                    Button(onClick = {
-                        navController.popBackStack(Screen.MainMenuScreen.title,
-                            inclusive = false)
-                    }) {
-                        Text(text = "Back", modifier = Modifier.padding(14.dp))
-                    }
-                    if (confirmVis != null && confirmVis!!) {
-                        Button(onClick = {
-                            infoInputViewModel.update()
-                            navController.navigate(Screen.OptionsScreen.title)
-                        }) {
-                            Text(text = "Confirm $type Info", modifier = Modifier.padding(14.dp))
+                } else {
+                    if (isLoad != null) {
+                        if (isLoad!!) {
+                            OrderInput(focusManager, infoInputViewModel)
+                            LoadInput(focusManager, infoInputViewModel)
+                            LoaderInput(focusManager, infoInputViewModel)
+                            BlInput(focusManager, infoInputViewModel)
+                            QuantityInput(focusManager, infoInputViewModel)
+                            BundlesInput(focusManager, infoInputViewModel)
+                        } else {
+                            VesselInput(focusManager, infoInputViewModel)
+                            CheckerInput(focusManager, infoInputViewModel)
                         }
                     }
+
+                    Row(modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceEvenly) {
+                        Button(onClick = {
+                            if (!isClicked.value) {
+                                navController.popBackStack(Screen.MainMenuScreen.title,
+                                    inclusive = false)
+                            }
+                        }) {
+                            Text(text = "Back", modifier = Modifier.padding(14.dp))
+                        }
+                        if (confirmVis != null && confirmVis!!) {
+                            Button(onClick = {
+                                if (!isClicked.value) {
+                                    infoInputViewModel.getUpdate()
+                                    isClicked.value = true
+                                }
+                            }) {
+                                Text(text = "Confirm $type Info",
+                                    modifier = Modifier.padding(14.dp))
+                            }
+                        }
+                    }
+                }
+                if (!loading && isClicked.value) {
+                    navController.navigate(Screen.OptionsScreen.title)
+                    isClicked.value = false
                 }
             }
         }
     }
+
 }
 
 @Composable
