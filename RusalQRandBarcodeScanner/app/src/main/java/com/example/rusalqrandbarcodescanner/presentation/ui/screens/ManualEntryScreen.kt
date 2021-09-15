@@ -132,9 +132,9 @@ fun ManualEntryScreen(navController: NavHostController, userInputViewModel: User
                                                     if (ScannedInfo.blNum == userInputViewModel.bl.value && ScannedInfo.quantity == userInputViewModel.quantity.value) {
                                                         navController.navigate(Screen.ScannedInfoScreen.title)
                                                     } else if (ScannedInfo.blNum != userInputViewModel.bl.value) {
-                                                        navController.navigate(Screen.IncorrectBlScreen.title)
+                                                        navController.navigate(Screen.IncorrectBundleScreen.title)
                                                     } else {
-                                                        navController.navigate(Screen.IncorrectQuantityScreen.title)
+                                                        navController.navigate(Screen.IncorrectBundleScreen.title)
                                                     }
                                                 } else {
                                                     openDialog.value = true

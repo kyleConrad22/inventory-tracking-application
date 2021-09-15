@@ -119,14 +119,6 @@ class MainActivity : ComponentActivity() {
                         userInputViewModel,
                         scannedCodeViewModel)
                 }
-                composable(Screen.IncorrectBlScreen.title) {
-                    IncorrectBlScreen(navController,
-                        userInputViewModel)
-                }
-                composable(Screen.IncorrectQuantityScreen.title) {
-                    IncorrectQuantityScreen(navController,
-                        userInputViewModel)
-                }
                 composable(Screen.ToBeImplementedScreen.title) { ToBeImplementedScreen(navController) }
                 composable(Screen.BlOptionsScreen.title) { BlOptionsScreen(navController) }
                 composable(Screen.QuantityOptionsScreen.title) {
@@ -136,6 +128,7 @@ class MainActivity : ComponentActivity() {
                         scannedCodeViewModel)
                 }
                 composable(Screen.SplashScreen.title) { SplashScreen(navController) }
+                composable(Screen.IncorrectBundleScreen.title) { IncorrectBundleScreen(navController) }
             }
         }
     }
@@ -150,8 +143,7 @@ sealed class Screen(val title: String) {
     object BundleAddedScreen: Screen("BundleAdded")
     object BundleInfoScreen: Screen("BundleInfo")
     object DuplicateBundleScreen: Screen("DuplicateBundle")
-    object IncorrectBlScreen: Screen("IncorrectBl")
-    object IncorrectQuantityScreen: Screen("IncorrectQuantity")
+    object IncorrectBundleScreen : Screen("IncorrectBundle")
     object OptionsScreen: Screen("Options")
     object ManualEntryScreen: Screen("ManualEntry")
     object RemoveEntryScreen: Screen("RemoveEntry")

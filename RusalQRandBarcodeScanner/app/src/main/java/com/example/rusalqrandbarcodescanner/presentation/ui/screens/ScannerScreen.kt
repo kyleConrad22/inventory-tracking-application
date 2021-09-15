@@ -186,15 +186,15 @@ fun CameraPreview(
                                 val scanTime: String? = returnedCode?.scanTime
                                 if (result == null ) {
                                     if (ScannedInfo.blNum == userInputViewModel.bl.value && ScannedInfo.quantity == userInputViewModel.quantity.value ) {
-                                        navController.navigate("scannedInfoReturn")
+                                        navController.navigate(Screen.ScannedInfoScreen.title)
                                     } else if (ScannedInfo.blNum != userInputViewModel.bl.value) {
-                                        navController.navigate("incorrectBl")
+                                        navController.navigate(Screen.IncorrectBundleScreen.title)
                                     } else {
-                                        navController.navigate("incorrectQuantity")
+                                        navController.navigate(Screen.IncorrectBundleScreen.title)
                                     }
                                 } else if (scanTime != null) {
                                     Log.d("DEBUG", scanTime)
-                                    navController.navigate("duplicateBundlePage/${scanTime}")
+                                    navController.navigate("${Screen.DuplicateBundleScreen}/${scanTime}")
                                 }
                             })
                     }
