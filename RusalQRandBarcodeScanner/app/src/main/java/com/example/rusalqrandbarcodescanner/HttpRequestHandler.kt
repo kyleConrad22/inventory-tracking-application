@@ -133,7 +133,7 @@ object HttpRequestHandler {
     }
 
     private suspend fun addToRepo(viewModel: CurrentInventoryViewModel) = withContext(Dispatchers.IO){
-        //viewModel.deleteAll()
+        viewModel.deleteAll()
         currentInventory()
         val lines = output.split("},{").toTypedArray()
         lines[0] = lines[0].replace("[{", "")

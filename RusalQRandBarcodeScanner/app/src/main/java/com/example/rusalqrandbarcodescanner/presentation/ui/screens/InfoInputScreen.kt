@@ -114,7 +114,7 @@ fun OrderInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewMode
 
     order?.let{ ord ->
         OutlinedTextField(singleLine = true,
-            keyboardOptions = KeyboardOptions.Default.copy(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Next),
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password, capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down)}),
             value = ord,
             onValueChange = { it ->
@@ -174,7 +174,7 @@ fun BlInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewModel) 
 
     bl?.let{ blIt ->
         OutlinedTextField(singleLine = true,
-            keyboardOptions = KeyboardOptions.Default.copy(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Next),
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password, capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down)}),
             value = blIt,
             onValueChange = { it ->

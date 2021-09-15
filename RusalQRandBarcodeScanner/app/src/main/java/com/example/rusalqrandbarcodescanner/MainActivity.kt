@@ -10,6 +10,7 @@ import androidx.activity.viewModels
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -70,9 +71,9 @@ class MainActivity : ComponentActivity() {
 
         RusalQRAndBarcodeScannerTheme() {
             NavHost(navController = navController,
-                startDestination = (Screen.MainMenuScreen.title)) {
+                startDestination = (Screen.SplashScreen.title)) {
                 composable(Screen.MainMenuScreen.title) {
-                    MainMenuScreen(navController = navController)
+                    MainMenuScreen(navController)
                 }
                 composable(Screen.DuplicateBundleScreen.title + "/{scanTime}") { backStackEntry ->
                     DuplicateBundleScreen(navController = navController,
@@ -145,12 +146,16 @@ class MainActivity : ComponentActivity() {
                         userInputViewModel,
                         scannedCodeViewModel)
                 }
+                composable(Screen.SplashScreen.title) {
+                    SplashScreen(navController)
+                }
             }
         }
     }
 }
 
 sealed class Screen(val title: String) {
+    object SplashScreen: Screen("SplashScreen")
     object MainMenuScreen: Screen("MainMenu")
     object ScannerScreen: Screen("Scanner")
     object InfoInputScreen: Screen("InfoInput")

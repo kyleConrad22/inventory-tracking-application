@@ -13,7 +13,7 @@ class MainMenuViewModel(private val repository : UserInputRepository) : ViewMode
 
     val loading = mutableStateOf(true)
 
-    suspend fun isLoad(isLoad: Boolean) = viewModelScope.launch {
+    fun isLoad(isLoad: Boolean) = viewModelScope.launch {
         Log.d("DEBUG", "userInput")
         val userInput: UserInput = if (isLoad) {
             UserInput(type = "Load", id = "data")
