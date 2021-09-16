@@ -1,6 +1,5 @@
 package com.example.rusalqrandbarcodescanner.presentation.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Scaffold
@@ -17,18 +16,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.rusalqrandbarcodescanner.CircularIndeterminateProgressBar
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.viewModels.MainMenuViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.MainMenuViewModel.MainMenuViewModelFactory
-import com.example.rusalqrandbarcodescanner.viewModels.ScannedCodeViewModel
-import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.DelicateCoroutinesApi
 
+@DelicateCoroutinesApi
 @Composable
 fun MainMenuScreen(navController: NavHostController) {
     val application = LocalContext.current.applicationContext
@@ -50,7 +45,6 @@ fun MainMenuScreen(navController: NavHostController) {
 
             } else {
                 Button(onClick = {
-                    isClicked.value = true
                     mainMenuViewModel.getIsLoad(true)
                     isClicked.value = true
                 }) {

@@ -22,7 +22,9 @@ import com.example.rusalqrandbarcodescanner.viewModels.ScannedCodeViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.ScannedCodeViewModel.ScannedCodeViewModelFactory
 import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel.UserInputViewModelFactory
+import kotlinx.coroutines.DelicateCoroutinesApi
 
+@DelicateCoroutinesApi
 @ExperimentalComposeUiApi
 class MainActivity : ComponentActivity() {
 
@@ -91,11 +93,7 @@ class MainActivity : ComponentActivity() {
                         currentInventoryViewModel)
                 }
                 composable(Screen.BundleAddedScreen.title) { BundleAddedScreen(navController) }
-                composable(Screen.ScannedInfoScreen.title) {
-                    ScannedInfoScreen(navController,
-                        userInputViewModel,
-                        scannedCodeViewModel)
-                }
+                composable(Screen.ScannedInfoScreen.title) { ScannedInfoScreen(navController) }
                 composable(Screen.ManualEntryScreen.title) {
                     ManualEntryScreen(navController,
                         userInputViewModel,
