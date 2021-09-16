@@ -11,47 +11,41 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Observer
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.ScannedInfo
-import com.example.rusalqrandbarcodescanner.Screen
-import com.example.rusalqrandbarcodescanner.viewModels.ScannedCodeViewModel
-import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel
+import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
+import com.example.rusalqrandbarcodescanner.viewModels.BundleAddedViewModel
+import com.example.rusalqrandbarcodescanner.viewModels.BundleAddedViewModel.BundleAddedViewModelFactory
 
 @Composable
-fun BundleAddedScreen(navController: NavHostController, scannedCodeViewModel: ScannedCodeViewModel, userInputViewModel: UserInputViewModel) {
-    val lifecycleOwner = LocalLifecycleOwner.current
-    var count = remember { scannedCodeViewModel.count.value }
-    val countObserver = Observer<Int> { it ->
-        count = it
-    }
-    var isLoad by remember { mutableStateOf(userInputViewModel.isLoad().value) }
-    val isLoadObserver = Observer<Boolean> { it ->
-        isLoad = it
-    }
-    scannedCodeViewModel.count.observe(lifecycleOwner, countObserver)
-    userInputViewModel.isLoad().observe(lifecycleOwner, isLoadObserver)
+fun BundleAddedScreen(navController: NavHostController) {
+    val application  = LocalContext.current.applicationContext
+    val bundleAddedViewModel : BundleAddedViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "bundleAddedViewModel", factory = BundleAddedViewModelFactory((application as CodeApplication).userRepository, application.repository))
 
-    val type = if(isLoad != null && isLoad!!) { "load" } else{ "reception" }
+    val loading = bundleAddedViewModel.loading.value
+    val isLoad = bundleAddedViewModel.isLoad.value
+    val destination = bundleAddedViewModel.destination.value
+    bundleAddedViewModel.setValues()
 
     Scaffold(topBar = { TopAppBar( title = { Text("Bundle Added", textAlign = TextAlign.Center) }) }) {
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(text = "Bundle ${ScannedInfo.heatNum} added to $type")
+            if (loading) {
+                LoadingDialog(isDisplayed = true)
+            } else {
+                Text(text = "Bundle ${ScannedInfo.heatNum} added to ${if (isLoad != null && isLoad) { "load" } else { "reception" }}")
 
-            if (count != null) {
-                Text(text = "Bundles Remaining: ${Integer.parseInt(userInputViewModel.bundles.value!!) - count!!}")
+                Text(text = "Bundles Remaining: ${bundleAddedViewModel.bundlesRemaining.value}")
                 Button(onClick = {
-                    if (Integer.parseInt(userInputViewModel.bundles.value!!) - count!! == 0) {
-                        navController.navigate(Screen.ReviewScreen.title)
-                    } else {
-                        ScannedInfo.clearValues()
-                        navController.popBackStack(Screen.ScannerScreen.title, inclusive = false)
-                    } }) {
+                    navController.navigate(destination)
+                }) {
                     Text(text = "OK", modifier = Modifier.padding(16.dp))
                 }
             }

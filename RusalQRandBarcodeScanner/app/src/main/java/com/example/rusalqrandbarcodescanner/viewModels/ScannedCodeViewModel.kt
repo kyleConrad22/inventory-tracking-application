@@ -9,7 +9,6 @@ import java.lang.IllegalArgumentException
 class ScannedCodeViewModel(private val repository: CodeRepository): ViewModel() {
 
     val allCodes: LiveData<List<ScannedCode>> = repository.allCodes.asLiveData()
-    val count: LiveData<Int> = repository.count.asLiveData()
 
     fun insert(scannedCode: ScannedCode) = viewModelScope.launch {
         repository.insert(scannedCode)

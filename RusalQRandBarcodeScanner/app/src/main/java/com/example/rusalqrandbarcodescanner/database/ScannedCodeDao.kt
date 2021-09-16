@@ -27,7 +27,10 @@ interface ScannedCodeDao {
     suspend fun deleteAll()
 
     @Query("SELECT COUNT(*) FROM scannedCode")
-    fun getRowCount(): Flow<Int>
+    suspend fun getRowCount(): Int
+
+    @Query("SELECT COUNT(*) FROM scannedCode")
+    fun count(): Flow<Int>
 
     @Insert
     suspend fun insert(vararg scannedCodes: ScannedCode)

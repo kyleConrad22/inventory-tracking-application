@@ -8,9 +8,18 @@ import com.example.rusalqrandbarcodescanner.database.ScannedCodeDao
 import kotlinx.coroutines.flow.Flow
 
 class CodeRepository(private val scannedCodeDao: ScannedCodeDao) {
-
+    val count: Flow<Int> = scannedCodeDao.count()
     val allCodes: Flow<List<ScannedCode>> = scannedCodeDao.getAll()
-    val count: Flow<Int> = scannedCodeDao.getRowCount()
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun getRowCount() : Int? {
+        return try {
+            scannedCodeDao.getRowCount()
+        } catch (exc : EmptyResultSetException) {
+            null
+        }
+    }
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread

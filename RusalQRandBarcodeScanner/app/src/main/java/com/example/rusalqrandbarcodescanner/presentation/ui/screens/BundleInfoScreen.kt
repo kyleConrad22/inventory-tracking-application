@@ -24,17 +24,13 @@ fun BundleInfoScreen(navController: NavHostController, barcode: String?, scanned
     val codeObserver = Observer<ScannedCode?> { it ->
         scannedCode = it
     }
-    var count by remember { mutableStateOf(scannedCodeViewModel.count.value) }
-    val countObserver = Observer<Int> { it ->
-        count = it
-    }
+
     var isLoad by remember { mutableStateOf(userInputViewModel.isLoad().value) }
     val isLoadObserver = Observer<Boolean> { it->
         isLoad = it
     }
-
+    val count = 100
     userInputViewModel.isLoad().observe(lifecycleOwner, isLoadObserver)
-    scannedCodeViewModel.count.observe(lifecycleOwner, countObserver)
     scannedCodeViewModel.findByBarcode(barcode!!).observe(lifecycleOwner, codeObserver)
 
     var openDialog by remember { mutableStateOf(false) }

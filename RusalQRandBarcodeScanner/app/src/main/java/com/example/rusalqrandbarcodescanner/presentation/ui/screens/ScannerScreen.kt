@@ -39,10 +39,6 @@ import com.google.mlkit.vision.common.InputImage
 fun ScannerScreen(navController: NavHostController, scannedCodeViewModel: ScannedCodeViewModel, userInputViewModel: UserInputViewModel, currentInventoryViewModel: CurrentInventoryViewModel) {
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    var count by remember { mutableStateOf(scannedCodeViewModel.count.value) }
-    val countObserver = Observer<Int>{ it ->
-        count = it
-    }
     var isLoad by remember { mutableStateOf(userInputViewModel.isLoad().value) }
     val loadObserver = Observer<Boolean> { it ->
         isLoad = it
@@ -53,7 +49,8 @@ fun ScannerScreen(navController: NavHostController, scannedCodeViewModel: Scanne
     }
     userInputViewModel.isLoad().observe(lifecycleOwner, loadObserver)
     userInputViewModel.isReception().observe(lifecycleOwner, receptionObserver)
-    scannedCodeViewModel.count.observe(lifecycleOwner, countObserver)
+
+    val count = 100
 
     val type = if (isLoad != null && isLoad!!) { "Load" } else { "Reception" }
 

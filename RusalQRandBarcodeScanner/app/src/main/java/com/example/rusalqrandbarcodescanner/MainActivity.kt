@@ -90,11 +90,7 @@ class MainActivity : ComponentActivity() {
                         scannedCodeViewModel,
                         currentInventoryViewModel)
                 }
-                composable(Screen.BundleAddedScreen.title) {
-                    BundleAddedScreen(navController,
-                        scannedCodeViewModel,
-                        userInputViewModel)
-                }
+                composable(Screen.BundleAddedScreen.title) { BundleAddedScreen(navController) }
                 composable(Screen.ScannedInfoScreen.title) {
                     ScannedInfoScreen(navController,
                         userInputViewModel,
