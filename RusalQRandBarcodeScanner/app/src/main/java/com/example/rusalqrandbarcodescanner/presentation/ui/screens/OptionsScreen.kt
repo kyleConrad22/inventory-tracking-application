@@ -37,6 +37,8 @@ fun OptionsScreen(navController: NavHostController) {
     }
     optionsViewModel.isLoad().observe(LocalLifecycleOwner.current, isLoadObserver)
 
+    val displayRemoveEntry = optionsViewModel.displayRemoveEntry.value
+
     if (isLoad == null) {
         CircularIndeterminateProgressBar(isDisplayed = loading)
     } else {
@@ -69,7 +71,6 @@ fun OptionsScreen(navController: NavHostController) {
                                 .align(Alignment.CenterVertically), textAlign = TextAlign.Center)
                         }
                     }
-                    RemoveEntryButton(navController)
                 }
                 Row(modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -83,7 +84,7 @@ fun OptionsScreen(navController: NavHostController) {
                         Button(onClick = {
                             navController.navigate(Screen.ReviewScreen.title)
                         }) {
-                            Text(text = "Confirm $type", modifier = Modifier.padding(16.dp))
+                            Text(text = if (displayRemoveEntry) { "RemoveEntry" } else { "Confirm $type" }, modifier = Modifier.padding(16.dp))
                         }
                     }
                     if (resetDialog.value) {
@@ -107,14 +108,3 @@ fun OptionsScreen(navController: NavHostController) {
             }
     }
 }
-
-@Composable
-fun RemoveEntryButton(navController: NavHostController) {
-    Button(onClick = { navController.navigate(Screen.RemoveEntryScreen.title) }) {
-        Text(text = "Remove Entry", modifier = Modifier
-            .padding(16.dp)
-            .size(width = 200.dp, height = 20.dp)
-            .align(Alignment.CenterVertically), textAlign = TextAlign.Center)
-    }
-}
-

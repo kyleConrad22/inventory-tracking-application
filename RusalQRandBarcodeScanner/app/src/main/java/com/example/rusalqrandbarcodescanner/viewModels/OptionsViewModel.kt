@@ -9,11 +9,11 @@ import java.lang.IllegalArgumentException
 
 class OptionsViewModel(private val userRepository : UserInputRepository, private val codeRepository : CodeRepository) : ViewModel() {
     val currentInput = userRepository.currentInput.asLiveData()
-    val count: LiveData<Int> = codeRepository.count.asLiveData()
+    private val count: LiveData<Int> = codeRepository.count.asLiveData()
 
     val loading = mutableStateOf(false)
-
     val displayCountButtons = mutableStateOf(count.value != null && count.value!! > 0)
+    val displayRemoveEntry = mutableStateOf(count.value != null && currentInput.value != null && Integer.parseInt(currentInput.value!![0].bundleQuantity!!) - count.value!! > 0)
 
     fun deleteAll() = viewModelScope.launch {
         codeRepository.deleteAll()

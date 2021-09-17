@@ -13,6 +13,7 @@ import java.lang.IllegalArgumentException
 
 class ReviewViewModel(private val codeRepository : CodeRepository, private val inventoryRepository: CurrentInventoryRepository, private val userRepository: UserInputRepository) : ViewModel() {
     private val currentInput = userRepository.currentInput.asLiveData()
+    private val count = codeRepository.count.asLiveData()
     val codes = codeRepository.allCodes.asLiveData()
 
     val isLoad = mutableStateOf(currentInput.value!![0].type == "Load")
@@ -21,6 +22,8 @@ class ReviewViewModel(private val codeRepository : CodeRepository, private val i
     fun deleteAll() = viewModelScope.launch {
         codeRepository.deleteAll()
     }
+
+    val showRemoveDialog = mutableStateOf(count.value != null && currentInput.value != null && Integer.parseInt(currentInput.value!![0].bundleQuantity!!) - count.value!! > 0)
 
     class ReviewViewModelFactory(private val codeRepository: CodeRepository, private val inventoryRepository: CurrentInventoryRepository, private val userRepository: UserInputRepository) : ViewModelProvider.Factory {
         override fun<T : ViewModel> create(modelClass : Class<T>) : T {

@@ -75,6 +75,7 @@ fun BundleInfoScreen(navController: NavHostController, barcode: String?, scanned
                             Text(text = "Deny Removal", modifier = Modifier.padding(16.dp))
                         }
                         Button(onClick = {
+                            /* TODO - Add check for if bundle is unidentified and if so remove from current inventory as well*/
                             scannedCodeViewModel.delete(scannedCode!!)
                             openDialog = false
                             if (count != null && count!! > 1) {

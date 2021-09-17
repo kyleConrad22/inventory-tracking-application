@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Observer
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
@@ -37,51 +38,58 @@ fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: Scanned
 
     val isLoad = reviewViewModel.isLoad.value
     val loadType = reviewViewModel.loadType.value
+    val showRemoveDialog = reviewViewModel.showRemoveDialog.value
 
     val confirmDialog = remember { mutableStateOf(false) }
-
-    Column(modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly) {
-        Text(text = "Review $loadType:", modifier = Modifier.padding(16.dp))
-        GetCodeListView(navController)
-        Row(modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly) {
-            Button(onClick = {
-                navController.navigateUp()
-            }) {
-                Text(text="Back", modifier = Modifier.padding(16.dp))
-            }
-            Button(onClick = {
-                if (isLoad) {
-                    HttpRequestHandler.initUpdate(scannedCodeViewModel, currentInventoryViewModel)
-                } else {
-                    /*TODO - Add Reception Confirmation Logic */
+    Scaffold(topBar = { TopAppBar(title = { Text(text=if(showRemoveDialog) { "Remove Entry" } else { "Review $loadType" }, textAlign = TextAlign.Center) }) }) {
+        Column(modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly) {
+            Text(text = if(showRemoveDialog) { "Please select the bundle you would like to remove:" } else { "Review $loadType; if you would like to remove a bundle please select it:" }, modifier = Modifier.padding(16.dp))
+            GetCodeListView(navController)
+            Row(modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly) {
+                Button(onClick = {
+                    navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)
+                }) {
+                    Text(text = "Back", modifier = Modifier.padding(16.dp))
                 }
-                reviewViewModel.deleteAll()
-                confirmDialog.value = true
-            }) {
-                Text(text="Confirm $loadType", modifier = Modifier.padding(16.dp))
+                if (!showRemoveDialog) {
+                    Button(onClick = {
+                        if (isLoad) {
+                            HttpRequestHandler.initUpdate(reviewViewModel,
+                                scannedCodeViewModel,
+                                currentInventoryViewModel)
+                        } else {
+                            /*TODO - Add Reception Confirmation Logic */
+                        }
+                        reviewViewModel.deleteAll()
+                        confirmDialog.value = true
+                    }) {
+                        Text(text = "Confirm $loadType", modifier = Modifier.padding(16.dp))
+                    }
+                }
             }
         }
-    }
-    if (confirmDialog.value) {
-        AlertDialog(
-            onDismissRequest = {
-                navController.popBackStack(Screen.MainMenuScreen.title, inclusive = true)
-            },
-            title = { Text(text = "$loadType Confirmation") },
-            text = { Text(text = "$loadType Confirmed") },
-            buttons = {
-                Row(modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly) {
-                    Button(onClick = {
-                        navController.popBackStack(Screen.MainMenuScreen.title, inclusive = true)
-                    }) { Text(text = "Ok", modifier = Modifier.padding(16.dp)) }
+        if (confirmDialog.value) {
+            AlertDialog(
+                onDismissRequest = {
+                    navController.popBackStack(Screen.MainMenuScreen.title, inclusive = true)
+                },
+                title = { Text(text = "$loadType Confirmation") },
+                text = { Text(text = "$loadType Confirmed") },
+                buttons = {
+                    Row(modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly) {
+                        Button(onClick = {
+                            navController.popBackStack(Screen.MainMenuScreen.title,
+                                inclusive = true)
+                        }) { Text(text = "Ok", modifier = Modifier.padding(16.dp)) }
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 }
 

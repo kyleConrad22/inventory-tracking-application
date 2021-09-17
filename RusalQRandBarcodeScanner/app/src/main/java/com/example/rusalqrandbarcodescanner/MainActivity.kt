@@ -108,11 +108,6 @@ class MainActivity : ComponentActivity() {
                 }
                 composable(Screen.OptionsScreen.title) { OptionsScreen(navController) }
                 composable(Screen.InfoInputScreen.title) { InfoInputScreen(navController) }
-                composable(Screen.RemoveEntryScreen.title) {
-                    RemoveEntryScreen(navController,
-                        userInputViewModel,
-                        scannedCodeViewModel)
-                }
                 composable(Screen.ToBeImplementedScreen.title) { ToBeImplementedScreen(navController) }
                 composable(Screen.BlOptionsScreen.title) { BlOptionsScreen(navController) }
                 composable(Screen.QuantityOptionsScreen.title) {
@@ -140,7 +135,6 @@ sealed class Screen(val title: String) {
     object IncorrectBundleScreen : Screen("IncorrectBundle")
     object OptionsScreen: Screen("Options")
     object ManualEntryScreen: Screen("ManualEntry")
-    object RemoveEntryScreen: Screen("RemoveEntry")
     object ScannedInfoScreen: Screen("ScannedInfo")
     object ToBeImplementedScreen: Screen("ToBeImplemented")
     object ReviewScreen: Screen("Review")
