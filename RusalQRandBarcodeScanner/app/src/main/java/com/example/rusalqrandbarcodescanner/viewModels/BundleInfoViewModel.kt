@@ -1,12 +1,69 @@
 package com.example.rusalqrandbarcodescanner.viewModels
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.rusalqrandbarcodescanner.database.ScannedCode
 import com.example.rusalqrandbarcodescanner.repositories.CodeRepository
 import com.example.rusalqrandbarcodescanner.repositories.UserInputRepository
+import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
 
 class BundleInfoViewModel(private val userRepo : UserInputRepository, private val codeRepo : CodeRepository) : ViewModel() {
+    private val initCode : ScannedCode? = null
+    private val initLoad : Boolean? = null
+    val loading = mutableStateOf(true)
+    val code = mutableStateOf(initCode)
+    val isLoad = mutableStateOf(initLoad)
+
+    fun setValues(barcode : String) {
+        if (isLoad.value == null) {
+            GlobalScope.launch(Dispatchers.Main) {
+                setIsLoad()
+                setCodeValue(barcode)
+                loading.value = false
+            }
+        }
+    }
+
+    fun removeBundle() {
+        loading.value = true
+        GlobalScope.launch(Dispatchers.Main) {
+            val value = GlobalScope.async {
+                withContext(Dispatchers.Main) {
+                    codeRepo.delete(code.value!!)
+                }
+            }
+            println(value.await())
+            loading.value = false
+        }
+    }
+
+    fun resetViewModelState() {
+        loading.value = true
+        code.value = initCode
+        isLoad.value = initLoad
+    }
+
+    private suspend fun setCodeValue(barcode : String) {
+        val value = GlobalScope.async {
+            withContext(Dispatchers.Main) {
+                code.value = codeRepo.findByBarcode(barcode)
+            }
+        }
+        println(value.await())
+    }
+
+    private suspend fun setIsLoad() {
+        val value = GlobalScope.async {
+            withContext(Dispatchers.Main) {
+                val userInput = userRepo.getInputSuspend()!![0]
+                isLoad.value = userInput.type == "Load"
+            }
+        }
+        println(value.await())
+    }
+
     class BundleInfoViewModelFactory(private val userRepo : UserInputRepository, private val codeRepo : CodeRepository) : ViewModelProvider.Factory {
         override fun<T : ViewModel> create(modelClass : Class<T>) : T {
             if (modelClass.isAssignableFrom(BundleAddedViewModel::class.java)) {

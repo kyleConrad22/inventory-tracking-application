@@ -82,10 +82,7 @@ class MainActivity : ComponentActivity() {
                         userInputViewModel)
                 }
                 composable(Screen.BundleInfoScreen.title + "/{barcode}") { backStackEntry ->
-                    BundleInfoScreen(navController = navController,
-                        barcode = backStackEntry.arguments?.getString("barcode"),
-                        scannedCodeViewModel,
-                        userInputViewModel)
+                    BundleInfoScreen(navController = navController, barcode = backStackEntry.arguments?.getString("barcode"))
                 }
                 composable(Screen.ReviewScreen.title) {
                     ReviewScreen(navController,
