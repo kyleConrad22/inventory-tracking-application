@@ -84,7 +84,7 @@ fun OptionsScreen(navController: NavHostController) {
                         Button(onClick = {
                             navController.navigate(Screen.ReviewScreen.title)
                         }) {
-                            Text(text = if (displayRemoveEntry) { "RemoveEntry" } else { "Confirm $type" }, modifier = Modifier.padding(16.dp))
+                            Text(text = if (displayRemoveEntry) { "RemoveEntry" } else { "Review $type" }, modifier = Modifier.padding(16.dp))
                         }
                     }
                     if (resetDialog.value) {
