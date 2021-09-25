@@ -9,8 +9,22 @@ import java.lang.IllegalArgumentException
 
 @DelicateCoroutinesApi
 class ScannerViewModel(private val userRepo : UserInputRepository) : ViewModel() {
+    private val currentInput = userRepo.currentInput
+
     val loading = mutableStateOf(false)
     val heat = mutableStateOf("")
+    val isReviewVis = mutableStateOf(false)
+
+
+    /* TODO - Add logic for getting load type */
+    fun getType() : String {
+        return ""
+    }
+
+    /* TODO - Add Review Visibility logic */
+    fun setReviewVis() {
+
+    }
 
     /* TODO - Move Scanning Logic To ViewModel */
 

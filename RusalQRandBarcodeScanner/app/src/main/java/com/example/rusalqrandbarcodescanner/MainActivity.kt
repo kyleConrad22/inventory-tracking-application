@@ -37,10 +37,6 @@ class MainActivity : ComponentActivity() {
         CurrentInventoryViewModelFactory((application as CodeApplication).invRepository)
     }
 
-    private val userInputViewModel: UserInputViewModel by viewModels {
-        UserInputViewModelFactory((application as CodeApplication).userRepository)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -86,12 +82,7 @@ class MainActivity : ComponentActivity() {
                         currentInventoryViewModel)
                 }
                 composable(Screen.ManualEntryScreen.title) { ManualEntryScreen(navController) }
-                composable(Screen.ScannerScreen.title) {
-                    ScannerScreen(navController,
-                        scannedCodeViewModel,
-                        userInputViewModel,
-                        currentInventoryViewModel)
-                }
+                composable(Screen.ScannerScreen.title) { ScannerScreen(navController) }
                 composable(Screen.OptionsScreen.title) { OptionsScreen(navController) }
                 composable(Screen.InfoInputScreen.title) { InfoInputScreen(navController) }
                 composable(Screen.ToBeImplementedScreen.title) { ToBeImplementedScreen(navController) }

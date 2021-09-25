@@ -19,42 +19,34 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.util.ScannedInfo
 import com.example.rusalqrandbarcodescanner.Screen
-import com.example.rusalqrandbarcodescanner.database.ScannedCode
-import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel
-import com.example.rusalqrandbarcodescanner.viewModels.ScannedCodeViewModel
-import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel
+import com.example.rusalqrandbarcodescanner.viewModels.ScannerViewModel
+import com.example.rusalqrandbarcodescanner.viewModels.ScannerViewModel.ScannerViewModelFactory
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
+import kotlinx.coroutines.DelicateCoroutinesApi
 
+@DelicateCoroutinesApi
 @ExperimentalComposeUiApi
 @Composable
-fun ScannerScreen(navController: NavHostController, scannedCodeViewModel: ScannedCodeViewModel, userInputViewModel: UserInputViewModel, currentInventoryViewModel: CurrentInventoryViewModel) {
+fun ScannerScreen(navController: NavHostController) {
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    var isLoad by remember { mutableStateOf(userInputViewModel.isLoad().value) }
-    val loadObserver = Observer<Boolean> { it ->
-        isLoad = it
-    }
-    var isReception by remember { mutableStateOf(userInputViewModel.isReception().value) }
-    val receptionObserver = Observer<Boolean> { it ->
-        isReception = it
-    }
-    userInputViewModel.isLoad().observe(lifecycleOwner, loadObserver)
-    userInputViewModel.isReception().observe(lifecycleOwner, receptionObserver)
+    val scannerViewModel : ScannerViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ScannerVM", factory = ScannerViewModelFactory((LocalContext.current.applicationContext as CodeApplication).userRepository))
 
-    val count = 100
+    val isReviewVis = scannerViewModel.isReviewVis.value!!
 
-    val type = if (isLoad != null && isLoad!!) { "Load" } else { "Reception" }
-
-    CameraPreview(modifier = Modifier.fillMaxSize(), navController = navController, currentInventoryViewModel = currentInventoryViewModel, scannedCodeViewModel = scannedCodeViewModel, userInputViewModel = userInputViewModel)
+    CameraPreview(modifier = Modifier.fillMaxSize(), navController = navController, scannerViewModel = scannerViewModel)
     Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom) {
@@ -71,28 +63,18 @@ fun ScannerScreen(navController: NavHostController, scannedCodeViewModel: Scanne
             verticalAlignment = Alignment.Bottom,
             horizontalArrangement = Arrangement.SpaceEvenly) {
             Button(onClick = {
-                when {
-                    isLoad!! -> {
-                        navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)
-                    }
-                    isReception!! -> {
-                        navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)
-                    }
-                    else -> {
-                        navController.popBackStack(Screen.MainMenuScreen.title, inclusive = false)
-                    }
-                }
+                navController.popBackStack()
             }) {
                 Text(text="Back", modifier = Modifier.padding(16.dp))
             }
             Button(onClick = { navController.navigate(Screen.ManualEntryScreen.title) }) {
                 Text(text = "Manual Entry", modifier = Modifier.padding(16.dp))
             }
-            if (count != null && count!! > 0) {
+            if (isReviewVis) {
                 Button(onClick = {
                     navController.navigate(Screen.ReviewScreen.title)
                 }) {
-                    Text("Confirm $type", modifier = Modifier.padding(16.dp))
+                    Text("Confirm ${scannerViewModel.getType()}", modifier = Modifier.padding(16.dp))
                 }
             }
         }
@@ -101,6 +83,7 @@ fun ScannerScreen(navController: NavHostController, scannedCodeViewModel: Scanne
 }
 
 private class ImageAnalyzer: ImageAnalysis.Analyzer {
+
     @SuppressLint("UnsafeOptInUsageError")
     override fun analyze(imageProxy: ImageProxy) {
         val mediaImage = imageProxy.image
@@ -130,6 +113,7 @@ private class ImageAnalyzer: ImageAnalysis.Analyzer {
     }
 }
 
+@DelicateCoroutinesApi
 @ExperimentalComposeUiApi
 @Composable
 fun CameraPreview(
@@ -137,10 +121,7 @@ fun CameraPreview(
     cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA,
     scaleType: PreviewView.ScaleType = PreviewView.ScaleType.FILL_CENTER,
     navController: NavHostController,
-    currentInventoryViewModel: CurrentInventoryViewModel,
-    scannedCodeViewModel: ScannedCodeViewModel,
-    userInputViewModel: UserInputViewModel
-) {
+    scannerViewModel : ScannerViewModel) {
 
     val lifecycleOwner = LocalLifecycleOwner.current
     AndroidView(
@@ -166,26 +147,8 @@ fun CameraPreview(
                 { imageProxy ->
                     ImageAnalyzer().analyze(imageProxy)
                     if (ScannedInfo.qrCode != "") {
-                        var result: ScannedCode?
-                        currentInventoryViewModel.findByHeat(ScannedInfo.heatNum.replace("-", "")).observe(lifecycleOwner,
-                            { returnedCode ->
-                                if (returnedCode != null) {
-                                    ScannedInfo.blNum = returnedCode.blNum.toString()
-                                    ScannedInfo.quantity = returnedCode.quantity.toString()
-                                } else {
-                                    ScannedInfo.blNum = "BL not found!"
-                                }
-
-                            })
-                        scannedCodeViewModel.findByBarcode(ScannedInfo.barCode).observe(lifecycleOwner,
-                            { returnedCode ->
-                                result = returnedCode
-                                if (result == null ) {
-                                    if (ScannedInfo.blNum == userInputViewModel.bl.value && ScannedInfo.quantity == userInputViewModel.quantity.value ) {
-                                        navController.navigate(Screen.ReturnedBundleScreen.title)
-                                    }
-                                }
-                            })
+                        scannerViewModel.heat.value = ScannedInfo.heatNum
+                        navController.navigate(Screen.ReturnedBundleScreen.title)
                     }
                 })
 
