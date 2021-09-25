@@ -23,11 +23,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.navArgument
 import com.example.rusalqrandbarcodescanner.CodeApplication
-import com.example.rusalqrandbarcodescanner.ScannedInfo
+import com.example.rusalqrandbarcodescanner.util.ScannedInfo
 import com.example.rusalqrandbarcodescanner.Screen
-import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
 import com.example.rusalqrandbarcodescanner.database.ScannedCode
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel
@@ -35,10 +33,9 @@ import com.example.rusalqrandbarcodescanner.viewModels.ManualEntryViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.ManualEntryViewModel.ManualEntryViewModelFactory
 import com.example.rusalqrandbarcodescanner.viewModels.ScannedCodeViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.DelicateCoroutinesApi
 
+@DelicateCoroutinesApi
 @ExperimentalComposeUiApi
 @Composable
 fun ManualEntryScreen(navController: NavHostController, userInputViewModel: UserInputViewModel, currentInventoryViewModel: CurrentInventoryViewModel, scannedCodeViewModel: ScannedCodeViewModel) {
@@ -89,35 +86,6 @@ fun ManualEntryScreen(navController: NavHostController, userInputViewModel: User
                         if (isBaseHeat) {
                             manualEntryViewModel.setDestination()
                             isClicked.value = true
-
-                            /*
-                            var returnType : String? = ""
-                            GlobalScope.launch(Dispatchers.Main) { returnType = manualEntryViewModel.getReturnType() }
-
-                            if (returnType != "Null") {
-                                when (returnType) {
-                                    "Single Return" -> {
-                                        destination = Screen.ScannedInfoScreen.title
-                                    }
-                                    "Multiple Bls" -> {
-                                        /*TODO*/
-                                        destination = Screen.BlOptionsScreen.title
-                                        /*Present bl options to loader and ask for them to confirm BL being loaded is correct*/
-
-                                    }
-                                    "Multiple Quantities" -> {
-                                        /*TODO*/
-                                        destination = Screen.QuantityOptionsScreen.title
-                                        /*Ask for loader to verify that there are the requested number of pieces on this bundle, have them type the amount*/
-
-                                    }
-                                    "Multiple Bls and Quantities" -> {
-                                        /*TODO*/
-                                        destination = Screen.ToBeImplementedScreen.title
-                                        /*Ask for loader to verify requested amount of pieces and confirm that the BL being loaded is correct.*/
-                                    }
-                                    isClicked.value = true
-                             */
                         } else {
                             var returnedCode: ScannedCode?
                             scannedCodeViewModel.findByHeat(heat!!)
@@ -179,6 +147,7 @@ fun ManualEntryScreen(navController: NavHostController, userInputViewModel: User
     }
 }
 
+@DelicateCoroutinesApi
 @Composable
 private fun HeatNumberInput(focusManager : FocusManager, manualEntryViewModel : ManualEntryViewModel) {
     var heat by remember { mutableStateOf(manualEntryViewModel.heat.value) }

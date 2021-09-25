@@ -1,14 +1,10 @@
 package com.example.rusalqrandbarcodescanner.viewModels
 
-import android.util.Log
 import androidx.lifecycle.*
 import com.example.rusalqrandbarcodescanner.repositories.CurrentInventoryRepository
-import com.example.rusalqrandbarcodescanner.ScannedInfo
 import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 class CurrentInventoryViewModel(private val repository: CurrentInventoryRepository): ViewModel() {
 

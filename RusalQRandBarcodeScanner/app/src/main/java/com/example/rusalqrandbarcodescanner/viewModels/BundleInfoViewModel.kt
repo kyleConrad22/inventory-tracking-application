@@ -12,12 +12,13 @@ import java.lang.IllegalArgumentException
 class BundleInfoViewModel(private val userRepo : UserInputRepository, private val codeRepo : CodeRepository) : ViewModel() {
     private val initCode : ScannedCode? = null
     private val initLoad : Boolean? = null
-    val loading = mutableStateOf(true)
+    val loading = mutableStateOf(false)
     val code = mutableStateOf(initCode)
     val isLoad = mutableStateOf(initLoad)
 
     fun setValues(barcode : String) {
         if (isLoad.value == null) {
+            loading.value = true
             GlobalScope.launch(Dispatchers.Main) {
                 setIsLoad()
                 setCodeValue(barcode)
@@ -40,7 +41,6 @@ class BundleInfoViewModel(private val userRepo : UserInputRepository, private va
     }
 
     fun resetViewModelState() {
-        loading.value = true
         code.value = initCode
         isLoad.value = initLoad
     }

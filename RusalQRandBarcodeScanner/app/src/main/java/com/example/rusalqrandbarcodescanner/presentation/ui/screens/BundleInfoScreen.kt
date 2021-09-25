@@ -44,6 +44,7 @@ fun BundleInfoScreen(navController: NavHostController, barcode: String?) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly) {
                     Button(onClick = {
+                        bundleInfoViewModel.resetViewModelState()
                         navController.popBackStack()
                     }) {
                         Text(text = "Dismiss", modifier = Modifier.padding(16.dp))

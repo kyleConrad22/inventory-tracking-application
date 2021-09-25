@@ -3,7 +3,7 @@ package com.example.rusalqrandbarcodescanner.viewModels
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
-import com.example.rusalqrandbarcodescanner.ScannedInfo
+import com.example.rusalqrandbarcodescanner.util.ScannedInfo
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
 import com.example.rusalqrandbarcodescanner.database.UserInput
@@ -18,8 +18,9 @@ import java.time.format.DateTimeFormatter
 @DelicateCoroutinesApi
 class ManualEntryViewModel(private val userRepository : UserInputRepository, private val codeRepository : CodeRepository, private val inventoryRepository : CurrentInventoryRepository) : ViewModel() {
     private val list : List<UserInput> = listOf()
-    private var currentInput = mutableStateOf(list)
+    private val currentInput = mutableStateOf(list)
     private val triggerLoader = MutableLiveData<Unit>()
+    private var repoData : List<CurrentInventoryLineItem> = listOf()
 
     val heat: MutableLiveData<String> = MutableLiveData("")
     val destination = mutableStateOf("")
@@ -35,6 +36,21 @@ class ManualEntryViewModel(private val userRepository : UserInputRepository, pri
 
     fun refresh() {
         triggerLoader.value = Unit
+    }
+
+    // Returns destination for NavController
+    fun setDestination() {
+        loading.value = true
+        GlobalScope.launch(Dispatchers.Main) { // Launches coroutine in main thread
+            setDestinationLogic()
+            loading.value = false
+        }
+    }
+
+    fun getBaseHeatList() : List<String> {
+        val baseHeats = mutableListOf<String>()
+        /*TODO*/
+        return baseHeats
     }
 
     private fun isBaseHeatLogic() : LiveData<Boolean> {
@@ -145,11 +161,9 @@ class ManualEntryViewModel(private val userRepository : UserInputRepository, pri
         insert(result)
     }
 
-    // Returns destination for NavController
-    fun setDestination() {
-        loading.value = true
-        GlobalScope.launch(Dispatchers.Main) { // Launches coroutine in main thread
-            setDestinationLogic()
+    private suspend fun destinationLogic() {
+        val repoData = findByBaseHeat(heat.value!!) {
+
         }
     }
 
@@ -180,7 +194,6 @@ class ManualEntryViewModel(private val userRepository : UserInputRepository, pri
             }
         }
         println(value.await())
-        loading.value = false
     }
 
     // Returns list of all BLs found for given heat number, by base heat only

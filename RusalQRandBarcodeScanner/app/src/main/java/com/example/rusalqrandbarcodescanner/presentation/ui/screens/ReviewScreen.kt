@@ -108,10 +108,10 @@ private fun GetCodeListView(navController: NavHostController) {
     reviewViewModel.codes.observe(LocalLifecycleOwner.current, codeObserver)
 
     LazyColumn (
-        modifier= Modifier
+        modifier = Modifier
             .background(Color.LightGray)
             .size(400.dp),
-        contentPadding= PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
     ) {
         if (codes != null) {
             items(

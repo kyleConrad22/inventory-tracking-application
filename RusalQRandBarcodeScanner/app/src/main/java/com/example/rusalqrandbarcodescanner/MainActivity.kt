@@ -10,18 +10,19 @@ import androidx.activity.viewModels
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.rusalqrandbarcodescanner.presentation.ui.screens.*
 import com.example.rusalqrandbarcodescanner.presentation.ui.theme.RusalQRAndBarcodeScannerTheme
+import com.example.rusalqrandbarcodescanner.util.ReturnedBundleOptions
 import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel.CurrentInventoryViewModelFactory
 import com.example.rusalqrandbarcodescanner.viewModels.ScannedCodeViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.ScannedCodeViewModel.ScannedCodeViewModelFactory
 import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel.UserInputViewModelFactory
+import com.squareup.moshi.Moshi
 import kotlinx.coroutines.DelicateCoroutinesApi
 
 @DelicateCoroutinesApi
@@ -67,6 +68,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     @Composable
     fun MainLayout() {
         val navController = rememberNavController()
@@ -106,15 +108,21 @@ class MainActivity : ComponentActivity() {
                 composable(Screen.OptionsScreen.title) { OptionsScreen(navController) }
                 composable(Screen.InfoInputScreen.title) { InfoInputScreen(navController) }
                 composable(Screen.ToBeImplementedScreen.title) { ToBeImplementedScreen(navController) }
-                composable(Screen.BlOptionsScreen.title) { BlOptionsScreen(navController) }
-                composable(Screen.QuantityOptionsScreen.title) {
-                    QuantityOptionsScreen(navController,
-                        currentInventoryViewModel,
-                        userInputViewModel,
-                        scannedCodeViewModel)
-                }
+                composable("${Screen.BundleOptionsScreen.title}/{options}") { backStackEntry ->
+                    val optionsJson = backStackEntry.arguments?.getString("options")
+                    val moshi = Moshi.Builder().build()
+                    val jsonAdapter = moshi.adapter(ReturnedBundleOptions::class.java).lenient()
+                    val optionsObject = jsonAdapter.fromJson(optionsJson!!)
+                    BundleOptionsScreen(navController, options = optionsObject!!) }
                 composable(Screen.SplashScreen.title) { SplashScreen(navController) }
                 composable(Screen.IncorrectBundleScreen.title) { IncorrectBundleScreen(navController) }
+                composable("${Screen.LoadedHeatsScreen.title}/{heats}") { backStackEntry ->
+                    val heatsJson = backStackEntry.arguments?.getString("heats")
+                    val moshi = Moshi.Builder().build()
+                    val jsonAdapter = moshi.adapter(List::class.java).lenient()
+                    val listObject = jsonAdapter.fromJson(heatsJson!!)
+                    LoadedHeatsScreen(navController, heats = listObject as List<String>)
+                }
             }
         }
     }
@@ -125,7 +133,7 @@ sealed class Screen(val title: String) {
     object MainMenuScreen: Screen("MainMenu")
     object ScannerScreen: Screen("Scanner")
     object InfoInputScreen: Screen("InfoInput")
-    object BlOptionsScreen: Screen("BlOptions")
+    object BundleOptionsScreen: Screen("BundleOptions")
     object BundleAddedScreen: Screen("BundleAdded")
     object BundleInfoScreen: Screen("BundleInfo")
     object DuplicateBundleScreen: Screen("DuplicateBundle")
@@ -135,5 +143,5 @@ sealed class Screen(val title: String) {
     object ScannedInfoScreen: Screen("ScannedInfo")
     object ToBeImplementedScreen: Screen("ToBeImplemented")
     object ReviewScreen: Screen("Review")
-    object QuantityOptionsScreen: Screen("QuantityOptionsScreen")
+    object LoadedHeatsScreen: Screen("LoadedHeats")
 }

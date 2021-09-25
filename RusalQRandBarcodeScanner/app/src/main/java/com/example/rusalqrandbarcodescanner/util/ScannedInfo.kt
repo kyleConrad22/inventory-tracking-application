@@ -1,21 +1,11 @@
-package com.example.rusalqrandbarcodescanner
+package com.example.rusalqrandbarcodescanner.util
 
-import android.content.Context
-import android.content.ContextWrapper
-import android.util.Log
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
 import com.example.rusalqrandbarcodescanner.database.ScannedCode
-import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel
-import com.google.mlkit.vision.barcode.Barcode
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import kotlin.coroutines.coroutineContext
 
 object ScannedInfo {
     var qrCode: String = ""
@@ -37,7 +27,7 @@ object ScannedInfo {
         val elements = rawValue.split("_").toTypedArray()
         qrCode = rawValue
         barCode = elements[0]
-        heatNum = elements[1]
+        heatNum = elements[1].replace("-","")
         netWgtKg = elements[5].split("/")[0]
         grossWgtKg = elements[5].split("/")[1]
         netWgtLbs = elements[7].split("/")[0]
@@ -79,15 +69,15 @@ object ScannedInfo {
         grossWeightLbs : String = "",
         quantity : String = "",
     ) {
-        this.heatNum = heatNum
-        this.barCode = barcode
-        this.grossWgtKg = grossWeightKg
-        this.netWgtKg = netWeightKg
-        this.packageNum = packageNum
-        this.netWgtLbs = netWeightLbs
-        this.grossWgtLbs = grossWeightLbs
-        this.quantity = quantity
-        this.blNum = blNum
+        ScannedInfo.heatNum = heatNum
+        barCode = barcode
+        grossWgtKg = grossWeightKg
+        netWgtKg = netWeightKg
+        ScannedInfo.packageNum = packageNum
+        netWgtLbs = netWeightLbs
+        grossWgtLbs = grossWeightLbs
+        ScannedInfo.quantity = quantity
+        ScannedInfo.blNum = blNum
     }
 
     fun clearValues(){
