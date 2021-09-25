@@ -14,6 +14,9 @@ interface UserInputDao {
     @Query("DELETE FROM userInput")
     suspend fun deleteAll()
 
+    @Query("UPDATE userInput SET heatNum =:searchHeat WHERE id =:searchId")
+    suspend fun updateHeat(searchHeat : String, searchId : String)
+
     @Update
     suspend fun update(vararg  userInput: UserInput)
 

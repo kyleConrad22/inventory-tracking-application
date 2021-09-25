@@ -45,7 +45,7 @@ fun InfoInputScreen(navController: NavHostController) {
     infoInputViewModel.isLoad().observe(lifecycleOwner, isLoadObserver)
 
     var confirmVis by remember { mutableStateOf(infoInputViewModel.confirmVis.value) }
-    val confirmVisObserver = Observer<Boolean> { it ->
+    val confirmVisObserver = Observer<Boolean> {
         confirmVis = it
     }
     infoInputViewModel.confirmVis.observe(lifecycleOwner, confirmVisObserver)

@@ -11,6 +11,12 @@ class UserInputRepository(private val userInputDao: UserInputDao) {
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
+    suspend fun updateHeat(heat : String) {
+        userInputDao.updateHeat(heat, "data")
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
     suspend fun getInputSuspend() : List<UserInput>? {
         return try {
             userInputDao.getInputSuspend()

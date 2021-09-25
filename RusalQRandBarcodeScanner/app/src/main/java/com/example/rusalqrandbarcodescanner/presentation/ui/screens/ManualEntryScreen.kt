@@ -38,32 +38,17 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 @DelicateCoroutinesApi
 @ExperimentalComposeUiApi
 @Composable
-fun ManualEntryScreen(navController: NavHostController, userInputViewModel: UserInputViewModel, currentInventoryViewModel: CurrentInventoryViewModel, scannedCodeViewModel: ScannedCodeViewModel) {
+fun ManualEntryScreen(navController : NavHostController) {
     val focusManager = LocalFocusManager.current
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val application = LocalContext.current.applicationContext
 
-    val manualEntryViewModel : ManualEntryViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "manualEntryVM", ManualEntryViewModelFactory((application as CodeApplication).userRepository, application.repository, application.invRepository))
+    val manualEntryViewModel : ManualEntryViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "manualEntryVM", ManualEntryViewModelFactory((LocalContext.current.applicationContext as CodeApplication).userRepository))
 
-    val isSearchVis = manualEntryViewModel.isSearchVis.value
+    val isSearchVis = manualEntryViewModel.isSearchVis.value!!
+
     val openDialog = remember { mutableStateOf(false) }
-
-    var isBaseHeat by remember { mutableStateOf(false) }
-    val isBaseHeatObserver = Observer<Boolean> { it ->
-        isBaseHeat = it
-    }
-    manualEntryViewModel.isBaseHeat.observe(lifecycleOwner, isBaseHeatObserver)
-
-    var heat by remember { mutableStateOf(userInputViewModel.heat.value) }
-    val heatObserver = Observer<String> { it ->
-        heat = it
-    }
-    manualEntryViewModel.heat.observe(lifecycleOwner, heatObserver)
 
     val loading = manualEntryViewModel.loading.value
     val isClicked = remember { mutableStateOf(false) }
-
-    val destination = manualEntryViewModel.destination.value
 
     Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -83,36 +68,8 @@ fun ManualEntryScreen(navController: NavHostController, userInputViewModel: User
                 }
                 if (isSearchVis) {
                     Button(onClick = {
-                        if (isBaseHeat) {
-                            manualEntryViewModel.setDestination()
-                            isClicked.value = true
-                        } else {
-                            var returnedCode: ScannedCode?
-                            scannedCodeViewModel.findByHeat(heat!!)
-                                .observe(lifecycleOwner, { code ->
-                                    returnedCode = code
-                                    if (returnedCode == null) {
-                                        currentInventoryViewModel.findByHeat(heat!!)
-                                            .observe(lifecycleOwner, { inventoryItem ->
-                                                if (inventoryItem != null) {
-                                                    ScannedInfo.getValues(inventoryItem)
-                                                    Log.d("DEBUG", "Retrieved non-null reference")
-                                                    if (ScannedInfo.blNum == userInputViewModel.bl.value && ScannedInfo.quantity == userInputViewModel.quantity.value) {
-                                                        navController.navigate(Screen.ScannedInfoScreen.title)
-                                                    } else if (ScannedInfo.blNum != userInputViewModel.bl.value) {
-                                                        navController.navigate(Screen.IncorrectBundleScreen.title)
-                                                    } else {
-                                                        navController.navigate(Screen.IncorrectBundleScreen.title)
-                                                    }
-                                                } else {
-                                                    openDialog.value = true
-                                                }
-                                            })
-                                    } else if (returnedCode?.scanTime != null) {
-                                        navController.navigate("${Screen.DuplicateBundleScreen.title}/${returnedCode?.scanTime}")
-                                    }
-                                })
-                        }
+                        manualEntryViewModel.updateHeat()
+                        isClicked.value = true
                     }) {
                         Text(text = "Retrieve Bundle Info", modifier = Modifier.padding(16.dp))
                     }
@@ -137,13 +94,7 @@ fun ManualEntryScreen(navController: NavHostController, userInputViewModel: User
         }
     }
     if (!loading && isClicked.value) {
-        if (destination == "N/A") {
-            openDialog.value = true
-            isClicked.value = false
-        } else {
-            isClicked.value = false
-            navController.navigate(destination)
-        }
+        navController.navigate(Screen.ReturnedBundleScreen.title)
     }
 }
 

@@ -93,12 +93,7 @@ class MainActivity : ComponentActivity() {
                 }
                 composable(Screen.BundleAddedScreen.title) { BundleAddedScreen(navController) }
                 composable(Screen.ScannedInfoScreen.title) { ScannedInfoScreen(navController) }
-                composable(Screen.ManualEntryScreen.title) {
-                    ManualEntryScreen(navController,
-                        userInputViewModel,
-                        currentInventoryViewModel,
-                        scannedCodeViewModel)
-                }
+                composable(Screen.ManualEntryScreen.title) { ManualEntryScreen(navController) }
                 composable(Screen.ScannerScreen.title) {
                     ScannerScreen(navController,
                         scannedCodeViewModel,
@@ -123,6 +118,7 @@ class MainActivity : ComponentActivity() {
                     val listObject = jsonAdapter.fromJson(heatsJson!!)
                     LoadedHeatsScreen(navController, heats = listObject as List<String>)
                 }
+                composable(Screen.ReturnedBundleScreen.title) { ReturnedBundleScreen(navController) }
             }
         }
     }
@@ -144,4 +140,5 @@ sealed class Screen(val title: String) {
     object ToBeImplementedScreen: Screen("ToBeImplemented")
     object ReviewScreen: Screen("Review")
     object LoadedHeatsScreen: Screen("LoadedHeats")
+    object ReturnedBundleScreen : Screen("ReturnedBundle")
 }
