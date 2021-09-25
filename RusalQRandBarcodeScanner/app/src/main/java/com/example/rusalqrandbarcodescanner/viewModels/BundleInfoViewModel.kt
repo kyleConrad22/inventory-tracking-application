@@ -66,7 +66,7 @@ class BundleInfoViewModel(private val userRepo : UserInputRepository, private va
 
     class BundleInfoViewModelFactory(private val userRepo : UserInputRepository, private val codeRepo : CodeRepository) : ViewModelProvider.Factory {
         override fun<T : ViewModel> create(modelClass : Class<T>) : T {
-            if (modelClass.isAssignableFrom(BundleAddedViewModel::class.java)) {
+            if (modelClass.isAssignableFrom(BundleInfoViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")
                 return BundleInfoViewModel(userRepo, codeRepo) as T
             }

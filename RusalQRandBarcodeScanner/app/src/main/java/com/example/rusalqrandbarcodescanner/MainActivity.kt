@@ -77,12 +77,6 @@ class MainActivity : ComponentActivity() {
             NavHost(navController = navController,
                 startDestination = (Screen.SplashScreen.title)) {
                 composable(Screen.MainMenuScreen.title) { MainMenuScreen(navController) }
-                composable(Screen.DuplicateBundleScreen.title + "/{scanTime}") { backStackEntry ->
-                    DuplicateBundleScreen(navController = navController,
-                        scanTime = backStackEntry.arguments?.getString("scanTime"),
-                        scannedCodeViewModel,
-                        userInputViewModel)
-                }
                 composable(Screen.BundleInfoScreen.title + "/{barcode}") { backStackEntry ->
                     BundleInfoScreen(navController = navController, barcode = backStackEntry.arguments?.getString("barcode"))
                 }
@@ -91,8 +85,6 @@ class MainActivity : ComponentActivity() {
                         scannedCodeViewModel,
                         currentInventoryViewModel)
                 }
-                composable(Screen.BundleAddedScreen.title) { BundleAddedScreen(navController) }
-                composable(Screen.ScannedInfoScreen.title) { ScannedInfoScreen(navController) }
                 composable(Screen.ManualEntryScreen.title) { ManualEntryScreen(navController) }
                 composable(Screen.ScannerScreen.title) {
                     ScannerScreen(navController,
@@ -103,21 +95,7 @@ class MainActivity : ComponentActivity() {
                 composable(Screen.OptionsScreen.title) { OptionsScreen(navController) }
                 composable(Screen.InfoInputScreen.title) { InfoInputScreen(navController) }
                 composable(Screen.ToBeImplementedScreen.title) { ToBeImplementedScreen(navController) }
-                composable("${Screen.BundleOptionsScreen.title}/{options}") { backStackEntry ->
-                    val optionsJson = backStackEntry.arguments?.getString("options")
-                    val moshi = Moshi.Builder().build()
-                    val jsonAdapter = moshi.adapter(ReturnedBundleOptions::class.java).lenient()
-                    val optionsObject = jsonAdapter.fromJson(optionsJson!!)
-                    BundleOptionsScreen(navController, options = optionsObject!!) }
                 composable(Screen.SplashScreen.title) { SplashScreen(navController) }
-                composable(Screen.IncorrectBundleScreen.title) { IncorrectBundleScreen(navController) }
-                composable("${Screen.LoadedHeatsScreen.title}/{heats}") { backStackEntry ->
-                    val heatsJson = backStackEntry.arguments?.getString("heats")
-                    val moshi = Moshi.Builder().build()
-                    val jsonAdapter = moshi.adapter(List::class.java).lenient()
-                    val listObject = jsonAdapter.fromJson(heatsJson!!)
-                    LoadedHeatsScreen(navController, heats = listObject as List<String>)
-                }
                 composable(Screen.ReturnedBundleScreen.title) { ReturnedBundleScreen(navController) }
             }
         }
@@ -129,16 +107,10 @@ sealed class Screen(val title: String) {
     object MainMenuScreen: Screen("MainMenu")
     object ScannerScreen: Screen("Scanner")
     object InfoInputScreen: Screen("InfoInput")
-    object BundleOptionsScreen: Screen("BundleOptions")
-    object BundleAddedScreen: Screen("BundleAdded")
     object BundleInfoScreen: Screen("BundleInfo")
-    object DuplicateBundleScreen: Screen("DuplicateBundle")
-    object IncorrectBundleScreen : Screen("IncorrectBundle")
     object OptionsScreen: Screen("Options")
     object ManualEntryScreen: Screen("ManualEntry")
-    object ScannedInfoScreen: Screen("ScannedInfo")
     object ToBeImplementedScreen: Screen("ToBeImplemented")
     object ReviewScreen: Screen("Review")
-    object LoadedHeatsScreen: Screen("LoadedHeats")
     object ReturnedBundleScreen : Screen("ReturnedBundle")
 }

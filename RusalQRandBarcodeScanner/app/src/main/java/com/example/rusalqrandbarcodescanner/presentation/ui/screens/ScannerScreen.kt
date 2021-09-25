@@ -180,18 +180,10 @@ fun CameraPreview(
                         scannedCodeViewModel.findByBarcode(ScannedInfo.barCode).observe(lifecycleOwner,
                             { returnedCode ->
                                 result = returnedCode
-                                val scanTime: String? = returnedCode?.scanTime
                                 if (result == null ) {
                                     if (ScannedInfo.blNum == userInputViewModel.bl.value && ScannedInfo.quantity == userInputViewModel.quantity.value ) {
-                                        navController.navigate(Screen.ScannedInfoScreen.title)
-                                    } else if (ScannedInfo.blNum != userInputViewModel.bl.value) {
-                                        navController.navigate(Screen.IncorrectBundleScreen.title)
-                                    } else {
-                                        navController.navigate(Screen.IncorrectBundleScreen.title)
+                                        navController.navigate(Screen.ReturnedBundleScreen.title)
                                     }
-                                } else if (scanTime != null) {
-                                    Log.d("DEBUG", scanTime)
-                                    navController.navigate("${Screen.DuplicateBundleScreen}/${scanTime}")
                                 }
                             })
                     }
