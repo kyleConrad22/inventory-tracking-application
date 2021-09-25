@@ -15,14 +15,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.rusalqrandbarcodescanner.presentation.ui.screens.*
 import com.example.rusalqrandbarcodescanner.presentation.ui.theme.RusalQRAndBarcodeScannerTheme
-import com.example.rusalqrandbarcodescanner.util.ReturnedBundleOptions
 import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel.CurrentInventoryViewModelFactory
 import com.example.rusalqrandbarcodescanner.viewModels.ScannedCodeViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.ScannedCodeViewModel.ScannedCodeViewModelFactory
-import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel
-import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel.UserInputViewModelFactory
-import com.squareup.moshi.Moshi
 import kotlinx.coroutines.DelicateCoroutinesApi
 
 @DelicateCoroutinesApi

@@ -1,9 +1,6 @@
 package com.example.rusalqrandbarcodescanner.util
 
-import androidx.lifecycle.Observer
 import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
-import com.example.rusalqrandbarcodescanner.database.ScannedCode
-import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -92,40 +89,5 @@ object ScannedInfo {
         scanTime = ""
         blNum = ""
         quantity = ""
-    }
-
-    fun toScannedCode(viewModel: UserInputViewModel): ScannedCode{
-        val orderObserver = Observer<String> { it ->
-            workOrder = it
-        }
-        val loadNumObserver = Observer<String> { it ->
-            loadNum = it
-        }
-        val loaderObserver = Observer<String> { it ->
-            loader = it
-        }
-
-        viewModel.order.observeForever(orderObserver)
-        viewModel.load.observeForever(loadNumObserver)
-        viewModel.loader.observeForever(loaderObserver)
-        val result = ScannedCode(
-            barCode = barCode,
-            heatNum = heatNum,
-            netWgtKg = netWgtKg,
-            grossWgtKg = grossWgtKg,
-            netWgtLbs = netWgtLbs,
-            grossWgtLbs = grossWgtLbs,
-            packageNum = packageNum,
-            scanTime = scanTime,
-            workOrder = workOrder,
-            loadNum = loadNum,
-            loader = loader,
-            bl = blNum,
-            quantity = quantity
-        )
-        viewModel.order.removeObserver(orderObserver)
-        viewModel.load.removeObserver(loadNumObserver)
-        viewModel.loader.removeObserver(loaderObserver)
-        return result
     }
 }

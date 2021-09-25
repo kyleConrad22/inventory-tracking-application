@@ -9,6 +9,7 @@ import com.example.rusalqrandbarcodescanner.repositories.UserInputRepository
 import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
 
+@DelicateCoroutinesApi
 class BundleInfoViewModel(private val userRepo : UserInputRepository, private val codeRepo : CodeRepository) : ViewModel() {
     private val initCode : ScannedCode? = null
     private val initLoad : Boolean? = null

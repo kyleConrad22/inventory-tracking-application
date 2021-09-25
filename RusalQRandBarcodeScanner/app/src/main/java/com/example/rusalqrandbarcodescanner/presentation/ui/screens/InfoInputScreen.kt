@@ -28,8 +28,9 @@ import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.viewModels.InfoInputViewModel
-import com.example.rusalqrandbarcodescanner.viewModels.UserInputViewModel
+import kotlinx.coroutines.DelicateCoroutinesApi
 
+@DelicateCoroutinesApi
 @ExperimentalComposeUiApi
 @Composable
 fun InfoInputScreen(navController: NavHostController) {
@@ -119,6 +120,7 @@ fun InfoInputScreen(navController: NavHostController) {
 
 }
 
+@DelicateCoroutinesApi
 @Composable
 fun OrderInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewModel) {
     var order by remember { mutableStateOf(infoInputViewModel.order.value) }
@@ -139,6 +141,7 @@ fun OrderInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewMode
     }
 }
 
+@DelicateCoroutinesApi
 @Composable
 fun LoadInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewModel) {
     var load by remember { mutableStateOf(infoInputViewModel.load.value) }
@@ -159,6 +162,7 @@ fun LoadInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewModel
     }
 }
 
+@DelicateCoroutinesApi
 @Composable
 fun LoaderInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewModel) {
     var loader by remember { mutableStateOf(infoInputViewModel.loader.value) }
@@ -179,6 +183,7 @@ fun LoaderInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewMod
     }
 }
 
+@DelicateCoroutinesApi
 @Composable
 fun BlInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewModel) {
     var bl by remember { mutableStateOf(infoInputViewModel.bl.value) }
@@ -199,6 +204,7 @@ fun BlInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewModel) 
     }
 }
 
+@DelicateCoroutinesApi
 @Composable
 fun QuantityInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewModel) {
     var quantity by remember { mutableStateOf(infoInputViewModel.quantity.value) }
@@ -219,6 +225,7 @@ fun QuantityInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewM
     }
 }
 
+@DelicateCoroutinesApi
 @Composable
 fun BundlesInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewModel) {
     var bundles by remember { mutableStateOf(infoInputViewModel.bundles.value) }
@@ -239,6 +246,7 @@ fun BundlesInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewMo
     }
 }
 
+@DelicateCoroutinesApi
 @Composable
 fun VesselInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewModel) {
     var vessel by remember { mutableStateOf(infoInputViewModel.vessel.value) }
@@ -259,6 +267,7 @@ fun VesselInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewMod
     }
 }
 
+@DelicateCoroutinesApi
 @Composable
 fun CheckerInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewModel) {
     var checker by remember { mutableStateOf(infoInputViewModel.checker.value) }
