@@ -30,6 +30,7 @@ import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.util.ScannedInfo
 import com.example.rusalqrandbarcodescanner.Screen
+import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.viewModels.ScannerViewModel
 import com.example.rusalqrandbarcodescanner.viewModels.ScannerViewModel.ScannerViewModelFactory
 import com.google.mlkit.vision.barcode.BarcodeScanning
@@ -40,45 +41,37 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 @ExperimentalComposeUiApi
 @Composable
 fun ScannerScreen(navController: NavHostController) {
-    val lifecycleOwner = LocalLifecycleOwner.current
+
+    /* TODO - Add Flash toggle functionality */
 
     val scannerViewModel : ScannerViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ScannerVM", factory = ScannerViewModelFactory((LocalContext.current.applicationContext as CodeApplication).userRepository))
 
-    val isReviewVis = scannerViewModel.isReviewVis.value!!
+    val loading = scannerViewModel.loading.value
 
     CameraPreview(modifier = Modifier.fillMaxSize(), navController = navController, scannerViewModel = scannerViewModel)
     Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom) {
-        Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.End) {
-            Button(modifier = Modifier
-                .padding(16.dp)
-                .alpha(if (false) {
-                    1f
-                } else {
-                    0f
-                }), onClick = {}) { Text(text="Toggle Flash") }
-        }
-        Row(modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.SpaceEvenly) {
-            Button(onClick = {
-                navController.popBackStack()
-            }) {
-                Text(text="Back", modifier = Modifier.padding(16.dp))
+        if (loading) {
+            LoadingDialog(isDisplayed = true)
+        } else {
+            Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.End) {
+                Button(modifier = Modifier.padding(16.dp).alpha(if (false) { 1f } else { 0f }), onClick = {}) { Text(text = "Toggle Flash") }
             }
-            Button(onClick = { navController.navigate(Screen.ManualEntryScreen.title) }) {
-                Text(text = "Manual Entry", modifier = Modifier.padding(16.dp))
-            }
-            if (isReviewVis) {
+            Row(modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.SpaceEvenly) {
                 Button(onClick = {
-                    navController.navigate(Screen.ReviewScreen.title)
+                    navController.popBackStack()
                 }) {
-                    Text("Confirm ${scannerViewModel.getType()}", modifier = Modifier.padding(16.dp))
+                    Text(text = "Back", modifier = Modifier.padding(16.dp))
+                }
+                Button(onClick = { navController.navigate(Screen.ManualEntryScreen.title) }) {
+                    Text(text = "Manual Entry", modifier = Modifier.padding(16.dp))
                 }
             }
+            Spacer(modifier = Modifier.padding(30.dp))
         }
-        Spacer(modifier = Modifier.padding(30.dp))
     }
 }
 
@@ -124,57 +117,63 @@ fun CameraPreview(
     scannerViewModel : ScannerViewModel) {
 
     val lifecycleOwner = LocalLifecycleOwner.current
-    AndroidView(
-        modifier = modifier,
-        factory = { context ->
-            val previewView = PreviewView(context).apply {
+    val isScanned = remember { mutableStateOf(false) }
 
-                this.scaleType = scaleType
+    if (!scannerViewModel.loading.value && isScanned.value) {
+        navController.navigate(Screen.ReturnedBundleScreen.title)
+    } else {
+        AndroidView(
+            modifier = modifier,
+            factory = { context ->
+                val previewView = PreviewView(context).apply {
 
-                layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
-                )
+                    this.scaleType = scaleType
 
-                // Preview incorrectly scaled in Compose on some devices without following code
-                implementationMode = PreviewView.ImplementationMode.COMPATIBLE
-            }
+                    layoutParams = ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    )
 
-            val imageAnalysis =
-                ImageAnalysis.Builder().setTargetResolution(Size(1080, 2310)).build()
+                    // Preview incorrectly scaled in Compose on some devices without following code
+                    implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+                }
 
-            imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context),
-                { imageProxy ->
-                    ImageAnalyzer().analyze(imageProxy)
-                    if (ScannedInfo.qrCode != "") {
-                        scannerViewModel.heat.value = ScannedInfo.heatNum
-                        navController.navigate(Screen.ReturnedBundleScreen.title)
+                val imageAnalysis =
+                    ImageAnalysis.Builder().setTargetResolution(Size(1080, 2310)).build()
+
+                imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context),
+                    { imageProxy ->
+                        ImageAnalyzer().analyze(imageProxy)
+                        if (ScannedInfo.qrCode != "") {
+                            isScanned.value = true
+                            scannerViewModel.updateHeat()
+                        }
+                    })
+
+                val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+
+                cameraProviderFuture.addListener({
+                    val cameraProvider = cameraProviderFuture.get()
+
+                    // Preview
+                    val preview = Preview.Builder().build().also {
+                        it.setSurfaceProvider(previewView.surfaceProvider)
                     }
-                })
 
-            val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+                    try {
+                        // Must unbind the use-cases before rebinding them
+                        cameraProvider.unbindAll()
 
-            cameraProviderFuture.addListener({
-                val cameraProvider = cameraProviderFuture.get()
+                        cameraProvider.bindToLifecycle(lifecycleOwner,
+                            cameraSelector,
+                            imageAnalysis,
+                            preview)
+                    } catch (exc: Exception) {
+                        Log.e(ContentValues.TAG, "Use case binding failed", exc)
+                    }
+                }, ContextCompat.getMainExecutor(context))
 
-                // Preview
-                val preview = Preview.Builder().build().also {
-                    it.setSurfaceProvider(previewView.surfaceProvider)
-                }
-
-                try {
-                    // Must unbind the use-cases before rebinding them
-                    cameraProvider.unbindAll()
-
-                    cameraProvider.bindToLifecycle(lifecycleOwner,
-                        cameraSelector,
-                        imageAnalysis,
-                        preview)
-                } catch (exc: Exception) {
-                    Log.e(ContentValues.TAG, "Use case binding failed", exc)
-                }
-            }, ContextCompat.getMainExecutor(context))
-
-            previewView
-        })
+                previewView
+            })
+    }
 }
