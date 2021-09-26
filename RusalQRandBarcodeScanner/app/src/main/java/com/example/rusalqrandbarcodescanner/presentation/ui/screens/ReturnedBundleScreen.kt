@@ -61,12 +61,11 @@ fun ReturnedBundleScreen(navController: NavHostController) {
                         }
                     } else {
                         if (isMultipleOptions) {
-                            UniqueOptionsList(returnedBundleViewModel.getUniqueOptions(returnedBundleViewModel.getHeat()))
+                            UniqueOptionsList(returnedBundleViewModel.uniqueList)
                         }
                         Row(modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceEvenly) {
                             Button(onClick = {
-                                returnedBundleViewModel.denyBundle()
                                 navController.popBackStack()
                             }) {
                                 Text(text = "Deny", modifier = Modifier.padding(16.dp))

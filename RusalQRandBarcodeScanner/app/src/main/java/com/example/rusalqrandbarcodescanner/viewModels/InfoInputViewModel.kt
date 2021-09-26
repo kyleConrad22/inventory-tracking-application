@@ -25,6 +25,8 @@ class InfoInputViewModel(private val repository : UserInputRepository) : ViewMod
 
     val loading = mutableStateOf(false)
 
+    /* TODO - Implement auto-completion feature of BLs from inventory */
+
     fun isLoad() : LiveData<Boolean> {
         val mediatorLiveData = MediatorLiveData<Boolean>()
         mediatorLiveData.addSource(currentInput) { it ->

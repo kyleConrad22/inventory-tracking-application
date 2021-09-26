@@ -9,6 +9,9 @@ import com.example.rusalqrandbarcodescanner.repositories.CurrentInventoryReposit
 import com.example.rusalqrandbarcodescanner.repositories.UserInputRepository
 import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @DelicateCoroutinesApi
 class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val invRepo : CurrentInventoryRepository, private val userRepo : UserInputRepository) : ViewModel() {
@@ -22,6 +25,7 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
     private var isIncorrectQuantity = false
     private var isNotFound = false
     private var scanTime = ""
+    var uniqueList = listOf<List<String>>()
 
     val loading = mutableStateOf(false)
     val isIncorrectBundle = mutableStateOf(false)
@@ -51,50 +55,42 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
 
     fun addBundle() = viewModelScope.launch {
         if (isBaseHeat(getHeat())) {
-            invRepo.insert(CurrentInventoryLineItem(
-                heatNum = "",
-                packageNum = "",
-                grossWeightKg = "",
-                netWeightKg = "",
-                quantity = "",
-                dimension = "",
-                grade = "",
-                certificateNum = "",
-                blNum = "",
-                barcode = "",
-                workOrder = "",
-                loadNum = "",
-                loader = "",
-                loadTime = ""
-            ))
+            invRepo.insert(returnedBundle!!)
         }
-        codeRepo.insert(ScannedCode(
-            barCode = "",
-            heatNum = "",
-            netWgtKg = "",
-            grossWgtKg = "",
-            netWgtLbs = "",
-            grossWgtLbs = "",
-            packageNum = "",
-            scanTime = "",
-            workOrder = "",
-            loadNum = "",
-            loader = "",
-            bl = "",
-            quantity = ""
-        ))
+        val scannedCode = lineItemToScannedCode(returnedBundle!!)
+        scannedCode.loadNum = currentInput.value!![0].load
+        scannedCode.loader = currentInput.value!![0].loader
+        scannedCode.workOrder = currentInput.value!![0].order
+        scannedCode.scanTime = getCurrentDateTime()
+        codeRepo.insert(scannedCode)
     }
 
-    /*TODO - Add Logic for getting list of all unique combos*/
-    fun getUniqueOptions(heat : String) : List<List<String>>{
-        val uniqueOptions : MutableList<List<String>> = mutableListOf()
-
-        return uniqueOptions.toList()
+    private fun lineItemToScannedCode(currentInventoryLineItem : CurrentInventoryLineItem) : ScannedCode{
+        return ScannedCode(
+            heatNum = currentInventoryLineItem.heatNum,
+            netWgtKg = currentInventoryLineItem.netWeightKg,
+            grossWgtKg = currentInventoryLineItem.grossWeightKg,
+            packageNum = currentInventoryLineItem.packageNum,
+            bl = currentInventoryLineItem.blNum,
+            quantity = currentInventoryLineItem.quantity,
+            barCode = currentInventoryLineItem.barcode,
+        )
     }
 
-    /*TODO - Add logic for removing heat */
-    fun denyBundle() {
+    private fun getCurrentDateTime() : String {
+        val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")
+        return LocalDateTime.now().format(formatter)
+    }
 
+    private suspend fun setUniqueList(heat : String) {
+        val uniqueCodes = mutableListOf<List<String>>()
+        for (code in invRepo.findByBaseHeat(heat)!!) {
+            val combo = listOf(code.blNum!!, code.quantity!!)
+            if (!uniqueCodes.contains(combo)) {
+                uniqueCodes.add(combo)
+            }
+        }
+        uniqueList = uniqueCodes.toList()
     }
 
     private fun getBaseHeat(heat : String) : String {
@@ -181,7 +177,6 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
 
     private suspend fun setIsBundleLoadable(heat : String) {
         val value = GlobalScope.async(Dispatchers.Main) {
-            setReturnedBundle(heat)
             setIsIncorrectBundle(heat)
             setReasoning()
         }
@@ -189,12 +184,13 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
     }
 
     private suspend fun setIsIncorrectBundle(heat : String) {
-        setIsNotFound()
+        setIsIncorrectHeat(getBaseHeat(heat))
+        setIsDuplicate(heat)
+        if (!isIncorrectHeat && !isDuplicate) {
+            setReturnedBundle(heat)
+        }
+
         if (!isNotFound) {
-            if (!isBaseHeat(heat)) {
-                setIsDuplicate(heat)
-            setIsIncorrectHeat(getBaseHeat(heat))
-            }
             setIsIncorrectQuantity()
             setIsIncorrectBl()
             isIncorrectBundle.value = (isDuplicate || isIncorrectHeat || isIncorrectQuantity || isIncorrectBl)
@@ -203,13 +199,37 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
         }
     }
 
-    /*TODO - Add logic for base heats / correct base heat logic*/
     private suspend fun setReturnedBundle(heat: String) {
-        returnedBundle = if (isBaseHeat(heat)) {
-            invRepo.findByBaseHeat(heat)?.get(0)
+        if (isBaseHeat(heat)) {
+            setUniqueList(heat)
+            when {
+                uniqueList.isEmpty() -> {
+                    returnedBundle = null
+                }
+
+                uniqueList.size == 1 -> {
+                    returnedBundle = invRepo.findByBaseHeat(heat)?.get(0)
+                }
+
+                uniqueList.size > 1 -> {
+                    val bl = currentInput.value?.get(0)!!.bl
+                    val quantity = currentInput.value?.get(0)!!.bundleQuantity
+                    if (uniqueList.contains(listOf(bl, quantity))) {
+                        isMultipleOptions.value = true
+                        returnedBundle = CurrentInventoryLineItem(heatNum = heat, blNum = bl, quantity = quantity, barcode = "${heat}u${getNumberOfUnidentifiedBundles(heat) + 1}")
+                    } else {
+                        isIncorrectBundle.value = true
+                    }
+                }
+            }
         } else {
-            invRepo.findByHeat(heat)
+            returnedBundle = invRepo.findByHeat(heat)
         }
+        isIncorrectBundle.value = returnedBundle == null
+    }
+
+    private fun getNumberOfUnidentifiedBundles(heat : String) : Int {
+        return 0
     }
 
     private fun setIsIncorrectBl() {
@@ -226,10 +246,6 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
 
     private fun setIsIncorrectQuantity() {
         isIncorrectQuantity = returnedBundle!!.quantity != currentInput.value!![0].bundleQuantity
-    }
-
-    private fun setIsNotFound() {
-        isNotFound = returnedBundle == null
     }
 
     private suspend fun setIsDuplicate(heat : String) {

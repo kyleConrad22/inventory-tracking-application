@@ -65,4 +65,10 @@ class CurrentInventoryRepository(private val currentInventoryDao: CurrentInvento
     suspend fun deleteAll(){
         currentInventoryDao.deleteAll()
     }
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun delete(currentInventoryLineItem: CurrentInventoryLineItem) {
+        currentInventoryDao.delete(currentInventoryLineItem)
+    }
 }
