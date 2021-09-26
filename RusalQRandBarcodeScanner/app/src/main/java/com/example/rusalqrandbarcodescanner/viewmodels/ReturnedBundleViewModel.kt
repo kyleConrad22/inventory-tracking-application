@@ -1,4 +1,4 @@
-package com.example.rusalqrandbarcodescanner.viewModels
+package com.example.rusalqrandbarcodescanner.viewmodels
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
@@ -9,7 +9,6 @@ import com.example.rusalqrandbarcodescanner.repositories.CurrentInventoryReposit
 import com.example.rusalqrandbarcodescanner.repositories.UserInputRepository
 import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
-import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 

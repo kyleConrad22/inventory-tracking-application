@@ -1,10 +1,8 @@
-package com.example.rusalqrandbarcodescanner.viewModels
+package com.example.rusalqrandbarcodescanner.viewmodels
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.asLiveData
-import com.example.rusalqrandbarcodescanner.repositories.CodeRepository
 import com.example.rusalqrandbarcodescanner.repositories.UserInputRepository
 import com.example.rusalqrandbarcodescanner.util.ScannedInfo
 import kotlinx.coroutines.*

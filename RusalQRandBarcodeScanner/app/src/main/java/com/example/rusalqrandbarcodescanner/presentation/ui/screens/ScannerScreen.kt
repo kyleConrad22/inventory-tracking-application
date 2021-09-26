@@ -31,8 +31,8 @@ import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.util.ScannedInfo
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
-import com.example.rusalqrandbarcodescanner.viewModels.ScannerViewModel
-import com.example.rusalqrandbarcodescanner.viewModels.ScannerViewModel.ScannerViewModelFactory
+import com.example.rusalqrandbarcodescanner.viewmodels.ScannerViewModel
+import com.example.rusalqrandbarcodescanner.viewmodels.ScannerViewModel.ScannerViewModelFactory
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import kotlinx.coroutines.DelicateCoroutinesApi

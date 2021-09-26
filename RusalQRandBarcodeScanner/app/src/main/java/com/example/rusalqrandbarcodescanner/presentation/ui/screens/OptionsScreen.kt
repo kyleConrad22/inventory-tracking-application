@@ -18,7 +18,7 @@ import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.CircularIndeterminateProgressBar
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
-import com.example.rusalqrandbarcodescanner.viewModels.*
+import com.example.rusalqrandbarcodescanner.viewmodels.*
 
 @Composable
 fun OptionsScreen(navController: NavHostController) {

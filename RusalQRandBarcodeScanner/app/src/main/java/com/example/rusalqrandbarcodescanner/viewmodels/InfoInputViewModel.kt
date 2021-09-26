@@ -1,4 +1,4 @@
-package com.example.rusalqrandbarcodescanner.viewModels
+package com.example.rusalqrandbarcodescanner.viewmodels
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*

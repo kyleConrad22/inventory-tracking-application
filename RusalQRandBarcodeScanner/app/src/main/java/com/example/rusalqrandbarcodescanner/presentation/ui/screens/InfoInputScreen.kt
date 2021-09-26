@@ -27,7 +27,7 @@ import com.example.rusalqrandbarcodescanner.CircularIndeterminateProgressBar
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
-import com.example.rusalqrandbarcodescanner.viewModels.InfoInputViewModel
+import com.example.rusalqrandbarcodescanner.viewmodels.InfoInputViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
 
 @DelicateCoroutinesApi

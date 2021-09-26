@@ -24,10 +24,10 @@ import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.HttpRequestHandler
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.database.ScannedCode
-import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel
-import com.example.rusalqrandbarcodescanner.viewModels.ReviewViewModel
-import com.example.rusalqrandbarcodescanner.viewModels.ReviewViewModel.ReviewViewModelFactory
-import com.example.rusalqrandbarcodescanner.viewModels.ScannedCodeViewModel
+import com.example.rusalqrandbarcodescanner.viewmodels.CurrentInventoryViewModel
+import com.example.rusalqrandbarcodescanner.viewmodels.ReviewViewModel
+import com.example.rusalqrandbarcodescanner.viewmodels.ReviewViewModel.ReviewViewModelFactory
+import com.example.rusalqrandbarcodescanner.viewmodels.ScannedCodeViewModel
 
 
 @Composable

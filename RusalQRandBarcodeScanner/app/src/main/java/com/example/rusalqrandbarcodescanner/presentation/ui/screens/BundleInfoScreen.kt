@@ -12,8 +12,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
-import com.example.rusalqrandbarcodescanner.viewModels.BundleInfoViewModel.BundleInfoViewModelFactory
-import com.example.rusalqrandbarcodescanner.viewModels.BundleInfoViewModel
+import com.example.rusalqrandbarcodescanner.viewmodels.BundleInfoViewModel.BundleInfoViewModelFactory
+import com.example.rusalqrandbarcodescanner.viewmodels.BundleInfoViewModel
 
 @Composable
 fun BundleInfoScreen(navController: NavHostController, barcode: String?) {

@@ -3,9 +3,9 @@ package com.example.rusalqrandbarcodescanner
 import android.util.Log
 import androidx.lifecycle.Observer
 import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
-import com.example.rusalqrandbarcodescanner.viewModels.CurrentInventoryViewModel
-import com.example.rusalqrandbarcodescanner.viewModels.ReviewViewModel
-import com.example.rusalqrandbarcodescanner.viewModels.ScannedCodeViewModel
+import com.example.rusalqrandbarcodescanner.viewmodels.CurrentInventoryViewModel
+import com.example.rusalqrandbarcodescanner.viewmodels.ReviewViewModel
+import com.example.rusalqrandbarcodescanner.viewmodels.ScannedCodeViewModel
 import kotlinx.coroutines.*
 import java.io.*
 import java.net.HttpURLConnection

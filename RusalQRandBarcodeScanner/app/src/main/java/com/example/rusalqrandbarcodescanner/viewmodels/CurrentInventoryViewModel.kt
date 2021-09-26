@@ -1,4 +1,4 @@
-package com.example.rusalqrandbarcodescanner.viewModels
+package com.example.rusalqrandbarcodescanner.viewmodels
 
 import androidx.lifecycle.*
 import com.example.rusalqrandbarcodescanner.repositories.CurrentInventoryRepository

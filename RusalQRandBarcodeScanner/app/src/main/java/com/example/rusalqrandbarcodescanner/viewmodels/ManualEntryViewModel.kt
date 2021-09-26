@@ -1,19 +1,10 @@
-package com.example.rusalqrandbarcodescanner.viewModels
+package com.example.rusalqrandbarcodescanner.viewmodels
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
-import com.example.rusalqrandbarcodescanner.util.ScannedInfo
-import com.example.rusalqrandbarcodescanner.Screen
-import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
-import com.example.rusalqrandbarcodescanner.database.UserInput
-import com.example.rusalqrandbarcodescanner.repositories.CodeRepository
-import com.example.rusalqrandbarcodescanner.repositories.CurrentInventoryRepository
 import com.example.rusalqrandbarcodescanner.repositories.UserInputRepository
 import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 @DelicateCoroutinesApi
 class ManualEntryViewModel(private val userRepository : UserInputRepository) : ViewModel() {
