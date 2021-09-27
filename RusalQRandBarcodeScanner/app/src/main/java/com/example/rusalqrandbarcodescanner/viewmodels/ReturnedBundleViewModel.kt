@@ -255,7 +255,12 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
         var result = 0
         val value = GlobalScope.async {
             withContext(Dispatchers.Main) {
-                result = invRepo.findByBarcodes("${heat}u")!!.size
+                val repoData = invRepo.findByBarcodes("${heat}u")
+                result = if (repoData.isNullOrEmpty()) {
+                    0
+                } else {
+                    repoData.size
+                }
             }
         }
         value.await()
