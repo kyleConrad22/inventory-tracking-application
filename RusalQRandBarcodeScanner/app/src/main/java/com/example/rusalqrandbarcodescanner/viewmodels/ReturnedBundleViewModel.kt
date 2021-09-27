@@ -207,6 +207,7 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
     private suspend fun setIsIncorrectBundle(heat : String) {
         setIsIncorrectHeat(getBaseHeat(heat))
         setIsDuplicate(heat)
+        println("IncorrectHeat: ${isIncorrectHeat}\nDuplicate: $isDuplicate")
         if (!isIncorrectHeat && !isDuplicate) {
             setReturnedBundle(heat)
         }
@@ -221,34 +222,39 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
     }
 
     private suspend fun setReturnedBundle(heat: String) {
-        if (isBaseHeat(heat)) {
-            when {
-                uniqueList.isEmpty() -> {
-                    returnedBundle = null
-                }
+        val value = GlobalScope.async {
+            withContext(Dispatchers.Main) {
+                if (isBaseHeat(heat)) {
+                    when {
+                        uniqueList.isEmpty() -> {
+                            returnedBundle = null
+                        }
 
-                uniqueList.size == 1 -> {
-                    val repoData = invRepo.findByBaseHeat(heat)?.get(0)!!
-                    returnedBundle = CurrentInventoryLineItem(heatNum = heat, blNum = repoData.blNum, quantity = repoData.quantity, grossWeightKg = "N/A", netWeightKg = "N/A", barcode = "${heat}u${getNumberOfUnidentifiedBundles(heat) + 1}")
-                }
+                        uniqueList.size == 1 -> {
+                            val repoData = invRepo.findByBaseHeat(heat)?.get(0)!!
+                            returnedBundle = CurrentInventoryLineItem(heatNum = heat, blNum = repoData.blNum, quantity = repoData.quantity, grossWeightKg = "N/A", netWeightKg = "N/A", barcode = "${heat}u${getNumberOfUnidentifiedBundles(heat) + 1}")
+                        }
 
-                uniqueList.size > 1 -> {
-                    val bl = currentInput.bl
-                    val quantity = currentInput.pieceCount
-                    if (uniqueList.contains(listOf(bl, quantity))) {
-                        isMultipleOptions = true
-                        returnedBundle = CurrentInventoryLineItem(heatNum = heat, blNum = bl, quantity = quantity, grossWeightKg = "N/A", netWeightKg = "N/A", barcode = "${heat}u${getNumberOfUnidentifiedBundles(heat) + 1}")
-                    } else {
-                        isIncorrectBundle = true
-                        isIncorrectCombo = true
+                        uniqueList.size > 1 -> {
+                            val bl = currentInput.bl
+                            val quantity = currentInput.pieceCount
+                            if (uniqueList.contains(listOf(bl, quantity))) {
+                                isMultipleOptions = true
+                                returnedBundle = CurrentInventoryLineItem(heatNum = heat, blNum = bl, quantity = quantity, grossWeightKg = "N/A", netWeightKg = "N/A", barcode = "${heat}u${getNumberOfUnidentifiedBundles(heat) + 1}")
+                            } else {
+                                isIncorrectBundle = true
+                                isIncorrectCombo = true
+                            }
+                        }
                     }
+                } else {
+                    returnedBundle = invRepo.findByHeat(heat)
                 }
+                isIncorrectBundle = returnedBundle == null
+                isNotFound = isIncorrectBundle
             }
-        } else {
-            returnedBundle = invRepo.findByHeat(heat)
         }
-        isIncorrectBundle = returnedBundle == null
-        isNotFound = isIncorrectBundle
+        println(value.await())
     }
 
     private suspend fun getNumberOfUnidentifiedBundles(heat : String) : Int {
@@ -284,12 +290,16 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
     }
 
     private suspend fun setIsDuplicate(heat : String) {
-        val existingBundle = codeRepo.findByHeat(heat)
-        if (existingBundle == null) {
-            isDuplicate = false
+        if (!isBaseHeat(heat)) {
+            val existingBundle = codeRepo.findByHeat(heat)
+            if (existingBundle == null) {
+                isDuplicate = false
+            } else {
+                isDuplicate = true
+                scanTime = existingBundle.scanTime!!
+            }
         } else {
-            isDuplicate = true
-            scanTime = existingBundle.scanTime!!
+            isDuplicate = false
         }
     }
 

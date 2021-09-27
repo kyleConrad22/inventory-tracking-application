@@ -90,13 +90,16 @@ private fun BundleAddedDialog(navController : NavHostController, showDialog : Mu
             navController.popBackStack()
         }) {
         Surface(modifier = Modifier.fillMaxSize()) {
-            Text(text="Bundle $heat, has been added to the $type.")
-            Button(onClick = {
-                showDialog.value = false
-                navController.popBackStack()
-            }) {
-                Text("Ok", modifier = Modifier.padding(16.dp))
+            Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
+                Text(text="Bundle $heat, has been added to the $type.", Modifier.padding(16.dp))
+                Button(onClick = {
+                    showDialog.value = false
+                    navController.popBackStack()
+                }) {
+                    Text("Ok", modifier = Modifier.padding(16.dp))
+                }
             }
+
         }
     }
 }
@@ -127,7 +130,7 @@ private fun UniqueOption(item : List<String>) {
                 .padding(16.dp)
                 .fillMaxWidth()
                 .align(Alignment.CenterVertically)) {
-                Text(text="BL: ${item[0]}\tQuantity: ${item[1]}", style = MaterialTheme.typography.h6)
+                Text(text="BL: ${item[0]}\nQuantity: ${item[1]}", style = MaterialTheme.typography.h6)
             }
         }
     }
