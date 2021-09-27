@@ -11,14 +11,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.R
 import com.example.rusalqrandbarcodescanner.Screen
+import com.example.rusalqrandbarcodescanner.viewmodels.SplashScreenViewModel
+import com.example.rusalqrandbarcodescanner.viewmodels.SplashScreenViewModel.SplashScreenViewModelFactory
 import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(navController: NavController) {
+    val splashScreenViewModel : SplashScreenViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "SplashScreenVM", factory = SplashScreenViewModelFactory((LocalContext.current.applicationContext as CodeApplication).repository))
+
     val scale = remember {
         androidx.compose.animation.core.Animatable(0f)
     }
