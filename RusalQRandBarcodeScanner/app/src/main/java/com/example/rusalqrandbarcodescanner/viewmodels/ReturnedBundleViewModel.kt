@@ -25,6 +25,7 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
     private var isIncorrectQuantity = false
     private var isNotFound = false
     private var scanTime = ""
+    private var isIncorrectCombo = false
 
     var uniqueList = listOf<List<String>>()
     val loading = mutableStateOf(false)
@@ -33,16 +34,12 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
     var reasoning  = ""
 
     init {
-        if (currentInput.id == "null") {
-            loading.value = true
-            println("initializing")
-            GlobalScope.launch {
-                waitForInput()
-                setUniqueList(currentInput.heatNum!!)
-                setIsBundleLoadable(getHeat())
-                print("we got here")
-                loading.value = false
-            }
+        loading.value = true
+        GlobalScope.launch {
+            waitForInput()
+            setUniqueList(currentInput.heatNum!!)
+            setIsBundleLoadable(getHeat())
+            loading.value = false
         }
     }
 
@@ -154,8 +151,13 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
                     }
                     isIncorrectQuantity -> {
                         reasoning = """
-                            Incorrect quantity! The requested quantity is ${currentInput.bundleQuantity}, but the scanned quantity is ${returnedBundle!!.quantity}.
+                            Incorrect quantity! The requested quantity is ${currentInput.pieceCount}, but the scanned quantity is ${returnedBundle!!.quantity}.
                             Please load a different bundle.
+                        """.trimIndent()
+                    }
+                    isIncorrectCombo -> {
+                        reasoning = """
+                            The requested heat returned multiple BL / quantity combinations, however, none of them contain the requested BL || Quantity combo of: ${currentInput.bl} || ${currentInput.pieceCount}
                         """.trimIndent()
                     }
                     else -> {
@@ -166,7 +168,7 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
             }
             isMultipleOptions -> {
                 reasoning = """
-                    Heat number is associated with multiple bl / quantity combinations! Please ensure that the BL is ${currentInput.bl} and the quantity is ${currentInput.bundleQuantity}!
+                    Heat number is associated with multiple bl / quantity combinations! Please ensure that the BL is ${currentInput.bl} and the quantity is ${currentInput.pieceCount}!
                     Returned identifiers:
                 """.trimIndent()
             }
@@ -184,14 +186,12 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
     }
 
     private suspend fun waitForInput() {
-        println("waitingForInupt")
         val value = GlobalScope.async() {
             withContext(Dispatchers.Main) {
                 currentInput = userRepo.getInputSuspend()!![0]
             }
         }
         value.await()
-        print("done waiting")
     }
 
     private suspend fun setIsBundleLoadable(heat : String) {
@@ -205,24 +205,22 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
     }
 
     private suspend fun setIsIncorrectBundle(heat : String) {
-        println("settingBunde")
         setIsIncorrectHeat(getBaseHeat(heat))
         setIsDuplicate(heat)
         if (!isIncorrectHeat && !isDuplicate) {
             setReturnedBundle(heat)
         }
 
-        if (!isNotFound) {
+        isIncorrectBundle = if (!isNotFound) {
             setIsIncorrectQuantity()
             setIsIncorrectBl()
-            isIncorrectBundle = (isDuplicate || isIncorrectHeat || isIncorrectQuantity || isIncorrectBl)
+            (isDuplicate || isIncorrectHeat || isIncorrectQuantity || isIncorrectBl)
         } else {
-            isIncorrectBundle = true
+            true
         }
     }
 
     private suspend fun setReturnedBundle(heat: String) {
-        println("settingReturn")
         if (isBaseHeat(heat)) {
             when {
                 uniqueList.isEmpty() -> {
@@ -230,17 +228,19 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
                 }
 
                 uniqueList.size == 1 -> {
-                    returnedBundle = invRepo.findByBaseHeat(heat)?.get(0)
+                    val repoData = invRepo.findByBaseHeat(heat)?.get(0)!!
+                    returnedBundle = CurrentInventoryLineItem(heatNum = heat, blNum = repoData.blNum, quantity = repoData.quantity, grossWeightKg = "N/A", netWeightKg = "N/A", barcode = "${heat}u${getNumberOfUnidentifiedBundles(heat) + 1}")
                 }
 
                 uniqueList.size > 1 -> {
                     val bl = currentInput.bl
-                    val quantity = currentInput.bundleQuantity
+                    val quantity = currentInput.pieceCount
                     if (uniqueList.contains(listOf(bl, quantity))) {
                         isMultipleOptions = true
-                        returnedBundle = CurrentInventoryLineItem(heatNum = heat, blNum = bl, quantity = quantity, barcode = "${heat}u${getNumberOfUnidentifiedBundles(heat) + 1}")
+                        returnedBundle = CurrentInventoryLineItem(heatNum = heat, blNum = bl, quantity = quantity, grossWeightKg = "N/A", netWeightKg = "N/A", barcode = "${heat}u${getNumberOfUnidentifiedBundles(heat) + 1}")
                     } else {
                         isIncorrectBundle = true
+                        isIncorrectCombo = true
                     }
                 }
             }
@@ -275,7 +275,7 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
     }
 
     private fun setIsIncorrectQuantity() {
-        isIncorrectQuantity = returnedBundle!!.quantity != currentInput.bundleQuantity
+        isIncorrectQuantity = returnedBundle!!.quantity != currentInput.pieceCount
     }
 
     private suspend fun setIsDuplicate(heat : String) {
