@@ -37,7 +37,11 @@ fun ManualEntryScreen(navController : NavHostController) {
 
     val manualEntryViewModel : ManualEntryViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "manualEntryVM", ManualEntryViewModelFactory((LocalContext.current.applicationContext as CodeApplication).userRepository))
 
-    val isSearchVis = manualEntryViewModel.isSearchVis.value!!
+    val isSearchVis = remember{ mutableStateOf(false) }
+    val searchVisObserver = Observer<Boolean> {
+        isSearchVis.value = it
+    }
+    manualEntryViewModel.isSearchVis.observe(LocalLifecycleOwner.current, searchVisObserver)
 
     val openDialog = remember { mutableStateOf(false) }
 
@@ -47,7 +51,7 @@ fun ManualEntryScreen(navController : NavHostController) {
     Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly) {
-        if (loading && isClicked.value) {
+        if (loading || isClicked.value) {
             LoadingDialog(isDisplayed = true)
         } else {
             Text(text = "Manual Heat Number Search: ", modifier = Modifier.padding(16.dp))
@@ -60,7 +64,7 @@ fun ManualEntryScreen(navController : NavHostController) {
                 }) {
                     Text(text = "Back", modifier = Modifier.padding(16.dp))
                 }
-                if (isSearchVis) {
+                if (isSearchVis.value) {
                     Button(onClick = {
                         manualEntryViewModel.updateHeat()
                         isClicked.value = true
@@ -89,6 +93,7 @@ fun ManualEntryScreen(navController : NavHostController) {
     }
     if (!loading && isClicked.value) {
         navController.navigate(Screen.ReturnedBundleScreen.title)
+        isClicked.value = false
     }
 }
 

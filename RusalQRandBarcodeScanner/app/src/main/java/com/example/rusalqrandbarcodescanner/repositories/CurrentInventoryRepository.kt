@@ -33,7 +33,7 @@ class CurrentInventoryRepository(private val currentInventoryDao: CurrentInvento
     @WorkerThread
     suspend fun findByBarcodes(barcode: String): List<CurrentInventoryLineItem>? {
         return try {
-            currentInventoryDao.findByBarcodes(barcode)
+            currentInventoryDao.findByBarcodes("%$barcode%")
         } catch (exc: EmptyResultSetException) {
             null
         }
@@ -51,7 +51,7 @@ class CurrentInventoryRepository(private val currentInventoryDao: CurrentInvento
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun findByBaseHeat(heat: String): List<CurrentInventoryLineItem>? {
-        return currentInventoryDao.findByBaseHeat(heat)
+        return currentInventoryDao.findByBaseHeat("%$heat%")
     }
 
     @Suppress("RedundantSuspendModifier")

@@ -38,9 +38,6 @@ fun ReturnedBundleScreen(navController: NavHostController) {
     val showAddedDialog = remember { mutableStateOf(false) }
 
     val loading = returnedBundleViewModel.loading.value
-    val isIncorrectBundle = returnedBundleViewModel.isIncorrectBundle.value
-    val isMultipleOptions = returnedBundleViewModel.isMultipleOptions.value
-    returnedBundleViewModel.initialize()
 
     if (showAddedDialog.value) {
         BundleAddedDialog(navController, showAddedDialog, returnedBundleViewModel.getHeat(), returnedBundleViewModel.getType())
@@ -52,15 +49,15 @@ fun ReturnedBundleScreen(navController: NavHostController) {
                 if (loading) {
                     LoadingDialog(isDisplayed = true)
                 } else {
-                    Text(text = returnedBundleViewModel.reasoning.value, modifier = Modifier.padding(16.dp))
-                    if (isIncorrectBundle) {
+                    Text(text = returnedBundleViewModel.reasoning, modifier = Modifier.padding(16.dp))
+                    if (returnedBundleViewModel.isIncorrectBundle) {
                         Button(onClick = {
                             navController.popBackStack()
                         }) {
                             Text(text = "Ok", modifier = Modifier.padding(16.dp))
                         }
                     } else {
-                        if (isMultipleOptions) {
+                        if (returnedBundleViewModel.isMultipleOptions) {
                             UniqueOptionsList(returnedBundleViewModel.uniqueList)
                         }
                         Row(modifier = Modifier.fillMaxWidth(),

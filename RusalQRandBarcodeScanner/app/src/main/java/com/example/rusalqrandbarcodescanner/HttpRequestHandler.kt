@@ -143,7 +143,7 @@ object HttpRequestHandler {
             var loadTime: String = ""
 
             for (fieldVal in lineFields) {
-                val fieldValClean = fieldVal.replace("\"", "")
+                val fieldValClean = fieldVal.replace("\"", "").replace("\\n","")
                 val field = fieldValClean.split(":")[0]
                 val value = fieldValClean.split(":")[1]
                 when (field) {
