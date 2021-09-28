@@ -13,20 +13,18 @@ import java.lang.IllegalArgumentException
 
 @DelicateCoroutinesApi
 class InfoInputViewModel(private val userRepo : UserInputRepository, private val invRepo : CurrentInventoryRepository) : ViewModel() {
-    private val currentInput = userRepo.currentInput.asLiveData()
-    private val triggerLoader = MutableLiveData<Unit>()
-
-    val confirmVis : LiveData<Boolean> = triggerLoader.switchMap { confirmVis() }
+    val isConfirmVis = mutableStateOf(false)
+    val isLoad = mutableStateOf(false)
 
     val blList : MutableState<List<Bl>> = mutableStateOf(listOf())
-    val loader: MutableLiveData<String> = MutableLiveData("")
-    val order: MutableLiveData<String> = MutableLiveData("")
-    val load: MutableLiveData<String> = MutableLiveData("")
-    val bundles: MutableLiveData<String> = MutableLiveData("")
+    val loader = mutableStateOf("")
+    val order = mutableStateOf("")
+    val load = mutableStateOf("")
+    val bundles = mutableStateOf("")
     val bl = mutableStateOf("")
-    val vessel: MutableLiveData<String> = MutableLiveData("")
-    val checker: MutableLiveData<String> = MutableLiveData("")
-    val quantity: MutableLiveData<String> = MutableLiveData("")
+    val vessel = mutableStateOf("")
+    val checker = mutableStateOf("")
+    val quantity = mutableStateOf("")
 
     val loading = mutableStateOf(false)
 
@@ -37,7 +35,7 @@ class InfoInputViewModel(private val userRepo : UserInputRepository, private val
             loading.value = true
             val result = invRepo.getAllSuspend()
             blList.value = getUniqueBlList(result!!)
-            println(blList.value[0])
+            isLoad.value = userRepo.getInputSuspend()!![0].type == "Load"
             loading.value = false
         }
     }
@@ -46,39 +44,10 @@ class InfoInputViewModel(private val userRepo : UserInputRepository, private val
         val result = mutableListOf<Bl>()
         for (lineItem in lineItems) {
             if (result.find {it.blNumber == lineItem.blNum } == null) {
-                println(lineItem.blNum)
                 result.add(Bl(lineItem.blNum!!))
             }
         }
         return result.toList()
-    }
-
-    fun isLoad() : LiveData<Boolean> {
-        val mediatorLiveData = MediatorLiveData<Boolean>()
-        mediatorLiveData.addSource(currentInput) { it ->
-            mediatorLiveData.value =
-                when {
-                    it.isNullOrEmpty() -> {
-                        null
-                    }
-                    it[0].type == "Load" -> {
-                        mediatorLiveData.removeSource(currentInput)
-                        true
-                    }
-                    it[0].type == "Reception" -> {
-                        mediatorLiveData.removeSource(currentInput)
-                        false
-                    }
-                    else -> {
-                        null
-                    }
-                }
-        }
-        return mediatorLiveData
-    }
-
-    private fun getLoadVal() : String? {
-        return currentInput.value!![0].type
     }
 
     fun getUpdate() {
@@ -91,7 +60,7 @@ class InfoInputViewModel(private val userRepo : UserInputRepository, private val
     private suspend fun update() {
         val value = GlobalScope.async {
             withContext(Dispatchers.Main) {
-                val type = getLoadVal().toString()
+                val type = if (isLoad.value) { "Load" } else { "Reception" }
 
                 val userInput = UserInput(
                     id = "data",
@@ -109,80 +78,22 @@ class InfoInputViewModel(private val userRepo : UserInputRepository, private val
                 userRepo.update(userInput)
             }
         }
-        println(value.await())
+        value.await()
         loading.value = false
     }
 
     fun refresh() {
-        triggerLoader.value = Unit
-    }
-
-    private fun confirmVis() : LiveData<Boolean> {
-        val mediatorLiveData = MediatorLiveData<Boolean>()
-        mediatorLiveData.addSource(isLoad()) { isLoad ->
-
-            if (isLoad != null) {
-                if (isLoad) {
-                    mediatorLiveData.removeSource(isLoad())
-                    mediatorLiveData.addSource(order) { ord ->
-                        mediatorLiveData.value = ord != ""
-
-                        if (ord != "") {
-                            mediatorLiveData.removeSource(order)
-                            mediatorLiveData.addSource(load) { loadIt ->
-                                mediatorLiveData.value = loadIt != ""
-
-                                if (loadIt != "") {
-                                    mediatorLiveData.removeSource(load)
-                                    mediatorLiveData.addSource(bundles) { bund ->
-                                        mediatorLiveData.value = bund != ""
-
-                                        if (bund != "") {
-                                            mediatorLiveData.removeSource(bundles)
-                                            mediatorLiveData.value = bl.value != ""
-
-                                            if (bl.value != "") {
-                                                mediatorLiveData.addSource(quantity) { quant ->
-                                                    mediatorLiveData.value = quant != ""
-
-                                                    if (quant != "") {
-                                                        mediatorLiveData.removeSource(quantity)
-                                                        mediatorLiveData.addSource(loader) { loaderIt ->
-                                                            mediatorLiveData.value = loaderIt != ""
-
-                                                            if (loaderIt != "") {
-                                                                mediatorLiveData.removeSource(loader)
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    mediatorLiveData.removeSource(isLoad())
-                    mediatorLiveData.addSource(vessel) { ves ->
-                        mediatorLiveData.value = ves != ""
-
-                        if (ves != "") {
-                            mediatorLiveData.removeSource(vessel)
-                            mediatorLiveData.addSource(checker) { check ->
-                                mediatorLiveData.value = check != ""
-
-                                if (check != "") {
-                                    mediatorLiveData.removeSource(checker)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        val valueList = if (isLoad.value) {
+            listOf(order.value,
+                load.value,
+                loader.value,
+                bundles.value,
+                bl.value,
+                quantity.value)
+        } else {
+            listOf(vessel.value, checker.value)
         }
-        return mediatorLiveData
+        isConfirmVis.value = !valueList.contains("")
     }
 
     class InfoInputViewModelFactory(private val userRepo : UserInputRepository, private val invRepo : CurrentInventoryRepository) : ViewModelProvider.Factory {
