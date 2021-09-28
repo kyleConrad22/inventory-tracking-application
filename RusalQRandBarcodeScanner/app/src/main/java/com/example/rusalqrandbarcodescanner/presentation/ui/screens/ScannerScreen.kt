@@ -5,20 +5,19 @@ import android.content.ContentValues
 import android.util.Log
 import android.util.Size
 import android.view.ViewGroup
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.ImageProxy
-import androidx.camera.core.Preview
+import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FlashOn
+import androidx.compose.material.icons.filled.FlashlightOff
+import androidx.compose.material.icons.filled.FlashlightOn
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
@@ -45,7 +44,6 @@ fun ScannerScreen(navController: NavHostController) {
     /* TODO - Add Flash toggle functionality */
 
     val scannerViewModel : ScannerViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ScannerVM", factory = ScannerViewModelFactory((LocalContext.current.applicationContext as CodeApplication).userRepository))
-
     val loading = scannerViewModel.loading.value
 
     CameraPreview(modifier = Modifier.fillMaxSize(), navController = navController, scannerViewModel = scannerViewModel)
@@ -55,9 +53,6 @@ fun ScannerScreen(navController: NavHostController) {
         if (loading) {
             LoadingDialog(isDisplayed = true)
         } else {
-            Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.End) {
-                Button(modifier = Modifier.padding(16.dp).alpha(if (false) { 1f } else { 0f }), onClick = {}) { Text(text = "Toggle Flash") }
-            }
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.Bottom,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -118,7 +113,7 @@ fun CameraPreview(
 
     val lifecycleOwner = LocalLifecycleOwner.current
     val isScanned = remember { mutableStateOf(false) }
-
+    var camera : Camera? by remember { mutableStateOf(null) }
     if (!scannerViewModel.loading.value && isScanned.value) {
         navController.navigate(Screen.ReturnedBundleScreen.title)
     } else {
@@ -164,10 +159,11 @@ fun CameraPreview(
                         // Must unbind the use-cases before rebinding them
                         cameraProvider.unbindAll()
 
-                        cameraProvider.bindToLifecycle(lifecycleOwner,
+                        camera = cameraProvider.bindToLifecycle(lifecycleOwner,
                             cameraSelector,
                             imageAnalysis,
                             preview)
+
                     } catch (exc: Exception) {
                         Log.e(ContentValues.TAG, "Use case binding failed", exc)
                     }
@@ -175,5 +171,29 @@ fun CameraPreview(
 
                 previewView
             })
+        if (camera != null && camera!!.cameraInfo.hasFlashUnit()) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.End
+            ) {
+                    var enabled by remember { mutableStateOf(false) }
+                    IconButton(onClick = {
+                        camera!!.cameraControl.enableTorch(!enabled)
+                        enabled = !enabled
+                    }) {
+                        Icon(
+                            if (enabled)
+                                Icons.Filled.FlashlightOn
+                            else
+                                Icons.Filled.FlashlightOff,
+
+                            "Toggle Flashlight",
+                            tint = MaterialTheme.colors.primary
+                        )
+                    }
+            }
+
+        }
     }
 }
