@@ -1,6 +1,5 @@
 package com.example.rusalqrandbarcodescanner.domain.models
 
-import androidx.compose.ui.text.toLowerCase
 import com.example.rusalqrandbarcodescanner.presentation.components.autocomplete.AutoCompleteEntity
 import java.util.*
 

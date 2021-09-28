@@ -14,7 +14,9 @@ import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.viewmodels.BundleInfoViewModel.BundleInfoViewModelFactory
 import com.example.rusalqrandbarcodescanner.viewmodels.BundleInfoViewModel
+import kotlinx.coroutines.DelicateCoroutinesApi
 
+@DelicateCoroutinesApi
 @Composable
 fun BundleInfoScreen(navController: NavHostController, barcode: String?) {
     val application = LocalContext.current.applicationContext

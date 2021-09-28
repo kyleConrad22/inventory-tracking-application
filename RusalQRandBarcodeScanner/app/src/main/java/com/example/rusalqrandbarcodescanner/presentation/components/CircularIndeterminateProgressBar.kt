@@ -1,4 +1,4 @@
-package com.example.rusalqrandbarcodescanner
+package com.example.rusalqrandbarcodescanner.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

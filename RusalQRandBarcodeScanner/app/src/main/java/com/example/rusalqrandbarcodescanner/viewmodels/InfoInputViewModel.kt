@@ -27,7 +27,7 @@ class InfoInputViewModel(private val userRepo : UserInputRepository, private val
     val quantity = mutableStateOf("")
 
     val loading = mutableStateOf(false)
-    
+
     init {
         viewModelScope.launch {
             loading.value = true
