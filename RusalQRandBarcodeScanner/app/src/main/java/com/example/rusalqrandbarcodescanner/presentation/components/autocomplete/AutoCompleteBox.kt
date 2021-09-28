@@ -1,5 +1,6 @@
 package com.example.rusalqrandbarcodescanner.presentation.components.autocomplete
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -35,13 +36,15 @@ fun <T : AutoCompleteEntity> AutoCompleteBox(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         autoCompleteState.content()
-        LazyColumn(
-            modifier = Modifier.autoComplete(autoCompleteState),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            items(autoCompleteState.filteredItems) { item ->
-                Box(modifier = Modifier.clickable { autoCompleteState.selectItem(item) }) {
-                    itemContent(item)
+        AnimatedVisibility(visible = autoCompleteState.isSearching) {
+            LazyColumn(
+                modifier = Modifier.autoComplete(autoCompleteState),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                items(autoCompleteState.filteredItems) { item ->
+                    Box(modifier = Modifier.clickable { autoCompleteState.selectItem(item) }) {
+                        itemContent(item)
+                    }
                 }
             }
         }

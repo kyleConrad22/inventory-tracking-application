@@ -1,6 +1,8 @@
 package com.example.rusalqrandbarcodescanner.presentation.ui.screens
 
 import android.util.Log
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -9,11 +11,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.focus.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -26,15 +28,19 @@ import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.CircularIndeterminateProgressBar
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
+import com.example.rusalqrandbarcodescanner.domain.models.Bl
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
+import com.example.rusalqrandbarcodescanner.presentation.components.autocomplete.AutoCompleteBox
 import com.example.rusalqrandbarcodescanner.viewmodels.InfoInputViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
 
+@ExperimentalAnimationApi
 @DelicateCoroutinesApi
 @ExperimentalComposeUiApi
 @Composable
 fun InfoInputScreen(navController: NavHostController) {
-    val infoInputViewModel: InfoInputViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "infoInputVM", factory = InfoInputViewModel.InfoInputViewModelFactory((LocalContext.current.applicationContext as CodeApplication).userRepository))
+    val application = LocalContext.current.applicationContext
+    val infoInputViewModel: InfoInputViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "infoInputVM", factory = InfoInputViewModel.InfoInputViewModelFactory((application as CodeApplication).userRepository, application.invRepository))
 
     val focusManager = LocalFocusManager.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -120,6 +126,7 @@ fun InfoInputScreen(navController: NavHostController) {
 
 }
 
+@ExperimentalComposeUiApi
 @DelicateCoroutinesApi
 @Composable
 fun OrderInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewModel) {
@@ -128,6 +135,7 @@ fun OrderInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewMode
         order = it
     }
     infoInputViewModel.order.observe(LocalLifecycleOwner.current, orderObserver)
+
 
     order?.let{ ord ->
         OutlinedTextField(singleLine = true,
@@ -184,6 +192,58 @@ fun LoaderInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewMod
 }
 
 @DelicateCoroutinesApi
+@ExperimentalAnimationApi
+@Composable
+fun BlInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewModel) {
+    val blList = infoInputViewModel.blList.value
+    Log.d("DEBUG", if (blList.isEmpty()) {"Empty!"} else {blList[0].blNumber})
+    AutoCompleteBox(
+        items = blList,
+        itemContent = { bl ->
+            BlAutoCompleteItem(bl)
+        }
+    ) {
+
+        val value = infoInputViewModel.bl.value
+
+        onItemSelected { bl ->
+            infoInputViewModel.bl.value = bl.blNumber
+            filter(bl.blNumber)
+            focusManager.moveFocus(FocusDirection.Down)
+        }
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(.9f).onFocusChanged { focusState ->
+                isSearching = focusState.isFocused
+                println(isSearching)
+            },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password, capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
+            value = value,
+            onValueChange = {  it ->
+                infoInputViewModel.bl.value = it
+                filter(it)
+                infoInputViewModel.refresh()
+            },
+            label = { Text(text="BL Number: ") })
+    }
+}
+
+@Composable
+fun BlAutoCompleteItem(bl : Bl) {
+    Log.d("DEBUG", bl.blNumber)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(text=bl.blNumber, style = MaterialTheme.typography.subtitle2)
+    }
+}
+
+/*
+@DelicateCoroutinesApi
 @Composable
 fun BlInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewModel) {
     var bl by remember { mutableStateOf(infoInputViewModel.bl.value) }
@@ -203,6 +263,7 @@ fun BlInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewModel) 
             } , label = { Text(text="BL Number: ") })
     }
 }
+ */
 
 @DelicateCoroutinesApi
 @Composable

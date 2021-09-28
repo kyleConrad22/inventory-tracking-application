@@ -1,24 +1,29 @@
 package com.example.rusalqrandbarcodescanner.viewmodels
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
+import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
 import com.example.rusalqrandbarcodescanner.database.UserInput
+import com.example.rusalqrandbarcodescanner.domain.models.Bl
+import com.example.rusalqrandbarcodescanner.repositories.CurrentInventoryRepository
 import com.example.rusalqrandbarcodescanner.repositories.UserInputRepository
 import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
 
 @DelicateCoroutinesApi
-class InfoInputViewModel(private val repository : UserInputRepository) : ViewModel() {
-    private val currentInput = repository.currentInput.asLiveData()
+class InfoInputViewModel(private val userRepo : UserInputRepository, private val invRepo : CurrentInventoryRepository) : ViewModel() {
+    private val currentInput = userRepo.currentInput.asLiveData()
     private val triggerLoader = MutableLiveData<Unit>()
 
     val confirmVis : LiveData<Boolean> = triggerLoader.switchMap { confirmVis() }
 
+    val blList : MutableState<List<Bl>> = mutableStateOf(listOf())
     val loader: MutableLiveData<String> = MutableLiveData("")
     val order: MutableLiveData<String> = MutableLiveData("")
     val load: MutableLiveData<String> = MutableLiveData("")
     val bundles: MutableLiveData<String> = MutableLiveData("")
-    val bl: MutableLiveData<String> = MutableLiveData("")
+    val bl = mutableStateOf("")
     val vessel: MutableLiveData<String> = MutableLiveData("")
     val checker: MutableLiveData<String> = MutableLiveData("")
     val quantity: MutableLiveData<String> = MutableLiveData("")
@@ -26,6 +31,27 @@ class InfoInputViewModel(private val repository : UserInputRepository) : ViewMod
     val loading = mutableStateOf(false)
 
     /* TODO - Implement auto-completion feature of BLs from inventory */
+
+    init {
+        viewModelScope.launch {
+            loading.value = true
+            val result = invRepo.getAllSuspend()
+            blList.value = getUniqueBlList(result!!)
+            println(blList.value[0])
+            loading.value = false
+        }
+    }
+
+    private fun getUniqueBlList(lineItems : List<CurrentInventoryLineItem>) : List<Bl> {
+        val result = mutableListOf<Bl>()
+        for (lineItem in lineItems) {
+            if (result.find {it.blNumber == lineItem.blNum } == null) {
+                println(lineItem.blNum)
+                result.add(Bl(lineItem.blNum!!))
+            }
+        }
+        return result.toList()
+    }
 
     fun isLoad() : LiveData<Boolean> {
         val mediatorLiveData = MediatorLiveData<Boolean>()
@@ -80,7 +106,7 @@ class InfoInputViewModel(private val repository : UserInputRepository) : ViewMod
                     heatNum = "",
                     type = type
                 )
-                repository.update(userInput)
+                userRepo.update(userInput)
             }
         }
         println(value.await())
@@ -113,22 +139,19 @@ class InfoInputViewModel(private val repository : UserInputRepository) : ViewMod
 
                                         if (bund != "") {
                                             mediatorLiveData.removeSource(bundles)
-                                            mediatorLiveData.addSource(bl) { blIt ->
-                                                mediatorLiveData.value = blIt != ""
+                                            mediatorLiveData.value = bl.value != ""
 
-                                                if (blIt != "") {
-                                                    mediatorLiveData.removeSource(bl)
-                                                    mediatorLiveData.addSource(quantity) { quant ->
-                                                        mediatorLiveData.value = quant != ""
+                                            if (bl.value != "") {
+                                                mediatorLiveData.addSource(quantity) { quant ->
+                                                    mediatorLiveData.value = quant != ""
 
-                                                        if (quant != "") {
-                                                            mediatorLiveData.removeSource(quantity)
-                                                            mediatorLiveData.addSource(loader) { loaderIt ->
-                                                                mediatorLiveData.value = loaderIt != ""
+                                                    if (quant != "") {
+                                                        mediatorLiveData.removeSource(quantity)
+                                                        mediatorLiveData.addSource(loader) { loaderIt ->
+                                                            mediatorLiveData.value = loaderIt != ""
 
-                                                                if (loaderIt != "") {
-                                                                    mediatorLiveData.removeSource(loader)
-                                                                }
+                                                            if (loaderIt != "") {
+                                                                mediatorLiveData.removeSource(loader)
                                                             }
                                                         }
                                                     }
@@ -162,11 +185,11 @@ class InfoInputViewModel(private val repository : UserInputRepository) : ViewMod
         return mediatorLiveData
     }
 
-    class InfoInputViewModelFactory(private val repository : UserInputRepository) : ViewModelProvider.Factory {
+    class InfoInputViewModelFactory(private val userRepo : UserInputRepository, private val invRepo : CurrentInventoryRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass : Class<T>) : T {
             if (modelClass.isAssignableFrom(InfoInputViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")
-                return InfoInputViewModel(repository) as T
+                return InfoInputViewModel(userRepo, invRepo) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }
