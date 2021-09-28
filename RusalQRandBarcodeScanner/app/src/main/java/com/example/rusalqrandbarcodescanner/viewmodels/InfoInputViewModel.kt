@@ -27,9 +27,7 @@ class InfoInputViewModel(private val userRepo : UserInputRepository, private val
     val quantity = mutableStateOf("")
 
     val loading = mutableStateOf(false)
-
-    /* TODO - Implement auto-completion feature of BLs from inventory */
-
+    
     init {
         viewModelScope.launch {
             loading.value = true
