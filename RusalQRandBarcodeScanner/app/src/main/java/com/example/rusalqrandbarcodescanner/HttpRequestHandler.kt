@@ -118,7 +118,6 @@ object HttpRequestHandler {
     }
 
     private suspend fun addToRepo(invRepo : CurrentInventoryRepository) = withContext(Dispatchers.IO){
-        invRepo.deleteAll()
         currentInventory()
         val lines = output.split("},{").toTypedArray()
         lines[0] = lines[0].replace("[{", "")
