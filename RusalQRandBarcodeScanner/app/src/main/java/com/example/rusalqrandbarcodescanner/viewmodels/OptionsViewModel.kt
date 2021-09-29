@@ -1,50 +1,52 @@
 package com.example.rusalqrandbarcodescanner.viewmodels
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
+import com.example.rusalqrandbarcodescanner.database.UserInput
 import com.example.rusalqrandbarcodescanner.repositories.CodeRepository
 import com.example.rusalqrandbarcodescanner.repositories.UserInputRepository
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
 
-class OptionsViewModel(private val userRepository : UserInputRepository, private val codeRepository : CodeRepository) : ViewModel() {
-    val currentInput = userRepository.currentInput.asLiveData()
-    private val count: LiveData<Int> = codeRepository.count.asLiveData()
+class OptionsViewModel(private val userRepo : UserInputRepository, private val codeRepo : CodeRepository) : ViewModel() {
 
+    val userInput : MutableState<UserInput?> = mutableStateOf(null)
     val loading = mutableStateOf(false)
-    val displayCountButtons = mutableStateOf(count.value != null && count.value!! > 0)
-    val displayRemoveEntry = mutableStateOf(count.value != null && currentInput.value != null && Integer.parseInt(currentInput.value!![0].bundleQuantity!!) - count.value!! > 0)
+    val isLoad = mutableStateOf(false)
+    val isDisplayAdditionalButtons = mutableStateOf(false)
+    val isDisplayRemoveEntry = mutableStateOf(false)
 
-    fun deleteAll() = viewModelScope.launch {
-        codeRepository.deleteAll()
+    init {
+        viewModelScope.launch{
+            loading.value = true
+            userInput.value = userRepo.getInputSuspend()!![0]
+            isLoad.value = getIsLoad(userInput.value!!)
+
+            setDisplayableButtons(
+                codeRepo.getRowCount() ?: 0,
+                if (userInput.value!!.bundleQuantity != "")
+                    userInput.value!!.bundleQuantity!!.toInt()
+                else
+                    0
+            )
+            loading.value = false
+        }
+
     }
 
-    fun isLoad() : LiveData<Boolean> {
-        val mediatorLiveData = MediatorLiveData<Boolean>()
-        if (currentInput.value != null) {
-            mediatorLiveData.value = (currentInput.value!![0].type == "Load")
-        } else {
-            mediatorLiveData.addSource(currentInput) { it ->
-                mediatorLiveData.removeSource(currentInput)
-                mediatorLiveData.value =
-                    when {
-                        it.isEmpty() -> {
-                            null
-                        }
-                        it[0].type == "Load" -> {
-                            true
-                        }
-                        it[0].type == "Reception" -> {
-                            false
-                        }
-                        else -> {
-                            null
-                        }
-                    }
-                loading.value = mediatorLiveData.value == null
-            }
-        }
-        return mediatorLiveData
+    private fun setDisplayableButtons(count : Int, requestedQuantity : Int) {
+        isDisplayAdditionalButtons.value = count > 0
+        isDisplayRemoveEntry.value = requestedQuantity != 0 && requestedQuantity - count > 0
+
+    }
+
+    fun deleteAll() = viewModelScope.launch {
+        codeRepo.deleteAll()
+    }
+
+    private fun getIsLoad(userInput : UserInput) : Boolean {
+        return userInput.type == "Load"
     }
 
     class OptionsViewModelFactory(private val userRepository : UserInputRepository, private val codeRepository : CodeRepository) : ViewModelProvider.Factory {

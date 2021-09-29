@@ -6,16 +6,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Observer
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.rusalqrandbarcodescanner.presentation.components.CircularIndeterminateProgressBar
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
+import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.viewmodels.*
 
 @Composable
@@ -25,34 +23,26 @@ fun OptionsScreen(navController: NavHostController) {
     val optionsViewModel : OptionsViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "optionsVM", factory = OptionsViewModel.OptionsViewModelFactory((application as CodeApplication).userRepository, (application as CodeApplication).repository))
 
     val loading = optionsViewModel.loading.value
-    val displayCountButtons = optionsViewModel.displayCountButtons.value
+    val isLoad = optionsViewModel.isLoad.value
+    val userInput = optionsViewModel.userInput.value
+    val isDisplayAdditionalButtons = optionsViewModel.isDisplayAdditionalButtons.value
+    val isDisplayRemoveEntry = optionsViewModel.isDisplayRemoveEntry.value
 
     val resetDialog = remember { mutableStateOf(false) }
+    val type = if (isLoad) { "Load" } else { "Reception" }
 
-    var isLoad by remember { mutableStateOf(optionsViewModel.isLoad().value) }
-    val isLoadObserver = Observer<Boolean> { it ->
-        isLoad = it
-    }
-    optionsViewModel.isLoad().observe(LocalLifecycleOwner.current, isLoadObserver)
+    Scaffold(topBar = { TopAppBar(title = { Text("Scanner Options", textAlign = TextAlign.Center) }) }) {
 
-    val displayRemoveEntry = optionsViewModel.displayRemoveEntry.value
-
-    if (isLoad == null) {
-        CircularIndeterminateProgressBar(isDisplayed = loading)
-    } else {
-        val input = optionsViewModel.currentInput.value!![0]
-
-        val type = if (isLoad!!) { "Load" } else { "Reception" }
-        Scaffold(topBar = { TopAppBar(title = { Text("$type Options", textAlign = TextAlign.Center) }) }) {
-
-            Column(modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceEvenly) {
-                Text(text = "$type Options:")
-                if (isLoad!!) {
-                    Text(text = "${input.order!!} Load ${input.load!!}")
+        Column(modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly) {
+            if (loading) {
+                LoadingDialog(isDisplayed = true)
+            } else {
+                if (isLoad) {
+                    Text(text = "${userInput!!.order} Load ${userInput.load}")
                 } else {
-                    Text(text = "Vessel Project: ${input.vessel!!}")
+                    Text(text = "Vessel Project: ${userInput!!.vessel}")
                 }
                 Button(onClick = { navController.navigate(Screen.ScannerScreen.title) }) {
                     Text(text = "Scan Code", modifier = Modifier
@@ -60,15 +50,17 @@ fun OptionsScreen(navController: NavHostController) {
                         .size(width = 200.dp, height = 20.dp)
                         .align(Alignment.CenterVertically), textAlign = TextAlign.Center)
                 }
-                if (displayCountButtons) {
-                    if (isLoad!!) {
+                if (isDisplayAdditionalButtons) {
+                    if (isLoad) {
                         Button(onClick = {
                             resetDialog.value = true
                         }) {
-                            Text(text = "Reset Load", modifier = Modifier
-                                .padding(16.dp)
-                                .size(width = 200.dp, height = 20.dp)
-                                .align(Alignment.CenterVertically), textAlign = TextAlign.Center)
+                            Text(text = "Reset Load",
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .size(width = 200.dp, height = 20.dp)
+                                    .align(Alignment.CenterVertically),
+                                textAlign = TextAlign.Center)
                         }
                     }
                 }
@@ -80,12 +72,12 @@ fun OptionsScreen(navController: NavHostController) {
                     }) {
                         Text(text = "Back", modifier = Modifier.padding(16.dp))
                     }
-                    if (displayCountButtons) {
+                    if (isDisplayAdditionalButtons) {
                         Button(onClick = {
                             navController.navigate(Screen.ReviewScreen.title)
                         }) {
-                            Text(text = if (displayRemoveEntry) {
-                                "RemoveEntry"
+                            Text(text = if (isDisplayRemoveEntry) {
+                                "Remove Entry"
                             } else {
                                 "Review $type"
                             }, modifier = Modifier.padding(16.dp))
