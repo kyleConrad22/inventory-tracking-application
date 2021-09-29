@@ -108,6 +108,7 @@ private fun HeatNumberInput(focusManager : FocusManager, manualEntryViewModel : 
 
     heat?.let { heatIt ->
         OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(.9f),
             singleLine = true,
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusManager.clearFocus(true) }),
