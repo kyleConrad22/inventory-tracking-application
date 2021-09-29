@@ -3,7 +3,9 @@ package com.example.rusalqrandbarcodescanner.presentation.ui.screens
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,17 +21,25 @@ import androidx.navigation.NavController
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.R
 import com.example.rusalqrandbarcodescanner.Screen
+import com.example.rusalqrandbarcodescanner.presentation.components.CircularIndeterminateProgressBar
+import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.viewmodels.SplashScreenViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.SplashScreenViewModel.SplashScreenViewModelFactory
 import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(navController: NavController) {
-    val splashScreenViewModel : SplashScreenViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "SplashScreenVM", factory = SplashScreenViewModelFactory((LocalContext.current.applicationContext as CodeApplication).repository))
+    val application = LocalContext.current.applicationContext
+    val splashScreenViewModel : SplashScreenViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "SplashScreenVM", factory = SplashScreenViewModelFactory((application as CodeApplication).repository, application.invRepository))
+
+    val loading = splashScreenViewModel.loading.value
 
     val scale = remember {
         androidx.compose.animation.core.Animatable(0f)
     }
+
+    if (!loading)
+        LaunchedEffect(key1 = true) { navController.navigate(Screen.MainMenuScreen.title) }
 
     // Animation Effect
     LaunchedEffect(key1 = true) {
@@ -42,14 +52,16 @@ fun SplashScreen(navController: NavController) {
                 }
             )
         )
-        delay(3000L)
-        navController.navigate(Screen.MainMenuScreen.title)
     }
 
-    // Image
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Image(painter = painterResource(id = R.drawable.splash_screen),
-            contentDescription = "Logo",
-            modifier = Modifier.scale(scale.value))
-    }
+        // Image
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+                Image(painter = painterResource(id = R.drawable.splash_screen),
+                    contentDescription = "Logo",
+                    modifier = Modifier.scale(scale.value))
+                CircularIndeterminateProgressBar(isDisplayed = loading)
+            }
+
+        }
 }

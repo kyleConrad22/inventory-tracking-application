@@ -3,6 +3,7 @@ package com.example.rusalqrandbarcodescanner
 import android.util.Log
 import androidx.lifecycle.Observer
 import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
+import com.example.rusalqrandbarcodescanner.repositories.CurrentInventoryRepository
 import com.example.rusalqrandbarcodescanner.viewmodels.CurrentInventoryViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.ReviewViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.ScannedCodeViewModel
@@ -116,8 +117,8 @@ object HttpRequestHandler {
         }
     }
 
-    private suspend fun addToRepo(viewModel: CurrentInventoryViewModel) = withContext(Dispatchers.IO){
-        viewModel.deleteAll()
+    private suspend fun addToRepo(invRepo : CurrentInventoryRepository) = withContext(Dispatchers.IO){
+        invRepo.deleteAll()
         currentInventory()
         val lines = output.split("},{").toTypedArray()
         lines[0] = lines[0].replace("[{", "")
@@ -169,7 +170,7 @@ object HttpRequestHandler {
             iterable++
             Log.d("DEBUG", iterable.toString())
 
-            viewModel.insert(CurrentInventoryLineItem(
+            invRepo.insert(CurrentInventoryLineItem(
                 heatNum = heatNum,
                 packageNum = packageNum,
                 grossWeightKg = grossWeightKg,
@@ -188,10 +189,13 @@ object HttpRequestHandler {
         }
     }
 
-    fun initialize(viewModel: CurrentInventoryViewModel) {
-        CoroutineScope(Dispatchers.IO).launch {
-            addToRepo(viewModel = viewModel)
+    suspend fun initialize(invRepo: CurrentInventoryRepository) : Boolean {
+        val value = CoroutineScope(Dispatchers.IO).async {
+            addToRepo(invRepo)
         }
+        value.await()
+        var loading = false
+        return loading
     }
 
     fun initUpdate(reviewViewModel: ReviewViewModel, viewModel: ScannedCodeViewModel, currentInventoryViewModel: CurrentInventoryViewModel) {
