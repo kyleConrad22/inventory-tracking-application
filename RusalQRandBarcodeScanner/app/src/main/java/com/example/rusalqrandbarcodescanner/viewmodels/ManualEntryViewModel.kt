@@ -8,15 +8,14 @@ import java.lang.IllegalArgumentException
 
 @DelicateCoroutinesApi
 class ManualEntryViewModel(private val userRepository : UserInputRepository) : ViewModel() {
-    private val triggerLoader = MutableLiveData<Unit>()
 
-    val heat: MutableLiveData<String> = MutableLiveData("")
+    val heat = mutableStateOf("")
     val loading = mutableStateOf(false)
-    val isSearchVis : LiveData<Boolean> = triggerLoader.switchMap { setSearchVis() }
+    val isSearchVis = mutableStateOf(false)
 
     // Used to manually test logic for setSearchVis as heat number is typed
     fun refresh() {
-        triggerLoader.value = Unit
+        setSearchVis()
     }
 
     // Saves heat input to repository
@@ -28,20 +27,14 @@ class ManualEntryViewModel(private val userRepository : UserInputRepository) : V
                     heat.value?.let { userRepository.updateHeat(it) }
                 }
             }
-            println(value.await())
+            value.await()
             loading.value = false
         }
     }
 
     // Sets the visibility of search button
-    private fun setSearchVis() : LiveData<Boolean> {
-        val mediatorLiveData : MediatorLiveData<Boolean> = MediatorLiveData()
-        mediatorLiveData.addSource(heat) {
-            mediatorLiveData.removeSource(heat)
-            mediatorLiveData.value = it.length > 5
-        }
-
-        return mediatorLiveData
+    private fun setSearchVis() {
+        isSearchVis.value = heat.value.length > 5
     }
 
     class ManualEntryViewModelFactory(private val userRepository : UserInputRepository) : ViewModelProvider.Factory {
