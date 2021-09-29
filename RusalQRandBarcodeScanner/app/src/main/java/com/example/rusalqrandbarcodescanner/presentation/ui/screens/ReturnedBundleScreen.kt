@@ -43,6 +43,7 @@ fun ReturnedBundleScreen(navController: NavHostController) {
         BundleAddedDialog(navController, showAddedDialog, returnedBundleViewModel.getHeat(), returnedBundleViewModel.getType())
     } else {
         Scaffold(topBar = { TopAppBar(title = { Text("Returned Bundle Info") }) }) {
+
             Column(modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceEvenly) {

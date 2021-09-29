@@ -42,6 +42,7 @@ fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: Scanned
 
     val confirmDialog = remember { mutableStateOf(false) }
     Scaffold(topBar = { TopAppBar(title = { Text(text=if(showRemoveDialog) { "Remove Entry" } else { "Review $loadType" }, textAlign = TextAlign.Center) }) }) {
+
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {

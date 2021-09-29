@@ -3,9 +3,7 @@ package com.example.rusalqrandbarcodescanner.presentation.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -15,6 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -39,28 +38,31 @@ fun ManualEntryScreen(navController : NavHostController) {
     val loading = manualEntryViewModel.loading.value
     val isClicked = remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly) {
-        if (loading || isClicked.value) {
-            LoadingDialog(isDisplayed = true)
-        } else {
-            Text(text = "Manual Heat Number Search: ", modifier = Modifier.padding(16.dp))
-            HeatNumberInput(focusManager, manualEntryViewModel)
-            Row(modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly) {
-                Button(onClick = {
-                    navController.navigateUp()
-                }) {
-                    Text(text = "Back", modifier = Modifier.padding(16.dp))
-                }
-                if (isSearchVis) {
+    Scaffold(topBar = { TopAppBar(title = { Text("Manual Entry", textAlign = TextAlign.Center) }) }) {
+
+        Column(modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly) {
+            if (loading || isClicked.value) {
+                LoadingDialog(isDisplayed = true)
+            } else {
+                Text(text = "Manual Heat Number Search: ", modifier = Modifier.padding(16.dp))
+                HeatNumberInput(focusManager, manualEntryViewModel)
+                Row(modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly) {
                     Button(onClick = {
-                        manualEntryViewModel.updateHeat()
-                        isClicked.value = true
+                        navController.navigateUp()
                     }) {
-                        Text(text = "Retrieve Bundle Info", modifier = Modifier.padding(16.dp))
+                        Text(text = "Back", modifier = Modifier.padding(16.dp))
+                    }
+                    if (isSearchVis) {
+                        Button(onClick = {
+                            manualEntryViewModel.updateHeat()
+                            isClicked.value = true
+                        }) {
+                            Text(text = "Retrieve Bundle Info", modifier = Modifier.padding(16.dp))
+                        }
                     }
                 }
             }

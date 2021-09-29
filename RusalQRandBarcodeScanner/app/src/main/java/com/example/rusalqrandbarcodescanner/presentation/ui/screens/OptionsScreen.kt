@@ -1,9 +1,7 @@
 package com.example.rusalqrandbarcodescanner.presentation.ui.screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,9 +43,11 @@ fun OptionsScreen(navController: NavHostController) {
         val input = optionsViewModel.currentInput.value!![0]
 
         val type = if (isLoad!!) { "Load" } else { "Reception" }
-        Column(modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly) {
+        Scaffold(topBar = { TopAppBar(title = { Text("$type Options", textAlign = TextAlign.Center) }) }) {
+
+            Column(modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceEvenly) {
                 Text(text = "$type Options:")
                 if (isLoad!!) {
                     Text(text = "${input.order!!} Load ${input.load!!}")
@@ -84,7 +84,11 @@ fun OptionsScreen(navController: NavHostController) {
                         Button(onClick = {
                             navController.navigate(Screen.ReviewScreen.title)
                         }) {
-                            Text(text = if (displayRemoveEntry) { "RemoveEntry" } else { "Review $type" }, modifier = Modifier.padding(16.dp))
+                            Text(text = if (displayRemoveEntry) {
+                                "RemoveEntry"
+                            } else {
+                                "Review $type"
+                            }, modifier = Modifier.padding(16.dp))
                         }
                     }
                     if (resetDialog.value) {
@@ -93,18 +97,26 @@ fun OptionsScreen(navController: NavHostController) {
                             title = { Text(text = "Reset $type Confirmation") },
                             text = { Text(text = "Are you sure you would like to remove all bundles from this Load? This cannot be undone.") },
                             buttons = {
-                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                                Button(onClick = {
-                                    resetDialog.value = false
-                                }) { Text(text = "Deny Reset", modifier = Modifier.padding(16.dp)) }
-                                Button(onClick = {
-                                    resetDialog.value = false
-                                    optionsViewModel.deleteAll()
-                                }) { Text(text = "Confirm Reset", modifier = Modifier.padding(16.dp)) }
-                            }
-                        })
+                                Row(modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceEvenly) {
+                                    Button(onClick = {
+                                        resetDialog.value = false
+                                    }) {
+                                        Text(text = "Deny Reset",
+                                            modifier = Modifier.padding(16.dp))
+                                    }
+                                    Button(onClick = {
+                                        resetDialog.value = false
+                                        optionsViewModel.deleteAll()
+                                    }) {
+                                        Text(text = "Confirm Reset",
+                                            modifier = Modifier.padding(16.dp))
+                                    }
+                                }
+                            })
                     }
                 }
             }
+        }
     }
 }
