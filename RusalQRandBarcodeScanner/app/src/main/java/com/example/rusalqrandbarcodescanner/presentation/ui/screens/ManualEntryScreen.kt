@@ -20,6 +20,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
+import com.example.rusalqrandbarcodescanner.presentation.components.BasicInputDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.viewmodels.ManualEntryViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.ManualEntryViewModel.ManualEntryViewModelFactory
@@ -47,7 +48,7 @@ fun ManualEntryScreen(navController : NavHostController) {
                 LoadingDialog(isDisplayed = true)
             } else {
                 Text(text = "Manual Heat Number Search: ", modifier = Modifier.padding(16.dp))
-                HeatNumberInput(focusManager, manualEntryViewModel)
+                BasicInputDialog(label = "Heat Number", userInput = manualEntryViewModel.heat, refresh = { manualEntryViewModel.refresh() }, focusManager = focusManager, lastInput = true, keyboardType = KeyboardType.Number)
                 Row(modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -72,21 +73,4 @@ fun ManualEntryScreen(navController : NavHostController) {
         navController.navigate(Screen.ReturnedBundleScreen.title)
         isClicked.value = false
     }
-}
-
-@DelicateCoroutinesApi
-@Composable
-private fun HeatNumberInput(focusManager : FocusManager, manualEntryViewModel : ManualEntryViewModel) {
-    val heat = manualEntryViewModel.heat.value
-
-    OutlinedTextField(
-        modifier = Modifier.fillMaxWidth(.9f),
-        singleLine = true,
-        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
-        keyboardActions = KeyboardActions(onNext = { focusManager.clearFocus(true) }),
-        value = heat,
-        onValueChange = { it ->
-            manualEntryViewModel.heat.value = it
-            manualEntryViewModel.refresh() },
-        label = { Text(text = "Heat Number: ") })
 }

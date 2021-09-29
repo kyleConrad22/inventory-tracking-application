@@ -23,6 +23,7 @@ import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.domain.models.Bl
+import com.example.rusalqrandbarcodescanner.presentation.components.BasicInputDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.autocomplete.AutoCompleteBox
 import com.example.rusalqrandbarcodescanner.viewmodels.InfoInputViewModel
@@ -59,15 +60,15 @@ fun InfoInputScreen(navController: NavHostController) {
 
             } else {
                 if (isLoad) {
-                    OrderInput(focusManager, infoInputViewModel)
-                    LoadInput(focusManager, infoInputViewModel)
-                    LoaderInput(focusManager, infoInputViewModel)
+                    BasicInputDialog(label = "Work Order", userInput = infoInputViewModel.order, refresh = { infoInputViewModel.refresh() }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Password)
+                    BasicInputDialog(label = "Load", userInput = infoInputViewModel.load, refresh = { infoInputViewModel.refresh() }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Number)
+                    BasicInputDialog(label = "Loader", userInput = infoInputViewModel.loader, refresh = { infoInputViewModel.refresh() }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Text)
                     BlInput(focusManager, infoInputViewModel)
-                    QuantityInput(focusManager, infoInputViewModel)
-                    BundlesInput(focusManager, infoInputViewModel)
+                    BasicInputDialog(label = "Piece Count", userInput = infoInputViewModel.quantity, refresh = { infoInputViewModel.refresh() }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Number)
+                    BasicInputDialog(label = "Number of Bundles", userInput = infoInputViewModel.bundles, refresh = { infoInputViewModel.refresh() }, focusManager = focusManager, lastInput = true, keyboardType = KeyboardType.Number)
                 } else {
-                    VesselInput(focusManager, infoInputViewModel)
-                    CheckerInput(focusManager, infoInputViewModel)
+                    BasicInputDialog(label = "Vessel Project", userInput = infoInputViewModel.vessel, refresh = { infoInputViewModel.refresh() }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Password)
+                    BasicInputDialog(label = "Checker", userInput = infoInputViewModel.checker, refresh = { infoInputViewModel.refresh() }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Text)
                 }
 
                 Row(modifier = Modifier.fillMaxWidth(),
@@ -102,52 +103,6 @@ fun InfoInputScreen(navController: NavHostController) {
             }
         }
     }
-}
-
-@ExperimentalComposeUiApi
-@DelicateCoroutinesApi
-@Composable
-fun OrderInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewModel) {
-    OutlinedTextField(
-        modifier = Modifier.fillMaxWidth(.9f),
-        singleLine = true,
-        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password, capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Next),
-        keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down)}),
-        value = infoInputViewModel.order.value,
-        onValueChange = { it ->
-            infoInputViewModel.order.value = it
-            infoInputViewModel.refresh()
-        } , label = { Text(text="Work Order: ") })
-}
-
-@DelicateCoroutinesApi
-@Composable
-fun LoadInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewModel) {
-    OutlinedTextField(
-        modifier = Modifier.fillMaxWidth(.9f),
-        singleLine = true,
-        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
-        keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down)}),
-        value = infoInputViewModel.load.value,
-        onValueChange = { it ->
-            infoInputViewModel.load.value = it
-            infoInputViewModel.refresh()
-        } , label = { Text(text="Load Number: ") })
-}
-
-@DelicateCoroutinesApi
-@Composable
-fun LoaderInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewModel) {
-    OutlinedTextField(
-        modifier = Modifier.fillMaxWidth(.9f),
-        singleLine = true,
-        keyboardOptions = KeyboardOptions.Default.copy(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Next),
-        keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down)}),
-        value = infoInputViewModel.loader.value,
-        onValueChange = { it ->
-            infoInputViewModel.loader.value = it
-            infoInputViewModel.refresh()
-        } , label = { Text(text="Loader: ") })
 }
 
 @DelicateCoroutinesApi
@@ -199,64 +154,4 @@ fun BlAutoCompleteItem(bl : Bl) {
     ) {
         Text(text=bl.blNumber, style = MaterialTheme.typography.subtitle2)
     }
-}
-
-@DelicateCoroutinesApi
-@Composable
-fun QuantityInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewModel) {
-    OutlinedTextField(
-        modifier = Modifier.fillMaxWidth(.9f),
-        singleLine = true,
-        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
-        keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down)}),
-        value = infoInputViewModel.quantity.value,
-        onValueChange = { it ->
-            infoInputViewModel.quantity.value = it
-            infoInputViewModel.refresh()
-        } , label = { Text(text="Piece Count: ") })
-}
-
-@DelicateCoroutinesApi
-@Composable
-fun BundlesInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewModel) {
-    OutlinedTextField(
-        modifier = Modifier.fillMaxWidth(.9f),
-        singleLine = true,
-        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus(true)}),
-        value = infoInputViewModel.bundles.value,
-        onValueChange = { it ->
-            infoInputViewModel.bundles.value = it
-            infoInputViewModel.refresh()
-        } , label = { Text(text="Bundle Quantity: ") })
-}
-
-@DelicateCoroutinesApi
-@Composable
-fun VesselInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewModel) {
-    OutlinedTextField(
-        modifier = Modifier.fillMaxWidth(.9f),
-        singleLine = true,
-        keyboardOptions = KeyboardOptions.Default.copy(KeyboardCapitalization.Characters, imeAction = ImeAction.Next),
-        keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
-        value = infoInputViewModel.vessel.value,
-        onValueChange = { it ->
-            infoInputViewModel.vessel.value = it
-            infoInputViewModel.refresh()
-        }, label = { Text(text = "Vessel:") })
-}
-
-@DelicateCoroutinesApi
-@Composable
-fun CheckerInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewModel) {
-    OutlinedTextField(
-        modifier = Modifier.fillMaxWidth(.9f),
-        singleLine = true,
-        keyboardOptions = KeyboardOptions.Default.copy(KeyboardCapitalization.Characters, imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus(true) }),
-        value = infoInputViewModel.checker.value,
-        onValueChange = { it ->
-            infoInputViewModel.checker.value = it
-            infoInputViewModel.refresh()
-        }, label = { Text("Checker:") })
 }
