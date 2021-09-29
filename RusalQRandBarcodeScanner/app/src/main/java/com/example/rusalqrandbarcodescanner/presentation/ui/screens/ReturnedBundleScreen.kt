@@ -24,6 +24,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
+import com.example.rusalqrandbarcodescanner.util.ScannedInfo
 import com.example.rusalqrandbarcodescanner.viewmodels.ReturnedBundleViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.ReturnedBundleViewModel.ReturnedBundleViewModelFactory
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -53,6 +54,7 @@ fun ReturnedBundleScreen(navController: NavHostController) {
                     Text(text = returnedBundleViewModel.reasoning, modifier = Modifier.padding(16.dp))
                     if (returnedBundleViewModel.isIncorrectBundle) {
                         Button(onClick = {
+                            ScannedInfo.heatNum = ""
                             navController.popBackStack()
                         }) {
                             Text(text = "Ok", modifier = Modifier.padding(16.dp))
@@ -64,11 +66,13 @@ fun ReturnedBundleScreen(navController: NavHostController) {
                         Row(modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceEvenly) {
                             Button(onClick = {
+                                ScannedInfo.heatNum = ""
                                 navController.popBackStack()
                             }) {
                                 Text(text = "Deny", modifier = Modifier.padding(16.dp))
                             }
                             Button(onClick = {
+                                ScannedInfo.heatNum = ""
                                 returnedBundleViewModel.addBundle()
                                 showAddedDialog.value = true
                             }) {

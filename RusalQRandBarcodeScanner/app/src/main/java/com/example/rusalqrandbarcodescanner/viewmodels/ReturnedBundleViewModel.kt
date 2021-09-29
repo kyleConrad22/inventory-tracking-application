@@ -8,6 +8,7 @@ import com.example.rusalqrandbarcodescanner.database.UserInput
 import com.example.rusalqrandbarcodescanner.repositories.CodeRepository
 import com.example.rusalqrandbarcodescanner.repositories.CurrentInventoryRepository
 import com.example.rusalqrandbarcodescanner.repositories.UserInputRepository
+import com.example.rusalqrandbarcodescanner.util.ScannedInfo
 import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
 import java.time.LocalDateTime
@@ -52,6 +53,7 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
     }
 
     fun addBundle() = viewModelScope.launch {
+        loading.value = true
         if (isBaseHeat(getHeat())) {
             invRepo.insert(returnedBundle!!)
         }
@@ -61,6 +63,8 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
         scannedCode.workOrder = currentInput.order
         scannedCode.scanTime = getCurrentDateTime()
         codeRepo.insert(scannedCode)
+        userRepo.updateHeat("")
+        loading.value = false
     }
 
     private fun lineItemToScannedCode(currentInventoryLineItem : CurrentInventoryLineItem) : ScannedCode{
@@ -210,11 +214,11 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
         println("IncorrectHeat: ${isIncorrectHeat}\nDuplicate: $isDuplicate")
         if (!isIncorrectHeat && !isDuplicate) {
             setReturnedBundle(heat)
+            setIsIncorrectQuantity()
+            setIsIncorrectBl()
         }
 
         isIncorrectBundle = if (!isNotFound) {
-            setIsIncorrectQuantity()
-            setIsIncorrectBl()
             (isDuplicate || isIncorrectHeat || isIncorrectQuantity || isIncorrectBl)
         } else {
             true

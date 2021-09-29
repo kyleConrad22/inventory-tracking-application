@@ -1,11 +1,8 @@
 package com.example.rusalqrandbarcodescanner.util
 
-import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-
 object ScannedInfo {
     var heatNum: String = ""
+    var isScanned : Boolean = false
 
     fun setValues(rawValue: String) {
         if (rawValue.contains("_")) {

@@ -79,16 +79,18 @@ private class ImageAnalyzer: ImageAnalysis.Analyzer {
             val results = scanner.process(image)
                 .addOnSuccessListener { barcodes ->
                     for (barcode in barcodes) {
-                        val bounds = barcode.boundingBox
-                        val corners = barcode.cornerPoints
+                        if (ScannedInfo.heatNum == "") {
+                            val bounds = barcode.boundingBox
+                            val corners = barcode.cornerPoints
+                            val rawValue = barcode.rawValue
+                            println("HERE\nJER\neohe\nEOEJF\nosghsog")
 
-                        val rawValue = barcode.rawValue
-
-                        val valueType = barcode.valueType
-                        if (rawValue != null) {
-                            ScannedInfo.setValues(rawValue)
+                            val valueType = barcode.valueType
+                            if (rawValue != null) {
+                                ScannedInfo.setValues(rawValue)
+                                ScannedInfo.isScanned = true
+                            }
                         }
-
                     }
                 }
                 .addOnFailureListener {
@@ -110,36 +112,35 @@ fun CameraPreview(
     scannerViewModel : ScannerViewModel) {
 
     val lifecycleOwner = LocalLifecycleOwner.current
-    val isScanned = remember { mutableStateOf(false) }
+
     var camera : Camera? by remember { mutableStateOf(null) }
-    if (!scannerViewModel.loading.value && isScanned.value) {
-        navController.navigate(Screen.ReturnedBundleScreen.title)
-    } else {
-        AndroidView(
-            modifier = modifier,
-            factory = { context ->
-                val previewView = PreviewView(context).apply {
 
-                    this.scaleType = scaleType
+    AndroidView(
+        modifier = modifier,
+        factory = { context ->
+            val previewView = PreviewView(context).apply {
+                this.scaleType = scaleType
 
-                    layoutParams = ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                    )
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
 
-                    // Preview incorrectly scaled in Compose on some devices without following code
-                    implementationMode = PreviewView.ImplementationMode.COMPATIBLE
-                }
+                // Preview incorrectly scaled in Compose on some devices without following code
+                implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+            }
 
+            if (camera == null) {
                 val imageAnalysis =
                     ImageAnalysis.Builder().setTargetResolution(Size(1080, 2310)).build()
 
                 imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context),
                     { imageProxy ->
                         ImageAnalyzer().analyze(imageProxy)
-                        if (ScannedInfo.heatNum != "") {
-                            isScanned.value = true
+                        if (ScannedInfo.heatNum != "" && ScannedInfo.isScanned) {
                             scannerViewModel.updateHeat()
+                            navController.navigate(Screen.ReturnedBundleScreen.title)
+                            ScannedInfo.isScanned = false
                         }
                     })
 
@@ -166,32 +167,32 @@ fun CameraPreview(
                         Log.e(ContentValues.TAG, "Use case binding failed", exc)
                     }
                 }, ContextCompat.getMainExecutor(context))
-
-                previewView
-            })
-        if (camera != null && camera!!.cameraInfo.hasFlashUnit()) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.End
-            ) {
-                    var enabled by remember { mutableStateOf(false) }
-                    IconButton(onClick = {
-                        camera!!.cameraControl.enableTorch(!enabled)
-                        enabled = !enabled
-                    }) {
-                        Icon(
-                            if (enabled)
-                                Icons.Filled.FlashlightOn
-                            else
-                                Icons.Filled.FlashlightOff,
-
-                            "Toggle Flashlight",
-                            tint = MaterialTheme.colors.primary
-                        )
-                    }
             }
+            previewView
+        })
 
+    if (camera != null && camera!!.cameraInfo.hasFlashUnit()) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.End
+        ) {
+                var enabled by remember { mutableStateOf(false) }
+                IconButton(onClick = {
+                    camera!!.cameraControl.enableTorch(!enabled)
+                    enabled = !enabled
+                }) {
+                    Icon(
+                        if (enabled)
+                            Icons.Filled.FlashlightOn
+                        else
+                            Icons.Filled.FlashlightOff,
+
+                        "Toggle Flashlight",
+                        tint = MaterialTheme.colors.primary
+                    )
+                }
         }
+
     }
 }
