@@ -16,12 +16,16 @@ class ScannerViewModel(private val userRepo : UserInputRepository) : ViewModel()
 
     /* TODO - Move Scanning Logic To ViewModel */
 
+    init {
+    }
+
     fun updateHeat() {
         loading.value = true
         GlobalScope.launch(Dispatchers.Main) {
             val value = GlobalScope.async {
                 withContext(Dispatchers.Main) {
                     userRepo.updateHeat(ScannedInfo.heatNum)
+                    ScannedInfo.heatNum = ""
                 }
             }
             println(value.await())
