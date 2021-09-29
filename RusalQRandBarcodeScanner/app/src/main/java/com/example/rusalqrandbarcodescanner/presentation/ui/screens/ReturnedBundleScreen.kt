@@ -54,7 +54,6 @@ fun ReturnedBundleScreen(navController: NavHostController) {
                     Text(text = returnedBundleViewModel.reasoning, modifier = Modifier.padding(16.dp))
                     if (returnedBundleViewModel.isIncorrectBundle) {
                         Button(onClick = {
-                            ScannedInfo.heatNum = ""
                             navController.popBackStack()
                         }) {
                             Text(text = "Ok", modifier = Modifier.padding(16.dp))
@@ -66,13 +65,11 @@ fun ReturnedBundleScreen(navController: NavHostController) {
                         Row(modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceEvenly) {
                             Button(onClick = {
-                                ScannedInfo.heatNum = ""
                                 navController.popBackStack()
                             }) {
                                 Text(text = "Deny", modifier = Modifier.padding(16.dp))
                             }
                             Button(onClick = {
-                                ScannedInfo.heatNum = ""
                                 returnedBundleViewModel.addBundle()
                                 showAddedDialog.value = true
                             }) {

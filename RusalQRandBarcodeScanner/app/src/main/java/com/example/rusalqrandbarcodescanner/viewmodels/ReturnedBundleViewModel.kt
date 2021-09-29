@@ -41,6 +41,7 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
             setUniqueList(currentInput.heatNum!!)
             setIsBundleLoadable(getHeat())
             loading.value = false
+            ScannedInfo.heatNum = ""
         }
     }
 
