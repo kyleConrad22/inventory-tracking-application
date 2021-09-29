@@ -5,7 +5,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 object ScannedInfo {
-    var qrCode: String = ""
     var heatNum: String = ""
     var barCode: String = ""
     var packageNum: String = ""
@@ -15,27 +14,25 @@ object ScannedInfo {
     var grossWgtLbs: String = ""
     var scanTime: String = ""
     var blNum: String = ""
-    var workOrder: String = ""
-    var loadNum: String = ""
-    var loader: String = ""
     var quantity: String = ""
 
     fun setValues(rawValue: String) {
-        val elements = rawValue.split("_").toTypedArray()
-        qrCode = rawValue
-        barCode = elements[0]
-        heatNum = elements[1].replace("-","")
-        netWgtKg = elements[5].split("/")[0]
-        grossWgtKg = elements[5].split("/")[1]
-        netWgtLbs = elements[7].split("/")[0]
-        grossWgtLbs = elements[7].split("/")[1]
-        packageNum = elements[9]
-        try {
-            quantity = elements[11]
-        } catch (e: ArrayIndexOutOfBoundsException) {
-            quantity = "5"
+        if (rawValue.contains("_")) {
+            val elements = rawValue.split("_").toTypedArray()
+            barCode = elements[0]
+            heatNum = elements[1].replace("-", "")
+            netWgtKg = elements[5].split("/")[0]
+            grossWgtKg = elements[5].split("/")[1]
+            netWgtLbs = elements[7].split("/")[0]
+            grossWgtLbs = elements[7].split("/")[1]
+            packageNum = elements[9]
+            quantity = try {
+                elements[11]
+            } catch (e: ArrayIndexOutOfBoundsException) {
+                "5"
+            }
+            setTime()
         }
-        setTime()
     }
 
     private fun setTime(){
@@ -78,7 +75,6 @@ object ScannedInfo {
     }
 
     fun clearValues(){
-        qrCode = ""
         heatNum = ""
         barCode = ""
         netWgtKg = ""

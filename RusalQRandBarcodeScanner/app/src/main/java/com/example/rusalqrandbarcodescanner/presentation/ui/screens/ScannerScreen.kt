@@ -41,8 +41,6 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 @Composable
 fun ScannerScreen(navController: NavHostController) {
 
-    /* TODO - Add Flash toggle functionality */
-
     val scannerViewModel : ScannerViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ScannerVM", factory = ScannerViewModelFactory((LocalContext.current.applicationContext as CodeApplication).userRepository))
     val loading = scannerViewModel.loading.value
 
@@ -139,7 +137,7 @@ fun CameraPreview(
                 imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context),
                     { imageProxy ->
                         ImageAnalyzer().analyze(imageProxy)
-                        if (ScannedInfo.qrCode != "") {
+                        if (ScannedInfo.heatNum != "") {
                             isScanned.value = true
                             scannerViewModel.updateHeat()
                         }
