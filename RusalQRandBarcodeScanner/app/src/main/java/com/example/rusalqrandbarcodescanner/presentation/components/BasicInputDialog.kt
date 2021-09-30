@@ -10,6 +10,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 
@@ -17,7 +18,7 @@ import androidx.compose.ui.text.input.KeyboardType
 fun BasicInputDialog(
     label : String,
     userInput : MutableState<String>,
-    refresh : () -> Unit,
+    refresh : (input : String) -> Unit,
     focusManager: FocusManager,
     lastInput : Boolean,
     keyboardType : KeyboardType
@@ -34,8 +35,7 @@ fun BasicInputDialog(
             },
         value = userInput.value,
         onValueChange = {
-            userInput.value = it
-            refresh()
+            refresh(it)
         },
         label = { Text(text = "$label:") }
     )
