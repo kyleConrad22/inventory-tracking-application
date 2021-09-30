@@ -22,10 +22,8 @@ import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.R
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.presentation.components.CircularIndeterminateProgressBar
-import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.viewmodels.SplashScreenViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.SplashScreenViewModel.SplashScreenViewModelFactory
-import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(navController: NavController) {
