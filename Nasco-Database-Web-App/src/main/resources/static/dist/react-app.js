@@ -30577,6 +30577,11 @@ var App = /*#__PURE__*/function (_Component) {
   _createClass(App, [{
     key: "componentDidMount",
     value: function componentDidMount() {
+      this.fetchRusalInventoryItems();
+    }
+  }, {
+    key: "fetchRusalInventoryItems",
+    value: function fetchRusalInventoryItems() {
       var _this2 = this;
 
       fetch("/api/rusal").then(function (res) {
@@ -30590,13 +30595,89 @@ var App = /*#__PURE__*/function (_Component) {
       });
     }
   }, {
+    key: "handleSubmit",
+    value: function handleSubmit(evt) {
+      var _this3 = this;
+
+      evt.preventDefault();
+      fetch("/api/rusal", {
+        method: "POST",
+        body: new FormData(evt.target)
+      }).then(function (response) {
+        if (response.ok) {
+          _this3.fetchRusalInventoryItems();
+        } else {
+          alert("Failed to create new inventory item");
+        }
+      })["catch"](function (error) {
+        // Network errors
+        alert(error);
+      });
+      evt.target.reset();
+      return false;
+    }
+  }, {
     key: "render",
     value: function render() {
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
         id: "rusal-all"
       }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("h1", null, "Rusal Inventory Items"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_rusal_line_item_list__WEBPACK_IMPORTED_MODULE_2__["default"], {
         rusalLineItems: this.state.rusalLineItems
-      }));
+      }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("form", {
+        onSubmit: this.handleSubmit.bind(this)
+      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", {
+        id: "heatNum",
+        name: "heatNum",
+        type: "text",
+        placeholder: "Enter Heat Number"
+      }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", {
+        id: "packageNum",
+        name: "packageNum",
+        type: "text",
+        placeholder: "Enter Package Number"
+      }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", {
+        id: "grossWeightKg",
+        name: "grossWeightKg",
+        type: "text",
+        placeholder: "Enter Gross Weight Kg"
+      }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", {
+        id: "netWeightKg",
+        name: "netWeightKg",
+        type: "text",
+        placeholder: "Enter Net Weight"
+      }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", {
+        id: "quantity",
+        name: "quantity",
+        type: "text",
+        placeholder: "Enter Quantity"
+      }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", {
+        id: "dimension",
+        name: "dimension",
+        type: "text",
+        placeholder: "Enter Dimension"
+      }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", {
+        id: "grade",
+        name: "grade",
+        type: "text",
+        placeholder: "Enter Grade"
+      }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", {
+        id: "certificateNum",
+        name: "certificateNum",
+        type: "text",
+        placeholder: "Enter Certificate Number"
+      }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", {
+        id: "blNum",
+        name: "blNum",
+        type: "text",
+        placeholder: "Enter BL Number"
+      }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", {
+        id: "barcode",
+        name: "barcode",
+        type: "text",
+        placeholder: "Enter Barcode"
+      }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", {
+        type: "submit"
+      }, "Add New Item")));
     }
   }]);
 
