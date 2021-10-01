@@ -12,7 +12,7 @@ class RusalLineItemList extends Component {
         );
 
         return (
-            <table id = "rusal-all-table">
+            <table>
                 <tbody>
                     <tr>
                         <th>Heat Number</th>

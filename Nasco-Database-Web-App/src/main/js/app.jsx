@@ -26,8 +26,8 @@ class App extends Component {
 
     render() {
         return (
-            <div>
-                <h1>Rusal Line Items</h1>
+            <div id = "rusal-all">
+                <h1>Rusal Inventory Items</h1>
                 <RusalLineItemList rusalLineItems={ this.state.rusalLineItems }/>
             </div>
         );
