@@ -22,6 +22,11 @@ public class MainController {
     @Autowired
     private RusalLineItemService rusalLineItemService;
 
+    @RequestMapping (value = "/")
+    public String index() {
+        return "index";
+    }
+
     @PostMapping(path = "/add")
     public @ResponseBody String addLineItem (
             @RequestParam String heatNum,

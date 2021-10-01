@@ -1,6 +1,7 @@
 plugins {
 	id 'org.springframework.boot' version '2.5.4'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'com.github.node-gradle.node' version '3.0.1'
 	id 'java'
 }
 
@@ -11,6 +12,23 @@ sourceCompatibility = '8'
 repositories {
 	mavenCentral()
 }
+
+node {
+	version = '14.15.5'
+}
+
+task buildReactApp(type: NodeTask, dependsOn: 'npmInstall') {
+	script = project.file('node_modules\\webpack\\bin\\webpack.js')
+	args = [
+	        '--mode', 'development',
+			'--entry', './src\\main\\js\\app.jsx',
+			'-o', './src/main/resources/static/dist'
+	]
+}
+
+processResources.dependsOn 'buildReactApp'
+clean.delete << file('node_modules')
+clean.delete << file('src/main/resources/static/dist')
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
