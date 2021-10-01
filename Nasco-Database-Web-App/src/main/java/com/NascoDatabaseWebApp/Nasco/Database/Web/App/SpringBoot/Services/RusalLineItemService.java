@@ -1,7 +1,7 @@
 package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services;
 
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.RusalLineItem;
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.RusalLineItemRepository;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItem;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,24 +26,10 @@ public class RusalLineItemService {
             String loader,
             String loadTime
     ) {
-        RusalLineItem lineItem = new RusalLineItem();
-        lineItem.setHeatNum(heatNum);
-        lineItem.setPackageNum(packageNum);
-        lineItem.setNetWeightKg(netWeightKg);
-        lineItem.setGrossWeightKg(grossWeightKg);
-        lineItem.setQuantity(quantity);
-        lineItem.setDimension(dimension);
-        lineItem.setGrade(grade);
-        lineItem.setCertificateNum(certificateNum);
-        lineItem.setBlNum(blNum);
-        lineItem.setBarcode(barcode);
-        lineItem.setWorkOrder(workOrder);
-        lineItem.setLoadNum(loadNum);
-        lineItem.setLoader(loader);
-        lineItem.setLoadTime(loadTime);
-        repository.save(lineItem);
+        repository.save(new RusalLineItem(heatNum, packageNum, grossWeightKg, netWeightKg, quantity, dimension, grade, certificateNum, blNum, barcode, workOrder, loadNum, loader, loadTime));
     }
 
+    /*
     public void updateRusalDatabase(
             String heatNum,
             String workOrder,
@@ -58,4 +44,5 @@ public class RusalLineItemService {
         lineItem.setLoadTime(loadTime);
         repository.save(lineItem);
     }
+    */
 }

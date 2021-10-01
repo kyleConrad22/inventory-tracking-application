@@ -1,8 +1,5 @@
 module.exports = {
-    entry: './src/main/js/app.js',
     devtool: 'source-map',
-    cache: true,
-    mode: 'development',
     output: {
         filename: 'react-app.js'
     },

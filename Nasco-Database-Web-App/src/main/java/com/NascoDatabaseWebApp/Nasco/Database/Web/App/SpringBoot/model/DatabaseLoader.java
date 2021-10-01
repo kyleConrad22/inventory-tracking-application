@@ -1,12 +1,9 @@
-package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot;
+package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model;
 
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.RusalLineItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,11 +11,11 @@ import java.util.List;
 @Component
 public class DatabaseLoader implements CommandLineRunner {
 
-    private final RusalLineItemService service;
+    private final RusalLineItemRepository repository;
 
     @Autowired
-    public DatabaseLoader(RusalLineItemService service) {
-        this.service = service;
+    public DatabaseLoader(RusalLineItemRepository repository) {
+        this.repository = repository;
     }
 
     @Override
@@ -39,7 +36,7 @@ public class DatabaseLoader implements CommandLineRunner {
         List<String> loadTimes = Arrays.asList("09/29/2021 03:21 PM", "09/30/2021 09:24 AM", "N/A");
 
         for (int i = 0; i < heatNums.size(); i++) {
-            this.service.addLineItem(
+            this.repository.save( new RusalLineItem(
                     heatNums.get(i),
                     packageNums.get(i),
                     grossWeightKgs.get(i),
@@ -54,7 +51,7 @@ public class DatabaseLoader implements CommandLineRunner {
                     loadNums.get(i),
                     loaders.get(i),
                     loadTimes.get(i)
-            );
+            ));
         }
     }
 }

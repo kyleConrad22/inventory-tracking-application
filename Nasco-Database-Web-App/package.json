@@ -1,6 +1,7 @@
 {
   "name": "nasco-web-app",
   "description": "NASCO support application using React and Spring Boot",
+  "homepage": "http://localhost:8081/",
   "dependencies": {
     "@babel/core": "^7.12.13",
     "@babel/preset-env": "^7.12.13",

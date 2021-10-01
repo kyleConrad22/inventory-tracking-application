@@ -1,13 +1,9 @@
 package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Controller;
 
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.RusalLineItem;
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.RusalLineItemRepository;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItem;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItemRepository;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.RusalLineItemService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -49,11 +45,7 @@ public class MainController {
         return "Saved";
     }
 
-    @GetMapping(path = "/all")
-    public @ResponseBody List<RusalLineItem> getAllLineItems() {
-        return rusalLineItemRepository.findAll();
-    }
-
+    /*
     @GetMapping(path = "/update")
     public @ResponseBody String updateLineItem(
             @RequestParam String heatNum,
@@ -64,4 +56,5 @@ public class MainController {
         rusalLineItemService.updateRusalDatabase(heatNum, workOrder, loadNum, loader, loadTime);
         return "Updated";
     }
+    */
 }

@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ExcelController {
     @Autowired
     ExcelService fileService;
-
+/*
     @GetMapping("/download")
     public ResponseEntity<Resource> getFile(){
         String fileName = "RusalDatabase.xlsx";
@@ -41,4 +41,6 @@ public class ExcelController {
                 .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
                 .body(file);
     }
+
+ */
 }
