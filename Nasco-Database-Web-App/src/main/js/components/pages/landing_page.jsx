@@ -46,6 +46,7 @@ export default function LandingPage() {
         )
     }
 
+    console.log("Made it to Landing Page!")
     return (
         <div>
             <h1>Landing Page</h1>
