@@ -2,8 +2,9 @@ import React from "react";
 import { BrowserRouter, Switch, Route, Link, userParams, useRouteMatch} from "react-router-dom";
 
 import ToBeImplemented from "../util/to_be_implemented";
-import BugReportPage from "../apps/checkin_checkout_app/bug_report_page";
-import ExcelSpreadSheetPage from "../apps/checkin_checkout_app/excel_spreadsheet_page";
+import CustomerSettings from "../apps/checkin_checkout_app/customer_settings";
+import RunTruckSupport from "../apps/checkin_checkout_app/run_truck_support";
+import NewCustomer from "../apps/checkin_checkout_app/new_customer";
 
 export default function CheckinCheckoutPage() {
     let { path, url } = useRouteMatch();
@@ -15,10 +16,13 @@ export default function CheckinCheckoutPage() {
             <h2>Functions</h2>
             <ul>
                 <li>
-                    <Link to={ `${url}/bugs` }>Bug Reporting</Link>
+                    <Link to={ `${url}/customer_settings` }>Modify Customer Process</Link>
                 </li>
                 <li>
-                    <Link to={ `${url}/excel_formatting` }>Excel SpreadSheet Formatting</Link>
+                    <Link to={ `${url}/run` }>Run Check-In / Check-out App</Link>
+                </li>
+                <li>
+                    <Link to={ `${url}/new_customer` }>Add Customer Process</Link>
                 </li>
             </ul>
 
@@ -26,11 +30,14 @@ export default function CheckinCheckoutPage() {
                 <Route exact path={ path }>
                     <h3>Please Select a Function.</h3>
                 </Route>
-                <Route exact path={ `${path}/bugs` }>
-                    <BugReportPage />
+                <Route path={ `${path}/customer_settings` }>
+                    <CustomerSettings />
                 </Route>
-                <Route exact path={ `${path}/excel_formatting` }>
-                    <ExcelSpreadSheetPage />
+                <Route path={ `${path}/run` }>
+                    <RunTruckSupport />
+                </Route>
+                <Route path={ `${path}/new_customer` }>
+                    <NewCustomer />
                 </Route>
             </Switch>
         </div>

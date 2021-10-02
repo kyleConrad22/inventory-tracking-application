@@ -12,11 +12,11 @@ const Main = () => {
             <Route exact path="/">
                 <LandingPage />
             </Route>
-            <Route exact path="/rusal" component={ RusalPage }></Route>
-            <Route exact path='/misc'>
+            <Route path="/rusal" component={ RusalPage }></Route>
+            <Route path='/misc'>
                 <MiscFunctionsPage />
             </Route>
-            <Route excat path='/truck_support'>
+            <Route path='/truck_support'>
                 <CheckinCheckoutPage />
             </Route>
         </Switch>

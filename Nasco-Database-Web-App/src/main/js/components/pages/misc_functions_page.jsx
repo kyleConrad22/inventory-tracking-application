@@ -1,20 +1,38 @@
 import React from "react";
-import { useHistory } from "react-router";
+import { BrowserRouter, Switch, Route, Link, userParams, useRouteMatch} from "react-router-dom";
+
 import ToBeImplemented from "../util/to_be_implemented";
+import BugReporting from "../apps/misc_functions/bug_reporting";
+import ExcelSpreadSheetFormatting from "../apps/misc_functions/excel_spreadsheet_formatting";
 
 export default function MiscFunctionsPage() {
-    function EditCustomerProcess() {
-        let history = useHistory();
-
-        function handleClick() {
-            history.push("")
-        }
-    }
+    let { path, url } = useRouteMatch();
 
     return (
         <div>
-            <h1>Misc Functions Landing Page</h1>
+            <h1>Misc Functions Page</h1>
             <ToBeImplemented />
+            <h2>Functions</h2>
+            <ul>
+                <li>
+                    <Link to={`${url}/bugs`}>Bug Reporting</Link>
+                </li>
+                <li>
+                    <Link to={`${url}/excel_formatting`}>Excel SpreadSheet Formatting</Link>
+                </li>
+            </ul>
+
+            <Switch>
+                <Route exact path={path}>
+                    <h3>I am Confusion</h3>
+                </Route>
+                <Route path={`${path}/bugs`}>
+                    <BugReporting />
+                </Route>
+                <Route path={`${path}/excel_formatting`}>
+                    <ExcelSpreadSheetFormatting />
+                </Route>
+            </Switch>
         </div>
     );
 }

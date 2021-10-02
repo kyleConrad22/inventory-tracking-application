@@ -1,6 +1,5 @@
 import React from "react";
 import { Link, useHistory } from "react-router-dom";
-import MiscFunctionsPage from "./misc_functions_page";
 
 export default function LandingPage() {
 
@@ -29,7 +28,7 @@ export default function LandingPage() {
             <button id="truck-support-button" type="button" onClick={ () => { handleClick() } }>
                 Truck Support App
             </button>
-        )
+        );
     }
 
     function MiscFunctionsButton() {
@@ -43,7 +42,7 @@ export default function LandingPage() {
             <button id="misc-button" type="button" onClick={ () => { handleClick() } }>
                 Misc Functions
             </button>
-        )
+        );
     }
 
     console.log("Made it to Landing Page!")
