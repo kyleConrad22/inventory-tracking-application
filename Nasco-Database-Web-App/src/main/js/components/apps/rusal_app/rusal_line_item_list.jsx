@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import RusalLineItem from "./RusalLineItem";
+import RusalLineItem from "./rusal_line_item";
 
 class RusalLineItemList extends Component {
     render() {
