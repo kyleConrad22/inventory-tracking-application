@@ -47,9 +47,9 @@ export default function RusalPage() {
 
     return (
         <div id = "rusal-all">
-                <h1>Rusal Inventory Items</h1>
-                <RusalLineItemList rusalLineItems={ rusalLineItems } />
-                <RusalAddNewForm handleSubmit={ handleSubmit } />
-            </div>
+            <h1>Rusal Inventory Items</h1>
+            <RusalLineItemList rusalLineItems={ rusalLineItems } />
+            <RusalAddNewForm handleSubmit={ handleSubmit } />
+        </div>
     );
 }
