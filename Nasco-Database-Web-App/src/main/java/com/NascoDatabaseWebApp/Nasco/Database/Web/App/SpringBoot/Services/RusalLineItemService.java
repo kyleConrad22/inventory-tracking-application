@@ -2,9 +2,11 @@ package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services;
 
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItem;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItemRepository;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.util.ExcelHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 @Service
@@ -25,20 +27,15 @@ public class RusalLineItemService implements RusalService{
         return repository.findByOrderAndLoad(workOrder, loadNum);
     }
 
-    /*
-    public void updateRusalDatabase(
-            String heatNum,
-            String workOrder,
-            String loadNum,
-            String loader,
-            String loadTime
-    ) {
-        RusalLineItem lineItem = repository.findByHeatNum(heatNum);
-        lineItem.setWorkOrder(workOrder);
-        lineItem.setLoadNum(loadNum);
-        lineItem.setLoader(loader);
-        lineItem.setLoadTime(loadTime);
-        repository.save(lineItem);
+    public void update(String heatNum, String workOrder, String loadNum, String loader, String loadTime) {
+        repository.update(heatNum, workOrder, loadNum, loader, loadTime);
     }
-    */
+
+    public ByteArrayInputStream loadAll() {
+        return ExcelHelper.loadToExcel(findAll());
+    }
+
+    public ByteArrayInputStream loadByOrderAndLoad(String workOrder, String loadNum) {
+        return ExcelHelper.loadToExcel(findByOrderAndLoad(workOrder, loadNum));
+    }
 }
