@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import RusalLineItemList from "../apps/rusal_app/rusal_line_item_list";
 import "../../../css/main.css";
+import RusalAddNewForm from "../apps/rusal_app/rusal_add_new_form";
 
-export default function RusalPage(props) {
+export default function RusalPage() {
 
     const [rusalLineItems, setRusalLineItems] = useState([]);
     
@@ -47,20 +48,8 @@ export default function RusalPage(props) {
     return (
         <div id = "rusal-all">
                 <h1>Rusal Inventory Items</h1>
-                <RusalLineItemList rusalLineItems={ rusalLineItems }/>
-                <form onSubmit={ handleSubmit }>
-                    <input id="heatNum" name="heatNum" type="text" placeholder="Enter Heat Number"/>
-                    <input id="packageNum" name="packageNum" type="text" placeholder="Enter Package Number"/>
-                    <input id="grossWeightKg" name="grossWeightKg" type="text" placeholder="Enter Gross Weight Kg"/>
-                    <input id="netWeightKg" name="netWeightKg" type="text" placeholder="Enter Net Weight"/>
-                    <input id="quantity" name="quantity" type="text" placeholder="Enter Quantity"/>
-                    <input id="dimension" name="dimension" type="text" placeholder="Enter Dimension"/>
-                    <input id="grade" name="grade" type="text" placeholder="Enter Grade"/>
-                    <input id="certificateNum" name="certificateNum" type="text" placeholder="Enter Certificate Number"/>
-                    <input id="blNum" name="blNum" type="text" placeholder="Enter BL Number"/>
-                    <input id="barcode" name="barcode" type="text" placeholder = "Enter Barcode"/>
-                    <button type="submit">Add New Item</button>
-                </form>
+                <RusalLineItemList rusalLineItems={ rusalLineItems } />
+                <RusalAddNewForm handleSubmit={ handleSubmit } />
             </div>
     );
 }
