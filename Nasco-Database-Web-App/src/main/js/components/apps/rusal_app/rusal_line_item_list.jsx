@@ -12,9 +12,9 @@ export default function RusalLineItemList(props) {
     );
 
     return (
-        <table>
+        <table className='padded-table'>
             <tbody>
-                <tr>
+                <tr className='bordered-row'>
                     <th>Heat Number</th>
                     <th>Gross Weight Kg</th>
                     <th>Net Weight Kg</th>

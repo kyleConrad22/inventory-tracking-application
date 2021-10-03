@@ -48,10 +48,12 @@ export default function LandingPage() {
     console.log("Made it to Landing Page!")
     return (
         <div>
-            <h1>Landing Page</h1>
-            <h2>Navigation Buttons Found Below</h2>
+            <h2>Landing Page</h2>
+            <h3>Navigation Buttons</h3>
             <RusalButton />
+            &nbsp;&nbsp;&nbsp;
             <TruckSupportButton />
+            &nbsp;&nbsp;&nbsp;
             <MiscFunctionsButton />
         </div>
     );

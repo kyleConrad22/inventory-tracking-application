@@ -26,7 +26,6 @@ export default function RusalDownloads() {
             <h3>Download Links</h3>
             <ToBeImplemented />
             <DownloadDatabase />
-            &nbsp;&nbsp;&nbsp;
             <DownloadByOrderAndLoad />
         </div>
     );

@@ -3,7 +3,7 @@ import React from "react";
 export default function RusalLineItem(props) {
     
     return (
-        <tr>
+        <tr className='bordered-row'>
             <td>{props.rusalLineItem.heatNum}</td>
             <td>{props.rusalLineItem.grossWeightKg}</td>
             <td>{props.rusalLineItem.netWeightKg}</td>
