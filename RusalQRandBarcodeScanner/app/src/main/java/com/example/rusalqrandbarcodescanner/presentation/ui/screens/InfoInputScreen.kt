@@ -26,6 +26,10 @@ import com.example.rusalqrandbarcodescanner.domain.models.Bl
 import com.example.rusalqrandbarcodescanner.presentation.components.BasicInputDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.autocomplete.AutoCompleteBox
+import com.example.rusalqrandbarcodescanner.util.inputvalidation.BasicItemValidator
+import com.example.rusalqrandbarcodescanner.util.inputvalidation.NameValidator
+import com.example.rusalqrandbarcodescanner.util.inputvalidation.NumberValidator
+import com.example.rusalqrandbarcodescanner.util.inputvalidation.WorkOrderValidator
 import com.example.rusalqrandbarcodescanner.viewmodels.InfoInputViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
 
@@ -60,15 +64,45 @@ fun InfoInputScreen(navController: NavHostController) {
 
             } else {
                 if (isLoad) {
-                    BasicInputDialog(label = "Work Order", userInput = infoInputViewModel.order, refresh = { infoInputViewModel.refresh() }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Password)
-                    BasicInputDialog(label = "Load", userInput = infoInputViewModel.load, refresh = { infoInputViewModel.refresh() }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Number)
-                    BasicInputDialog(label = "Loader", userInput = infoInputViewModel.loader, refresh = { infoInputViewModel.refresh() }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Text)
+
+                    BasicInputDialog(label = "Work Order", userInput = infoInputViewModel.order, refresh = {
+                        WorkOrderValidator().updateWorkOrder(it, infoInputViewModel.order)
+                        infoInputViewModel.refresh()
+                    }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Password)
+
+                    BasicInputDialog(label = "Load", userInput = infoInputViewModel.load, refresh = {
+                        NumberValidator().updateNumber(it, infoInputViewModel.load)
+                        infoInputViewModel.refresh()
+                    }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Number)
+
+                    BasicInputDialog(label = "Loader", userInput = infoInputViewModel.loader, refresh = {
+                        NameValidator().updateName(it, infoInputViewModel.loader)
+                        infoInputViewModel.refresh()
+                    }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Text)
+
                     BlInput(focusManager, infoInputViewModel)
-                    BasicInputDialog(label = "Piece Count", userInput = infoInputViewModel.quantity, refresh = { infoInputViewModel.refresh() }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Number)
-                    BasicInputDialog(label = "Number of Bundles", userInput = infoInputViewModel.bundles, refresh = { infoInputViewModel.refresh() }, focusManager = focusManager, lastInput = true, keyboardType = KeyboardType.Number)
+
+                    BasicInputDialog(label = "Piece Count", userInput = infoInputViewModel.quantity, refresh = {
+                        NumberValidator().updateNumber(it, infoInputViewModel.quantity)
+                        infoInputViewModel.refresh()
+                    }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Number)
+
+                    BasicInputDialog(label = "Number of Bundles", userInput = infoInputViewModel.bundles, refresh = {
+                        NumberValidator().updateNumber(it, infoInputViewModel.bundles)
+                        infoInputViewModel.refresh()
+                    }, focusManager = focusManager, lastInput = true, keyboardType = KeyboardType.Number)
+
                 } else {
-                    BasicInputDialog(label = "Vessel Project", userInput = infoInputViewModel.vessel, refresh = { infoInputViewModel.refresh() }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Password)
-                    BasicInputDialog(label = "Checker", userInput = infoInputViewModel.checker, refresh = { infoInputViewModel.refresh() }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Text)
+
+                    BasicInputDialog(label = "Vessel Project", userInput = infoInputViewModel.vessel, refresh = {
+                        BasicItemValidator().updateItem(it, infoInputViewModel.vessel)
+                        infoInputViewModel.refresh()
+                    }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Password)
+
+                    BasicInputDialog(label = "Checker", userInput = infoInputViewModel.checker, refresh = {
+                        NameValidator().updateName(it, infoInputViewModel.checker)
+                        infoInputViewModel.refresh()
+                    }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Text)
                 }
 
                 Row(modifier = Modifier.fillMaxWidth(),
@@ -136,7 +170,7 @@ fun BlInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewModel) 
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
             value = value,
             onValueChange = {  it ->
-                infoInputViewModel.bl.value = it
+                BasicItemValidator().updateItem(it, infoInputViewModel.bl)
                 filter(it)
                 infoInputViewModel.refresh()
             },

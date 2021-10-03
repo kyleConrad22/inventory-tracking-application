@@ -1,0 +1,20 @@
+#rusal-all 
+{
+    background: #eff;
+    margin: 0 auto;
+    width: 1200px;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+.padded-table
+{
+    padding: 5px 15px 5px 15px;
+}
+
+.bordered-row
+{
+    border: 1px solid #000;
+}

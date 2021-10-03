@@ -17,7 +17,7 @@ import androidx.compose.ui.text.input.KeyboardType
 fun BasicInputDialog(
     label : String,
     userInput : MutableState<String>,
-    refresh : () -> Unit,
+    refresh : (input : String) -> Unit,
     focusManager: FocusManager,
     lastInput : Boolean,
     keyboardType : KeyboardType
@@ -34,8 +34,7 @@ fun BasicInputDialog(
             },
         value = userInput.value,
         onValueChange = {
-            userInput.value = it
-            refresh()
+            refresh(it)
         },
         label = { Text(text = "$label:") }
     )

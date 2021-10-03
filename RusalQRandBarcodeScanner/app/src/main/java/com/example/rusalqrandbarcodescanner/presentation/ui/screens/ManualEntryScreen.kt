@@ -1,17 +1,13 @@
 package com.example.rusalqrandbarcodescanner.presentation.ui.screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -22,6 +18,7 @@ import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.presentation.components.BasicInputDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
+import com.example.rusalqrandbarcodescanner.util.inputvalidation.HeatNumberValidator
 import com.example.rusalqrandbarcodescanner.viewmodels.ManualEntryViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.ManualEntryViewModel.ManualEntryViewModelFactory
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -48,7 +45,12 @@ fun ManualEntryScreen(navController : NavHostController) {
                 LoadingDialog(isDisplayed = true)
             } else {
                 Text(text = "Manual Heat Number Search: ", modifier = Modifier.padding(16.dp))
-                BasicInputDialog(label = "Heat Number", userInput = manualEntryViewModel.heat, refresh = { manualEntryViewModel.refresh() }, focusManager = focusManager, lastInput = true, keyboardType = KeyboardType.Number)
+
+                BasicInputDialog(label = "Heat Number", userInput = manualEntryViewModel.heat, refresh = {
+                    HeatNumberValidator().updateHeat(it, manualEntryViewModel.heat)
+                    manualEntryViewModel.refresh()
+                    }, focusManager = focusManager, lastInput = true, keyboardType = KeyboardType.Number)
+
                 Row(modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly) {

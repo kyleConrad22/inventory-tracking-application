@@ -1,61 +1,41 @@
 package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services;
 
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.RusalLineItem;
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.RusalLineItemRepository;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItem;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItemRepository;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.util.ExcelHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
+import java.util.List;
+
 @Service
-public class RusalLineItemService {
+public class RusalLineItemService implements RusalService{
+
     @Autowired
     RusalLineItemRepository repository;
 
-    public void addLineItem(
-            String heatNum,
-            String packageNum,
-            String netWeightKg,
-            String grossWeightKg,
-            String quantity,
-            String dimension,
-            String grade,
-            String certificateNum,
-            String blNum,
-            String barcode,
-            String workOrder,
-            String loadNum,
-            String loader,
-            String loadTime
-    ) {
-        RusalLineItem lineItem = new RusalLineItem();
-        lineItem.setHeatNum(heatNum);
-        lineItem.setPackageNum(packageNum);
-        lineItem.setNetWeightKg(netWeightKg);
-        lineItem.setGrossWeightKg(grossWeightKg);
-        lineItem.setQuantity(quantity);
-        lineItem.setDimension(dimension);
-        lineItem.setGrade(grade);
-        lineItem.setCertificateNum(certificateNum);
-        lineItem.setBlNum(blNum);
-        lineItem.setBarcode(barcode);
-        lineItem.setWorkOrder(workOrder);
-        lineItem.setLoadNum(loadNum);
-        lineItem.setLoader(loader);
-        lineItem.setLoadTime(loadTime);
-        repository.save(lineItem);
+    public RusalLineItem save(RusalLineItem rusalLineItem) {
+        return repository.save(rusalLineItem);
     }
 
-    public void updateRusalDatabase(
-            String heatNum,
-            String workOrder,
-            String loadNum,
-            String loader,
-            String loadTime
-    ) {
-        RusalLineItem lineItem = repository.findByHeatNum(heatNum);
-        lineItem.setWorkOrder(workOrder);
-        lineItem.setLoadNum(loadNum);
-        lineItem.setLoader(loader);
-        lineItem.setLoadTime(loadTime);
-        repository.save(lineItem);
+    public List<RusalLineItem> findAll() {
+        return repository.findAll();
+    }
+
+    public List<RusalLineItem> findByOrderAndLoad(String workOrder, String loadNum) {
+        return repository.findByOrderAndLoad(workOrder, loadNum);
+    }
+
+    public void update(String heatNum, String workOrder, String loadNum, String loader, String loadTime) {
+        repository.update(heatNum, workOrder, loadNum, loader, loadTime);
+    }
+
+    public ByteArrayInputStream loadAll() {
+        return ExcelHelper.loadToExcel(findAll());
+    }
+
+    public ByteArrayInputStream loadByOrderAndLoad(String workOrder, String loadNum) {
+        return ExcelHelper.loadToExcel(findByOrderAndLoad(workOrder, loadNum));
     }
 }

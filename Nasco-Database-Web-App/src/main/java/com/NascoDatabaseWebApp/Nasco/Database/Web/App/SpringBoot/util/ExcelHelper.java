@@ -1,5 +1,6 @@
-package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot;
+package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.util;
 
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItem;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
