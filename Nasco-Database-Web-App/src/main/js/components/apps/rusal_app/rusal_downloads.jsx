@@ -1,22 +1,61 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ToBeImplemented from "../../util/to_be_implemented";
 
 export default function RusalDownloads() {
 
     function DownloadDatabase() {
+
+        function handleClick() {
+            fetch("/api/rusal/download-all")
+            .then(
+                (response) => {
+                    if (response.ok) {
+                        alert("Downloaded Database Copy")
+                    } else {
+                        alert("Database Download Failed")
+                    }
+                }).catch(
+                    (error) => {
+                        alert(error)
+                })
+            return false;
+        }
+
         return(
-            <button id='download-database' type='button'>Download Full Database</button>
+            <button id='download-database' type='button' onClick={ handleClick }>Download Full Database</button>
         );
     }
 
     function DownloadByOrderAndLoad() {
+
+        function handleSubmit(evt) {
+            evt.preventDefault();
+            fetch("/api/rusal/download-by-order-and-load", {
+                method: "GET",
+                body: new FormData(evt.target)
+            }).then(
+                (response) => {
+                    if (response.ok) {
+                        alert("Downloaded Tally Sheet")
+                    } else {
+                        alert("Tally Sheet Download Failed")
+                    }
+                }
+            ).catch(
+                (error) => {
+                    alert(error)
+            })
+            evt.target.reset();
+            return false;
+        }
+
         return (
-            <form>
+            <form onSubmit={ handleSubmit }>
                 <input id='work-order' name='workOrder' type='text' placeholder='Enter Work Order:'/>
                 &nbsp;&nbsp;&nbsp;
                 <input id='load-number' name='loadNum' type='text' placeholder='Enter Load Number:'/>
                 &nbsp;&nbsp;&nbsp;
-                <button id='download-order-and-load' type='button'>Download By Order and Load</button>
+                <button id='download-order-and-load' type='submit'>Download By Order and Load</button>
             </form>
         );
     }
