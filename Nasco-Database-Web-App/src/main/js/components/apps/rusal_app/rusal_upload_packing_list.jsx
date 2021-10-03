@@ -10,9 +10,13 @@ export default function RusalUploadPackingList() {
         }
 
         return (
-            <button id="upload-packing-list" type="button" onClick={ () => { handleClick() } }>
-                Upload Packing List
-            </button>
+            <form>
+                <input id='vessel' name='vessel' type='text' placeholder='Enter Vessel Name:' />
+                &nbsp;&nbsp;&nbsp;
+                <button id="upload-packing-list" type="button" onClick={ () => { handleClick() } }>
+                    Upload Packing List
+                </button>
+            </form>
         );
     }
 
