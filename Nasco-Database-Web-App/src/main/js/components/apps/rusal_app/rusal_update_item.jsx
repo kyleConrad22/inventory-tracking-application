@@ -4,8 +4,33 @@ import ToBeImplemented from "../../util/to_be_implemented";
 export default function RusalUpdateItem() {
 
     function UpdateFields() {
+
+        function handleSubmit(evt) {
+            evt.preventDefault()
+            
+            fetch("/api/rusal/update", {
+                method: 'POST',
+                body: new FormData(evt.target)
+            }).then(
+                (response) => {
+                    if (response.ok) {
+                        alert("Update successful")
+                    } else {
+                        alert("Update failed")
+                    }
+                }
+            ).catch(
+                (error) => {
+                    alert(error);
+                }
+            )
+
+            evt.target.reset();
+            return false;
+        }
+
         return (
-            <form>
+            <form onSubmit={ handleSubmit }>
                 <input id="heat-number" name='heatNum' type='text' placeholder='Enter Bundle Heat Number:' />
                 &nbsp;&nbsp;&nbsp;
                 <input id='work-order' name='workOrder' type='text' placeholder='Enter Work Order:' />
