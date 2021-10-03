@@ -6,7 +6,7 @@ export default function RusalDownloads() {
     function DownloadDatabase() {
 
         function handleClick() {
-            fetch("/api/rusal/exce/download-all")
+            fetch("/api/rusal/excel/download-all")
             .then(
                 (response) => {
                     if (response.ok) {
@@ -30,10 +30,15 @@ export default function RusalDownloads() {
 
         function handleSubmit(evt) {
             evt.preventDefault();
-            fetch("/api/rusal/excel/download-by-order-and-load", {
-                method: "GET",
-                body: new FormData(evt.target)
-            }).then(
+
+            let params = new URLSearchParams();
+            let input = new FormData(evt.target)
+
+            params.set('workOrder', input.get('workOrder'))
+            params.set('loadNum', input.get('loadNum'))
+            
+            fetch(`/api/rusal/excel/download-by-order-and-load?${params}`)
+            .then(
                 (response) => {
                     if (response.ok) {
                         alert("Downloaded Tally Sheet")
