@@ -6,7 +6,7 @@ export default function RusalDownloads() {
     function DownloadDatabase() {
 
         function handleClick() {
-            fetch("/api/rusal/download-all")
+            fetch("/api/rusal/exce/download-all")
             .then(
                 (response) => {
                     if (response.ok) {
@@ -30,7 +30,7 @@ export default function RusalDownloads() {
 
         function handleSubmit(evt) {
             evt.preventDefault();
-            fetch("/api/rusal/download-by-order-and-load", {
+            fetch("/api/rusal/excel/download-by-order-and-load", {
                 method: "GET",
                 body: new FormData(evt.target)
             }).then(
