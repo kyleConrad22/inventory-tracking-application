@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import ToBeImplemented from "../../util/to_be_implemented";
 
 export default function RusalDownloads() {
 
@@ -12,7 +11,7 @@ export default function RusalDownloads() {
 
     function DownloadByOrderAndLoad() {
 
-        function httpDownloadRequest(evt) {
+        function handleSubmit(evt) {
             evt.preventDefault();
 
             let params = new URLSearchParams();
@@ -23,40 +22,25 @@ export default function RusalDownloads() {
             
             fetch(`/api/rusal/excel/download-by-order-and-load?${params}`)
             .then(
-                (response) => {
-                    if (response.ok) {
-                        return response;
-                        alert("Downloaded Tally Sheet")
-                    } else {
-                        alert("Tally Sheet Download Failed")
-                    }
-                }
-            ).catch(
+                (response) => response.blob()
+            ).then((blob) => {
+                const url = window.URL.createObjectURL(new Blob([blob]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', `rusal-order-${input.get('workOrder')}-load-${input.get('loadNum')}.xlsx`);
+
+                document.body.appendChild(link);
+
+                link.click();
+
+                link.parentNode.removeChild(link);
+            })
+            .catch(
                 (error) => {
                     alert(error)
             })
             evt.target.reset();
-            return false
-        }
-
-        function handleSubmit(evt) {
-            httpDownloadRequest(evt)
-            .then(
-                (response) => response.blob()
-            ).then(
-                (blob) => {
-                    const url = window.URL.createObjectURL(new Blob([blob]));
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.setAttribute('download', `sample.${file}`);
-
-                    document.body.appendChild(link);
-
-                    link.click();
-                    
-                    link.parentNode.removeChild(link);
-                }
-            )
+            return false;
         }
 
         return (
@@ -73,7 +57,6 @@ export default function RusalDownloads() {
     return (
         <div id='downloads'>
             <h3>Download Links</h3>
-            <ToBeImplemented />
             <DownloadDatabase />
             <DownloadByOrderAndLoad />
         </div>
