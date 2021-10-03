@@ -20,7 +20,7 @@ object HttpRequestHandler {
 
     private suspend fun currentInventory() = withContext(Dispatchers.IO) {
             try {
-                val url = URL("http", "45.22.122.47", 8081, "/demo/all")
+                val url = URL("http", "45.22.122.47", 8081, "/api/rusal")
 
                 val urlConnection = url.openConnection() as HttpURLConnection
 
@@ -56,7 +56,7 @@ object HttpRequestHandler {
                         val url = URL("http",
                             "45.22.122.47",
                             8081,
-                            "/demo/update?heatNum=$heatNum&workOrder=$workOrder&loadNum=$loadNum&loader=$loader&loadTime=$loadTime")
+                            "/api/rusal/update?heatNum=$heatNum&workOrder=$workOrder&loadNum=$loadNum&loader=$loader&loadTime=$loadTime")
                         val urlConnection = url.openConnection() as HttpURLConnection
 
                         try {
