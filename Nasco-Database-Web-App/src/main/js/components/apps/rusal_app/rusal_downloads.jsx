@@ -5,30 +5,14 @@ export default function RusalDownloads() {
 
     function DownloadDatabase() {
 
-        function handleClick() {
-            fetch("/api/rusal/excel/download-all")
-            .then(
-                (response) => {
-                    if (response.ok) {
-                        alert("Downloaded Database Copy")
-                    } else {
-                        alert("Database Download Failed")
-                    }
-                }).catch(
-                    (error) => {
-                        alert(error)
-                })
-            return false;
-        }
-
         return(
-            <button id='download-database' type='button' onClick={ handleClick }>Download Full Database</button>
+            <a href='/api/rusal/excel/download-all' download>Download Full Database</a>
         );
     }
 
     function DownloadByOrderAndLoad() {
 
-        function handleSubmit(evt) {
+        function httpDownloadRequest(evt) {
             evt.preventDefault();
 
             let params = new URLSearchParams();
@@ -41,6 +25,7 @@ export default function RusalDownloads() {
             .then(
                 (response) => {
                     if (response.ok) {
+                        return response;
                         alert("Downloaded Tally Sheet")
                     } else {
                         alert("Tally Sheet Download Failed")
@@ -51,7 +36,27 @@ export default function RusalDownloads() {
                     alert(error)
             })
             evt.target.reset();
-            return false;
+            return false
+        }
+
+        function handleSubmit(evt) {
+            httpDownloadRequest(evt)
+            .then(
+                (response) => response.blob()
+            ).then(
+                (blob) => {
+                    const url = window.URL.createObjectURL(new Blob([blob]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', `sample.${file}`);
+
+                    document.body.appendChild(link);
+
+                    link.click();
+                    
+                    link.parentNode.removeChild(link);
+                }
+            )
         }
 
         return (

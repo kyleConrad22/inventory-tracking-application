@@ -9,10 +9,16 @@ import java.util.List;
 
 public interface RusalLineItemRepository extends JpaRepository<RusalLineItem, String> {
 
-    @Query("SELECT * FROM current_inventory WHERE work_order = :searchOrder AND load_num = :searchLoad")
+    @Query(
+        value = "SELECT * FROM current_inventory WHERE work_order = :searchOrder AND load_num = :searchLoad",
+        nativeQuery = true
+    )
     List<RusalLineItem> findByOrderAndLoad(@Param("searchOrder") String workOrder, @Param("searchLoad") String loadNum);
 
     @Modifying(clearAutomatically = true)
-    @Query("UPDATE current_inventory SET work_order = :reqOrder AND load_num = :reqLoadNum AND loader = :reqLoader AND load_time = :reqLoadTime WHERE heat_num =: searchHeat")
+    @Query(
+        value = "UPDATE current_inventory SET work_order = :reqOrder, load_num = :reqLoadNum, loader = :reqLoader, load_time = :reqLoadTime WHERE heat_num = :searchHeat",
+        nativeQuery = true
+    )
     void update(@Param("searchHeat") String heatNum, @Param("reqOrder") String workOrder, @Param("reqLoadNum") String loadNum, @Param("reqLoader") String loader, @Param("reqLoadTime") String loadTime);
 }
