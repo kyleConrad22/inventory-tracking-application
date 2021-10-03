@@ -2,6 +2,6 @@ import React from 'react';
 
 export default function ToBeImplemented() {
     return (
-        <h1>This feature has not yet been implemented!</h1>
+        <h4>This feature has not yet been implemented!</h4>
     );
 }

@@ -1,6 +1,5 @@
 import React from "react";
-import { BrowserRouter, Switch, Route, Link, userParams, useRouteMatch} from "react-router-dom";
-
+import { Switch, Route, Link, useRouteMatch} from "react-router-dom";
 import ToBeImplemented from "../util/to_be_implemented";
 import BugReporting from "../apps/misc_functions/bug_reporting";
 import ExcelSpreadSheetFormatting from "../apps/misc_functions/excel_spreadsheet_formatting";
