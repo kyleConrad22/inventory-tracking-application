@@ -6,15 +6,15 @@ export default function RusalUpdateItem() {
     function UpdateFields() {
         return (
             <form>
-                <input id="heatNum" name='heatNum' type='text' placeholder='Enter Bundle Heat Number:' />
+                <input id="heat-number" name='heatNum' type='text' placeholder='Enter Bundle Heat Number:' />
                 &nbsp;&nbsp;&nbsp;
-                <input id='workOrder' name='workOrder' type='text' placeholder='Enter Work Order:' />
+                <input id='work-order' name='workOrder' type='text' placeholder='Enter Work Order:' />
                 &nbsp;&nbsp;&nbsp;
-                <input id='loadNum' name='loadNum' type='text' placeholder='Enter Load Number:' />
+                <input id='load-number' name='loadNum' type='text' placeholder='Enter Load Number:' />
                 &nbsp;&nbsp;&nbsp;
                 <input id='loader' name='loader' type='text' placeholder='Enter Loader Name:' />
                 &nbsp;&nbsp;&nbsp;
-                <input id='loadTime' name='loadTime' type='text' placeholder='Enter Load Time:' />
+                <input id='load-time' name='loadTime' type='text' placeholder='Enter Load Time:' />
                 &nbsp;&nbsp;&nbsp;
                 <input id='vessel' name='vessel' type='text' placeholder='Enter Vessel Name:' />
                 &nbsp;&nbsp;&nbsp;

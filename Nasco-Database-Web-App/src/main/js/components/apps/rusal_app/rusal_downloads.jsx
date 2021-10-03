@@ -13,7 +13,9 @@ export default function RusalDownloads() {
         return (
             <form>
                 <input id='work-order' name='workOrder' type='text' placeholder='Enter Work Order:'/>
+                &nbsp;&nbsp;&nbsp;
                 <input id='load-number' name='loadNum' type='text' placeholder='Enter Load Number:'/>
+                &nbsp;&nbsp;&nbsp;
                 <button id='download-order-and-load' type='button'>Download By Order and Load</button>
             </form>
         );
