@@ -47,8 +47,8 @@ export default function RusalPage() {
                     // Network errors
                     alert(error)
             });
-            evt.target.reset();
-            return false;
+        evt.target.reset();
+        return false;
     }
 
     return (
