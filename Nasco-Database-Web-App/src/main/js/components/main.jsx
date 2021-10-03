@@ -12,7 +12,7 @@ const Main = () => {
             <Route exact path="/">
                 <LandingPage />
             </Route>
-            <Route path="/rusal" component={ RusalPage }></Route>
+            <Route path="/rusal"><RusalPage /></Route>
             <Route path='/misc'>
                 <MiscFunctionsPage />
             </Route>
