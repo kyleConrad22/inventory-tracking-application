@@ -1,7 +1,7 @@
 package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Controller;
 
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.RusalLineItemService;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItem;
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.*;
 public class RusalController {
 
     @Autowired
-    private RusalLineItemRepository rusalLineItemRepository;
+    private RusalLineItemService rusalLineItemService;
 
     @GetMapping
     Iterable<RusalLineItem> list() {
-        return rusalLineItemRepository.findAll();
+        return rusalLineItemService.findAll();
     }
 
     @PostMapping
@@ -32,7 +32,7 @@ public class RusalController {
         @RequestParam final String blNum,
         @RequestParam final String barcode
         ) {
-        return this.rusalLineItemRepository.save(
+        return this.rusalLineItemService.save(
             RusalLineItem.builder()
                 .heatNum(heatNum)
                 .packageNum(packageNum)

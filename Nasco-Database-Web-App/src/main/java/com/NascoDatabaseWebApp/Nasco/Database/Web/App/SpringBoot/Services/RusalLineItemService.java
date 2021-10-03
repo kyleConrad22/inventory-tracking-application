@@ -5,28 +5,24 @@ import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLine
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
-public class RusalLineItemService {
+public class RusalLineItemService implements RusalService{
+
     @Autowired
     RusalLineItemRepository repository;
 
-    public void addLineItem(
-            String heatNum,
-            String packageNum,
-            String netWeightKg,
-            String grossWeightKg,
-            String quantity,
-            String dimension,
-            String grade,
-            String certificateNum,
-            String blNum,
-            String barcode,
-            String workOrder,
-            String loadNum,
-            String loader,
-            String loadTime
-    ) {
-        repository.save(new RusalLineItem(heatNum, packageNum, grossWeightKg, netWeightKg, quantity, dimension, grade, certificateNum, blNum, barcode, workOrder, loadNum, loader, loadTime));
+    public RusalLineItem save(RusalLineItem rusalLineItem) {
+        return repository.save(rusalLineItem);
+    }
+
+    public List<RusalLineItem> findAll() {
+        return repository.findAll();
+    }
+
+    public List<RusalLineItem> findByOrderAndLoad(String workOrder, String loadNum) {
+        return repository.findByOrderAndLoad(workOrder, loadNum);
     }
 
     /*

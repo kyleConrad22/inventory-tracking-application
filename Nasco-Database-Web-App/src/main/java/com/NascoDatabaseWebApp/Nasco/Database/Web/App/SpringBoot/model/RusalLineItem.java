@@ -11,6 +11,7 @@ import java.util.Objects;
 @Builder
 @Data
 @Entity //Tells Hibernate to make a table out of this class
+@Table(name="current_inventory")
 @NoArgsConstructor
 @AllArgsConstructor
 public class RusalLineItem {

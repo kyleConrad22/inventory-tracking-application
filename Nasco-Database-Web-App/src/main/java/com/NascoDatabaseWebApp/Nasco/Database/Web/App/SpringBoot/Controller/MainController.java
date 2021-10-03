@@ -1,20 +1,18 @@
 package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Controller;
 
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItem;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItemRepository;
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.RusalLineItemService;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.stereotype.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
 
 @Controller
 @RequestMapping(path = "/demo")
 public class MainController {
+
     @Autowired
     private RusalLineItemRepository rusalLineItemRepository;
-
+    /*
     @Autowired
     private RusalLineItemService rusalLineItemService;
 
@@ -45,7 +43,6 @@ public class MainController {
         return "Saved";
     }
 
-    /*
     @GetMapping(path = "/update")
     public @ResponseBody String updateLineItem(
             @RequestParam String heatNum,
@@ -56,5 +53,6 @@ public class MainController {
         rusalLineItemService.updateRusalDatabase(heatNum, workOrder, loadNum, loader, loadTime);
         return "Updated";
     }
-    */
+
+     */
 }
