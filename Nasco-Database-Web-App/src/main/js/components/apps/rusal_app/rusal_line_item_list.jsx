@@ -12,7 +12,7 @@ export default function RusalLineItemList(props) {
     );
 
     return (
-        <table className='padded-table'>
+        <table className="padded-table">
             <tbody>
                 <tr className='bordered-row'>
                     <th>Heat Number</th>
