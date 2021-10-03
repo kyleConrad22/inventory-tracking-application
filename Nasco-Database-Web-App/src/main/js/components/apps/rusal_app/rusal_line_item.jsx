@@ -1,16 +1,13 @@
-import React, { Component } from "react";
+import React from "react";
 
-class RusalLineItem extends Component {
-    render() {
-        return (
-            <tr>
-                <td>{this.props.rusalLineItem.heatNum}</td>
-                <td>{this.props.rusalLineItem.grossWeightKg}</td>
-                <td>{this.props.rusalLineItem.netWeightKg}</td>
-                <td>{this.props.rusalLineItem.blNum}</td>
-            </tr>
-        )
-    }
+export default function RusalLineItem(props) {
+    
+    return (
+        <tr>
+            <td>{props.rusalLineItem.heatNum}</td>
+            <td>{props.rusalLineItem.grossWeightKg}</td>
+            <td>{props.rusalLineItem.netWeightKg}</td>
+            <td>{props.rusalLineItem.blNum}</td>
+        </tr>
+    );
 }
-
-export default RusalLineItem;
