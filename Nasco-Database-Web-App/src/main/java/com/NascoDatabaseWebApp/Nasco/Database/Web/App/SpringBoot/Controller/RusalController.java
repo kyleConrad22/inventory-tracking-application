@@ -70,7 +70,7 @@ public class RusalController {
     }
 
     @GetMapping("excel/download-by-order-and-load")
-    public ResponseEntity<Resource> downloadByOrderAndLoad(String workOrder, String loadNum) {
+    public ResponseEntity<Resource> downloadByOrderAndLoad(@RequestParam final String workOrder, @RequestParam final String loadNum) {
         String fileName = "rusal-order-" + workOrder + "-load-" + loadNum + ".xlsx";
         InputStreamResource file = new InputStreamResource(rusalLineItemService.loadByOrderAndLoad(workOrder, loadNum));
 
