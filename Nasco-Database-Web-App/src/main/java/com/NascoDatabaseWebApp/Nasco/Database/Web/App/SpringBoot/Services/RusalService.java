@@ -8,5 +8,6 @@ public interface RusalService {
 
     RusalLineItem save(RusalLineItem rusalLineItem);
     List<RusalLineItem> findAll();
-    List<RusalLineItem> findByOrderAndLoad(String order, String load);
+    List<RusalLineItem> findByOrderAndLoad(String workOrder, String loadNum);
+    void update(String heatNum, String workOrder, String loadNum, String loader, String loadTime);
 }

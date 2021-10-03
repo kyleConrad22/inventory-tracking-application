@@ -25,6 +25,10 @@ public class RusalLineItemService implements RusalService{
         return repository.findByOrderAndLoad(workOrder, loadNum);
     }
 
+    public void update(String heatNum, String workOrder, String loadNum, String loader, String loadTime) {
+        repository.update(heatNum, workOrder, loadNum, loader, loadTime);
+    }
+
     /*
     public void updateRusalDatabase(
             String heatNum,
