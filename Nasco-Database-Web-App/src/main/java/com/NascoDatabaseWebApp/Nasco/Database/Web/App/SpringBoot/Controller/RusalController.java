@@ -58,8 +58,19 @@ public class RusalController {
                 .build());
     }
 
+    @PostMapping("/update")
+    void update(
+        @RequestParam final String heatNum,
+        @RequestParam final String workOrder,
+        @RequestParam final String loadNum,
+        @RequestParam final String loader,
+        @RequestParam final String loadTime
+    ) {
+        rusalLineItemService.update(heatNum, workOrder, loadNum, loader, loadTime);
+    }
+
     @GetMapping("/excel/download-all")
-    public ResponseEntity<Resource> downloadDatabaseCopy() {
+    ResponseEntity<Resource> downloadDatabaseCopy() {
         String fileName = "rusal-database-copy-" + LocalDate.now() + ".xlsx";
         InputStreamResource file = new InputStreamResource(rusalLineItemService.loadAll());
 
@@ -70,7 +81,7 @@ public class RusalController {
     }
 
     @GetMapping("excel/download-by-order-and-load")
-    public ResponseEntity<Resource> downloadByOrderAndLoad(@RequestParam final String workOrder, @RequestParam final String loadNum) {
+    ResponseEntity<Resource> downloadByOrderAndLoad(@RequestParam final String workOrder, @RequestParam final String loadNum) {
         String fileName = "rusal-order-" + workOrder + "-load-" + loadNum + ".xlsx";
         InputStreamResource file = new InputStreamResource(rusalLineItemService.loadByOrderAndLoad(workOrder, loadNum));
 
