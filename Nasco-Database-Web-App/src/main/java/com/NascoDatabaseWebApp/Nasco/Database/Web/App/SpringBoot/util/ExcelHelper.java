@@ -19,7 +19,7 @@ public class ExcelHelper {
 
     public static ByteArrayInputStream loadToExcel(List<RusalLineItem> lineItems) {
 
-        try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream();) {
+        try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Sheet sheet = workbook.createSheet(SHEET);
 
             Row headerRow = sheet.createRow(0);
