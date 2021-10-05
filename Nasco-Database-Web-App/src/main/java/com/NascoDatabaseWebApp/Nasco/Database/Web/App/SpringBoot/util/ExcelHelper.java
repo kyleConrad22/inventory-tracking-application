@@ -128,13 +128,10 @@ public class ExcelHelper {
         int lastCol = worksheet.getRow(0).getLastCellNum();
 
         if (tableTitle != null) {
-            int lastRow = 0;
-            while (worksheet.getRow(lastRow+1) != null) {
-                lastRow++;
-            }
+            int lastRow = getTrueLastRow(worksheet);
 
             AreaReference reference = resultWorkbook.getCreationHelper().createAreaReference(
-                    new CellReference(0, 0), new CellReference(lastRow, lastCol)
+                    new CellReference(0, 0), new CellReference(lastRow, lastCol-1)
             );
             formatAsTable((XSSFSheet) resultSheet, reference, lastCol, tableTitle, tableStyle);
         }
@@ -186,23 +183,18 @@ public class ExcelHelper {
 
     // Copy all cells in source to receiver
     public static void copyToWorkSheet(Sheet source, Sheet receiver) {
-        int lastRow = 0;
-        while (source.getRow(lastRow+1) != null) {
-            lastRow++;
-        }
+        int lastRow = getTrueLastRow(source);
 
         int lastCol = source.getRow(0).getLastCellNum();
 
         System.out.println("Rows: " + lastRow + "Cols: " + lastCol);
 
-        IntStream.range(0, lastRow).forEach(i -> {
+        IntStream.range(0, lastRow+1).forEach(i -> {
 
             Row row = receiver.createRow(i);
             IntStream.range(0, lastCol).forEach(j -> {
 
                 Cell cell = source.getRow(i).getCell(j);
-
-                System.out.println(cell.getStringCellValue());
 
                 String value;
                 switch (cell.getCellType()) {
@@ -223,6 +215,7 @@ public class ExcelHelper {
                         break;
                 }
                 row.createCell(j).setCellValue(value);
+
             });
         });
     }
@@ -237,5 +230,14 @@ public class ExcelHelper {
                 firstRow.getCell(j).setCellValue(replace.get(firstRow.getCell(j).getStringCellValue()));
             }
         });
+    }
+
+    // Get last row which has data
+    public static int getTrueLastRow(Sheet sheet) {
+        int lastRow = 0;
+        while (sheet.getRow(lastRow+1) != null) {
+            lastRow++;
+        }
+        return lastRow;
     }
 }
