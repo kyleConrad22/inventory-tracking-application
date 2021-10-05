@@ -68,7 +68,8 @@ public class ExcelHelper {
         }
     }
 
-    public static Workbook readSheetFromExcel(MultipartFile excelFile) {
+
+    public static Workbook readExcelFile(MultipartFile excelFile) {
         try (InputStream in = excelFile.getInputStream()) {
 
             try {
@@ -97,7 +98,7 @@ public class ExcelHelper {
     }
 
     public static ByteArrayInputStream formatAlgomaReport(MultipartFile excelFile, int sheetIndex, List<String> headers, HashMap<String, String> replace) {
-        Workbook workbook = readSheetFromExcel(excelFile);
+        Workbook workbook = readExcelFile(excelFile);
 
         Workbook result = formatReport(workbook.getSheetAt(sheetIndex), headers, replace, "Inventory Report", "inventory", "TableStyleLight8", 18);
 
@@ -105,7 +106,7 @@ public class ExcelHelper {
     }
 
     public static ByteArrayInputStream formatSsabReport(MultipartFile excelFile, int sheetIndex, List<String> headers) {
-        Workbook workbook = readSheetFromExcel(excelFile);
+        Workbook workbook = readExcelFile(excelFile);
 
         Workbook result = formatReport(workbook.getSheetAt(sheetIndex), headers, null, "Inventory Report", "inventory", "TableStyleLight8", 1);
 
