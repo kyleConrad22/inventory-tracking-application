@@ -1,4 +1,4 @@
-package com.example.rusalqrandbarcodescanner
+package com.example.rusalqrandbarcodescanner.services
 
 import android.util.Log
 import androidx.lifecycle.Observer

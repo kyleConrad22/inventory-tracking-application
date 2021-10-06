@@ -1,12 +1,8 @@
-package com.example.rusalqrandbarcodescanner
+package com.example.rusalqrandbarcodescanner.services
 
 import android.content.Context
 import android.net.ConnectivityManager
-import android.net.Network
 import android.net.NetworkCapabilities
-import android.os.Build
-import androidx.compose.ui.platform.LocalContext
-import com.google.android.datatransport.cct.internal.NetworkConnectionInfo
 
 class ConnectivityHandler(context : Context) {
 
