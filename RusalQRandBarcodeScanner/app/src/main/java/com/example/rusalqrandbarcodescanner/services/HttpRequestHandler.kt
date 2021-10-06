@@ -12,11 +12,57 @@ import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.StandardCharsets
+import java.util.stream.Collector
 import java.util.stream.Collectors
+import java.util.stream.Collectors.joining
+import java.util.stream.Collectors.toMap
 
-object HttpRequestHandler {
+class HttpRequestHandler {
 
-    private var output: String = ""
+    lateinit var urlConnection: HttpURLConnection
+
+    // Attempts to connect to URL supplied by parameter, if connection is made then returns true and sets urlConnection; otherwise returns false
+    @Suppress("BlockingMethodInNonBlockingContext")
+    suspend fun connectToUrl(url : URL) : Boolean = withContext(Dispatchers.IO) {
+        try {
+            urlConnection = url.openConnection() as HttpURLConnection
+
+            try {
+                urlConnection.connect()
+                return@withContext urlConnection.responseCode == HttpURLConnection.HTTP_OK
+            } catch (e: Exception) {
+                e.printStackTrace()
+                urlConnection.disconnect()
+                return@withContext false
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return@withContext false
+        }
+    }
+
+    fun getApiResponse() : String {
+        try {
+            val input : InputStream = BufferedInputStream(urlConnection.inputStream)
+             return BufferedReader(InputStreamReader(input, StandardCharsets.UTF_8)).lines()
+                 .collect(joining("\n"))
+        } finally {
+            urlConnection.disconnect()
+        }
+    }
+
+    fun parseApiResponse(response : String) : List<HashMap<String, String>> {
+        val result = mutableListOf<HashMap<String, String>>()
+
+        Regex("\\{.+}").findAll(response).forEach { item ->
+            result.add(HashMap())
+            Regex("\".*\":\".*\"").findAll(item.value).forEach { pair ->
+                val keyValue = pair.value.replace("\"", "").split(":")
+                result.last()[keyValue[0]] = keyValue[1]
+            }
+        }
+        return result.toList()
+    }
 
     private suspend fun currentInventory() = withContext(Dispatchers.IO) {
             try {
@@ -26,11 +72,11 @@ object HttpRequestHandler {
 
                 try {
                     val input: InputStream = BufferedInputStream(urlConnection.inputStream)
-                    output = BufferedReader(InputStreamReader(input, StandardCharsets.UTF_8)).lines()
-                            .collect(Collectors.joining("\n"))
+                    val output = BufferedReader(InputStreamReader(input, StandardCharsets.UTF_8)).lines()
+                            .collect(joining("\n"))
                     Log.d("DEBUG",
                         BufferedReader(InputStreamReader(input, StandardCharsets.UTF_8)).lines()
-                            .collect(Collectors.joining("\n")))
+                            .collect(joining("\n")))
                 } finally {
                     urlConnection.disconnect()
                 }
@@ -64,7 +110,7 @@ object HttpRequestHandler {
                             val result =
                                 BufferedReader(InputStreamReader(input,
                                     StandardCharsets.UTF_8)).lines()
-                                    .collect(Collectors.joining("\n"))
+                                    .collect(joining("\n"))
                             Log.d("DEBUG", result)
                         } finally {
                             urlConnection.disconnect()
@@ -104,7 +150,7 @@ object HttpRequestHandler {
                             val result =
                                 BufferedReader(InputStreamReader(input,
                                     StandardCharsets.UTF_8)).lines()
-                                    .collect(Collectors.joining("\n"))
+                                    .collect(joining("\n"))
                             Log.d("DEBUG", result)
                         } finally {
                             urlConnection.disconnect()
@@ -119,6 +165,7 @@ object HttpRequestHandler {
 
     private suspend fun addToRepo(invRepo : CurrentInventoryRepository) = withContext(Dispatchers.IO){
         currentInventory()
+        val output = ""
         val lines = output.split("},{").toTypedArray()
         lines[0] = lines[0].replace("[{", "")
         lines[lines.size - 1] = lines[lines.size - 1].replace("}]", "")

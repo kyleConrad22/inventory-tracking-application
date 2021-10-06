@@ -99,9 +99,15 @@ public class ExcelHelper {
 
     // Remove first row of worksheet
     public static void removeFirstRows(Sheet worksheet, int rows) {
-        int lastRow = worksheet.getLastRowNum();
+        while (rows > 0) {
+            int lastRow = worksheet.getLastRowNum();
 
-        worksheet.shiftRows(rows, lastRow, -rows);
+            if (rows < lastRow) {
+                worksheet.shiftRows(rows, lastRow+1, -1);
+            }
+            rows--;
+        }
+
     }
 
     // Remove all columns who's headers are not specified within headers list
@@ -138,7 +144,7 @@ public class ExcelHelper {
 
     // Copy all cells in source to receiver
     public static void copyToWorkSheet(Sheet source, Sheet receiver) {
-        int lastRow = getTrueLastRow(source);
+        int lastRow = getLastNonNullRow(source);
 
         int lastCol = source.getRow(0).getLastCellNum();
 
@@ -167,6 +173,7 @@ public class ExcelHelper {
                         value = "";
                         break;
                 }
+                System.out.println(value);
                 row.createCell(j).setCellValue(value);
 
             });
@@ -186,7 +193,7 @@ public class ExcelHelper {
     }
 
     // Get last row which has data
-    public static int getTrueLastRow(Sheet sheet) {
+    public static int getLastNonNullRow(Sheet sheet) {
         int lastRow = 0;
         while (sheet.getRow(lastRow+1) != null) {
             lastRow++;

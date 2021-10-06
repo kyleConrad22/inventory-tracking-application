@@ -42,7 +42,7 @@ public class AlgomaReport extends CustomerReport {
 
     private void createCoilBreakdown(Workbook workbook) {
         Sheet sheet = workbook.getSheet("Shipped");
-        int lastRow = ExcelHelper.getTrueLastRow(sheet);
+        int lastRow = ExcelHelper.getLastNonNullRow(sheet);
         HashMap<String, Integer> orderCounts = countUniqueEntries(sheet, lastRow);
 
         addBreakdownTitle(workbook, sheet, lastRow + 4);

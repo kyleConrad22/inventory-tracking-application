@@ -1,0 +1,37 @@
+[
+  {
+    "httpRequest": {
+      "path": "/empty"
+    },
+    "httpResponse": {
+      "body": []
+    }
+  },
+
+  {
+    "httpRequest": {
+      "path": "/singleField"
+    },
+    "httpResponse": {
+      "body": "[{\"heatNum\":\"17201601\"}]"
+    }
+  },
+
+  {
+    "httpRequest": {
+      "path": "/singleLineMultipleFields"
+    },
+    "httpResponse": {
+      "body": "[{\"heatNum\":\"17201601\",\"packageNum\":\"17\"}]"
+    }
+  },
+
+  {
+    "httpRequest": {
+      "path": "/multipleLines"
+    },
+    "httpResponse": {
+      "body": "[{\"heatNum\":\"17202102\"},{\"heatNum\":\"1453264\"}]"
+    }
+  }
+]

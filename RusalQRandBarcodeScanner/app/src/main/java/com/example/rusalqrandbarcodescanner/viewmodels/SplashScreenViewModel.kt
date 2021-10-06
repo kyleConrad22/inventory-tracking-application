@@ -18,7 +18,7 @@ class SplashScreenViewModel(private val codeRepo : CodeRepository, private val i
 
         viewModelScope.launch {
             codeRepo.deleteAll()
-            loading.value = HttpRequestHandler.initialize(invRepo)
+            loading.value = HttpRequestHandler().initialize(invRepo)
         }
     }
 

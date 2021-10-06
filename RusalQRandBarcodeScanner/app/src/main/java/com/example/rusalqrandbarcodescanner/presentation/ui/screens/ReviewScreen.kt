@@ -59,7 +59,7 @@ fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: Scanned
                 if (!showRemoveDialog) {
                     Button(onClick = {
                         if (isLoad) {
-                            HttpRequestHandler.initUpdate(reviewViewModel,
+                            HttpRequestHandler().initUpdate(reviewViewModel,
                                 scannedCodeViewModel,
                                 currentInventoryViewModel)
                         } else {

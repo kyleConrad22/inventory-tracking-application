@@ -27,10 +27,10 @@ public class ExcelHelperTest {
 
         @Test
         void removeFirstRowsLessThanOneTest() {
-            int expected = ExcelHelper.getTrueLastRow(sheet);
+            int expected = ExcelHelper.getLastNonNullRow(sheet);
             ExcelHelper.removeFirstRows(sheet,-1);
 
-            assertEquals(expected, ExcelHelper.getTrueLastRow(sheet));
+            assertEquals(expected, ExcelHelper.getLastNonNullRow(sheet));
         }
 
         @Test
