@@ -97,52 +97,6 @@ public class ExcelHelper {
         }
     }
 
-    public static ByteArrayInputStream formatAlgomaReport(MultipartFile excelFile, int sheetIndex, List<String> headers, HashMap<String, String> replace) {
-        Workbook workbook = readExcelFile(excelFile);
-
-        Workbook result = formatReport(workbook.getSheetAt(sheetIndex), headers, replace, "Inventory Report", "inventory", "TableStyleLight8", 18);
-
-        return writeWorkbookToStream(result);
-    }
-
-    public static ByteArrayInputStream formatSsabReport(MultipartFile excelFile, int sheetIndex, List<String> headers) {
-        Workbook workbook = readExcelFile(excelFile);
-
-        Workbook result = formatReport(workbook.getSheetAt(sheetIndex), headers, null, "Inventory Report", "inventory", "TableStyleLight8", 1);
-
-        return writeWorkbookToStream(result);
-    }
-
-    // Format input inventory report as defined by headers and replace values
-    public static Workbook formatReport(Sheet worksheet, List<String> headers, HashMap<String, String> replace, String title, String tableTitle, String tableStyle, int firstRowsToBeRemoved) {
-
-        removeFirstRows(worksheet, firstRowsToBeRemoved);
-        deleteUnusedColumns(worksheet, headers);
-
-        if (replace != null) {
-            replaceHeaderValues(worksheet, replace);
-        }
-
-        Workbook resultWorkbook = new XSSFWorkbook();
-        Sheet resultSheet = resultWorkbook.createSheet(title);
-
-        int lastCol = worksheet.getRow(0).getLastCellNum();
-
-        if (tableTitle != null) {
-            int lastRow = getTrueLastRow(worksheet);
-
-            AreaReference reference = resultWorkbook.getCreationHelper().createAreaReference(
-                    new CellReference(0, 0), new CellReference(lastRow, lastCol-1)
-            );
-            formatAsTable((XSSFSheet) resultSheet, reference, lastCol, tableTitle, tableStyle);
-        }
-
-        copyToWorkSheet(worksheet, resultSheet);
-        IntStream.range(0,lastCol).forEach(resultSheet::autoSizeColumn);
-
-        return resultWorkbook;
-    }
-
     // Remove first row of worksheet
     public static void removeFirstRows(Sheet worksheet, int rows) {
         int lastRow = worksheet.getLastRowNum();
@@ -168,10 +122,10 @@ public class ExcelHelper {
     }
 
     // Format add table to worksheet with given specifications
-    public static void formatAsTable(XSSFSheet worksheet, AreaReference reference, int lastTableColumn, String title, String tableStyle) {
+    public static void formatAsTable(XSSFSheet worksheet, AreaReference reference, int numColumns, String title, String tableStyle) {
         XSSFTable table = worksheet.createTable(reference);
 
-        IntStream.range(1, lastTableColumn).forEach(j -> {
+        IntStream.range(1, numColumns).forEach(j -> {
             table.getCTTable().getTableColumns().getTableColumnArray(j).setId(j+1);
         });
 
@@ -187,8 +141,6 @@ public class ExcelHelper {
         int lastRow = getTrueLastRow(source);
 
         int lastCol = source.getRow(0).getLastCellNum();
-
-        System.out.println("Rows: " + lastRow + "Cols: " + lastCol);
 
         IntStream.range(0, lastRow+1).forEach(i -> {
 

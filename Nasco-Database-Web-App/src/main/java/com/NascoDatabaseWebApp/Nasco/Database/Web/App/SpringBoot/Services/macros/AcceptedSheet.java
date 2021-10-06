@@ -2,5 +2,5 @@ package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.macro
 
 public enum AcceptedSheet {
     INVENTORY,
-    TAILGATE
+    TAILGATING
 }
