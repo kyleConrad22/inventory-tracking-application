@@ -130,7 +130,7 @@ private fun UniqueOption(item : List<String>) {
     Card(modifier = Modifier
         .padding(horizontal = 8.dp, vertical = 8.dp)
         .fillMaxWidth(),
-        elevation = 2.dp, backgroundColor = Color.Companion.Black, shape = RoundedCornerShape(corner = CornerSize(16.dp))) {
+        elevation = 2.dp, backgroundColor = Color.White, shape = RoundedCornerShape(corner = CornerSize(16.dp))) {
         Row {
             Column (modifier = Modifier
                 .padding(16.dp)
