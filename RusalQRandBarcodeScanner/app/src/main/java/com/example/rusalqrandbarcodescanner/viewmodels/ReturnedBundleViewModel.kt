@@ -27,6 +27,7 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
     private var isNotFound = false
     private var scanTime = ""
     private var isIncorrectCombo = false
+    private var loadedQuantity = mutableStateOf(0)
 
     var uniqueList = listOf<List<String>>()
     val loading = mutableStateOf(false)
@@ -40,9 +41,24 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
             waitForInput()
             setUniqueList(currentInput.heatNum!!)
             setIsBundleLoadable(getHeat())
+            setLoadedQuantity()
             loading.value = false
             ScannedInfo.heatNum = ""
         }
+    }
+
+    private suspend fun setLoadedQuantity() {
+        val value = GlobalScope.async {
+            withContext(Dispatchers.Main) {
+                loadedQuantity.value = codeRepo.getRowCount()!!
+            }
+        }
+        value.await()
+    }
+
+    fun isLastBundle() : Boolean {
+        val requestedQuantity = currentInput.bundleQuantity!!.toInt()
+        return requestedQuantity - loadedQuantity.value == 1
     }
 
     fun getType() : String {

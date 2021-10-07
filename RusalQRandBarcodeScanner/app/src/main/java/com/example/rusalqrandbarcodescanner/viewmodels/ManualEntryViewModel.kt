@@ -24,7 +24,7 @@ class ManualEntryViewModel(private val userRepository : UserInputRepository) : V
         GlobalScope.launch(Dispatchers.Main) {
             val value = GlobalScope.async {
                 withContext(Dispatchers.Main) {
-                    heat.value?.let { userRepository.updateHeat(it) }
+                    heat.value?.let { userRepository.updateHeat(it.replace("-","")) }
                 }
             }
             value.await()

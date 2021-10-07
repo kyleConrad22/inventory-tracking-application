@@ -17,7 +17,7 @@ class CodeRepository(private val scannedCodeDao: ScannedCodeDao) {
         return try {
             scannedCodeDao.getRowCount()
         } catch (exc : EmptyResultSetException) {
-            null
+            0
         }
     }
 

@@ -16,6 +16,10 @@ class ReviewViewModel(private val codeRepository : CodeRepository, private val i
     private val count = codeRepository.count.asLiveData()
     val codes = codeRepository.allCodes.asLiveData()
 
+    init {
+        
+    }
+
     val isLoad = mutableStateOf(currentInput.value!![0].type == "Load")
     val loadType = mutableStateOf(currentInput.value!![0].type)
 

@@ -23,6 +23,7 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.CodeApplication
+import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.viewmodels.ReturnedBundleViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.ReturnedBundleViewModel.ReturnedBundleViewModelFactory
@@ -40,7 +41,7 @@ fun ReturnedBundleScreen(navController: NavHostController) {
     val loading = returnedBundleViewModel.loading.value
 
     if (showAddedDialog.value) {
-        BundleAddedDialog(navController, showAddedDialog, returnedBundleViewModel.getHeat(), returnedBundleViewModel.getType())
+        BundleAddedDialog(navController, showAddedDialog, returnedBundleViewModel.getHeat(), returnedBundleViewModel.getType(), returnedBundleViewModel.isLastBundle())
     } else {
         Scaffold(topBar = { TopAppBar(title = { Text("Returned Bundle Info") }) }) {
 
@@ -84,7 +85,7 @@ fun ReturnedBundleScreen(navController: NavHostController) {
 
 @ExperimentalComposeUiApi
 @Composable
-private fun BundleAddedDialog(navController : NavHostController, showDialog : MutableState<Boolean>, heat : String, type : String) {
+private fun BundleAddedDialog(navController : NavHostController, showDialog : MutableState<Boolean>, heat : String, type : String, isLastBundle : Boolean) {
     Dialog(properties = DialogProperties(usePlatformDefaultWidth = false),
         onDismissRequest = {
             showDialog.value = false
@@ -95,9 +96,13 @@ private fun BundleAddedDialog(navController : NavHostController, showDialog : Mu
                 Text(text="Bundle $heat, has been added to the $type.", Modifier.padding(16.dp))
                 Button(onClick = {
                     showDialog.value = false
-                    navController.popBackStack()
+                    if (!isLastBundle) {
+                        navController.popBackStack()
+                    } else {
+                        navController.navigate(Screen.ReviewScreen.title)
+                    }
                 }) {
-                    Text("Ok", modifier = Modifier.padding(16.dp))
+                    Text(if (!isLastBundle) {"Ok"} else { "Review Load" }, modifier = Modifier.padding(16.dp))
                 }
             }
 
