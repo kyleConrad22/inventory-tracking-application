@@ -18,7 +18,7 @@ class OptionsViewModel(private val userRepo : UserInputRepository, private val c
     val isDisplayRemoveEntry = mutableStateOf(false)
 
     init {
-        viewModelScope.launch{
+        viewModelScope.launch {
             loading.value = true
             userInput.value = userRepo.getInputSuspend()!![0]
             isLoad.value = getIsLoad(userInput.value!!)

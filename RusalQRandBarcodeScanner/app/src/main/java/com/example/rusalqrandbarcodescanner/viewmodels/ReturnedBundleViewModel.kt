@@ -69,19 +69,26 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
         return currentInput.heatNum!!
     }
 
-    fun addBundle() = viewModelScope.launch {
+    fun addBundle() {
         loading.value = true
-        if (isBaseHeat(getHeat())) {
-            invRepo.insert(returnedBundle!!)
+        viewModelScope.launch {
+            if (isBaseHeat(getHeat())) {
+                invRepo.insert(returnedBundle!!)
+            }
+            val scannedCode = lineItemToScannedCode(returnedBundle!!)
+            scannedCode.loadNum = currentInput.load
+            scannedCode.loader = currentInput.loader
+            scannedCode.workOrder = currentInput.order
+            scannedCode.scanTime = getCurrentDateTime()
+            codeRepo.insert(scannedCode)
+            val value = viewModelScope.async {
+                withContext(Dispatchers.Default) {
+                    userRepo.updateHeat("")
+                }
+            }
+            value.await()
+            loading.value = false
         }
-        val scannedCode = lineItemToScannedCode(returnedBundle!!)
-        scannedCode.loadNum = currentInput.load
-        scannedCode.loader = currentInput.loader
-        scannedCode.workOrder = currentInput.order
-        scannedCode.scanTime = getCurrentDateTime()
-        codeRepo.insert(scannedCode)
-        userRepo.updateHeat("")
-        loading.value = false
     }
 
     private fun lineItemToScannedCode(currentInventoryLineItem : CurrentInventoryLineItem) : ScannedCode{

@@ -11,6 +11,9 @@ interface ScannedCodeDao {
     @Query("SELECT * FROM scannedCode")
     fun getAll(): Flow<List<ScannedCode>>
 
+    @Query("SELECT * FROM scannedCode")
+    suspend fun getAllCodes() : List<ScannedCode>
+
     @Query("SELECT * FROM scannedCode WHERE barcode IN (:barcodes)")
     fun loadAllByBarcodes(barcodes: IntArray): Flow<List<ScannedCode>>
 

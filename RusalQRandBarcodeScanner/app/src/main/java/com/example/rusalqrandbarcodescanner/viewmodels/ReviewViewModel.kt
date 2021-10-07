@@ -1,33 +1,47 @@
 package com.example.rusalqrandbarcodescanner.viewmodels
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.rusalqrandbarcodescanner.database.ScannedCode
+import com.example.rusalqrandbarcodescanner.database.UserInput
 import com.example.rusalqrandbarcodescanner.repositories.CodeRepository
 import com.example.rusalqrandbarcodescanner.repositories.CurrentInventoryRepository
 import com.example.rusalqrandbarcodescanner.repositories.UserInputRepository
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
+import kotlin.properties.Delegates
 
-class ReviewViewModel(private val codeRepository : CodeRepository, private val inventoryRepository: CurrentInventoryRepository, private val userRepository: UserInputRepository) : ViewModel() {
-    private val currentInput = userRepository.currentInput.asLiveData()
-    private val count = codeRepository.count.asLiveData()
-    val codes = codeRepository.allCodes.asLiveData()
+class ReviewViewModel(private val codeRepo : CodeRepository, private val inventoryRepo : CurrentInventoryRepository, private val userRepo : UserInputRepository) : ViewModel() {
+    private lateinit var currentInput : MutableState<UserInput>
+    private var loadedBundles by Delegates.notNull<Int>()
+
+    val loading = mutableStateOf(true)
+    val codes : MutableState<List<ScannedCode>> = mutableStateOf(listOf())
 
     init {
-        
+        viewModelScope.launch {
+            currentInput = mutableStateOf(userRepo.getInputSuspend()!![0])
+            loadedBundles = codeRepo.getRowCount()!!
+            codes.value = codeRepo.getAllCodes()
+            loading.value = false
+        }
     }
-
-    val isLoad = mutableStateOf(currentInput.value!![0].type == "Load")
-    val loadType = mutableStateOf(currentInput.value!![0].type)
 
     fun deleteAll() = viewModelScope.launch {
-        codeRepository.deleteAll()
+        codeRepo.deleteAll()
     }
 
-    val showRemoveDialog = mutableStateOf(count.value != null && currentInput.value != null && Integer.parseInt(currentInput.value!![0].bundleQuantity!!) - count.value!! > 0)
+    fun isLoad() : Boolean {
+        return currentInput.value.type == "Load"
+    }
+
+    fun showRemoveDialog() : Boolean {
+        return Integer.parseInt(currentInput.value.bundleQuantity!!) - loadedBundles > 0
+    }
 
     class ReviewViewModelFactory(private val codeRepository: CodeRepository, private val inventoryRepository: CurrentInventoryRepository, private val userRepository: UserInputRepository) : ViewModelProvider.Factory {
         override fun<T : ViewModel> create(modelClass : Class<T>) : T {

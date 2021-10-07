@@ -13,6 +13,16 @@ class CodeRepository(private val scannedCodeDao: ScannedCodeDao) {
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
+    suspend fun getAllCodes() : List<ScannedCode> {
+        return try {
+            scannedCodeDao.getAllCodes()
+        } catch (e : EmptyResultSetException) {
+            listOf()
+        }
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
     suspend fun getRowCount() : Int? {
         return try {
             scannedCodeDao.getRowCount()

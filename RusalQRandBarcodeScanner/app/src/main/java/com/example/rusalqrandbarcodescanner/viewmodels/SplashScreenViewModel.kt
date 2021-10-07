@@ -15,7 +15,6 @@ class SplashScreenViewModel(private val codeRepo : CodeRepository, private val i
     val loading = mutableStateOf(true)
 
     init {
-
         viewModelScope.launch {
             codeRepo.deleteAll()
             invRepo.deleteAll()

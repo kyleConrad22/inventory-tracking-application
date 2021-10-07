@@ -24,6 +24,7 @@ import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.services.HttpRequestHandler
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.database.ScannedCode
+import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.viewmodels.CurrentInventoryViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.ReviewViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.ReviewViewModel.ReviewViewModelFactory
@@ -34,62 +35,74 @@ import com.example.rusalqrandbarcodescanner.viewmodels.ScannedCodeViewModel
 fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: ScannedCodeViewModel, currentInventoryViewModel: CurrentInventoryViewModel) {
     val application = LocalContext.current.applicationContext
 
-    val reviewViewModel : ReviewViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "reviewVM", factory = ReviewViewModelFactory((application as CodeApplication).repository, application.invRepository, application.userRepository))
+    val reviewViewModel : ReviewViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ReviewVM", factory = ReviewViewModelFactory((application as CodeApplication).repository, application.invRepository, application.userRepository))
 
-    val isLoad = reviewViewModel.isLoad.value
-    val loadType = reviewViewModel.loadType.value
-    val showRemoveDialog = reviewViewModel.showRemoveDialog.value
+    val loading = reviewViewModel.loading.value
 
     val confirmDialog = remember { mutableStateOf(false) }
-    Scaffold(topBar = { TopAppBar(title = { Text(text=if(showRemoveDialog) { "Remove Entry" } else { "Review $loadType" }, textAlign = TextAlign.Center) }) }) {
+    Scaffold(topBar = { TopAppBar(title = { Text(text="Rusal Scanner", textAlign = TextAlign.Center) }) }) {
 
-        Column(modifier = Modifier.fillMaxSize(),
+        Column(
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(text = if(showRemoveDialog) { "Please select the bundle you would like to remove:" } else { "Review $loadType; if you would like to remove a bundle please select it:" }, modifier = Modifier.padding(16.dp))
-            GetCodeListView(navController)
-            Row(modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly) {
-                Button(onClick = {
-                    navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)
-                }) {
-                    Text(text = "Back", modifier = Modifier.padding(16.dp))
-                }
-                if (!showRemoveDialog) {
+            verticalArrangement = Arrangement.SpaceEvenly
+        ) {
+            if (loading) {
+                LoadingDialog(isDisplayed = true)
+
+            } else {
+                val loadType = if (reviewViewModel.isLoad()) { "Load" } else { "Reception" }
+
+                Text(text = if (reviewViewModel.showRemoveDialog()) {
+                    "Please select the bundle you would like to remove:"
+                } else {
+                    "Review $loadType; if you would like to remove a bundle please select it:"
+                }, modifier = Modifier.padding(16.dp))
+                GetCodeListView(navController, reviewViewModel.codes.value)
+                Row(modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly) {
                     Button(onClick = {
-                        if (isLoad) {
-                            HttpRequestHandler.initUpdate(reviewViewModel,
-                                scannedCodeViewModel,
-                                currentInventoryViewModel)
-                        } else {
-                            /*TODO - Add Reception Confirmation Logic */
-                        }
-                        reviewViewModel.deleteAll()
-                        confirmDialog.value = true
+                        navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)
                     }) {
-                        Text(text = "Confirm $loadType", modifier = Modifier.padding(16.dp))
+                        Text(text = "Back", modifier = Modifier.padding(16.dp))
+                    }
+                    if (!reviewViewModel.showRemoveDialog()) {
+                        Button(onClick = {
+                            if (reviewViewModel.isLoad()) {
+                                HttpRequestHandler.initUpdate(reviewViewModel,
+                                    scannedCodeViewModel,
+                                    currentInventoryViewModel)
+                            } else {
+                                /*TODO - Add Reception Confirmation Logic */
+                            }
+                            reviewViewModel.deleteAll()
+                            confirmDialog.value = true
+                        }) {
+                            Text(text = "Confirm $loadType", modifier = Modifier.padding(16.dp))
+                        }
                     }
                 }
-            }
-        }
-        if (confirmDialog.value) {
-            AlertDialog(
-                onDismissRequest = {
-                    navController.popBackStack(Screen.MainMenuScreen.title, inclusive = true)
-                },
-                title = { Text(text = "$loadType Confirmation") },
-                text = { Text(text = "$loadType Confirmed") },
-                buttons = {
-                    Row(modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly) {
-                        Button(onClick = {
+                if (confirmDialog.value) {
+                    AlertDialog(
+                        onDismissRequest = {
                             navController.popBackStack(Screen.MainMenuScreen.title,
                                 inclusive = true)
-                        }) { Text(text = "Ok", modifier = Modifier.padding(16.dp)) }
-                    }
+                        },
+                        title = { Text(text = "$loadType Confirmation") },
+                        text = { Text(text = "$loadType Confirmed") },
+                        buttons = {
+                            Row(modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceEvenly) {
+                                Button(onClick = {
+                                    navController.popBackStack(Screen.MainMenuScreen.title,
+                                        inclusive = true)
+                                }) { Text(text = "Ok", modifier = Modifier.padding(16.dp)) }
+                            }
+                        }
+                    )
                 }
-            )
+            }
         }
     }
 }
@@ -97,16 +110,7 @@ fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: Scanned
 
 
 @Composable
-private fun GetCodeListView(navController: NavHostController) {
-    val application = LocalContext.current.applicationContext
-
-    val reviewViewModel : ReviewViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "reviewVM", factory = ReviewViewModelFactory((application as CodeApplication).repository, application.invRepository, application.userRepository))
-
-    var codes = remember { reviewViewModel.codes.value }
-    val codeObserver = Observer<List<ScannedCode>> { codeList ->
-        codes = codeList
-    }
-    reviewViewModel.codes.observe(LocalLifecycleOwner.current, codeObserver)
+private fun GetCodeListView(navController: NavHostController, codes : List<ScannedCode>) {
 
     LazyColumn (
         modifier = Modifier
@@ -114,14 +118,12 @@ private fun GetCodeListView(navController: NavHostController) {
             .size(400.dp),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        if (codes != null) {
-            items(
-                items = codes!!,
-                itemContent = {
-                    CodeListItem(scannedCode = it, navController)
-                }
-            )
-        }
+        items(
+            items = codes,
+            itemContent = {
+                CodeListItem(scannedCode = it, navController)
+            }
+        )
     }
 }
 
@@ -136,7 +138,7 @@ private fun CodeListItem(scannedCode: ScannedCode, navController: NavHostControl
             })
             .fillMaxWidth(),
         elevation = 2.dp,
-        backgroundColor = Color.Black,
+        backgroundColor = Color.White,
         shape = RoundedCornerShape(corner = CornerSize(16.dp))
     ) {
         Row {
@@ -144,7 +146,8 @@ private fun CodeListItem(scannedCode: ScannedCode, navController: NavHostControl
                 .padding(16.dp)
                 .fillMaxWidth()
                 .align(Alignment.CenterVertically)) {
-                Text(text = "Heat: ${scannedCode.heatNum!!} || BL: ${scannedCode.bl!!}" , style = MaterialTheme.typography.h6)
+                Text(text = "Heat: ${scannedCode.heatNum!!}" , style = MaterialTheme.typography.h6)
+                Text(text="BL: ${scannedCode.bl!!}", style = MaterialTheme.typography.h6)
             }
         }
     }
