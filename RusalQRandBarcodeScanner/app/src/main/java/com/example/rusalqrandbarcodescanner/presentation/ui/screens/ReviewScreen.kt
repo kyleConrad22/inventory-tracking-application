@@ -10,12 +10,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.Observer
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -31,15 +34,19 @@ import com.example.rusalqrandbarcodescanner.viewmodels.ReviewViewModel.ReviewVie
 import com.example.rusalqrandbarcodescanner.viewmodels.ScannedCodeViewModel
 
 
+@ExperimentalComposeUiApi
 @Composable
 fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: ScannedCodeViewModel, currentInventoryViewModel: CurrentInventoryViewModel) {
     val application = LocalContext.current.applicationContext
 
     val reviewViewModel : ReviewViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ReviewVM", factory = ReviewViewModelFactory((application as CodeApplication).repository, application.invRepository, application.userRepository))
 
-    val loading = reviewViewModel.loading.value
+    var code : ScannedCode? by remember { mutableStateOf(null) }
 
+    val loading = reviewViewModel.loading.value
+    var showRemoveDialog by remember { mutableStateOf(false)}
     val confirmDialog = remember { mutableStateOf(false) }
+
     Scaffold(topBar = { TopAppBar(title = { Text(text="Rusal Scanner", textAlign = TextAlign.Center) }) }) {
 
         Column(
@@ -50,7 +57,11 @@ fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: Scanned
             if (loading) {
                 LoadingDialog(isDisplayed = true)
 
-            } else {
+            } else if (showRemoveDialog) {
+                RemoveDialog(onDismissRequest = { showRemoveDialog = false },
+                    onRemoveRequest = { reviewViewModel.removeCode(code!!) },
+                    code = code!!)
+            }else {
                 val loadType = if (reviewViewModel.isLoad()) { "Load" } else { "Reception" }
 
                 Text(text = if (reviewViewModel.showRemoveDialog()) {
@@ -58,7 +69,15 @@ fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: Scanned
                 } else {
                     "Review $loadType; if you would like to remove a bundle please select it:"
                 }, modifier = Modifier.padding(16.dp))
-                GetCodeListView(navController, reviewViewModel.codes.value)
+
+                GetCodeListView(
+                    reviewViewModel.codes.value,
+                    onClick = {
+                        code = it
+                        showRemoveDialog = true
+                    }
+                )
+
                 Row(modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -110,7 +129,7 @@ fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: Scanned
 
 
 @Composable
-private fun GetCodeListView(navController: NavHostController, codes : List<ScannedCode>) {
+private fun GetCodeListView(codes : List<ScannedCode>, onClick : (item : ScannedCode) -> Unit) {
 
     LazyColumn (
         modifier = Modifier
@@ -120,22 +139,19 @@ private fun GetCodeListView(navController: NavHostController, codes : List<Scann
     ) {
         items(
             items = codes,
-            itemContent = {
-                CodeListItem(scannedCode = it, navController)
+            itemContent = { it ->
+                CodeListItem(scannedCode = it, onClick = { onClick(it) })
             }
         )
     }
 }
 
 @Composable
-private fun CodeListItem(scannedCode: ScannedCode, navController: NavHostController) {
+private fun CodeListItem(scannedCode: ScannedCode, onClick: (item : ScannedCode) -> Unit) {
     Card(
         modifier= Modifier
             .padding(horizontal = 8.dp, vertical = 8.dp)
-            .clickable(onClick = {
-
-                navController.navigate("${Screen.BundleInfoScreen.title}/${scannedCode.barCode}")
-            })
+            .clickable(onClick = { onClick(scannedCode) })
             .fillMaxWidth(),
         elevation = 2.dp,
         backgroundColor = Color.White,
@@ -149,6 +165,34 @@ private fun CodeListItem(scannedCode: ScannedCode, navController: NavHostControl
                 Text(text = "Heat: ${scannedCode.heatNum!!}" , style = MaterialTheme.typography.h6)
                 Text(text="BL: ${scannedCode.bl!!}", style = MaterialTheme.typography.h6)
             }
+        }
+    }
+}
+
+@ExperimentalComposeUiApi
+@Composable
+private fun RemoveDialog(onDismissRequest : () -> Unit, onRemoveRequest : () -> Unit, code : ScannedCode) {
+    Dialog(properties = DialogProperties(usePlatformDefaultWidth = false),
+        onDismissRequest = onDismissRequest) {
+        Surface(modifier = Modifier.fillMaxSize()) {
+            Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
+                Text(text = "Heat Number: ${ code.heatNum }")
+                Text(text = "BL Number: ${ code.bl }")
+                Text(text = "Quantity: ${ code.quantity }")
+                Text(text = "Net Weight Kg: ${ code.netWgtKg }")
+                Text(text = "Gross Weight Kg: ${ code.grossWgtKg }")
+                Text(text = "Barcode: ${code.barCode}")
+                Button(onClick = onDismissRequest) {
+                    Text("Deny Removal", modifier = Modifier.padding(16.dp))
+                }
+                Button(onClick = {
+                    onRemoveRequest()
+                    onDismissRequest()
+                }) {
+                    Text("Remove Bundle", modifier = Modifier.padding(16.dp))
+                }
+            }
+
         }
     }
 }

@@ -70,9 +70,6 @@ class MainActivity : ComponentActivity() {
             NavHost(navController = navController,
                 startDestination = (Screen.SplashScreen.title)) {
                 composable(Screen.MainMenuScreen.title) { MainMenuScreen(navController) }
-                composable(Screen.BundleInfoScreen.title + "/{barcode}") { backStackEntry ->
-                    BundleInfoScreen(navController = navController, barcode = backStackEntry.arguments?.getString("barcode"))
-                }
                 composable(Screen.ReviewScreen.title) {
                     ReviewScreen(navController,
                         scannedCodeViewModel,
@@ -95,7 +92,6 @@ sealed class Screen(val title: String) {
     object MainMenuScreen: Screen("MainMenu")
     object ScannerScreen: Screen("Scanner")
     object InfoInputScreen: Screen("InfoInput")
-    object BundleInfoScreen: Screen("BundleInfo")
     object OptionsScreen: Screen("Options")
     object ManualEntryScreen: Screen("ManualEntry")
     object ToBeImplementedScreen: Screen("ToBeImplemented")

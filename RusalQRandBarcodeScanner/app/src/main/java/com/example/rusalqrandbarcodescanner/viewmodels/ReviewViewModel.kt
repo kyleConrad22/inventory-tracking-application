@@ -22,6 +22,7 @@ class ReviewViewModel(private val codeRepo : CodeRepository, private val invento
     val loading = mutableStateOf(true)
     val codes : MutableState<List<ScannedCode>> = mutableStateOf(listOf())
 
+
     init {
         viewModelScope.launch {
             currentInput = mutableStateOf(userRepo.getInputSuspend()!![0])
@@ -29,6 +30,12 @@ class ReviewViewModel(private val codeRepo : CodeRepository, private val invento
             codes.value = codeRepo.getAllCodes()
             loading.value = false
         }
+    }
+
+    fun removeCode(code : ScannedCode) = viewModelScope.launch {
+        codeRepo.delete(code)
+        codes.value = codeRepo.getAllCodes()
+        loadedBundles = codeRepo.getRowCount()!!
     }
 
     fun deleteAll() = viewModelScope.launch {
