@@ -1,7 +1,7 @@
 import React from "react";
 import { Switch, Route, Link, useRouteMatch} from "react-router-dom";
 import ToBeImplemented from "../util/to_be_implemented";
-import BugReporting from "../apps/misc_functions/bug_reporting";
+import FeaturesAndBugs from "../apps/misc_functions/features_and_bugs";
 import ExcelSpreadSheetFormatting from "../apps/misc_functions/excel_spreadsheet_formatting";
 
 export default function MiscFunctionsPage() {
@@ -14,7 +14,7 @@ export default function MiscFunctionsPage() {
             <h2>Functions</h2>
             <ul>
                 <li>
-                    <Link to={`${url}/bugs`}>Bug Reporting</Link>
+                    <Link to={`${url}/logging`}>Features and Bugs</Link>
                 </li>
                 <li>
                     <Link to={`${url}/excel_formatting`}>Excel SpreadSheet Formatting</Link>
@@ -23,9 +23,9 @@ export default function MiscFunctionsPage() {
 
             <Switch>
                 <Route exact path={path}>
-                    <h3>I am Confusion</h3>
+                    <h3>Choose a Function</h3>
                 </Route>
-                <Route path={`${path}/bugs`}>
+                <Route path={`${path}/logging`}>
                     <BugReporting />
                 </Route>
                 <Route path={`${path}/excel_formatting`}>
