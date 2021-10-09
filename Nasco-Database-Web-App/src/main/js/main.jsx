@@ -1,10 +1,10 @@
 import React from "react";
 import { Switch, Route } from "react-router-dom";
 
-import LandingPage from "./pages/landing_page";
-import RusalPage from "./pages/rusal_app_page";
-import MiscFunctionsPage from "./pages/misc_functions_page";
-import CheckinCheckoutPage from "./pages/checkin_checkout_app_page";
+import LandingPage from "./pages/landing/landing_page";
+import MiscFunctionsPage from "./pages/other/misc_functions_page";
+import CheckinCheckoutPage from "./pages/clerical/checkin_checkout_app_page";
+import RusalPage from "./pages/rusal/rusal_app_page";
 
 const Main = () => {
     return (
@@ -12,7 +12,9 @@ const Main = () => {
             <Route exact path="/">
                 <LandingPage />
             </Route>
-            <Route path="/rusal"><RusalPage /></Route>
+            <Route path="/rusal">
+                <RusalPage />
+            </Route>
             <Route path='/misc'>
                 <MiscFunctionsPage />
             </Route>

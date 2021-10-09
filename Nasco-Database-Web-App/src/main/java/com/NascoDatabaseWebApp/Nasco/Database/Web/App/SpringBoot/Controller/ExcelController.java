@@ -23,7 +23,7 @@ public class ExcelController {
     private ExcelFormatService excelFormatService;
 
     @PostMapping("/algoma")
-    ResponseEntity<Resource> downloadAlgomaReport(@RequestParam("file") MultipartFile excelDataFile) {
+    ResponseEntity<Resource> downloadAlgomaReport(@RequestParam("file") MultipartFile[] excelDataFile) {
         String fileName = "algoma-inventory-report-" + LocalDate.now() + ".xlsx";
         InputStreamResource file = new InputStreamResource(excelFormatService.formatAlgomaReport(excelDataFile));
 

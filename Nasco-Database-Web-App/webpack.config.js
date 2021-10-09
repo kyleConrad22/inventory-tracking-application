@@ -5,11 +5,11 @@ module.exports = {
     },
     module: {
         rules: [{
-            test: /\.(js|jsx)$/,
+            test: /\.(js|jsx|tsx)$/,
             exclude: /node_modules/,
             loader: "babel-loader",
             options: {
-                presets: ['@babel/preset-env', '@babel/preset-react']
+                presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript']
             }
         }, {
             test: /\.css$/,
@@ -18,6 +18,6 @@ module.exports = {
         }]
     },
     resolve: {
-        extensions: ['.js', '.jsx', '.css']
+        extensions: ['.js', '.jsx', '.css', '.tsx']
     }
 }

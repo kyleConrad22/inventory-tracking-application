@@ -1,7 +1,5 @@
 import React, {useRef} from "react";
 
-import ToBeImplemented from "../../../core/to_be_implemented";
-
 export default function ExcelSpreadSheetFormatting() {
     
     function FormatAlgomaReport() {
@@ -11,8 +9,10 @@ export default function ExcelSpreadSheetFormatting() {
         function handleChange(evt) {
             const files = evt.target.files
             const formData = new FormData()
-            formData.append('file', files[0])
-
+            for (let i = 0; i < files.length; i++) {
+                formData.append('file', files[i])
+            }
+        
             fetch('/api/excel/algoma', {
                 method: 'POST',
                 body: formData
@@ -37,6 +37,7 @@ export default function ExcelSpreadSheetFormatting() {
                     alert(error)
                 }
             )
+
             return false;
         }
 
@@ -46,7 +47,7 @@ export default function ExcelSpreadSheetFormatting() {
 
         return (
             <div>
-                <input id='algomaFile' type='file' ref={ inputFile } style={ { display: 'none' } } onChange={ handleChange } />
+                <input id='algomaFile' type='file' multiple ref={ inputFile } style={ { display: 'none' } } onChange={ handleChange } />
                 <button onClick={ handleClick }>Format Algoma Report</button>
             </div>
         );

@@ -2,7 +2,8 @@ import { BrowserRouter } from "react-router-dom";
 import React from "react";
 import ReactDOM from "react-dom";
 
-import Main from "./components/main";
+import '../css/main.css'
+import Main from './main'
 
 function App() {
     return (

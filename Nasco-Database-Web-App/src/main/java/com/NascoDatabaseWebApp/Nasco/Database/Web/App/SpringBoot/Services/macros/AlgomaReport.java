@@ -28,6 +28,7 @@ public class AlgomaReport extends CustomerReport {
 
     @Override
     public void parseFile(Workbook workbook, SheetContainer sheetContainer) {
+        System.out.println(sheetContainer.sheetType.toString());
         switch (sheetContainer.sheetType) {
             case INVENTORY:
                 formatInventoryReport(workbook.getSheetAt(sheetContainer.sheetIndex));

@@ -6,6 +6,7 @@
     "@babel/core": "^7.12.13",
     "@babel/preset-env": "^7.12.13",
     "@babel/preset-react": "^7.12.13",
+    "@babel/preset-typescript": "^7.15.0",
     "@mui/material": "^5.0.3",
     "babel-loader": "^8.2.2",
     "css-loader": "^5.0.2",

@@ -15,10 +15,10 @@ import java.util.List;
 @Service
 public class ExcelFormatService {
 
-    public ByteArrayInputStream formatAlgomaReport(MultipartFile excelInventoryReport) {
+    public ByteArrayInputStream formatAlgomaReport(MultipartFile[] excelInventoryReport) {
         AlgomaReport algomaReport = new AlgomaReport();
 
-        return algomaReport.createReport(new MultipartFile[] { excelInventoryReport });
+        return algomaReport.createReport(excelInventoryReport);
     }
 
     public ByteArrayInputStream formatSsabReport(MultipartFile excelInventoryReport) {
