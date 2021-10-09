@@ -47,7 +47,7 @@ export default function ExcelSpreadSheetFormatting() {
 
         return (
             <div>
-                <input id='algomaFile' type='file' multiple ref={ inputFile } style={ { display: 'none' } } onChange={ handleChange } />
+                <input id='algomaFile' type='file' multiple ref={ inputFile } style={ { display: 'none' } } onChange={ handleChange } onClick={ (evt) => evt.target.value = null } />
                 <button onClick={ handleClick }>Format Algoma Report</button>
             </div>
         );
@@ -96,7 +96,7 @@ export default function ExcelSpreadSheetFormatting() {
 
         return (
             <div>
-                <input id='ssabFile' type='file' accept='.xlsx' ref={ inputFile } style={ { display: 'none' } } onChange={ handleChange } />
+                <input id='ssabFile' type='file' accept='.xlsx' ref={ inputFile } style={ { display: 'none' } } onChange={ handleChange } onClick={ (evt) => evt.target.value = null } />
                 <button onClick={ handleClick }>Format SSAB Report</button>
             </div>
         );
