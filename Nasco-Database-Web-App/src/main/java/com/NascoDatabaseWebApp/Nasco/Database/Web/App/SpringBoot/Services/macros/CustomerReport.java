@@ -98,7 +98,7 @@ public abstract class CustomerReport {
         int lastCol = inSheet.getRow(0).getLastCellNum();
 
         if (tableTitle != null) {
-            int lastRow = ExcelHelper.getTrueLastRow(inSheet);
+            int lastRow = inSheet.getLastRowNum();
 
             AreaReference reference = outWorkbook.getCreationHelper().createAreaReference(
                     new CellReference(0, 0), new CellReference(lastRow, lastCol-1)

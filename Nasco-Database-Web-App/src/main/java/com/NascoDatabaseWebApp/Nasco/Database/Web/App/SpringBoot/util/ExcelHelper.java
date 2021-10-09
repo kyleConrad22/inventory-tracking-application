@@ -138,7 +138,7 @@ public class ExcelHelper {
 
     // Copy all cells in source to receiver
     public static void copyToWorkSheet(Sheet source, Sheet receiver) {
-        int lastRow = getTrueLastRow(source);
+        int lastRow = source.getLastRowNum();
 
         int lastCol = source.getRow(0).getLastCellNum();
 
@@ -186,7 +186,7 @@ public class ExcelHelper {
     }
 
     // Get last row which has data
-    public static int getTrueLastRow(Sheet sheet) {
+    public static int getFirstNullRow(Sheet sheet) {
         int lastRow = 0;
         while (sheet.getRow(lastRow+1) != null) {
             lastRow++;
