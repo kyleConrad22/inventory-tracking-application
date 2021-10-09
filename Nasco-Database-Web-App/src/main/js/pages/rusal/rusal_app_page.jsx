@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Switch, Link , Route, useRouteMatch} from "react-router-dom";
-import RusalLineItemList from "../apps/rusal_app/rusal_line_item_list";
+import RusalLineItemList from "../../apps/rusal_app/rusal_line_item_list";
 import "../../../css/main.css";
-import RusalAddNewForm from "../apps/rusal_app/rusal_add_new_form";
-import RusalDownloads from "../apps/rusal_app/rusal_downloads";
-import RusalUpdateItem from "../apps/rusal_app/rusal_update_item";
-import RusalUploadPackingList from "../apps/rusal_app/rusal_upload_packing_list";
+import RusalAddNewForm from "./rusal_add_new_form";
+import RusalDownloads from "../../apps/rusal_app/rusal_downloads";
+import RusalUpdateItem from "../../apps/rusal_app/rusal_update_item";
+import RusalUploadPackingList from "../../apps/rusal_app/rusal_upload_packing_list";
 
 export default function RusalPage() {
 

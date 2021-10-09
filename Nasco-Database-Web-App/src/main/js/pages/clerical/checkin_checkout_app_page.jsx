@@ -2,9 +2,9 @@ import React from "react";
 import { BrowserRouter, Switch, Route, Link, userParams, useRouteMatch} from "react-router-dom";
 
 import ToBeImplemented from "../util/to_be_implemented";
-import CustomerSettings from "../apps/checkin_checkout_app/customer_settings";
-import RunTruckSupport from "../apps/checkin_checkout_app/run_truck_support";
-import NewCustomer from "../apps/checkin_checkout_app/new_customer";
+import CustomerSettings from "./customer_settings";
+import RunTruckSupport from "../../apps/checkin_checkout_app/run_truck_support";
+import NewCustomer from "../../apps/checkin_checkout_app/new_customer";
 
 export default function CheckinCheckoutPage() {
     let { path, url } = useRouteMatch();

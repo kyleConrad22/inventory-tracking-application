@@ -1,8 +1,8 @@
 import React from "react";
 import { Switch, Route, Link, useRouteMatch} from "react-router-dom";
-import ToBeImplemented from "../util/to_be_implemented";
-import FeaturesAndBugs from "../apps/misc_functions/features_and_bugs";
-import ExcelSpreadSheetFormatting from "../apps/misc_functions/excel_spreadsheet_formatting";
+import ToBeImplemented from "../../core/to_be_implemented";
+import FeaturesAndBugs from "../../apps/misc_functions/features_and_bugs";
+import ExcelSpreadSheetFormatting from "./excel/excel_spreadsheet_formatting";
 
 export default function MiscFunctionsPage() {
     let { path, url } = useRouteMatch();
