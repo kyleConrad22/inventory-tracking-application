@@ -5,7 +5,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 public abstract class AutomatedSession {
-    private final WebDriver driver;
+    public final WebDriver driver;
 
     public AutomatedSession() {
         String chromeDriverPath = System.getProperty("user.dir") + "\\chromedriver.exe";
@@ -15,7 +15,8 @@ public abstract class AutomatedSession {
         this.driver = new ChromeDriver(options);
     }
 
-    protected void loginTc3() {
+    protected void loginTc3(LoginCredentials credentials) {
+        driver.get("https://tos.qsl.com/");
     }
 
     protected void endSession() {

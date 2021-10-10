@@ -34,5 +34,4 @@ public interface PdfRelease {
         }
     }
 
-    Release parseRelease(String convertedFile);
 }

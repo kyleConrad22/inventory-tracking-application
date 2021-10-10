@@ -59,6 +59,7 @@ public class RusalController {
     }
 
     @PostMapping("/update")
+    @ResponseStatus(HttpStatus.OK)
     void update(
         @RequestParam final String heatNum,
         @RequestParam final String workOrder,
