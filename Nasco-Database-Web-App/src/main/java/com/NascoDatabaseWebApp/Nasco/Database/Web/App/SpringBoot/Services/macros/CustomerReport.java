@@ -36,8 +36,6 @@ public abstract class CustomerReport {
     // Creates a customer report given an array of files from user
     public ByteArrayInputStream createReport(MultipartFile[] inFiles) {
 
-        System.out.println(inFiles.length);
-        
         for (MultipartFile inFile : inFiles) {
             Workbook inWorkbook = ExcelHelper.readExcelFile(inFile);
 
