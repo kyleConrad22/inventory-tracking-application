@@ -247,10 +247,9 @@ public class AlgomaReception extends Reception implements PdfRelease {
         return matches;
     }
 
-    @Override
     protected void createReception(Release release) {
         createTc3Reception();
-        fillReceptionFields(release);
+        fillFields(release);
         fillRemarks(release);
         saveNewReception();
         XSSFWorkbook manifest = createImportManifest(release);
@@ -258,7 +257,6 @@ public class AlgomaReception extends Reception implements PdfRelease {
         saveReception();
     }
 
-    @Override
     protected XSSFWorkbook createImportManifest(Release release) {
         return null;
     }
@@ -267,7 +265,7 @@ public class AlgomaReception extends Reception implements PdfRelease {
 
     }
 
-    private void fillRemarks(Release release) {
+    protected void fillRemarks(Release release) {
 
     }
 
@@ -275,7 +273,7 @@ public class AlgomaReception extends Reception implements PdfRelease {
 
     }
 
-    private void fillReceptionFields(Release release) {
+    protected void fillFields(Release release) {
 
     }
 
