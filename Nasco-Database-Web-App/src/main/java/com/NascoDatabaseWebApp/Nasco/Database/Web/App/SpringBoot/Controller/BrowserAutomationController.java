@@ -22,10 +22,9 @@ public class BrowserAutomationController {
     private BrowserAutomationService browserAutomationService;
 
     @PostMapping("/reception/algoma")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     void algomaReception(@RequestParam("files") MultipartFile[] files, @RequestParam("username") String username, @RequestParam("password") String password) {
         LoginCredentials credentials = new LoginCredentials(username, password);
         browserAutomationService.createAlgomaReception(files, credentials);
-
     }
 }

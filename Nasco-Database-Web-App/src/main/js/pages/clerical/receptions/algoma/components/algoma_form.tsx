@@ -3,17 +3,17 @@ import React, { useRef } from "react";
 export default function AlgomaForm( ) {
 
     function handleSubmit(evt) {
-        const formData = new FormData(evt.target)
-        
+
+        evt.preventDefault();    
         fetch('/api/browser/reception/algoma', {
-            method:'POST',
-            body: formData
+            method: 'POST',
+            body: new FormData(evt.target)
         }).then(
             (response) => {
-                if (!response.ok) {
-                    alert("Something went wrong!")
-                }
+            if(!response.ok) {
+                alert('Something went wrong!')
             }
+        }
         ).catch(
             (error) => {
                 alert(error)

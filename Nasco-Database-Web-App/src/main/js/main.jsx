@@ -18,7 +18,7 @@ const Main = () => {
             <Route path='/misc'>
                 <MiscFunctionsPage />
             </Route>
-            <Route path='/truck_support'>
+            <Route path='/clerical'>
                 <CheckinCheckoutPage />
             </Route>
         </Switch>

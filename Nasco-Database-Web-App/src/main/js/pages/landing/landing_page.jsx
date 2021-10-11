@@ -21,7 +21,7 @@ export default function LandingPage() {
         let history = useHistory();
 
         function handleClick() {
-            history.push("/truck_support");
+            history.push("/clerical");
         }
 
         return (
