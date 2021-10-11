@@ -52,4 +52,9 @@ public final class SeleniumHelper {
             return driver.findElement(locator2);
         }
     }
+
+    public static void executeClickOnBlockedElement(WebDriver driver, WebElement element) {
+        JavascriptExecutor ex = (JavascriptExecutor) driver;
+        ex.executeScript("arguments[0].click()", element);
+    }
 }

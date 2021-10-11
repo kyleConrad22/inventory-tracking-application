@@ -6,6 +6,8 @@ import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browse
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.receptions.Reception;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.FileFormatException;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,7 +22,7 @@ import java.util.stream.Stream;
 
 public class AlgomaReception extends Reception implements PdfRelease {
 
-    public void uploadReleases(MultipartFile[] files, LoginCredentials tc3Credentials) {
+    public void uploadReleases(MultipartFile[] files, LoginCredentials credentials) {
         List<AlgomaRelease> orders = new ArrayList<>();
         for (MultipartFile file : files) {
             String convertedFile = convertToText(readFile(file));
@@ -31,9 +33,9 @@ public class AlgomaReception extends Reception implements PdfRelease {
 
         }
         try {
-            loginTc3(tc3Credentials);
+            loginTc3(credentials);
             for (AlgomaRelease order : orders) {
-                createReception(order);
+                createReception(order , getClerkInitials(credentials.getUsername()));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -247,39 +249,74 @@ public class AlgomaReception extends Reception implements PdfRelease {
         return matches;
     }
 
-    protected void createReception(Release release) {
-        createTc3Reception();
-        fillFields(release);
-        fillRemarks(release);
-        saveNewReception();
-        XSSFWorkbook manifest = createImportManifest(release);
-        importManifest(manifest);
-        saveReception();
+    protected void createReception(Release release, String clerkInitials) {
+        createNewReception("Iroquois Landing", "Railcar", "Breakbulk");
+        fillTransportationFields(release, clerkInitials);
+        fillRemarks(getRemarks(release, clerkInitials));
+        clickCreateButton();
+        navigateToIncomingItems();
+        createImportManifest(release);
+        importManifest();
     }
 
-    protected XSSFWorkbook createImportManifest(Release release) {
-        return null;
+    private String getClerkInitials(String username) {
+        StringBuilder clerkInitials = new StringBuilder();
+        for (String name : username.split("\\.")) {
+            clerkInitials.append(name.charAt(0));
+        }
+        return clerkInitials.toString().toUpperCase(Locale.ROOT);
     }
 
-    private void createTc3Reception() {
+    private String getRemarks(Release release, String clerkInitials) {
+        HashMap<String, Integer> hm = new HashMap<>();
+
+        for (AlgomaItem item : ((AlgomaRelease) release).getItems()) {
+            String receiver = item.getReceiver();
+            if (hm.containsKey(receiver)) {
+                hm.put(receiver, hm.get(receiver) + 1);
+            } else {
+                hm.put(receiver, 1);
+            }
+        }
+
+        StringBuilder remarks  = new StringBuilder();
+
+        remarks.append(((AlgomaRelease) release).getRailcar())
+                .append("\n")
+                .append("Offloaded on ")
+                .append(((AlgomaRelease) release).getOffloadDate());
+
+        hm.forEach((receiver, count) -> {
+
+            String coils = "\n\n%d Coil%s for:\n";
+            if (count == 1) {
+                remarks.append(String.format(coils, count, ""));
+            } else {
+                remarks.append(String.format(coils, count, "s"));
+            }
+            remarks.append(receiver);
+        });
+
+        remarks.append("\n").append(clerkInitials);
+
+        return remarks.toString();
+    }
+
+    protected void createImportManifest(Release release) {
 
     }
 
-    protected void fillRemarks(Release release) {
-
+    protected void fillRemarks(String remarks) {
+        driver.findElement(By.id("specialInstructions")).sendKeys(remarks);
     }
 
-    private void saveReception() {
+    protected void fillTransportationFields(Release release, String clerkInitials) {
+        String react = "react-select-%d-input";
 
+        driver.findElement(By.id(String.format(react, 9))).sendKeys("CN" + Keys.RETURN);
+        driver.findElement(By.id("driverName")).sendKeys(clerkInitials);
+        driver.findElement(By.id("carrierBill")).sendKeys("Add In");
+        driver.findElement(By.id("transportationNumber")).sendKeys(((AlgomaRelease) release).getRailcar());
     }
 
-    protected void fillFields(Release release) {
-
-    }
-
-    private void importManifest(XSSFWorkbook manifest) {
-
-    }
-
-    private void saveNewReception() {}
 }

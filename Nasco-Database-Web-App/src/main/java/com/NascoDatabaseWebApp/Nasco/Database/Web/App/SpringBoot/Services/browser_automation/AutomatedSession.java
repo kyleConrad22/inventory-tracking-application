@@ -7,6 +7,9 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public abstract class AutomatedSession {
     public final WebDriver driver;
 
@@ -18,9 +21,17 @@ public abstract class AutomatedSession {
         this.driver = new ChromeDriver(options);
     }
 
-    protected abstract void fillRemarks(Release release);
+    protected String getDocumentNumber() {
+        Matcher m = Pattern.compile("(?<=/)\\d{5,6}(?=/)").matcher(driver.getCurrentUrl());
+        if (m.find()) {
+            return m.group();
+        }
+        throw new RuntimeException("Could not find document number!");
+    }
 
-    protected abstract void fillFields(Release release);
+    protected abstract void fillRemarks(String remarks);
+
+    protected abstract void fillTransportationFields(Release release, String clerkInitials);
 
     protected void loginTc3(LoginCredentials credentials) {
         WebDriverWait webDriverWait = new WebDriverWait(driver , 20);
