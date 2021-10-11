@@ -6,6 +6,7 @@ import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browse
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.receptions.Reception;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.FileFormatException;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.openqa.selenium.WebDriver;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedWriter;
@@ -29,11 +30,15 @@ public class AlgomaReception extends Reception implements PdfRelease {
             printOutput(convertedFile + orders.get(0));
 
         }
-        loginTc3(tc3Credentials);
-        for (AlgomaRelease order : orders) {
-            createReception(order);
+        try {
+            loginTc3(tc3Credentials);
+            for (AlgomaRelease order : orders) {
+                createReception(order);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            endSession();
         }
-        endSession();
     }
 
     private AlgomaRelease parseRelease(String release) {
@@ -244,11 +249,39 @@ public class AlgomaReception extends Reception implements PdfRelease {
 
     @Override
     protected void createReception(Release release) {
-
+        createTc3Reception();
+        fillReceptionFields(release);
+        fillRemarks(release);
+        saveNewReception();
+        XSSFWorkbook manifest = createImportManifest(release);
+        importManifest(manifest);
+        saveReception();
     }
 
     @Override
     protected XSSFWorkbook createImportManifest(Release release) {
         return null;
     }
+
+    private void createTc3Reception() {
+
+    }
+
+    private void fillRemarks(Release release) {
+
+    }
+
+    private void saveReception() {
+
+    }
+
+    private void fillReceptionFields(Release release) {
+
+    }
+
+    private void importManifest(XSSFWorkbook manifest) {
+
+    }
+
+    private void saveNewReception() {}
 }
