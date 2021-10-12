@@ -1,26 +1,25 @@
-#rusal-all 
-{
-    background: #eff;
+#rusal-all {
+    background: rgb(255, 255, 255);
     margin: 0 auto;
     width: 1200px;
 }
 
+td, th {
+    text-align: center;
+    padding: 1rem;
+}
+
 table {
+    width: 90%;
     border-collapse: collapse;
 }
 
-.padded-table
-{
-    padding: 5px 15px 5px 15px;
-}
-
-.bordered-row
-{
+.bordered-row {
     border: 1px solid #000;
+    border-spacing: .5rem
 }
 
-.centered 
-{
+.centered {
     position: absolute; left: 50%; right: 50%;
     transform: translate(-50%, -50%);
 }

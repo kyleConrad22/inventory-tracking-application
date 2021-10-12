@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Switch, Route, Link, userParams, useRouteMatch} from "react-router-dom";
+import { Switch, Route, Link, useRouteMatch } from "react-router-dom";
 
 import ToBeImplemented from "../../core/to_be_implemented";
 import CustomerSettings from "./customer_settings";
@@ -12,6 +12,7 @@ export default function CheckinCheckoutPage() {
     return (
         <div>
             <h1>Truck Support Appliction (Check-In / Check-Out)</h1>
+            <ToBeImplemented />
             <ToBeImplemented />
             <h2>Functions</h2>
             <ul>
