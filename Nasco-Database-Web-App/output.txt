@@ -81,11 +81,13 @@ HEAT NUMBER PIECES C MN S P SI CR NI CU MO AL V NB
 Railcar: FURX 380955
 BOL Number: 1200024855
 Offload Date: 
-[Receiver: ESMARK STEEL GROUP-MIDWEST, LLC
+[Receiver: ESMARK STEEL GROUP-MIDWEST, LLC 
 C/O NASCO
 9301 SOUTH KREITER AVE
 CHICAGO, IL
 USA 60617
+
+Order: Esmark Steel Group - Midwest - 17985
 PO Number: 2203648
 Subtype: Cold Rolled Steel Sheet
 Weight: 44,910
@@ -93,11 +95,13 @@ Thickness: 0.0550
 Diameter: 48.000
 Heat: 1798J5 04
 Mark: TCY0101
-Item Number: W237779/2, Receiver: ESMARK STEEL GROUP-MIDWEST, LLC
+Item Number: W237779/2, Receiver: ESMARK STEEL GROUP-MIDWEST, LLC 
 C/O NASCO
 9301 SOUTH KREITER AVE
 CHICAGO, IL
 USA 60617
+
+Order: Esmark Steel Group - Midwest - 17985
 PO Number: 2203648
 Subtype: Cold Rolled Steel Sheet
 Weight: 45,040
@@ -105,11 +109,13 @@ Thickness: 0.0550
 Diameter: 48.000
 Heat: 1798J5 05
 Mark: TCY0103
-Item Number: W237779/2, Receiver: ESMARK STEEL GROUP-MIDWEST, LLC
+Item Number: W237779/2, Receiver: ESMARK STEEL GROUP-MIDWEST, LLC 
 C/O NASCO
 9301 SOUTH KREITER AVE
 CHICAGO, IL
 USA 60617
+
+Order: Esmark Steel Group - Midwest - 17985
 PO Number: 2203648
 Subtype: Cold Rolled Steel Sheet
 Weight: 44,240
@@ -117,11 +123,13 @@ Thickness: 0.0550
 Diameter: 48.000
 Heat: 1798J5 53
 Mark: TCY0100
-Item Number: W237779/2, Receiver: ESMARK STEEL GROUP-MIDWEST, LLC
+Item Number: W237779/2, Receiver: ESMARK STEEL GROUP-MIDWEST, LLC 
 C/O NASCO
 9301 SOUTH KREITER AVE
 CHICAGO, IL
 USA 60617
+
+Order: Esmark Steel Group - Midwest - 17985
 PO Number: 2203648
 Subtype: Cold Rolled Steel Sheet
 Weight: 44,670

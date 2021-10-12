@@ -33,13 +33,18 @@ public abstract class AutomatedSession {
 
     protected abstract void fillTransportationFields(Release release, String clerkInitials);
 
-    protected void loginTc3(LoginCredentials credentials) {
+    protected void loginTc3(LoginCredentials credentials) throws TimeoutException {
+        System.out.println("\nLogging into TC3...");
         WebDriverWait webDriverWait = new WebDriverWait(driver , 20);
         driver.get("https://identity.qsl.com/u/login/identifier?state=hKFo2SBIVDJIUXlSYWdBTFBCVUFDVWgzRVRhUnAyZUVNVjZ1SqFur3VuaXZlcnNhbC1sb2dpbqN0aWTZIEVIRnFYMEh5T3NjX3liUnhOSkV3VjQ1b0FFSVVIU2tMo2NpZNkgYzRibDAyWVZjN1NWRWE2aXQ4RlFSVDRNOENaeU9RMWo");
         webDriverWait.until(ExpectedConditions.elementToBeClickable(By.id("username"))).sendKeys(credentials.getUsername() + Keys.RETURN);
 
         // Check for password field visibility and take respective action
-        WebElement element = SeleniumHelper.waitForEitherElement(driver, 20, By.id("i0118"), By.xpath("//*[@id=\"viewport\"]/article/section/div/div[1]/div[2]/div"));
+        WebElement element = SeleniumHelper.waitForOneOfThreeElements(driver, 20, By.id("i0116"), By.id("i0118"), By.xpath("//*[@id=\"viewport\"]/article/section/div/div[1]/div[2]/div"));
+        if (element.getAttribute("id").equals("i0116")) {
+            driver.findElement(By.id("idSIButton9")).click();
+        }
+        element = SeleniumHelper.waitForEitherElement(driver, 20, By.id("i0118"), By.xpath("//*[@id=\"viewport\"]/article/section/div/div[1]/div[2]/div"));
         if (element.getAttribute("id").equals("i0118")) {
             element.sendKeys(credentials.getPassword() + Keys.RETURN);
 
@@ -53,6 +58,7 @@ public abstract class AutomatedSession {
     }
 
     protected void endSession() {
+        System.out.println("\nClosing WebDriver session...");
         try {
             driver.quit();
         } catch (Exception ignore) {}

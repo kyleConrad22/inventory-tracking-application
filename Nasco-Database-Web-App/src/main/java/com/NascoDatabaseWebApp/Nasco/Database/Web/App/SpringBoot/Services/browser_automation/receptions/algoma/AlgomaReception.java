@@ -5,20 +5,20 @@ import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browse
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.Release;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.receptions.Reception;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.FileFormatException;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.Map.entry;
 
 public class AlgomaReception extends Reception implements PdfRelease {
 
@@ -35,36 +35,38 @@ public class AlgomaReception extends Reception implements PdfRelease {
         try {
             loginTc3(credentials);
             for (AlgomaRelease order : orders) {
-                createReception(order , getClerkInitials(credentials.getUsername()));
+                createReception(order, getClerkInitials(credentials.getUsername()));
             }
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
             endSession();
         }
     }
 
     private AlgomaRelease parseRelease(String release) {
+        System.out.println("\nParsing release...");
         List<AlgomaItem> algomaItems = new ArrayList<>();
         String railcar = getRailcar(release);
         String offloadDate = "";
         String bolNumber = getBolNumber(release);
         for (String page : getPages(release)) {
             String poNumber = getPoNumber(page);
+            String receiver = getReceiver(page);
+            String order = getOrder(poNumber, receiver);
 
             page = removeHeader(page);
 
-            String receiver = getReceiver(poNumber);
             List<String> types = getTypes(page);
             List<String> weights = getWeights(page);
             List<String> thicknesses = getThicknesses(page);
             List<String> itemNumbers = getItemNumbers(page);
             List<String> heats = getHeats(page);
             List<String> marks = getMarks(page);
-            List<String> diameters = getDiameters(page);
+            List<String> diameters = getWidths(page);
 
             Stream.of(types, weights, thicknesses, itemNumbers, heats, marks, diameters).forEach(it -> {
-                System.out.println(it.size());
-                System.out.println(it.toString());
+
                 if (types.size() != it.size()) {
                     throw new FileFormatException("Number of fields of returned items did not match!");
                 }
@@ -78,8 +80,9 @@ public class AlgomaReception extends Reception implements PdfRelease {
                     .receiver(receiver)
                     .mark(marks.get(i))
                     .poNumber(poNumber)
+                    .order(order)
                     .itemNumber(itemNumbers.get(i))
-                    .diameter(diameters.get(i))
+                    .width(diameters.get(i))
                     .heat(heats.get(i))
                         .build());
             }
@@ -151,7 +154,7 @@ public class AlgomaReception extends Reception implements PdfRelease {
     }
 
     private String getPoNumber(String page) {
-        Matcher m = Pattern.compile("^2\\d{6}$", Pattern.MULTILINE).matcher(page);
+        Matcher m = Pattern.compile("^2\\d{5,7}$", Pattern.MULTILINE).matcher(page);
         if (m.find()) {
             return m.group();
         }
@@ -174,16 +177,20 @@ public class AlgomaReception extends Reception implements PdfRelease {
         return "";
     }
 
-    private String getReceiver(String poNumber) {
-        Map<String, String> receiverMap = Map.of(
-                "2202011", "ESMARK STEEL GROUP-MIDWEST, LLC\nC/O CHICAGO STEEL AND IRON LLC\n700 CENTRAL AVENUE\nUNIVERSITY PARK, IL\nUSA 60454",
-                "2203648", "ESMARK STEEL GROUP-MIDWEST, LLC\nC/O NASCO\n9301 SOUTH KREITER AVE\nCHICAGO, IL\nUSA 60617"
-        );
+    private String getReceiver(String page) {
+        List<String> lines = page.lines().collect(Collectors.toList());
 
-        return receiverMap.get(poNumber);
+        StringBuilder result = new StringBuilder();
+
+        int i = lines.indexOf("SHIP TO") + 1;
+        while (!lines.get(i).contains("DATE/TIME")) {
+            result.append(lines.get(i++)).append("\n");
+        }
+
+        return result.toString();
     }
 
-    private List<String> getDiameters(String page) {
+    private List<String> getWidths(String page) {
         return collectMatches(
             Pattern.compile("(?<=[xX]\\s)\\d{2}\\.\\d{3}(?=\"\\s)", Pattern.MULTILINE),
             page
@@ -228,6 +235,29 @@ public class AlgomaReception extends Reception implements PdfRelease {
         return matches;
     }
 
+    private String getOrder(String poNumber, String receiver) {
+        if (receiver.contains("C/O NASCO")) {
+            return "Esmark Steel Group - Midwest - 17985";
+        }
+        Map<String, String> hm = Map.ofEntries(
+               entry( "2202902", "Wheatland Tube, LLC - 74629"),
+                entry("2201532", "Heidtman Butler IN - 46365"),
+                entry("2202010", "Esmark C/O Sun Steel - 14016"),
+                entry("2203488", "Viking Materials Inc. C/O Feralloy Midwest - 57504"),
+                entry("2202011", "Esmark C/O CSI University Park - 19843"),
+                entry("2203067", "Heidtman East Chicago, IN - 41941"),
+                entry("2203121", "Viking Materials Inc - Franklin Park - 56427"),
+                entry("2000369", "JDM Steel Chicago Heights, IL - 65714"),
+                entry("2203634", "Signode - 84261"),
+                entry("20043", "ASI C/O Voss Clark - 20043"),
+                entry("2203302", "Esmark C/O Ratner Steel - 12850"),
+                entry("20018", "ASI C/O Heidtman Granite City - 45209"),
+                entry("2203158", "Steel Warehouse - 93158"),
+                entry("2000762", "Olympic Steel - Gary - 38367")
+        );
+        return hm.get(poNumber);
+    }
+
     private void printOutput(String str) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("output.txt"))) {
             writer.write(str);
@@ -253,6 +283,7 @@ public class AlgomaReception extends Reception implements PdfRelease {
         createNewReception("Iroquois Landing", "Railcar", "Breakbulk");
         fillTransportationFields(release, clerkInitials);
         fillRemarks(getRemarks(release, clerkInitials));
+        setInventory("Algoma 2021");
         clickCreateButton();
         navigateToIncomingItems();
         createImportManifest(release);
@@ -261,7 +292,7 @@ public class AlgomaReception extends Reception implements PdfRelease {
 
     private String getClerkInitials(String username) {
         StringBuilder clerkInitials = new StringBuilder();
-        for (String name : username.split("\\.")) {
+        for (String name : username.substring(0,username.indexOf("@qsl.com")).split("\\.")) {
             clerkInitials.append(name.charAt(0));
         }
         return clerkInitials.toString().toUpperCase(Locale.ROOT);
@@ -302,18 +333,48 @@ public class AlgomaReception extends Reception implements PdfRelease {
         return remarks.toString();
     }
 
-    protected void createImportManifest(Release release) {
-
+    @Override
+    protected void addReleaseItems(Sheet sheet, Release release) {
+        System.out.printf("\nAdding items for release %s...\n", ((AlgomaRelease) release).getBolNumber());
+        for (AlgomaItem item : ((AlgomaRelease) release).getItems()) {
+            Row row = sheet.createRow(sheet.getLastRowNum() + 1);
+            row.createCell(0).setCellValue("Algoma 2021");
+            row.createCell(1).setCellValue(item.getOrder());
+            row.createCell(2).setCellValue("Steel Coils USA");
+            row.createCell(3).setCellValue(item.getType());
+            row.createCell(4).setCellValue("Loose");
+            row.createCell(5).setCellValue("1");
+            row.createCell(6).setCellValue("Can be containerized");
+            row.createCell(8).setCellValue("1");
+            row.createCell(9).setCellValue("Mark");
+            row.createCell(10).setCellValue(item.getMark());
+            row.createCell(11).setCellValue("HeatNumber");
+            row.createCell(12).setCellValue(item.getHeat());
+            row.createCell(13).setCellValue("Scope");
+            row.createCell(14).setCellValue(((AlgomaRelease) release).getBolNumber() + " / " + item.getPoNumber() + " / " + item.getItemNumber());
+            row.createCell(15).setCellValue("Other");
+            row.createCell(16).setCellValue(((AlgomaRelease) release).getOffloadDate());
+            row.createCell(17).setCellValue("Thickness");
+            row.createCell(18).setCellValue(item.getThickness());
+            row.createCell(19).setCellValue("in");
+            row.createCell(20).setCellValue("Width");
+            row.createCell(21).setCellValue(item.getWidth());
+            row.createCell(22).setCellValue("in");
+            row.createCell(31).setCellValue(item.getWeight());
+            row.createCell(32).setCellValue("lb");
+            row.createCell(33).setCellValue("Rail Building");
+        }
     }
 
     protected void fillRemarks(String remarks) {
+        System.out.println("\nFilling special instructions...");
         driver.findElement(By.id("specialInstructions")).sendKeys(remarks);
     }
 
     protected void fillTransportationFields(Release release, String clerkInitials) {
-        String react = "react-select-%d-input";
+        System.out.println("\nFilling transportation fields...");
 
-        driver.findElement(By.id(String.format(react, 9))).sendKeys("CN" + Keys.RETURN);
+        driver.findElement(By.id("react-select-5-input")).sendKeys("CN" + Keys.RETURN);
         driver.findElement(By.id("driverName")).sendKeys(clerkInitials);
         driver.findElement(By.id("carrierBill")).sendKeys("Add In");
         driver.findElement(By.id("transportationNumber")).sendKeys(((AlgomaRelease) release).getRailcar());
