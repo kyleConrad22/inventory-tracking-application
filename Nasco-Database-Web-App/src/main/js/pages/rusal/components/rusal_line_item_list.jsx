@@ -22,6 +22,8 @@ export default function RusalLineItemList(props) {
                     <th>Dimensions</th>
                     <th>Piece Count</th>
                     <th>BL Number</th>
+                    <th>Order</th>
+                    <th>Load</th>
                 </tr>
                 {rusalLineItems}
             </tbody>
