@@ -123,5 +123,9 @@ public abstract class Reception extends AutomatedSession {
 
         webDriverWait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"viewport\"]/article/section/section[3]/div[2]/div[1]")));
         driver.findElement(By.cssSelector("input[type='file']")).sendKeys(System.getProperty("user.dir") + "/import-manifest.xlsx");
+        System.out.println("\nWaiting for success...");
+        webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".Toastify__toast--success")));
+        System.out.println("\nImport successful");
+
     }
 }

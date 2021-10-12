@@ -51,6 +51,8 @@ public class AlgomaReception extends Reception implements PdfRelease {
         String offloadDate = "";
         String bolNumber = getBolNumber(release);
         for (String page : getPages(release)) {
+            System.out.println(page);
+
             String poNumber = getPoNumber(page);
             String receiver = getReceiver(page);
             String order = getOrder(poNumber, receiver);
@@ -115,24 +117,31 @@ public class AlgomaReception extends Reception implements PdfRelease {
         for (String line : lines) {
             Matcher m = Pattern.compile("PAGE\\s\\d\\s/\\s\\d").matcher(line);
             if (m.find()) {
+                System.out.println(m.group());
                if (m.group().charAt(m.group().length()-1) == '1') {
                    return Collections.singletonList(release);
                } else {
+                   System.out.println(lines.indexOf(line));
                    pageIndexes.add(lines.indexOf(line));
                }
             }
         }
         if (!pageIndexes.isEmpty()) {
+            pageIndexes.add(lines.size()-1);
+
             List<String> pages = new ArrayList<>();
 
-            for (int i : pageIndexes.subList(0, pageIndexes.size()-2)) {
+            for (int i = 0; i < pageIndexes.size()-1; i++) {
+
                 StringBuilder page = new StringBuilder();
 
-                for (int j = i; j < pageIndexes.get(i + 1); j++) {
-                    page.append(lines.get(i)).append("\n");
+                for (int j = pageIndexes.get(i); j < pageIndexes.get(i+1); j++) {
+
+                    page.append(lines.get(j)).append("\n");
                 }
                 pages.add(page.toString());
             }
+            System.out.println(pages.size());
             return pages;
         }
 
@@ -241,7 +250,7 @@ public class AlgomaReception extends Reception implements PdfRelease {
         }
         Map<String, String> hm = Map.ofEntries(
                entry( "2202902", "Wheatland Tube, LLC - 74629"),
-                entry("2201532", "Heidtman Butler IN - 46365"),
+                entry("2201532", "Heidtman Butler IN - 48365"),
                 entry("2202010", "Esmark C/O Sun Steel - 14016"),
                 entry("2203488", "Viking Materials Inc. C/O Feralloy Midwest - 57504"),
                 entry("2202011", "Esmark C/O CSI University Park - 19843"),
