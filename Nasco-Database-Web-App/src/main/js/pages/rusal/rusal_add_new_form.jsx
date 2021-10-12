@@ -1,6 +1,7 @@
 import React from "react";
 
 const RusalAddNewForm = ({ handleSubmit }) => {
+    
     return (
         <div>
             <h3>Add New Rusal Item</h3>

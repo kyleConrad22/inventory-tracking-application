@@ -4,7 +4,7 @@ export default function AlgomaForm( ) {
 
     function handleSubmit(evt) {
 
-        evt.preventDefault();    
+        evt.preventDefault()    
         fetch('/api/browser/reception/algoma', {
             method: 'POST',
             body: new FormData(evt.target)

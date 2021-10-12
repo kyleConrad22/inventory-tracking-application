@@ -1,7 +1,6 @@
 import React from "react";
 
 export default function RusalLineItem(props) {
-    
     return (
         <tr className='bordered-row'>
             <td>{props.rusalLineItem.heatNum}</td>
@@ -11,8 +10,6 @@ export default function RusalLineItem(props) {
             <td>{props.rusalLineItem.dimension}</td>
             <td>{props.rusalLineItem.quantity}</td>
             <td>{props.rusalLineItem.blNum}</td>
-            <td>{props.rusalLineItem.order}</td>
-            <td>{props.rusalLineItem.loadNum}</td>
         </tr>
-    );
+    )
 }
