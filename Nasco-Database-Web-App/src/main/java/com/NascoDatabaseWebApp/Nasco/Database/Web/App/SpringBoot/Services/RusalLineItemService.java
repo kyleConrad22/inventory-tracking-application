@@ -10,7 +10,7 @@ import java.io.ByteArrayInputStream;
 import java.util.List;
 
 @Service
-public class RusalLineItemService implements RusalService{
+public class RusalLineItemService implements RusalService {
 
     @Autowired
     RusalLineItemRepository repository;

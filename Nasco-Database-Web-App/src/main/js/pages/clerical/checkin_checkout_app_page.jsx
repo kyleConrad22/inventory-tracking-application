@@ -16,13 +16,13 @@ export default function CheckinCheckoutPage() {
             <h2>Functions</h2>
             <ul>
                 <li>
-                    <Link to={ `${url}/customer_settings` }>Modify Customer Process</Link>
+                    <Link to={ `${url}/settings` }>Modify Customer Process</Link>
                 </li>
                 <li>
                     <Link to={ `${url}/run` }>Run Check-In / Check-out App</Link>
                 </li>
                 <li>
-                    <Link to={ `${url}/new_customer` }>Add Customer Process</Link>
+                    <Link to={ `${url}/new` }>Add Customer Process</Link>
                 </li>
             </ul>
 
@@ -30,13 +30,13 @@ export default function CheckinCheckoutPage() {
                 <Route exact path={ path }>
                     <h3>Please Select a Function.</h3>
                 </Route>
-                <Route path={ `${path}/customer_settings` }>
+                <Route path={ `${path}/settings` }>
                     <CustomerSettings />
                 </Route>
                 <Route path={ `${path}/run` }>
                     <RunTruckSupport />
                 </Route>
-                <Route path={ `${path}/new_customer` }>
+                <Route path={ `${path}/new` }>
                     <NewCustomer />
                 </Route>
             </Switch>
