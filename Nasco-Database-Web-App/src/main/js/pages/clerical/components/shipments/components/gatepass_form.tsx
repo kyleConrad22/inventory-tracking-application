@@ -39,6 +39,8 @@ export default function GatepassForm() {
             &nbsp;&nbsp;&nbsp;
             <input id='dor' name='dor' type='text' placeholder="Enter Pickup Number:" />
             &nbsp;&nbsp;&nbsp;
+            <input id='file' name='file' type='file' />
+            &nbsp;&nbsp;&nbsp;
             <button id='submit' type='submit'>Run TC3 Automation</button>
         </form>
     )
