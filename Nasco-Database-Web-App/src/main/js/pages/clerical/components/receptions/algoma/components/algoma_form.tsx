@@ -10,11 +10,12 @@ export default function AlgomaForm( ) {
             body: new FormData(evt.target)
         }).then(
             (response) => {
-            if(!response.ok) {
-                alert('Something went wrong!')
+            if(response.ok) {
+                alert('Successfully created reception!')
+            } else {
+                alert('Reception could not be completed!')
             }
-        }
-        ).catch(
+        }).catch(
             (error) => {
                 alert(error)
             }

@@ -1,10 +1,9 @@
 import React from "react";
 import { Switch, Route, Link, useRouteMatch } from "react-router-dom";
 
-import ToBeImplemented from "../../core/to_be_implemented";
-import CustomerSettings from "./customer_settings";
-import RunTruckSupport from "./run_truck_support";
-import NewCustomer from "./new_customer";
+import CustomerSettings from "./components/customer_settings";
+import NewCustomer from "./components/new_customer";
+import BrowserAutomation from "./components/browser_automation";
 
 export default function CheckinCheckoutPage() {
     let { path, url } = useRouteMatch();
@@ -12,15 +11,13 @@ export default function CheckinCheckoutPage() {
     return (
         <div>
             <h1>Truck Support Appliction (Check-In / Check-Out)</h1>
-            <ToBeImplemented />
-            <ToBeImplemented />
             <h2>Functions</h2>
             <ul>
                 <li>
                     <Link to={ `${url}/settings` }>Modify Customer Process</Link>
                 </li>
                 <li>
-                    <Link to={ `${url}/run` }>Run Check-In / Check-out App</Link>
+                    <Link to={ `${url}/run` }>Browser Automation</Link>
                 </li>
                 <li>
                     <Link to={ `${url}/new` }>Add Customer Process</Link>
@@ -35,7 +32,7 @@ export default function CheckinCheckoutPage() {
                     <CustomerSettings />
                 </Route>
                 <Route path={ `${path}/run` }>
-                    <RunTruckSupport />
+                    <BrowserAutomation />
                 </Route>
                 <Route path={ `${path}/new` }>
                     <NewCustomer />

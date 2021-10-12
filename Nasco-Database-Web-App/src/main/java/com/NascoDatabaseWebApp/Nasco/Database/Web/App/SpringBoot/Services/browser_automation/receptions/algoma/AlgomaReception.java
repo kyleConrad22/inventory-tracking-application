@@ -27,9 +27,10 @@ public class AlgomaReception extends Reception implements PdfRelease {
         for (MultipartFile file : files) {
             String convertedFile = convertToText(readFile(file));
 
+            printOutput(convertedFile);
+
             orders.add(parseRelease(convertedFile));
 
-            printOutput(convertedFile + orders.get(0));
 
         }
         try {
