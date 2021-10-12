@@ -18,12 +18,7 @@ export default function RusalLineItemList(props) {
                     <th>Heat Number</th>
                     <th>Gross Weight Kg</th>
                     <th>Net Weight Kg</th>
-                    <th>Grade</th>
-                    <th>Dimensions</th>
-                    <th>Piece Count</th>
                     <th>BL Number</th>
-                    <th>Order</th>
-                    <th>Load</th>
                 </tr>
                 {rusalLineItems}
             </tbody>
