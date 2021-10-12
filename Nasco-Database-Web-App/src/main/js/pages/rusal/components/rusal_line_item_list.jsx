@@ -1,4 +1,5 @@
-import React, { Component } from "react";
+/* eslint-disable react/prop-types */
+import React from "react";
 import RusalLineItem from "./rusal_line_item";
 
 export default function RusalLineItemList(props) {
@@ -12,13 +13,18 @@ export default function RusalLineItemList(props) {
     );
 
     return (
-        <table className="padded-table">
+        <table>
             <tbody>
                 <tr className='bordered-row'>
                     <th>Heat Number</th>
                     <th>Gross Weight Kg</th>
                     <th>Net Weight Kg</th>
+                    <th>Grade</th>
+                    <th>Dimensions</th>
+                    <th>Piece Count</th>
                     <th>BL Number</th>
+                    <th>Work Order</th>
+                    <th>Load</th>
                 </tr>
                 {rusalLineItems}
             </tbody>

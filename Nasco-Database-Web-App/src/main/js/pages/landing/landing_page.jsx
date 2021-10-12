@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 export default function LandingPage() {
 
@@ -47,7 +47,7 @@ export default function LandingPage() {
 
     console.log("Made it to Landing Page!")
     return (
-        <div className='centered'>
+        <div>
             <h2>Landing Page</h2>
             <h3>Navigation Buttons</h3>
             <RusalButton />

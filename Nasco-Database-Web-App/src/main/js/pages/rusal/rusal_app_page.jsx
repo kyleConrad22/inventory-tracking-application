@@ -53,17 +53,6 @@ export default function RusalPage() {
 
     return (
         <div id = "rusal-all">
-            <ul>
-                <li>
-                    <Link to={`${url}/add`}>Add Inventory Items</Link>
-                </li>
-                <li>
-                    <Link to={`${url}/update`}>Update Inventory Item</Link>
-                </li>
-                <li>
-                    <Link to={`${url}/downloads`}>Download Options</Link>
-                </li>
-            </ul>
             <Switch>
                 <Route exact path={path}>
                     <h3>Please Choose a Function</h3>
@@ -79,6 +68,17 @@ export default function RusalPage() {
                     <RusalDownloads />
                 </Route>
             </Switch>
+            <ul>
+                <li>
+                    <Link to={`${url}/add`}>Add Inventory Items</Link>
+                </li>
+                <li>
+                    <Link to={`${url}/update`}>Update Inventory Item</Link>
+                </li>
+                <li>
+                    <Link to={`${url}/downloads`}>Download Options</Link>
+                </li>
+            </ul>
             <h1>Rusal Inventory Items</h1>
             <RusalLineItemList rusalLineItems={ rusalLineItems } />
         </div>
