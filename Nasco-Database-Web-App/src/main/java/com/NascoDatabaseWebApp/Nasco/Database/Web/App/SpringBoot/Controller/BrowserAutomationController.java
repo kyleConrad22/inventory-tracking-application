@@ -3,6 +3,7 @@ package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Controller;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.BrowserAutomationService;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.LoginCredentials;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.shipments.util.Gatepass;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.LoginCredentialsType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -24,7 +25,7 @@ public class BrowserAutomationController {
     @PostMapping("/reception/algoma")
     @ResponseStatus(HttpStatus.CREATED)
     void algomaReception(@RequestParam("files") MultipartFile[] files, @RequestParam("username") String username, @RequestParam("password") String password) {
-        LoginCredentials credentials = new LoginCredentials(username, password);
+        LoginCredentials credentials = new LoginCredentials(username, password, LoginCredentialsType.TC3);
         browserAutomationService.createAlgomaReception(files, credentials);
     }
 
@@ -43,8 +44,8 @@ public class BrowserAutomationController {
             @RequestParam("passwordTM") String passwordTM
     ) {
         Gatepass gatepass = new Gatepass(file, timeIn, driverName, license.toUpperCase(Locale.ROOT), truckingCompany.toUpperCase(Locale.ROOT), gatepassNumber, dor.toUpperCase(Locale.ROOT));
-        LoginCredentials tc3Credentials = new LoginCredentials(username + "@qsl.com", passwordTC3);
-        LoginCredentials tmCredentials = new LoginCredentials(username, passwordTM);
+        LoginCredentials tc3Credentials = new LoginCredentials(username, passwordTC3, LoginCredentialsType.TC3);
+        LoginCredentials tmCredentials = new LoginCredentials(username, passwordTM, LoginCredentialsType.TM);
         browserAutomationService.createShipment(gatepass, tc3Credentials, tmCredentials);
     }
 }
