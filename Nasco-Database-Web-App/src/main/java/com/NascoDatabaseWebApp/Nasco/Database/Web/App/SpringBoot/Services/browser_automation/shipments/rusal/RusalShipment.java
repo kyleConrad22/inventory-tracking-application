@@ -1,6 +1,7 @@
 package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.shipments.rusal;
 
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.Release;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.PdfRelease;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.Release;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.shipments.ShipmentWithRelease;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,7 +22,7 @@ public class RusalShipment extends ShipmentWithRelease {
     }
 
     @Override
-    public Release parseRelease(MultipartFile file) {
+    protected Release parseRelease(String release) {
         return null;
     }
 
@@ -47,6 +48,6 @@ public class RusalShipment extends ShipmentWithRelease {
 
     @Override
     protected void saveShipment() {
-        
+
     }
 }

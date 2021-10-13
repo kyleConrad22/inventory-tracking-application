@@ -1,8 +1,8 @@
 package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.receptions.algoma;
 
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.LoginCredentials;
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.PdfRelease;
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.Release;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.LoginCredentials;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.PdfRelease;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.Release;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.receptions.Reception;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.FileFormatException;
 import org.apache.poi.ss.usermodel.Row;
@@ -69,7 +69,7 @@ public class AlgomaReception extends Reception implements PdfRelease {
             List<String> marks = getMarks(page);
             List<String> diameters = getWidths(page);
 
-            Stream.of(types, weights, thicknesses, itemNumbers, heats, marks, diameters).forEach(it -> {
+            Stream.of(weights, thicknesses, itemNumbers, heats, marks, diameters).forEach(it -> {
 
                 if (types.size() != it.size()) {
                     throw new FileFormatException("Number of fields of returned items did not match!");

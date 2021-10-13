@@ -7,4 +7,5 @@ public class BoscusItem {
     private String pieceCount;
     private String quantity;
     private String size;
+
 }
