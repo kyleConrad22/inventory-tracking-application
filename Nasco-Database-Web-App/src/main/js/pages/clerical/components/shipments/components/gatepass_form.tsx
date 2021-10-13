@@ -27,6 +27,12 @@ export default function GatepassForm() {
 
     return (
         <form onSubmit={handleSubmit}>
+            <input id='username-shipment' name='username' type='text' placeholder='Enter Username:' />
+            &nbsp;&nbsp;&nbsp;
+            <input id='password-tc3' name='passwordTC3' type='text' placeholder='Enter TC3 Password:' />
+            &nbsp;&nbsp;&nbsp;
+            <input id='password-tm' name='passwordTM' type='text' placeholder='Enter TM Password:' />
+            &nbsp;&nbsp;&nbsp;
             <input id='time-in' name='timeIn' type='text' placeholder='Enter Time In:'/>
             &nbsp;&nbsp;&nbsp;
             <input id='driver-name' name='driverName' type='text' placeholder='Enter Driver Name:' />
