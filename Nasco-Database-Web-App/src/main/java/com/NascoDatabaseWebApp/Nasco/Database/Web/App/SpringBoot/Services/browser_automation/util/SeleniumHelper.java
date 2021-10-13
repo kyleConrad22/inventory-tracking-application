@@ -5,6 +5,7 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.util.Locale;
 import java.util.concurrent.*;
 
 public final class SeleniumHelper {
@@ -108,5 +109,13 @@ public final class SeleniumHelper {
     public static void executeClickOnBlockedElement(WebDriver driver, WebElement element) {
         JavascriptExecutor ex = (JavascriptExecutor) driver;
         ex.executeScript("arguments[0].click()", element);
+    }
+
+    public static String getClerkInitials(String username) {
+        StringBuilder clerkInitials = new StringBuilder();
+        for (String name : username.substring(0,username.indexOf("@qsl.com")).split("\\.")) {
+            clerkInitials.append(name.charAt(0));
+        }
+        return clerkInitials.toString().toUpperCase(Locale.ROOT);
     }
 }

@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Map.entry;
+import static com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.SeleniumHelper.getClerkInitials;
 
 public class AlgomaReception extends Reception implements PdfRelease {
 
@@ -298,14 +299,6 @@ public class AlgomaReception extends Reception implements PdfRelease {
         navigateToIncomingItems();
         createImportManifest(release);
         importManifest();
-    }
-
-    private String getClerkInitials(String username) {
-        StringBuilder clerkInitials = new StringBuilder();
-        for (String name : username.substring(0,username.indexOf("@qsl.com")).split("\\.")) {
-            clerkInitials.append(name.charAt(0));
-        }
-        return clerkInitials.toString().toUpperCase(Locale.ROOT);
     }
 
     private String getRemarks(Release release, String clerkInitials) {
