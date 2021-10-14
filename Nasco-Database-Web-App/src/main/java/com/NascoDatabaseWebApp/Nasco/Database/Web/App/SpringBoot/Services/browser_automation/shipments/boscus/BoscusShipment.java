@@ -17,11 +17,6 @@ import static com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services
 public class BoscusShipment extends ShipmentWithRelease {
 
     @Override
-    protected void fillRemarks(String remarks) {
-
-    }
-
-    @Override
     protected String getRemarks(Release release, String clerkInitials) {
         return String.format(
                 "%s\nPO#: %s\nSKU#: %s\nWeights are estimates only and as such are subject to review and revision as necessary.\n%s",
@@ -135,19 +130,8 @@ public class BoscusShipment extends ShipmentWithRelease {
         return sku.substring(0, sku.deleteCharAt(sku.length()).lastIndexOf(" "));
     }
 
-    protected void setReceiver(Release release) {
-
-    }
-
-    protected void setReceiverAddress(Release release) {
-
-    }
-
+    @Override
     protected void addItemsToShipment(Release release) {
-
-    }
-
-    protected void setInventory() {
 
     }
 

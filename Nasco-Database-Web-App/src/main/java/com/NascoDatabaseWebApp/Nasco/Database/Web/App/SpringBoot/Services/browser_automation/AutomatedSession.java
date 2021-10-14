@@ -31,7 +31,11 @@ public abstract class AutomatedSession {
         throw new RuntimeException("Could not find document number!");
     }
 
-    protected abstract void fillRemarks(String remarks);
+    protected void fillRemarks(String remarks) {
+        System.out.println("\nAttempting to fill remarks...");
+        driver.findElement(By.id("specialInstructions")).sendKeys(remarks);
+
+    }
 
     protected void createNewAction(String site, String transportationType, String cargoType) {
         System.out.println("\nCreating a new reception...");

@@ -11,15 +11,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class RusalShipment extends ShipmentWithRelease {
-    @Override
-    protected void fillRemarks(String remarks) {
-
-    }
-
-    @Override
-    protected void fillTransportationFields(Release release, String clerkInitials) {
-
-    }
 
     @Override
     protected String getRemarks(Release release, String clerkInitials) {
@@ -140,22 +131,7 @@ public class RusalShipment extends ShipmentWithRelease {
     }
 
     @Override
-    protected void setReceiver(Release release) {
-
-    }
-
-    @Override
-    protected void setReceiverAddress(Release release) {
-
-    }
-
-    @Override
     protected void addItemsToShipment(Release release) {
-
-    }
-
-    @Override
-    protected void setInventory() {
 
     }
 

@@ -356,9 +356,4 @@ public class AlgomaReception extends Reception implements PdfRelease {
         }
     }
 
-    protected void fillRemarks(String remarks) {
-        System.out.println("\nFilling special instructions...");
-        driver.findElement(By.id("specialInstructions")).sendKeys(remarks);
-    }
-
 }

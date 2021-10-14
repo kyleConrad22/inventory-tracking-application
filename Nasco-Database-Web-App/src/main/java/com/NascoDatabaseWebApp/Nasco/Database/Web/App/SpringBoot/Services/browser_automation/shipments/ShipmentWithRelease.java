@@ -1,5 +1,6 @@
 package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.shipments;
 
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.shipments.boscus.BoscusRelease;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.LoginCredentials;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.PdfRelease;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.Release;
@@ -29,24 +30,14 @@ public abstract class ShipmentWithRelease extends Shipment implements PdfRelease
                 .build()
         );
         fillRemarks(getRemarks(release, clerkInitials));
-        setInventory();
-        setReceiver(release);
-        setReceiverAddress(release);
+        setReceiver(((BoscusRelease) release).getReceiver());
+        setReceiverAddress(((BoscusRelease) release).getReceiverAddress());
         clickCreateButton();
         navigateToLoadingRequestOrShippedItems();
         addItemsToShipment(release);
         saveShipment();
     }
 
-    protected abstract String getRemarks(Release release, String clerkInitials);
-
     protected abstract Release parseRelease(String release);
-
-    protected abstract void setReceiver(Release release);
-
-    protected abstract void setReceiverAddress(Release release);
-
-    protected abstract void addItemsToShipment(Release release);
-
 
 }
