@@ -1,9 +1,7 @@
 package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.shipments.rusal;
 
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.PdfRelease;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.Release;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.shipments.ShipmentWithRelease;
-import org.springframework.web.multipart.MultipartFile;
 
 public class RusalShipment extends ShipmentWithRelease {
     @Override
@@ -18,7 +16,10 @@ public class RusalShipment extends ShipmentWithRelease {
 
     @Override
     protected String getRemarks(Release release, String clerkInitials) {
-        return null;
+        return String.format(
+                "%s\nPO #: %s\nMaterial must be free of dirt and debris.\nWood runners must be sturdy.\n%s",
+                release.getOrder(), ((RusalRelease) release).getPo(), clerkInitials
+        );
     }
 
     @Override

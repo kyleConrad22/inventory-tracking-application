@@ -1,10 +1,8 @@
 package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.shipments.boscus;
 
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.FileFormatException;
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.PdfRelease;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.Release;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.shipments.ShipmentWithRelease;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +46,7 @@ public class BoscusShipment extends ShipmentWithRelease {
 
         Stream.of(pieceCounts, quantities).forEach(it -> {
             if (sizes.size() != it.size()) {
-                throw new FileFormatException("umber of fields of returned items did not match!");
+                throw new FileFormatException("Number of fields of returned items did not match!");
             }
         });
         List<BoscusItem> items = new ArrayList<>();
