@@ -10,6 +10,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -102,6 +103,14 @@ public abstract class AutomatedSession {
         driver.findElement(By.id("carrierBill")).sendKeys(transportationFields.getCarrierBill());
         driver.findElement(By.id("transportationNumber")).sendKeys(transportationFields.getTransportationNumber());
 
+    }
+
+    protected static String getClerkInitials(String username) {
+        StringBuilder clerkInitials = new StringBuilder();
+        for (String name : username.substring(0,username.indexOf("@qsl.com")).split("\\.")) {
+            clerkInitials.append(name.charAt(0));
+        }
+        return clerkInitials.toString().toUpperCase(Locale.ROOT);
     }
 
     protected void loginTc3(LoginCredentials credentials) throws TimeoutException {

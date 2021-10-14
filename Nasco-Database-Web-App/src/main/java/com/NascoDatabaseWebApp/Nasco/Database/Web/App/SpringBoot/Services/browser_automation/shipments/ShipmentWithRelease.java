@@ -8,8 +8,6 @@ import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browse
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.enums.TransportationType;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
-import static com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.SeleniumHelper.getClerkInitials;
-
 public abstract class ShipmentWithRelease extends Shipment implements PdfRelease {
 
     public void createShipment(Gatepass gatepass, LoginCredentials tc3Credentials, LoginCredentials tmCredentials) {

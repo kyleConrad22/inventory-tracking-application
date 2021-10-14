@@ -7,4 +7,5 @@ public class RusalItem {
     private String bl;
     private String pieceCount;
     private String quantity;
+
 }

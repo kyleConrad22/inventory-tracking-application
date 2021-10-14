@@ -18,7 +18,6 @@ import java.util.stream.Stream;
 import static com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.RegexHelper.collectMatches;
 import static com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.StringHelper.printOutput;
 import static java.util.Map.entry;
-import static com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.SeleniumHelper.getClerkInitials;
 
 public class AlgomaReception extends Reception implements PdfRelease {
 

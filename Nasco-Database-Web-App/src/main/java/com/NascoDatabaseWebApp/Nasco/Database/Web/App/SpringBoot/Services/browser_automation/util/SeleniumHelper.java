@@ -111,11 +111,4 @@ public final class SeleniumHelper {
         ex.executeScript("arguments[0].click()", element);
     }
 
-    public static String getClerkInitials(String username) {
-        StringBuilder clerkInitials = new StringBuilder();
-        for (String name : username.substring(0,username.indexOf("@qsl.com")).split("\\.")) {
-            clerkInitials.append(name.charAt(0));
-        }
-        return clerkInitials.toString().toUpperCase(Locale.ROOT);
-    }
 }
