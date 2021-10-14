@@ -27,6 +27,34 @@ public class RusalShipment extends ShipmentWithRelease {
         return null;
     }
 
+    private static String getBl(Release release) {
+        return null;
+    }
+
+    private static String getCommodity(Release release) {
+        return null;
+    }
+
+    private static String getQuantity(Release release) {
+        return null;
+    }
+
+    private static String getPo(Release release) {
+        return null;
+    }
+
+    private static String getPieceCount(Release release) {
+        return null;
+    }
+
+    private static String getReceiver() {
+        return null;
+    }
+
+    private static String getReceiverAddress() {
+        return null;
+    }
+
     @Override
     protected void setReceiver(Release release) {
 
