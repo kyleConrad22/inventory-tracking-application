@@ -9,7 +9,7 @@ import java.util.List;
 public class RusalRelease extends Release {
     private List<RusalItem> items;
     private String po;
-    private RusalProduct type;
+    private RusalCommodity commodity;
     private String receiver;
     private String receiverAddress;
 }
