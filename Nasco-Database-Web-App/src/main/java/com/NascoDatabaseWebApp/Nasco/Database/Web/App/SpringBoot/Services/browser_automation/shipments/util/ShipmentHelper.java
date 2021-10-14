@@ -10,7 +10,7 @@ public final class ShipmentHelper {
         String dor = gatepass.getDor();
         if (dor.charAt(0) == 'S') {
             return new BoscusShipment();
-        } else if (dor.substring(0,3).equals("RAC")) {
+        } else if (dor.startsWith("RAC")) {
             return new RusalShipment();
         } else {
             throw new RuntimeException("Unknown customer!");
