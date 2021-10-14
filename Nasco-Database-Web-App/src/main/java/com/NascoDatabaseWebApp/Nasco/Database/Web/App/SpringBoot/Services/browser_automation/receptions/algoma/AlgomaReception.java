@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.RegexHelper.collectMatches;
+import static com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.StringHelper.printOutput;
 import static java.util.Map.entry;
 import static com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.SeleniumHelper.getClerkInitials;
 
@@ -268,16 +269,6 @@ public class AlgomaReception extends Reception implements PdfRelease {
                 entry("2000762", "Olympic Steel - Gary - 38367")
         );
         return hm.get(poNumber);
-    }
-
-    private void printOutput(String str) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("output.txt"))) {
-            writer.write(str);
-            writer.close();
-
-        } catch (IOException e) {
-            throw new RuntimeException("An exception occurred while attempting to write to file: " + e.getMessage());
-        }
     }
 
     protected void createReception(Release release, String clerkInitials) {
