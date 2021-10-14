@@ -1,0 +1,6 @@
+package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.enums;
+
+public enum LoginCredentialsType {
+    TC3,
+    TM
+}

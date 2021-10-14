@@ -1,11 +1,11 @@
 package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.shipments;
 
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.shipments.boscus.BoscusRelease;
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.LoginCredentials;
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.PdfRelease;
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.Release;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.*;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.shipments.util.Gatepass;
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.TransportationFields;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.enums.CargoType;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.enums.Site;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.enums.TransportationType;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import static com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.SeleniumHelper.getClerkInitials;
@@ -20,7 +20,7 @@ public abstract class ShipmentWithRelease extends Shipment implements PdfRelease
         loginTc3(tc3Credentials);
         loginTm(tmCredentials);
         submitToTm(gatepass);
-        createNewShipment();
+        createNewAction(Site.IROQUOIS_LANDING, TransportationType.TRUCK, CargoType.BREAK_BULK);
         fillTransportationFields(
             TransportationFields.builder()
                 .carrier(gatepass.getTruckingCompany())
@@ -30,6 +30,7 @@ public abstract class ShipmentWithRelease extends Shipment implements PdfRelease
                 .build()
         );
         fillRemarks(getRemarks(release, clerkInitials));
+        clickAddDestination();
         setReceiver(((BoscusRelease) release).getReceiver());
         setReceiverAddress(((BoscusRelease) release).getReceiverAddress());
         clickCreateButton();

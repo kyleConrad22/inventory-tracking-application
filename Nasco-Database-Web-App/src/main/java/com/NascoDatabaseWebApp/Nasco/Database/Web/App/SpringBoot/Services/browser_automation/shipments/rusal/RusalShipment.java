@@ -21,6 +21,11 @@ public class RusalShipment extends ShipmentWithRelease {
     }
 
     @Override
+    protected void navigateToLoadingRequestOrShippedItems() {
+
+    }
+
+    @Override
     protected Release parseRelease(String release) {
         RusalCommodity commodity = getCommodity(release);
         List<RusalItem> items = getItems(release, commodity);
@@ -130,13 +135,10 @@ public class RusalShipment extends ShipmentWithRelease {
         }
     }
 
+    /* TODO */
     @Override
     protected void addItemsToShipment(Release release) {
 
     }
 
-    @Override
-    protected void saveShipment() {
-
-    }
 }

@@ -1,7 +1,6 @@
 package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.shipments.boscus;
 
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.FileFormatException;
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.PdfRelease;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.Release;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.shipments.ShipmentWithRelease;
 
@@ -22,6 +21,12 @@ public class BoscusShipment extends ShipmentWithRelease {
                 "%s\nPO#: %s\nSKU#: %s\nWeights are estimates only and as such are subject to review and revision as necessary.\n%s",
                 release.getOrder(), ((BoscusRelease) release).getPo(), ((BoscusRelease) release).getSku(), clerkInitials
                 );
+    }
+
+    /* TODO */
+    @Override
+    protected void navigateToLoadingRequestOrShippedItems() {
+
     }
 
     public Release parseRelease(String release) {
@@ -130,12 +135,10 @@ public class BoscusShipment extends ShipmentWithRelease {
         return sku.substring(0, sku.deleteCharAt(sku.length()).lastIndexOf(" "));
     }
 
+    /* TODO */
     @Override
     protected void addItemsToShipment(Release release) {
 
     }
 
-    protected void saveShipment() {
-
-    }
 }

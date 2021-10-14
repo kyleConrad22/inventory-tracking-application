@@ -1,8 +1,9 @@
 package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation;
 
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.TransportationFields;
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.LoginCredentials;
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.SeleniumHelper;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.*;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.enums.CargoType;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.enums.Site;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.enums.TransportationType;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -37,43 +38,43 @@ public abstract class AutomatedSession {
 
     }
 
-    protected void createNewAction(String site, String transportationType, String cargoType) {
+    protected void createNewAction(Site site, TransportationType transportationType, CargoType cargoType) {
         System.out.println("\nCreating a new reception...");
         WebDriverWait webDriverWait = new WebDriverWait(driver, 20);
         driver.get("http://tos.qsl.com/client-inventories/receptions-of-materials");
 
         clickNewActionButton();
 
-        webDriverWait.until(ExpectedConditions.elementToBeClickable(By.id("react-select-9-input"))).sendKeys(site + Keys.RETURN);
+        webDriverWait.until(ExpectedConditions.elementToBeClickable(By.id("react-select-9-input"))).sendKeys(site.toString() + Keys.RETURN);
         String radio = "radio_transportationType_";
         switch (transportationType) {
-            case "Vessel":
+            case VESSEL:
                 driver.findElement(By.cssSelector("label[for='" + radio + 0 + "']")).click();
                 break;
 
-            case "Truck":
+            case TRUCK:
                 driver.findElement(By.cssSelector("label[for='" + radio + 1 + "']")).click();
                 break;
 
-            case "Railcar":
+            case RAILCAR:
                 driver.findElement(By.cssSelector("label[for='" + radio + 2 + "']")).click();
                 break;
 
-            case "Barge":
+            case BARGE:
                 driver.findElement(By.cssSelector("label[for='" + radio + 3 + "']")).click();
                 break;
 
-            case "Other":
+            case OTHER:
                 driver.findElement(By.cssSelector("label[for='" + radio + 4 + "']")).click();
                 break;
 
-            case "From Container":
+            case FROM_CONTAINER:
                 driver.findElement(By.cssSelector("label[for='" + radio + 5 + "']")).click();
                 break;
         }
 
         radio = "radio_cargoType_";
-        if (cargoType.equals("Bulk")) {
+        if (cargoType.equals(CargoType.BULK)) {
             driver.findElement(By.cssSelector("label[for='" + radio + 0 + "']")).click();
         } else {
             driver.findElement(By.cssSelector("label[for='" + radio + 1 + "']")).click();

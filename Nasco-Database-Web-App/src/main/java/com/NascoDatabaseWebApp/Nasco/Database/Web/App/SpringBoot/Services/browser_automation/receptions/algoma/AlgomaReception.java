@@ -2,16 +2,13 @@ package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.brows
 
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.*;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.receptions.Reception;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.enums.CargoType;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.enums.Site;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.enums.TransportationType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
-import java.security.Key;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -271,7 +268,7 @@ public class AlgomaReception extends Reception implements PdfRelease {
     }
 
     protected void createReception(Release release, String clerkInitials) {
-        createNewAction("Iroquois Landing", "Railcar", "Breakbulk");
+        createNewAction(Site.IROQUOIS_LANDING, TransportationType.RAILCAR, CargoType.BREAK_BULK);
         fillTransportationFields(
             TransportationFields.builder()
                 .carrier("CN")
