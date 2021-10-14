@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.RegexHelper.collectMatches;
 import static java.util.Map.entry;
 import static com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.SeleniumHelper.getClerkInitials;
 
@@ -277,17 +278,6 @@ public class AlgomaReception extends Reception implements PdfRelease {
         } catch (IOException e) {
             throw new RuntimeException("An exception occurred while attempting to write to file: " + e.getMessage());
         }
-    }
-
-    private List<String> collectMatches(Pattern pattern, String query) {
-        List<String> matches = new ArrayList<>();
-        Matcher m = pattern.matcher(query);
-
-        while (m.find()) {
-            matches.add(m.group());
-        }
-
-        return matches;
     }
 
     protected void createReception(Release release, String clerkInitials) {

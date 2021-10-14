@@ -8,4 +8,7 @@ public class BoscusItem {
     private String quantity;
     private String size;
 
+    public boolean isDuplicate(BoscusItem item) {
+        return pieceCount.equals(item.getPieceCount()) && size.equals(item.getSize());
+    }
 }
