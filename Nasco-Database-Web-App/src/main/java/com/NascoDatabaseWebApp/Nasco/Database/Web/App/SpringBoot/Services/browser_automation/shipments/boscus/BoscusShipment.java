@@ -22,11 +22,6 @@ public class BoscusShipment extends ShipmentWithRelease {
     }
 
     @Override
-    protected void fillTransportationFields(Release release, String clerkInitials) {
-
-    }
-
-    @Override
     protected String getRemarks(Release release, String clerkInitials) {
         return String.format(
                 "%s\nPO#: %s\nSKU#: %s\nWeights are estimates only and as such are subject to review and revision as necessary.\n%s",

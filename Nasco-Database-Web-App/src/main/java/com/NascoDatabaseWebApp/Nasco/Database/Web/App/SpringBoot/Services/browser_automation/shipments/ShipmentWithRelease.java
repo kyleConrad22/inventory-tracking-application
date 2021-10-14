@@ -4,6 +4,7 @@ import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browse
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.PdfRelease;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.Release;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.shipments.util.Gatepass;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.TransportationFields;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import static com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.SeleniumHelper.getClerkInitials;
@@ -19,7 +20,14 @@ public abstract class ShipmentWithRelease extends Shipment implements PdfRelease
         loginTm(tmCredentials);
         submitToTm(gatepass);
         createNewShipment();
-        fillTransportationFields(release, clerkInitials);
+        fillTransportationFields(
+            TransportationFields.builder()
+                .carrier(gatepass.getTruckingCompany())
+                .driverName(gatepass.getDriverName())
+                .carrierBill(gatepass.getDor())
+                .transportationNumber(gatepass.getLicense())
+                .build()
+        );
         fillRemarks(getRemarks(release, clerkInitials));
         setInventory();
         setReceiver(release);

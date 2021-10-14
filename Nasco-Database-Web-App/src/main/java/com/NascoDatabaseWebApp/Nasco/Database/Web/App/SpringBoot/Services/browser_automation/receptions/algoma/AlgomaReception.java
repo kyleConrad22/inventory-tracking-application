@@ -1,17 +1,17 @@
 package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.receptions.algoma;
 
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.LoginCredentials;
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.PdfRelease;
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.Release;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.*;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.receptions.Reception;
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.browser_automation.util.FileFormatException;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.security.Key;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,7 +33,6 @@ public class AlgomaReception extends Reception implements PdfRelease {
             printOutput(convertedFile);
 
             orders.add(parseRelease(convertedFile));
-
 
         }
         try {
@@ -272,8 +271,15 @@ public class AlgomaReception extends Reception implements PdfRelease {
     }
 
     protected void createReception(Release release, String clerkInitials) {
-        createNewReception("Iroquois Landing", "Railcar", "Breakbulk");
-        fillTransportationFields(release, clerkInitials);
+        createNewAction("Iroquois Landing", "Railcar", "Breakbulk");
+        fillTransportationFields(
+            TransportationFields.builder()
+                .carrier("CN")
+                .driverName(clerkInitials)
+                .carrierBill("Add In")
+                .transportationNumber(((AlgomaRelease) release).getRailcar())
+                .build()
+        );
         fillRemarks(getRemarks(release, clerkInitials));
         setInventory("Algoma 2021");
         clickCreateButton();
@@ -353,15 +359,6 @@ public class AlgomaReception extends Reception implements PdfRelease {
     protected void fillRemarks(String remarks) {
         System.out.println("\nFilling special instructions...");
         driver.findElement(By.id("specialInstructions")).sendKeys(remarks);
-    }
-
-    protected void fillTransportationFields(Release release, String clerkInitials) {
-        System.out.println("\nFilling transportation fields...");
-
-        driver.findElement(By.id("react-select-5-input")).sendKeys("CN" + Keys.RETURN);
-        driver.findElement(By.id("driverName")).sendKeys(clerkInitials);
-        driver.findElement(By.id("carrierBill")).sendKeys("Add In");
-        driver.findElement(By.id("transportationNumber")).sendKeys(((AlgomaRelease) release).getRailcar());
     }
 
 }

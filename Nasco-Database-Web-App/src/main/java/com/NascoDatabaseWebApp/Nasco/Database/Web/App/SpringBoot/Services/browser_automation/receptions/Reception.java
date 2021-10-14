@@ -45,55 +45,6 @@ public abstract class Reception extends AutomatedSession {
 
     protected abstract void addReleaseItems(Sheet sheet, Release release);
 
-    public void createNewReception(String site, String transportationType, String cargoType) {
-        System.out.println("\nCreating a new reception...");
-        WebDriverWait webDriverWait = new WebDriverWait(driver, 20);
-        driver.get("http://tos.qsl.com/client-inventories/receptions-of-materials");
-        WebElement element = webDriverWait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"viewport\"]/article/section/section[1]/div[2]/div[2]/button")));
-        try {
-            element.click();
-        } catch (WebDriverException e) {
-            SeleniumHelper.executeClickOnBlockedElement(driver, element);
-        }
-        webDriverWait.until(ExpectedConditions.elementToBeClickable(By.id("react-select-9-input"))).sendKeys(site + Keys.RETURN);
-        String radio = "radio_transportationType_";
-        switch (transportationType) {
-            case "Vessel":
-                driver.findElement(By.cssSelector("label[for='" + radio + 0 + "']")).click();
-                break;
-
-            case "Truck":
-                driver.findElement(By.cssSelector("label[for='" + radio + 1 + "']")).click();
-                break;
-
-            case "Railcar":
-                driver.findElement(By.cssSelector("label[for='" + radio + 2 + "']")).click();
-                break;
-
-            case "Barge":
-                driver.findElement(By.cssSelector("label[for='" + radio + 3 + "']")).click();
-                break;
-
-            case "Other":
-                driver.findElement(By.cssSelector("label[for='" + radio + 4 + "']")).click();
-                break;
-
-            case "From Container":
-                driver.findElement(By.cssSelector("label[for='" + radio + 5 + "']")).click();
-                break;
-        }
-
-        radio = "radio_cargoType_";
-        if (cargoType.equals("Bulk")) {
-            driver.findElement(By.cssSelector("label[for='" + radio + 0 + "']")).click();
-        } else {
-            driver.findElement(By.cssSelector("label[for='" + radio + 1 + "']")).click();
-        }
-
-        driver.findElement(By.xpath("/html/body/div[3]/div/form/header/menu/button[2]")).click();
-        webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("react-select-5-input")));
-    }
-
     public void setInventory(String inventory) {
         System.out.printf("\nSetting inventory as %s...\n", inventory);
         driver.findElement(By.id("react-select-13-input")).sendKeys(inventory + Keys.RETURN);
