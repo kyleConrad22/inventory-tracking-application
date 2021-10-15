@@ -34,7 +34,6 @@ public abstract class ShipmentWithRelease extends Shipment implements PdfRelease
         clickCreateButton();
         navigateToLoadingRequestOrShippedItems();
         addItemsToShipment(release);
-        saveShipment();
     }
 
     protected abstract Release parseRelease(String release);

@@ -10,6 +10,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public abstract class Shipment extends AutomatedSession {
 
+    protected boolean addLoadingRequest;
+
     public abstract void createShipment(Gatepass gatepass, LoginCredentials tc3Credentials, LoginCredentials tmCredentials);
 
     /* TODO */
@@ -22,23 +24,18 @@ public abstract class Shipment extends AutomatedSession {
 
     }
 
-    /*TODO*/
-    protected void clickCreateButton() {
-
-    }
-
     protected void clickAddDestination() {
         driver.findElement(By.xpath("//*[@id='viewport']/article/section/form/fieldset[2]/article/header/button")).click();
     }
 
     protected abstract String getRemarks(Release release, String clerkInitials);
 
-    /* TODO */
-    protected abstract void navigateToLoadingRequestOrShippedItems();
-
-    /* TODO */
-    protected void saveShipment() {
-
+    protected void navigateToLoadingRequestOrShippedItems() {
+        if (addLoadingRequest) {
+            navigateToLoadingRequest();
+        } else {
+            navigatedToShippedItems();
+        }
     }
 
     protected void setReceiver(String receiver) {
@@ -61,5 +58,17 @@ public abstract class Shipment extends AutomatedSession {
     }
 
     protected abstract void addItemsToShipment(Release release);
+
+    protected void navigatedToShippedItems() {
+        System.out.println("\nNavigating to shipped items...");
+        String url = driver.getCurrentUrl();
+        driver.get(url.substring(0, url.lastIndexOf("/")) + "/shipped-items");
+    }
+
+    protected void navigateToLoadingRequest() {
+        System.out.println("\nNavigating to loading request...");
+        String url = driver.getCurrentUrl();
+        driver.get(url.substring(0,url.lastIndexOf("/")) + "/loading-request");
+    }
 
 }

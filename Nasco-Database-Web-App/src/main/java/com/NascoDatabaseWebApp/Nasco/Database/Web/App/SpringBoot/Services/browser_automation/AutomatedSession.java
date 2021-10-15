@@ -15,7 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class AutomatedSession {
-    public final WebDriver driver;
+    protected final WebDriver driver;
 
     public AutomatedSession() {
         String chromeDriverPath = System.getProperty("user.dir") + "\\chromedriver.exe";
@@ -135,6 +135,18 @@ public abstract class AutomatedSession {
             }
         }
         webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"viewport\"]/article/section/div/div[1]/div[2]/div")));
+    }
+
+    // Try to click header button; if header button is not found then click on "sticky" header button
+    protected void clickCreateButton() {
+        try {
+            driver.findElement(By.xpath("//*[@id=\"viewport\"]/article/section/form/section[1]/div[2]/div[2]/button[2]")).click();
+        } catch (Exception e) {
+            driver.findElement(By.xpath("//*[@id=\"viewport\"]/article/section/form/section[2]/div/div[2]/button[2]")).click();
+        }
+
+        WebDriverWait webDriverWait = new WebDriverWait(driver, 20);
+        webDriverWait.until(ExpectedConditions.urlContains("general-information"));
     }
 
     protected void endSession() {

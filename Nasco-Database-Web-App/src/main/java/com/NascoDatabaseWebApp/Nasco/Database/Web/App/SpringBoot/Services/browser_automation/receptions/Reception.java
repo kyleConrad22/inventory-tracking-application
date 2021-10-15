@@ -50,18 +50,6 @@ public abstract class Reception extends AutomatedSession {
         driver.findElement(By.id("react-select-13-input")).sendKeys(inventory + Keys.RETURN);
     }
 
-    // Try to click header button; if header button is not found then click on "sticky" header button
-    public void clickCreateButton() {
-        try {
-            driver.findElement(By.xpath("//*[@id=\"viewport\"]/article/section/form/section[1]/div[2]/div[2]/button[2]")).click();
-        } catch (Exception e) {
-            driver.findElement(By.xpath("//*[@id=\"viewport\"]/article/section/form/section[2]/div/div[2]/button[2]")).click();
-        }
-
-        WebDriverWait webDriverWait = new WebDriverWait(driver, 20);
-        webDriverWait.until(ExpectedConditions.urlContains("general-information"));
-    }
-
     public void navigateToIncomingItems() {
         System.out.println("\nNavigating to incoming items...");
         String url = driver.getCurrentUrl();
