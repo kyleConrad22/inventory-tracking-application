@@ -27,6 +27,10 @@ public class RusalLineItemService implements RusalService {
         return repository.findByOrderAndLoad(workOrder, loadNum);
     }
 
+    public List<RusalLineItem> findByBarge(String barge) {
+        return repository.findByBarge(barge);
+    }
+
     public void update(String heatNum, String workOrder, String loadNum, String loader, String loadTime) {
         repository.update(heatNum, workOrder, loadNum, loader, loadTime);
     }
@@ -37,5 +41,9 @@ public class RusalLineItemService implements RusalService {
 
     public ByteArrayInputStream loadByOrderAndLoad(String workOrder, String loadNum) {
         return ExcelHelper.loadToExcel(findByOrderAndLoad(workOrder, loadNum));
+    }
+
+    public ByteArrayInputStream loadByBarge(String barge) {
+        return ExcelHelper.loadToExcel(findByBarge(barge));
     }
 }

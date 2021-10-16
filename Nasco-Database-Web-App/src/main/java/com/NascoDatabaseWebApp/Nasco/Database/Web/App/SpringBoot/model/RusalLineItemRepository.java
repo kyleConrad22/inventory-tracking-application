@@ -16,6 +16,12 @@ public interface RusalLineItemRepository extends JpaRepository<RusalLineItem, St
     )
     List<RusalLineItem> findByOrderAndLoad(@Param("searchOrder") String workOrder, @Param("searchLoad") String loadNum);
 
+    @Query(
+            value ="SELECT * FROM current_inventory WHERE barge = :searchBarge",
+            nativeQuery = true
+    )
+    List<RusalLineItem> findByBarge(@Param("searchBarge") String barge);
+
     @Transactional
     @Modifying(clearAutomatically = true)
     @Query(
