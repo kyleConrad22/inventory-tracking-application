@@ -10,23 +10,22 @@ import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 
-class SplashScreenViewModel(private val codeRepo : CodeRepository, private val invRepo : InventoryRepository) : ViewModel() {
+class SplashScreenViewModel(private val invRepo : InventoryRepository) : ViewModel() {
 
     val loading = mutableStateOf(true)
 
     init {
         viewModelScope.launch {
-            codeRepo.deleteAll()
             invRepo.deleteAll()
             loading.value = HttpRequestHandler.initialize(invRepo)
         }
     }
 
-    class SplashScreenViewModelFactory(private val codeRepo : CodeRepository, private val invRepo: InventoryRepository) : ViewModelProvider.Factory {
+    class SplashScreenViewModelFactory(private val invRepo: InventoryRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass : Class<T>) : T {
             if (modelClass.isAssignableFrom(SplashScreenViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")
-                return SplashScreenViewModel(codeRepo, invRepo) as T
+                return SplashScreenViewModel(invRepo) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }

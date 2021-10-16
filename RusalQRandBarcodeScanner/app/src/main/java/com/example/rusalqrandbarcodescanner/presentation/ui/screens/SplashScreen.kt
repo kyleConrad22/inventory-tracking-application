@@ -27,8 +27,7 @@ import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.SplashS
 
 @Composable
 fun SplashScreen(navController: NavController) {
-    val application = LocalContext.current.applicationContext
-    val splashScreenViewModel : SplashScreenViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "SplashScreenVM", factory = SplashScreenViewModelFactory((application as CodeApplication).repository, application.invRepository))
+    val splashScreenViewModel : SplashScreenViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "SplashScreenVM", factory = SplashScreenViewModelFactory((LocalContext.current.applicationContext as CodeApplication).invRepository))
 
     val loading = splashScreenViewModel.loading.value
 
