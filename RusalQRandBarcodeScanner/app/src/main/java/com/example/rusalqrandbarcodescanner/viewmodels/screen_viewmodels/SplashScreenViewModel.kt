@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.rusalqrandbarcodescanner.services.HttpRequestHandler
-import com.example.rusalqrandbarcodescanner.repositories.CodeRepository
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException

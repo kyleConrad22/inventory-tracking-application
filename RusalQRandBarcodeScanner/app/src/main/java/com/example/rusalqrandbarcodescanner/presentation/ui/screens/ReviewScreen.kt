@@ -29,12 +29,11 @@ import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialo
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReviewViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReviewViewModel.ReviewViewModelFactory
-import com.example.rusalqrandbarcodescanner.viewmodels.ScannedCodeViewModel
 
 
 @ExperimentalComposeUiApi
 @Composable
-fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: ScannedCodeViewModel, mainActivityViewModel: MainActivityViewModel) {
+fun ReviewScreen(navController: NavHostController, mainActivityViewModel: MainActivityViewModel) {
     val application = LocalContext.current.applicationContext
 
     val reviewViewModel : ReviewViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ReviewVM", factory = ReviewViewModelFactory((application as CodeApplication).invRepository, application.userRepository))
@@ -87,9 +86,7 @@ fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: Scanned
                     if (!reviewViewModel.showRemoveDialog()) {
                         Button(onClick = {
                             if (reviewViewModel.isLoad()) {
-                                HttpRequestHandler.initUpdate(reviewViewModel,
-                                    scannedCodeViewModel,
-                                    mainActivityViewModel)
+                                HttpRequestHandler.initUpdate(mainActivityViewModel)
                             } else {
                                 /*TODO - Add Reception Confirmation Logic */
                             }

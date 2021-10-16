@@ -7,8 +7,6 @@ import androidx.lifecycle.Observer
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
-import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReviewViewModel
-import com.example.rusalqrandbarcodescanner.viewmodels.ScannedCodeViewModel
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
@@ -44,79 +42,77 @@ object HttpRequestHandler {
             }
         }
 
-    private suspend fun updateDatabase(reviewViewModel : ReviewViewModel, viewModel: ScannedCodeViewModel, mainActivityViewModel: MainActivityViewModel) = withContext(Dispatchers.IO) {
-        val codes = viewModel.allCodes.value
+    private suspend fun updateDatabase(mainActivityViewModel : MainActivityViewModel) = withContext(Dispatchers.IO) {
+        val items = mainActivityViewModel.getAddedItems()
 
-        if (codes != null) {
-            for (code in codes) {
+        for (item in items) {
 
-                    val heatNum = code.heatNum.replace("-", "")
-                    val workOrder = code.workOrder
-                    val loadNum = code.loadNum
-                    val loader = code.loader.replace(" ", "_")
-                    val loadTime = code.scanTime.replace(" ", "_")
+                val heatNum = item.heatNum.replace("-", "")
+                val workOrder = item.workOrder
+                val loadNum = item.loadNum
+                val loader = item.loader.replace(" ", "_")
+                val loadTime = item.loadTime.replace(" ", "_")
 
-                if (!code.barCode.contains('u')) {
-                    try {
-                        val url = URL("http",
-                            "45.22.122.47",
-                            8081,
-                            "/api/rusal/update?heatNum=$heatNum&workOrder=$workOrder&loadNum=$loadNum&loader=$loader&loadTime=$loadTime")
-                        val urlConnection = url.openConnection() as HttpURLConnection
-
-                        try {
-                            val input: InputStream = BufferedInputStream(urlConnection.inputStream)
-                            val result =
-                                BufferedReader(InputStreamReader(input,
-                                    StandardCharsets.UTF_8)).lines()
-                                    .collect(Collectors.joining("\n"))
-                            Log.d("DEBUG", result)
-                        } finally {
-                            urlConnection.disconnect()
-                        }
-                    } catch (e: IOException) {
-                        e.printStackTrace()
-                    }
-                } else {
-                    var newCode = RusalItem("","","","","","","","","","","","","","")
-                    val uniObserver = Observer<RusalItem?> { it ->
-                        newCode = it
-                    }
-                    GlobalScope.launch(Dispatchers.Main){
-                        mainActivityViewModel.findByBarcode(code.barCode).observeForever(uniObserver)
-                        mainActivityViewModel.findByBarcode(code.barCode).removeObserver(uniObserver)
-                    }
-                    val grossWeight = code.grossWgtKg
-                    val netWeight = code.netWgtKg
-                    val packageNum = code.packageNum
-                    val dimension = newCode.dimension
-                    val grade = newCode.grade
-                    val certificateNum = newCode.certificateNum
-                    val quantity = newCode.quantity
-                    val barcode = code.barCode
-                    val blNum = newCode.blNum
+            if (!item.barcode.contains('u')) {
+                try {
+                    val url = URL("http",
+                        "45.22.122.47",
+                        8081,
+                        "/api/rusal/update?heatNum=$heatNum&workOrder=$workOrder&loadNum=$loadNum&loader=$loader&loadTime=$loadTime")
+                    val urlConnection = url.openConnection() as HttpURLConnection
 
                     try {
-                        val url = URL("http",
-                            "45.22.122.47",
-                            8081,
-                            "demo/add?heatNum=$heatNum&packageNum=$packageNum&grossWeightKg=$grossWeight&netWeightKg=$netWeight&quantity=$quantity&dimension=$dimension&grade=$grade&certificateNum=$certificateNum&blNum=$blNum&barcode=$barcode&workOrder=$workOrder&loadNum=$loadNum&loader=$loader&loadTime=$loadTime")
-
-                        val urlConnection = url.openConnection() as HttpURLConnection
-
-                        try {
-                            val input: InputStream = BufferedInputStream(urlConnection.inputStream)
-                            val result =
-                                BufferedReader(InputStreamReader(input,
-                                    StandardCharsets.UTF_8)).lines()
-                                    .collect(Collectors.joining("\n"))
-                            Log.d("DEBUG", result)
-                        } finally {
-                            urlConnection.disconnect()
-                        }
-                    } catch (e: IOException) {
-                        e.printStackTrace()
+                        val input: InputStream = BufferedInputStream(urlConnection.inputStream)
+                        val result =
+                            BufferedReader(InputStreamReader(input,
+                                StandardCharsets.UTF_8)).lines()
+                                .collect(Collectors.joining("\n"))
+                        Log.d("DEBUG", result)
+                    } finally {
+                        urlConnection.disconnect()
                     }
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            } else {
+                var newCode = RusalItem("","","","","","","","","","","","","","")
+                val uniObserver = Observer<RusalItem?> { it ->
+                    newCode = it
+                }
+                GlobalScope.launch(Dispatchers.Main){
+                    mainActivityViewModel.findByBarcode(item.barcode).observeForever(uniObserver)
+                    mainActivityViewModel.findByBarcode(item.barcode).removeObserver(uniObserver)
+                }
+                val grossWeight = item.grossWeightKg
+                val netWeight = item.netWeightKg
+                val packageNum = item.packageNum
+                val dimension = newCode.dimension
+                val grade = newCode.grade
+                val certificateNum = newCode.certificateNum
+                val quantity = newCode.quantity
+                val barcode = item.barcode
+                val blNum = newCode.blNum
+
+                try {
+                    val url = URL("http",
+                        "45.22.122.47",
+                        8081,
+                        "demo/add?heatNum=$heatNum&packageNum=$packageNum&grossWeightKg=$grossWeight&netWeightKg=$netWeight&quantity=$quantity&dimension=$dimension&grade=$grade&certificateNum=$certificateNum&blNum=$blNum&barcode=$barcode&workOrder=$workOrder&loadNum=$loadNum&loader=$loader&loadTime=$loadTime")
+
+                    val urlConnection = url.openConnection() as HttpURLConnection
+
+                    try {
+                        val input: InputStream = BufferedInputStream(urlConnection.inputStream)
+                        val result =
+                            BufferedReader(InputStreamReader(input,
+                                StandardCharsets.UTF_8)).lines()
+                                .collect(Collectors.joining("\n"))
+                        Log.d("DEBUG", result)
+                    } finally {
+                        urlConnection.disconnect()
+                    }
+                } catch (e: IOException) {
+                    e.printStackTrace()
                 }
             }
         }
@@ -145,9 +141,9 @@ object HttpRequestHandler {
         return false
     }
 
-    fun initUpdate(reviewViewModel: ReviewViewModel, viewModel: ScannedCodeViewModel, mainActivityViewModel: MainActivityViewModel) {
+    fun initUpdate(mainActivityViewModel : MainActivityViewModel) {
         CoroutineScope(Dispatchers.IO).launch {
-            updateDatabase(reviewViewModel = reviewViewModel, viewModel = viewModel, mainActivityViewModel = mainActivityViewModel)
+            updateDatabase(mainActivityViewModel = mainActivityViewModel)
         }
     }
 

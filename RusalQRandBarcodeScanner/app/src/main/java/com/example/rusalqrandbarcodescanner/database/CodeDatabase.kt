@@ -10,7 +10,6 @@ import kotlinx.coroutines.launch
 
 @Database (entities = arrayOf(RusalItem::class, RusalItem::class, UserInput::class), version = 16)
 abstract class CodeDatabase: RoomDatabase() {
-    abstract fun scannedCodeDao(): ScannedCodeDao
     abstract fun inventoryDao(): InventoryDao
     abstract fun userInputDao(): UserInputDao
 
@@ -21,10 +20,8 @@ abstract class CodeDatabase: RoomDatabase() {
             super.onCreate(db)
             INSTANCE?.let { database ->
                 scope.launch {
-                    val scannedCodeDao = database.scannedCodeDao()
                     val inventoryDao = database.inventoryDao()
                     val userInputDao = database.userInputDao()
-                    scannedCodeDao.deleteAll()
                     inventoryDao.deleteAll()
                     userInputDao.deleteAll()
                 }

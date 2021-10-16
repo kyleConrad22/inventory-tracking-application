@@ -18,17 +18,11 @@ import com.example.rusalqrandbarcodescanner.presentation.ui.screens.*
 import com.example.rusalqrandbarcodescanner.presentation.ui.theme.RusalQRAndBarcodeScannerTheme
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel.MainActivityViewModelFactory
-import com.example.rusalqrandbarcodescanner.viewmodels.ScannedCodeViewModel
-import com.example.rusalqrandbarcodescanner.viewmodels.ScannedCodeViewModel.ScannedCodeViewModelFactory
 import kotlinx.coroutines.DelicateCoroutinesApi
 
 @DelicateCoroutinesApi
 @ExperimentalComposeUiApi
 class MainActivity : ComponentActivity() {
-
-    private val scannedCodeViewModel: ScannedCodeViewModel by viewModels {
-        ScannedCodeViewModelFactory((application as CodeApplication).repository)
-    }
 
     private val mainActivityViewModel: MainActivityViewModel by viewModels {
         MainActivityViewModelFactory((application as CodeApplication).invRepository, application)
@@ -72,7 +66,6 @@ class MainActivity : ComponentActivity() {
                 composable(Screen.MainMenuScreen.title) { MainMenuScreen(navController) }
                 composable(Screen.ReviewScreen.title) {
                     ReviewScreen(navController,
-                        scannedCodeViewModel,
                         mainActivityViewModel)
                 }
                 composable(Screen.ManualEntryScreen.title) { ManualEntryScreen(navController) }
