@@ -20,7 +20,7 @@ import com.example.rusalqrandbarcodescanner.viewmodels.*
 fun OptionsScreen(navController: NavHostController) {
     val application = LocalContext.current.applicationContext
 
-    val optionsViewModel : OptionsViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "optionsVM", factory = OptionsViewModel.OptionsViewModelFactory((application as CodeApplication).userRepository, application.repository))
+    val optionsViewModel : OptionsViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "optionsVM", factory = OptionsViewModel.OptionsViewModelFactory((application as CodeApplication).userRepository, application.invRepository))
 
     val loading = optionsViewModel.loading.value
     val isLoad = optionsViewModel.isLoad.value

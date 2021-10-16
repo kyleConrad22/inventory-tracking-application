@@ -8,6 +8,12 @@ interface CurrentInventoryDao {
     @Query("SELECT * FROM current_inventory")
     fun getAll(): Flow<List<RusalItem>>
 
+    @Query("SELECT COUNT(is_added) FROM current_inventory WHERE is_added = 1")
+    suspend fun getNumberOfAddedItems() : Int
+
+    @Query("UPDATE current_inventory SET is_added = 0 WHERE is_added = 1")
+    suspend fun removeAllAddedItems();
+
     @Query ("SELECT * FROM current_inventory")
     suspend fun getAllSuspend() : List<RusalItem>
 

@@ -85,4 +85,15 @@ class CurrentInventoryRepository(private val currentInventoryDao: CurrentInvento
         currentInventoryDao.update(rusalItem)
     }
 
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun removeAllAddedItems() {
+        currentInventoryDao.removeAllAddedItems()
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun getNumberOfAddedItems() : Int {
+        return currentInventoryDao.getNumberOfAddedItems()
+    }
 }
