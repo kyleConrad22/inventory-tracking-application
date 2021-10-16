@@ -2,7 +2,7 @@ package com.example.rusalqrandbarcodescanner.viewmodels
 
 import androidx.lifecycle.*
 import com.example.rusalqrandbarcodescanner.repositories.CurrentInventoryRepository
-import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
+import com.example.rusalqrandbarcodescanner.database.RusalItem
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 
@@ -10,8 +10,8 @@ class CurrentInventoryViewModel(private val repository: CurrentInventoryReposito
 
     private val blListMediator = MediatorLiveData<List<String>?>()
 
-    fun findByBaseHeat(heat: String): LiveData<List<CurrentInventoryLineItem>?> {
-        val result = MutableLiveData<List<CurrentInventoryLineItem>?>()
+    fun findByBaseHeat(heat: String): LiveData<List<RusalItem>?> {
+        val result = MutableLiveData<List<RusalItem>?>()
         viewModelScope.launch {
             val returnedResult = repository.findByBaseHeat(heat)
             result.postValue(returnedResult)
@@ -19,8 +19,8 @@ class CurrentInventoryViewModel(private val repository: CurrentInventoryReposito
         return result
     }
 
-    fun findByBarcode(barcode: String): LiveData<CurrentInventoryLineItem?> {
-        val result = MutableLiveData<CurrentInventoryLineItem?>()
+    fun findByBarcode(barcode: String): LiveData<RusalItem?> {
+        val result = MutableLiveData<RusalItem?>()
         viewModelScope.launch {
             val returnedResult = repository.findByBarcode(barcode)
             result.postValue(returnedResult)
@@ -28,7 +28,7 @@ class CurrentInventoryViewModel(private val repository: CurrentInventoryReposito
         return result
     }
 
-    fun insert(lineItem: CurrentInventoryLineItem) = viewModelScope.launch {
+    fun insert(lineItem: RusalItem) = viewModelScope.launch {
         repository.insert(lineItem)
     }
 
@@ -36,8 +36,8 @@ class CurrentInventoryViewModel(private val repository: CurrentInventoryReposito
         repository.deleteAll()
     }
 
-    fun findByHeat(heat: String): LiveData<CurrentInventoryLineItem?> {
-        val result = MutableLiveData<CurrentInventoryLineItem?>()
+    fun findByHeat(heat: String): LiveData<RusalItem?> {
+        val result = MutableLiveData<RusalItem?>()
         viewModelScope.launch {
             val returnedCode = repository.findByHeat(heat)
             result.postValue(returnedCode)
@@ -52,7 +52,7 @@ class CurrentInventoryViewModel(private val repository: CurrentInventoryReposito
 
         } else {
             val repositoryLiveData = findByBaseHeat("%$heat%")
-            blListMediator.addSource(repositoryLiveData) { items: List<CurrentInventoryLineItem>? ->
+            blListMediator.addSource(repositoryLiveData) { items: List<RusalItem>? ->
                 blListMediator.removeSource(repositoryLiveData)
 
                 items?.let {

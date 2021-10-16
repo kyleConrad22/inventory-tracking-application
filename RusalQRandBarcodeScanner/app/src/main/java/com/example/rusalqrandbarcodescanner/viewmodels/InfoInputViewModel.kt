@@ -3,7 +3,7 @@ package com.example.rusalqrandbarcodescanner.viewmodels
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
-import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
+import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.database.UserInput
 import com.example.rusalqrandbarcodescanner.domain.models.Bl
 import com.example.rusalqrandbarcodescanner.repositories.CurrentInventoryRepository
@@ -38,7 +38,7 @@ class InfoInputViewModel(private val userRepo : UserInputRepository, private val
         }
     }
 
-    private fun getUniqueBlList(lineItems : List<CurrentInventoryLineItem>) : List<Bl> {
+    private fun getUniqueBlList(lineItems : List<RusalItem>) : List<Bl> {
         val result = mutableListOf<Bl>()
         for (lineItem in lineItems) {
             if (result.find {it.blNumber == lineItem.blNum } == null) {

@@ -2,7 +2,7 @@ package com.example.rusalqrandbarcodescanner.viewmodels
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
-import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
+import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.database.ScannedCode
 import com.example.rusalqrandbarcodescanner.database.UserInput
 import com.example.rusalqrandbarcodescanner.repositories.CodeRepository
@@ -19,7 +19,7 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
     private var currentInput = UserInput(id = "null")
     private val currentLoadedBundles = codeRepo.allCodes.asLiveData()
 
-    private var returnedBundle : CurrentInventoryLineItem? = null
+    private var returnedBundle : RusalItem? = null
     private var isIncorrectHeat = false
     private var isDuplicate = false
     private var isIncorrectBl = false
@@ -91,15 +91,15 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
         }
     }
 
-    private fun lineItemToScannedCode(currentInventoryLineItem : CurrentInventoryLineItem) : ScannedCode{
+    private fun lineItemToScannedCode(rusalItem : RusalItem) : ScannedCode{
         return ScannedCode(
-            heatNum = currentInventoryLineItem.heatNum,
-            netWgtKg = currentInventoryLineItem.netWeightKg,
-            grossWgtKg = currentInventoryLineItem.grossWeightKg,
-            packageNum = currentInventoryLineItem.packageNum,
-            bl = currentInventoryLineItem.blNum,
-            quantity = currentInventoryLineItem.quantity,
-            barCode = currentInventoryLineItem.barcode,
+            heatNum = rusalItem.heatNum,
+            netWgtKg = rusalItem.netWeightKg,
+            grossWgtKg = rusalItem.grossWeightKg,
+            packageNum = rusalItem.packageNum,
+            bl = rusalItem.blNum,
+            quantity = rusalItem.quantity,
+            barCode = rusalItem.barcode,
         )
     }
 
@@ -260,7 +260,7 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
 
                         uniqueList.size == 1 -> {
                             val repoData = invRepo.findByBaseHeat(heat)?.get(0)!!
-                            returnedBundle = CurrentInventoryLineItem(heatNum = heat, blNum = repoData.blNum, quantity = repoData.quantity, grossWeightKg = "N/A", netWeightKg = "N/A", barcode = "${heat}u${getNumberOfUnidentifiedBundles(heat) + 1}")
+                            returnedBundle = RusalItem(heatNum = heat, blNum = repoData.blNum, quantity = repoData.quantity, grossWeightKg = "N/A", netWeightKg = "N/A", barcode = "${heat}u${getNumberOfUnidentifiedBundles(heat) + 1}")
                         }
 
                         uniqueList.size > 1 -> {
@@ -268,7 +268,7 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
                             val quantity = currentInput.pieceCount
                             if (uniqueList.contains(listOf(bl, quantity))) {
                                 isMultipleOptions = true
-                                returnedBundle = CurrentInventoryLineItem(heatNum = heat, blNum = bl, quantity = quantity, grossWeightKg = "N/A", netWeightKg = "N/A", barcode = "${heat}u${getNumberOfUnidentifiedBundles(heat) + 1}")
+                                returnedBundle = RusalItem(heatNum = heat, blNum = bl, quantity = quantity, grossWeightKg = "N/A", netWeightKg = "N/A", barcode = "${heat}u${getNumberOfUnidentifiedBundles(heat) + 1}")
                             } else {
                                 isIncorrectBundle = true
                                 isIncorrectCombo = true

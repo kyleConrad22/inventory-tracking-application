@@ -2,13 +2,12 @@ package com.example.rusalqrandbarcodescanner.services
 
 import android.util.Log
 import androidx.lifecycle.Observer
-import com.example.rusalqrandbarcodescanner.database.CurrentInventoryLineItem
+import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.repositories.CurrentInventoryRepository
 import com.example.rusalqrandbarcodescanner.viewmodels.CurrentInventoryViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.ReviewViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.ScannedCodeViewModel
 import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.JsonReader
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import kotlinx.coroutines.*
@@ -77,8 +76,8 @@ object HttpRequestHandler {
                         e.printStackTrace()
                     }
                 } else {
-                    var newCode = CurrentInventoryLineItem("","","","","","","","","","","","","","")
-                    val uniObserver = Observer<CurrentInventoryLineItem?> { it ->
+                    var newCode = RusalItem("","","","","","","","","","","","","","")
+                    val uniObserver = Observer<RusalItem?> { it ->
                         newCode = it
                     }
                     GlobalScope.launch(Dispatchers.Main){
@@ -124,8 +123,8 @@ object HttpRequestHandler {
     private suspend fun addToRepo(invRepo : CurrentInventoryRepository) = withContext(Dispatchers.IO){
         currentInventory()
         val moshi : Moshi = Moshi.Builder().build()
-        val listType = Types.newParameterizedType(List::class.java, CurrentInventoryLineItem::class.java)
-        val adapter : JsonAdapter<List<CurrentInventoryLineItem>> = moshi.adapter(listType)
+        val listType = Types.newParameterizedType(List::class.java, RusalItem::class.java)
+        val adapter : JsonAdapter<List<RusalItem>> = moshi.adapter(listType)
 
         val rusalItems = adapter.fromJson(output);
 

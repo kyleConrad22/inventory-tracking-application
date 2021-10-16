@@ -7,7 +7,7 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 @Entity(tableName="current_inventory")
-data class CurrentInventoryLineItem (
+data class RusalItem (
     @ColumnInfo(name = "heat_num") val heatNum: String? = "",
     @ColumnInfo(name = "package_num") val packageNum: String? = "",
     @ColumnInfo(name = "gross_weight") val grossWeightKg: String? = "",
