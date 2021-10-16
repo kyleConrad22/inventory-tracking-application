@@ -55,7 +55,11 @@ public class RusalController {
                 .loadNum("N/A")
                 .loader("N/A")
                 .loadTime("N/A")
-                .build());
+                .barge("N/A")
+                .receptionDate("N/A")
+                .checker("N/A")
+                .mark("N/A")
+                    .build());
     }
 
     @PostMapping("/update")
@@ -91,4 +95,5 @@ public class RusalController {
                 .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
                 .body(file);
     }
+
 }
