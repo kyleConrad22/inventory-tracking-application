@@ -96,7 +96,7 @@ public class RusalController {
                 .body(file);
     }
 
-    @GetMapping("excel/download-by-barge")
+    @GetMapping("/excel/download-by-barge")
     ResponseEntity<Resource> downloadByBarge(@RequestParam final String barge) {
         String fileName = "rusal-barge-" + barge + ".xlsx";
         InputStreamResource file = new InputStreamResource(rusalLineItemService.loadByBarge(barge));
@@ -107,13 +107,13 @@ public class RusalController {
                 .body(file);
     }
 
-    @PostMapping("add-mark")
+    @PostMapping("/update/mark")
     @ResponseStatus(HttpStatus.OK)
     void addMark(@RequestParam final String bl, @RequestParam final String mark) {
         rusalLineItemService.addMark(bl, mark);
     }
 
-    @PostMapping("add-barge")
+    @PostMapping("/update/barge")
     @ResponseStatus(HttpStatus.OK)
     void addBarge(@RequestParam final String bl, @RequestParam final String barge) {
         rusalLineItemService.addBarge(bl, barge);
