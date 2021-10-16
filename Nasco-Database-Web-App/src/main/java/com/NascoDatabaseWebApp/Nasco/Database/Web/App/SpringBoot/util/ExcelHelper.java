@@ -22,7 +22,10 @@ import java.util.stream.IntStream;
 public class ExcelHelper {
     public static String TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     static String SHEET = "Load Information";
-    static String[] HEADERS = {"Heat Number", "Package Number", "Net Weight Kg", "Gross Weight Kg", "Net Weight Lbs", "Gross Weight Lbs", "Quantity", "Dimensions", "Grade", "Certificate Number", "BL", "Barcode", "Order", "Load", "Loader", "Load Date"};
+    static String[] HEADERS = {
+            "Heat Number", "Package Number", "Net Weight Kg", "Gross Weight Kg", "Net Weight Lbs", "Gross Weight Lbs", "Quantity", "Dimensions", "Grade",
+            "Certificate Number", "BL", "Barcode", "Order", "Load", "Loader", "Load Date", "Barge", "Reception Date", "Checker", "Mark"
+    };
 
     // Create an excel worksheet representation of items
     public static ByteArrayInputStream loadToExcel(List<RusalLineItem> lineItems) {
