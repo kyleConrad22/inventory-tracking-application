@@ -6,7 +6,7 @@ export default function AddBarge() {
         
         evt.preventDefault()
 
-        fetch('api/rusal/update/barge', {
+        fetch('/api/rusal/update/barge', {
             method: 'POST',
             body: new FormData(evt.target)
         }).then(
