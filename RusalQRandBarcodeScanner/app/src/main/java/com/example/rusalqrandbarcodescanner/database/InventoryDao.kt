@@ -4,7 +4,7 @@ import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface CurrentInventoryDao {
+interface InventoryDao {
     @Query("SELECT * FROM current_inventory")
     fun getAll(): Flow<List<RusalItem>>
 

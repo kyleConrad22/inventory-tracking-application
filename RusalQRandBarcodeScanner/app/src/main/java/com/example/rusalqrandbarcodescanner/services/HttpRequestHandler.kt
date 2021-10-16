@@ -5,8 +5,8 @@ package com.example.rusalqrandbarcodescanner.services
 import android.util.Log
 import androidx.lifecycle.Observer
 import com.example.rusalqrandbarcodescanner.database.RusalItem
-import com.example.rusalqrandbarcodescanner.repositories.CurrentInventoryRepository
-import com.example.rusalqrandbarcodescanner.viewmodels.CurrentInventoryViewModel
+import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
+import com.example.rusalqrandbarcodescanner.viewmodels.InventoryViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.ReviewViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.ScannedCodeViewModel
 import com.squareup.moshi.JsonAdapter
@@ -44,7 +44,7 @@ object HttpRequestHandler {
             }
         }
 
-    private suspend fun updateDatabase(reviewViewModel : ReviewViewModel, viewModel: ScannedCodeViewModel, currentInventoryViewModel: CurrentInventoryViewModel) = withContext(Dispatchers.IO) {
+    private suspend fun updateDatabase(reviewViewModel : ReviewViewModel, viewModel: ScannedCodeViewModel, inventoryViewModel: InventoryViewModel) = withContext(Dispatchers.IO) {
         val codes = viewModel.allCodes.value
 
         if (codes != null) {
@@ -83,8 +83,8 @@ object HttpRequestHandler {
                         newCode = it
                     }
                     GlobalScope.launch(Dispatchers.Main){
-                        currentInventoryViewModel.findByBarcode(code.barCode).observeForever(uniObserver)
-                        currentInventoryViewModel.findByBarcode(code.barCode).removeObserver(uniObserver)
+                        inventoryViewModel.findByBarcode(code.barCode).observeForever(uniObserver)
+                        inventoryViewModel.findByBarcode(code.barCode).removeObserver(uniObserver)
                     }
                     val grossWeight = code.grossWgtKg
                     val netWeight = code.netWgtKg
@@ -122,7 +122,7 @@ object HttpRequestHandler {
         }
     }
 
-    private suspend fun addToRepo(invRepo : CurrentInventoryRepository) = withContext(Dispatchers.IO){
+    private suspend fun addToRepo(invRepo : InventoryRepository) = withContext(Dispatchers.IO){
         currentInventory()
         val moshi : Moshi = Moshi.Builder().build()
         val listType = Types.newParameterizedType(List::class.java, RusalItem::class.java)
@@ -137,7 +137,7 @@ object HttpRequestHandler {
     }
 
     // Returns false when update complete to signify loading as completed
-    suspend fun initialize(invRepo: CurrentInventoryRepository): Boolean {
+    suspend fun initialize(invRepo: InventoryRepository): Boolean {
         val value = CoroutineScope(Dispatchers.IO).async {
             addToRepo(invRepo)
         }
@@ -145,9 +145,9 @@ object HttpRequestHandler {
         return false
     }
 
-    fun initUpdate(reviewViewModel: ReviewViewModel, viewModel: ScannedCodeViewModel, currentInventoryViewModel: CurrentInventoryViewModel) {
+    fun initUpdate(reviewViewModel: ReviewViewModel, viewModel: ScannedCodeViewModel, inventoryViewModel: InventoryViewModel) {
         CoroutineScope(Dispatchers.IO).launch {
-            updateDatabase(reviewViewModel = reviewViewModel, viewModel = viewModel, currentInventoryViewModel = currentInventoryViewModel)
+            updateDatabase(reviewViewModel = reviewViewModel, viewModel = viewModel, inventoryViewModel = inventoryViewModel)
         }
     }
 

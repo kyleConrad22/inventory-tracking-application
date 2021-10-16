@@ -1,12 +1,12 @@
 package com.example.rusalqrandbarcodescanner.database_test
 
-import com.example.rusalqrandbarcodescanner.database.CurrentInventoryDao
+import com.example.rusalqrandbarcodescanner.database.InventoryDao
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
-class CurrentInventoryDaoTest {
-    private lateinit var invRepo : CurrentInventoryDao
+class InventoryDaoTest {
+    private lateinit var invRepo : InventoryDao
 
     @Test
     fun insertTest() {

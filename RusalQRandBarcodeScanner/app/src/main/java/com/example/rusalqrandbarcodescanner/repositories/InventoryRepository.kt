@@ -2,18 +2,18 @@ package com.example.rusalqrandbarcodescanner.repositories
 
 import androidx.annotation.WorkerThread
 import androidx.room.EmptyResultSetException
-import com.example.rusalqrandbarcodescanner.database.CurrentInventoryDao
+import com.example.rusalqrandbarcodescanner.database.InventoryDao
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import kotlinx.coroutines.flow.Flow
 
-class CurrentInventoryRepository(private val currentInventoryDao: CurrentInventoryDao) {
-    val fullInventory: Flow<List<RusalItem>> = currentInventoryDao.getAll()
+class InventoryRepository(private val inventoryDao: InventoryDao) {
+    val fullInventory: Flow<List<RusalItem>> = inventoryDao.getAll()
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun getAllSuspend() : List<RusalItem>? {
         return try {
-            currentInventoryDao.getAllSuspend()
+            inventoryDao.getAllSuspend()
         } catch (exc : EmptyResultSetException) {
             null
         }
@@ -23,7 +23,7 @@ class CurrentInventoryRepository(private val currentInventoryDao: CurrentInvento
     @WorkerThread
     suspend fun findByHeat(heat: String): RusalItem? {
         return try {
-            currentInventoryDao.findByHeat(heat)
+            inventoryDao.findByHeat(heat)
         } catch (exc: EmptyResultSetException) {
             null
         }
@@ -33,7 +33,7 @@ class CurrentInventoryRepository(private val currentInventoryDao: CurrentInvento
     @WorkerThread
     suspend fun findByBarcodes(barcode: String): List<RusalItem>? {
         return try {
-            currentInventoryDao.findByBarcodes("%$barcode%")
+            inventoryDao.findByBarcodes("%$barcode%")
         } catch (exc: EmptyResultSetException) {
             null
         }
@@ -43,7 +43,7 @@ class CurrentInventoryRepository(private val currentInventoryDao: CurrentInvento
     @WorkerThread
     suspend fun findByBarcode(barcode: String): RusalItem? {
         return try {
-            currentInventoryDao.findByBarcode(barcode)
+            inventoryDao.findByBarcode(barcode)
         } catch (exc: EmptyResultSetException) {
             null
         }
@@ -52,48 +52,48 @@ class CurrentInventoryRepository(private val currentInventoryDao: CurrentInvento
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun findByBaseHeat(heat: String): List<RusalItem>? {
-        return currentInventoryDao.findByBaseHeat("%$heat%")
+        return inventoryDao.findByBaseHeat("%$heat%")
     }
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun updateIsAddedStatus(isAdded : Boolean, heat : String) {
-        currentInventoryDao.updateIsAddedStatus(isAdded, heat)
+        inventoryDao.updateIsAddedStatus(isAdded, heat)
     }
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun insert(rusalItem: RusalItem) {
-        currentInventoryDao.insert(rusalItem)
+        inventoryDao.insert(rusalItem)
     }
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun deleteAll(){
-        currentInventoryDao.deleteAll()
+        inventoryDao.deleteAll()
     }
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun delete(rusalItem: RusalItem) {
-        currentInventoryDao.delete(rusalItem)
+        inventoryDao.delete(rusalItem)
     }
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun update(rusalItem : RusalItem) {
-        currentInventoryDao.update(rusalItem)
+        inventoryDao.update(rusalItem)
     }
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun removeAllAddedItems() {
-        currentInventoryDao.removeAllAddedItems()
+        inventoryDao.removeAllAddedItems()
     }
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun getNumberOfAddedItems() : Int {
-        return currentInventoryDao.getNumberOfAddedItems()
+        return inventoryDao.getNumberOfAddedItems()
     }
 }

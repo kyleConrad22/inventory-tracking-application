@@ -6,13 +6,13 @@ import androidx.lifecycle.*
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.database.UserInput
 import com.example.rusalqrandbarcodescanner.domain.models.Bl
-import com.example.rusalqrandbarcodescanner.repositories.CurrentInventoryRepository
+import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
 import com.example.rusalqrandbarcodescanner.repositories.UserInputRepository
 import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
 
 @DelicateCoroutinesApi
-class InfoInputViewModel(private val userRepo : UserInputRepository, private val invRepo : CurrentInventoryRepository) : ViewModel() {
+class InfoInputViewModel(private val userRepo : UserInputRepository, private val invRepo : InventoryRepository) : ViewModel() {
     val isConfirmVis = mutableStateOf(false)
     val isLoad = mutableStateOf(false)
 
@@ -94,7 +94,7 @@ class InfoInputViewModel(private val userRepo : UserInputRepository, private val
         isConfirmVis.value = !valueList.contains("")
     }
 
-    class InfoInputViewModelFactory(private val userRepo : UserInputRepository, private val invRepo : CurrentInventoryRepository) : ViewModelProvider.Factory {
+    class InfoInputViewModelFactory(private val userRepo : UserInputRepository, private val invRepo : InventoryRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass : Class<T>) : T {
             if (modelClass.isAssignableFrom(InfoInputViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")

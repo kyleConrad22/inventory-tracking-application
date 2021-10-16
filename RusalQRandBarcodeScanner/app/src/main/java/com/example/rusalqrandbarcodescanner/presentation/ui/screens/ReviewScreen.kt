@@ -26,7 +26,7 @@ import com.example.rusalqrandbarcodescanner.services.HttpRequestHandler
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.database.ScannedCode
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
-import com.example.rusalqrandbarcodescanner.viewmodels.CurrentInventoryViewModel
+import com.example.rusalqrandbarcodescanner.viewmodels.InventoryViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.ReviewViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.ReviewViewModel.ReviewViewModelFactory
 import com.example.rusalqrandbarcodescanner.viewmodels.ScannedCodeViewModel
@@ -34,7 +34,7 @@ import com.example.rusalqrandbarcodescanner.viewmodels.ScannedCodeViewModel
 
 @ExperimentalComposeUiApi
 @Composable
-fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: ScannedCodeViewModel, currentInventoryViewModel: CurrentInventoryViewModel) {
+fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: ScannedCodeViewModel, inventoryViewModel: InventoryViewModel) {
     val application = LocalContext.current.applicationContext
 
     val reviewViewModel : ReviewViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ReviewVM", factory = ReviewViewModelFactory((application as CodeApplication).repository, application.userRepository))
@@ -89,7 +89,7 @@ fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: Scanned
                             if (reviewViewModel.isLoad()) {
                                 HttpRequestHandler.initUpdate(reviewViewModel,
                                     scannedCodeViewModel,
-                                    currentInventoryViewModel)
+                                    inventoryViewModel)
                             } else {
                                 /*TODO - Add Reception Confirmation Logic */
                             }

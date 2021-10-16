@@ -6,7 +6,7 @@ import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.database.ScannedCode
 import com.example.rusalqrandbarcodescanner.database.UserInput
 import com.example.rusalqrandbarcodescanner.repositories.CodeRepository
-import com.example.rusalqrandbarcodescanner.repositories.CurrentInventoryRepository
+import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
 import com.example.rusalqrandbarcodescanner.repositories.UserInputRepository
 import com.example.rusalqrandbarcodescanner.util.ScannedInfo
 import kotlinx.coroutines.*
@@ -15,7 +15,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @DelicateCoroutinesApi
-class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val invRepo : CurrentInventoryRepository, private val userRepo : UserInputRepository) : ViewModel() {
+class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val invRepo : InventoryRepository, private val userRepo : UserInputRepository) : ViewModel() {
     private var currentInput = UserInput(id = "null")
     private val currentLoadedBundles = codeRepo.allCodes.asLiveData()
 
@@ -331,7 +331,7 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
         }
     }
 
-    class ReturnedBundleViewModelFactory(private val codeRepo : CodeRepository, private val invRepo : CurrentInventoryRepository, private val userRepo : UserInputRepository) : ViewModelProvider.Factory {
+    class ReturnedBundleViewModelFactory(private val codeRepo : CodeRepository, private val invRepo : InventoryRepository, private val userRepo : UserInputRepository) : ViewModelProvider.Factory {
         override fun<T : ViewModel> create(modelClass : Class<T>) : T {
             @Suppress("UNCHECKED_CAST")
             if (modelClass.isAssignableFrom(ReturnedBundleViewModel::class.java)) {
