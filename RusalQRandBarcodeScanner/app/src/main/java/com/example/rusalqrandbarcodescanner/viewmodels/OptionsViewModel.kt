@@ -26,7 +26,7 @@ class OptionsViewModel(private val userRepo : UserInputRepository, private val c
             setDisplayableButtons(
                 codeRepo.getRowCount() ?: 0,
                 if (userInput.value!!.bundleQuantity != "")
-                    userInput.value!!.bundleQuantity!!.toInt()
+                    userInput.value!!.bundleQuantity.toInt()
                 else
                     0
             )

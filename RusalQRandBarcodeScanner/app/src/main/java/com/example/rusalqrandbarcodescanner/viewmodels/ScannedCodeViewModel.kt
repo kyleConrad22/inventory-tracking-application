@@ -22,24 +22,6 @@ class ScannedCodeViewModel(private val repository: CodeRepository): ViewModel() 
         repository.delete(scannedCode)
     }
 
-    fun findByHeat(heat: String): LiveData<ScannedCode?> {
-        val result = MutableLiveData<ScannedCode?>()
-        viewModelScope.launch{
-            val returnedCode = repository.findByHeat(heat)
-            result.postValue(returnedCode)
-        }
-        return result
-    }
-
-    fun findByBarcode(barcode: String): LiveData<ScannedCode?> {
-        val result = MutableLiveData<ScannedCode?>()
-        viewModelScope.launch {
-            val returnedCode = repository.findByBarcode(barcode)
-            result.postValue(returnedCode)
-        }
-        return result
-    }
-
     class ScannedCodeViewModelFactory(private val repository: CodeRepository) :
         ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {

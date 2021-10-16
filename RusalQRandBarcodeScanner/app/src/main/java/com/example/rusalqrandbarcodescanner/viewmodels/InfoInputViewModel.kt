@@ -42,7 +42,7 @@ class InfoInputViewModel(private val userRepo : UserInputRepository, private val
         val result = mutableListOf<Bl>()
         for (lineItem in lineItems) {
             if (result.find {it.blNumber == lineItem.blNum } == null) {
-                result.add(Bl(lineItem.blNum!!))
+                result.add(Bl(lineItem.blNum))
             }
         }
         return result.toList()

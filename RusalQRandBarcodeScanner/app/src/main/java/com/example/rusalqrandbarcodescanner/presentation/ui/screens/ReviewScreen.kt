@@ -14,12 +14,10 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.lifecycle.Observer
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -39,7 +37,7 @@ import com.example.rusalqrandbarcodescanner.viewmodels.ScannedCodeViewModel
 fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: ScannedCodeViewModel, currentInventoryViewModel: CurrentInventoryViewModel) {
     val application = LocalContext.current.applicationContext
 
-    val reviewViewModel : ReviewViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ReviewVM", factory = ReviewViewModelFactory((application as CodeApplication).repository, application.invRepository, application.userRepository))
+    val reviewViewModel : ReviewViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ReviewVM", factory = ReviewViewModelFactory((application as CodeApplication).repository, application.userRepository))
 
     var code : ScannedCode? by remember { mutableStateOf(null) }
 
@@ -162,8 +160,8 @@ private fun CodeListItem(scannedCode: ScannedCode, onClick: (item : ScannedCode)
                 .padding(16.dp)
                 .fillMaxWidth()
                 .align(Alignment.CenterVertically)) {
-                Text(text = "Heat: ${scannedCode.heatNum!!}" , style = MaterialTheme.typography.h6)
-                Text(text="BL: ${scannedCode.bl!!}", style = MaterialTheme.typography.h6)
+                Text(text = "Heat: ${scannedCode.heatNum}" , style = MaterialTheme.typography.h6)
+                Text(text="BL: ${scannedCode.bl}", style = MaterialTheme.typography.h6)
             }
         }
     }

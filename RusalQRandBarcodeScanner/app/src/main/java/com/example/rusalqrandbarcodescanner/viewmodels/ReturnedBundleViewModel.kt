@@ -39,7 +39,7 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
         loading.value = true
         GlobalScope.launch {
             waitForInput()
-            setUniqueList(currentInput.heatNum!!)
+            setUniqueList(currentInput.heatNum)
             setIsBundleLoadable(getHeat())
             setLoadedQuantity()
             loading.value = false
@@ -57,16 +57,16 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
     }
 
     fun isLastBundle() : Boolean {
-        val requestedQuantity = currentInput.bundleQuantity!!.toInt()
+        val requestedQuantity = currentInput.bundleQuantity.toInt()
         return requestedQuantity - loadedQuantity.value == 1
     }
 
     fun getType() : String {
-        return currentInput.type!!.lowercase()
+        return currentInput.type.lowercase()
     }
 
     fun getHeat() : String {
-        return currentInput.heatNum!!
+        return currentInput.heatNum
     }
 
     fun addBundle() {
@@ -113,7 +113,7 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
             withContext(Dispatchers.Main) {
                 val uniqueCodes = mutableListOf<List<String>>()
                 for (code in invRepo.findByBaseHeat(heat)!!) {
-                    val combo = listOf(code.blNum!!, code.quantity!!)
+                    val combo = listOf(code.blNum, code.quantity)
                     if (!uniqueCodes.contains(combo)) {
                         uniqueCodes.add(combo)
                     }
@@ -140,7 +140,7 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
         val heatList : MutableList<String> = mutableListOf()
         if (!currentLoadedBundles.value.isNullOrEmpty()) {
             currentLoadedBundles.value!!.forEach {
-                val heat = it.heatNum!!.substring(0, 6)
+                val heat = it.heatNum.substring(0, 6)
                 if (!heatList.contains(heat)) {
                     heatList.add(heat)
                 }
@@ -324,7 +324,7 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
                 isDuplicate = false
             } else {
                 isDuplicate = true
-                scanTime = existingBundle.scanTime!!
+                scanTime = existingBundle.scanTime
             }
         } else {
             isDuplicate = false

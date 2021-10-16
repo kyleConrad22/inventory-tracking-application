@@ -4,18 +4,16 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.rusalqrandbarcodescanner.database.ScannedCode
 import com.example.rusalqrandbarcodescanner.database.UserInput
 import com.example.rusalqrandbarcodescanner.repositories.CodeRepository
-import com.example.rusalqrandbarcodescanner.repositories.CurrentInventoryRepository
 import com.example.rusalqrandbarcodescanner.repositories.UserInputRepository
 import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
 import kotlin.properties.Delegates
 
-class ReviewViewModel(private val codeRepo : CodeRepository, private val inventoryRepo : CurrentInventoryRepository, private val userRepo : UserInputRepository) : ViewModel() {
+class ReviewViewModel(private val codeRepo : CodeRepository, private val userRepo : UserInputRepository) : ViewModel() {
     private lateinit var currentInput : MutableState<UserInput>
     private var loadedBundles by Delegates.notNull<Int>()
 
@@ -47,14 +45,14 @@ class ReviewViewModel(private val codeRepo : CodeRepository, private val invento
     }
 
     fun showRemoveDialog() : Boolean {
-        return Integer.parseInt(currentInput.value.bundleQuantity!!) - loadedBundles > 0
+        return Integer.parseInt(currentInput.value.bundleQuantity) - loadedBundles > 0
     }
 
-    class ReviewViewModelFactory(private val codeRepository: CodeRepository, private val inventoryRepository: CurrentInventoryRepository, private val userRepository: UserInputRepository) : ViewModelProvider.Factory {
+    class ReviewViewModelFactory(private val codeRepository: CodeRepository, private val userRepository: UserInputRepository) : ViewModelProvider.Factory {
         override fun<T : ViewModel> create(modelClass : Class<T>) : T {
             if (modelClass.isAssignableFrom(ReviewViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")
-                return ReviewViewModel(codeRepository, inventoryRepository, userRepository) as T
+                return ReviewViewModel(codeRepository, userRepository) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }

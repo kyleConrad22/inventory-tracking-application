@@ -1,3 +1,5 @@
+@file:Suppress("BlockingMethodInNonBlockingContext")
+
 package com.example.rusalqrandbarcodescanner.services
 
 import android.util.Log
@@ -48,11 +50,11 @@ object HttpRequestHandler {
         if (codes != null) {
             for (code in codes) {
 
-                    val heatNum = code.heatNum!!.replace("-", "")
-                    val workOrder = code.workOrder!!
-                    val loadNum = code.loadNum!!
-                    val loader = code.loader!!.replace(" ", "_")
-                    val loadTime = code.scanTime!!.replace(" ", "_")
+                    val heatNum = code.heatNum.replace("-", "")
+                    val workOrder = code.workOrder
+                    val loadNum = code.loadNum
+                    val loader = code.loader.replace(" ", "_")
+                    val loadTime = code.scanTime.replace(" ", "_")
 
                 if (!code.barCode.contains('u')) {
                     try {
@@ -84,9 +86,9 @@ object HttpRequestHandler {
                         currentInventoryViewModel.findByBarcode(code.barCode).observeForever(uniObserver)
                         currentInventoryViewModel.findByBarcode(code.barCode).removeObserver(uniObserver)
                     }
-                    val grossWeight = code.grossWgtKg!!
-                    val netWeight = code.netWgtKg!!
-                    val packageNum = code.packageNum!!
+                    val grossWeight = code.grossWgtKg
+                    val netWeight = code.netWgtKg
+                    val packageNum = code.packageNum
                     val dimension = newCode.dimension
                     val grade = newCode.grade
                     val certificateNum = newCode.certificateNum
@@ -134,13 +136,13 @@ object HttpRequestHandler {
         }
     }
 
-    suspend fun initialize(invRepo: CurrentInventoryRepository) : Boolean {
+    // Returns false when update complete to signify loading as completed
+    suspend fun initialize(invRepo: CurrentInventoryRepository): Boolean {
         val value = CoroutineScope(Dispatchers.IO).async {
             addToRepo(invRepo)
         }
         value.await()
-        var loading = false
-        return loading
+        return false
     }
 
     fun initUpdate(reviewViewModel: ReviewViewModel, viewModel: ScannedCodeViewModel, currentInventoryViewModel: CurrentInventoryViewModel) {
