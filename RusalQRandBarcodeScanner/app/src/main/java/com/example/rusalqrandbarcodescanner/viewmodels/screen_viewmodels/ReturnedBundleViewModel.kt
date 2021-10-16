@@ -3,9 +3,7 @@ package com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
 import com.example.rusalqrandbarcodescanner.database.RusalItem
-import com.example.rusalqrandbarcodescanner.database.ScannedCode
 import com.example.rusalqrandbarcodescanner.database.UserInput
-import com.example.rusalqrandbarcodescanner.repositories.CodeRepository
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
 import com.example.rusalqrandbarcodescanner.repositories.UserInputRepository
 import com.example.rusalqrandbarcodescanner.util.ScannedInfo
@@ -15,9 +13,9 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @DelicateCoroutinesApi
-class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val invRepo : InventoryRepository, private val userRepo : UserInputRepository) : ViewModel() {
+class ReturnedBundleViewModel(private val invRepo : InventoryRepository, private val userRepo : UserInputRepository) : ViewModel() {
     private var currentInput = UserInput(id = "null")
-    private val currentLoadedBundles = codeRepo.allCodes.asLiveData()
+    private val currentLoadedBundles = mutableStateOf(listOf<RusalItem>())
 
     private var returnedBundle : RusalItem? = null
     private var isIncorrectHeat = false
@@ -39,6 +37,7 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
         loading.value = true
         GlobalScope.launch {
             waitForInput()
+            currentLoadedBundles.value = invRepo.getAddedItems()
             setUniqueList(currentInput.heatNum)
             setIsBundleLoadable(getHeat())
             setLoadedQuantity()
@@ -50,7 +49,7 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
     private suspend fun setLoadedQuantity() {
         val value = GlobalScope.async {
             withContext(Dispatchers.Main) {
-                loadedQuantity.value = codeRepo.getRowCount()!!
+                loadedQuantity.value = invRepo.getNumberOfAddedItems()
             }
         }
         value.await()
@@ -75,12 +74,8 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
             if (isBaseHeat(getHeat())) {
                 invRepo.insert(returnedBundle!!)
             }
-            val scannedCode = lineItemToScannedCode(returnedBundle!!)
-            scannedCode.loadNum = currentInput.load
-            scannedCode.loader = currentInput.loader
-            scannedCode.workOrder = currentInput.order
-            scannedCode.scanTime = getCurrentDateTime()
-            codeRepo.insert(scannedCode)
+            invRepo.updateIsAddedStatus(true, getHeat())
+            invRepo.updateLoadFields(currentInput.order, currentInput.load, currentInput.loader, getCurrentDateTime(), getHeat())
             val value = viewModelScope.async {
                 withContext(Dispatchers.Default) {
                     userRepo.updateHeat("")
@@ -89,18 +84,6 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
             value.await()
             loading.value = false
         }
-    }
-
-    private fun lineItemToScannedCode(rusalItem : RusalItem) : ScannedCode{
-        return ScannedCode(
-            heatNum = rusalItem.heatNum,
-            netWgtKg = rusalItem.netWeightKg,
-            grossWgtKg = rusalItem.grossWeightKg,
-            packageNum = rusalItem.packageNum,
-            bl = rusalItem.blNum,
-            quantity = rusalItem.quantity,
-            barCode = rusalItem.barcode,
-        )
     }
 
     private fun getCurrentDateTime() : String {
@@ -139,7 +122,7 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
     private fun getLoadedHeats() : List<String> {
         val heatList : MutableList<String> = mutableListOf()
         if (!currentLoadedBundles.value.isNullOrEmpty()) {
-            currentLoadedBundles.value!!.forEach {
+            currentLoadedBundles.value.forEach {
                 val heat = it.heatNum.substring(0, 6)
                 if (!heatList.contains(heat)) {
                     heatList.add(heat)
@@ -319,23 +302,23 @@ class ReturnedBundleViewModel(private val codeRepo : CodeRepository, private val
 
     private suspend fun setIsDuplicate(heat : String) {
         if (!isBaseHeat(heat)) {
-            val existingBundle = codeRepo.findByHeat(heat)
-            if (existingBundle == null) {
-                isDuplicate = false
-            } else {
+            val returnedItem = invRepo.findByHeat(heat)
+            if (returnedItem != null && returnedItem.isAdded) {
                 isDuplicate = true
-                scanTime = existingBundle.scanTime
+                scanTime = returnedItem.loadTime
+            } else {
+                isDuplicate = false
             }
         } else {
             isDuplicate = false
         }
     }
 
-    class ReturnedBundleViewModelFactory(private val codeRepo : CodeRepository, private val invRepo : InventoryRepository, private val userRepo : UserInputRepository) : ViewModelProvider.Factory {
+    class ReturnedBundleViewModelFactory(private val invRepo : InventoryRepository, private val userRepo : UserInputRepository) : ViewModelProvider.Factory {
         override fun<T : ViewModel> create(modelClass : Class<T>) : T {
             @Suppress("UNCHECKED_CAST")
             if (modelClass.isAssignableFrom(ReturnedBundleViewModel::class.java)) {
-                return ReturnedBundleViewModel(codeRepo, invRepo, userRepo) as T
+                return ReturnedBundleViewModel(invRepo, userRepo) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }

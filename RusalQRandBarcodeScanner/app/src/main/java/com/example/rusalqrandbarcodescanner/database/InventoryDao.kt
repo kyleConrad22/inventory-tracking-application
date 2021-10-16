@@ -44,4 +44,10 @@ interface InventoryDao {
     @Delete
     suspend fun delete(rusalItem: RusalItem)
 
+    @Query("SELECT * FROM current_inventory WHERE is_added = 1")
+    suspend fun getAddedItems() : List<RusalItem>
+
+    @Query("UPDATE current_inventory SET work_order = :reqWorkOrder AND load_num = :reqLoadNum AND loader = :reqLoader AND load_time = :reqLoadTime WHERE heat_num = :searchHeatNum")
+    suspend fun updateLoadFields(reqWorkOrder : String, reqLoadNum : String, reqLoader : String, reqLoadTime : String, searchHeatNum : String)
+
 }

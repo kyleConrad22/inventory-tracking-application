@@ -6,10 +6,10 @@ import com.example.rusalqrandbarcodescanner.database.InventoryDao
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import kotlinx.coroutines.flow.Flow
 
+@Suppress("RedundantSuspendModifier")
 class InventoryRepository(private val inventoryDao: InventoryDao) {
     val fullInventory: Flow<List<RusalItem>> = inventoryDao.getAll()
 
-    @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun getAllSuspend() : List<RusalItem>? {
         return try {
@@ -19,7 +19,6 @@ class InventoryRepository(private val inventoryDao: InventoryDao) {
         }
     }
 
-    @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun findByHeat(heat: String): RusalItem? {
         return try {
@@ -29,7 +28,6 @@ class InventoryRepository(private val inventoryDao: InventoryDao) {
         }
     }
 
-    @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun findByBarcodes(barcode: String): List<RusalItem>? {
         return try {
@@ -39,7 +37,6 @@ class InventoryRepository(private val inventoryDao: InventoryDao) {
         }
     }
 
-    @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun findByBarcode(barcode: String): RusalItem? {
         return try {
@@ -49,51 +46,57 @@ class InventoryRepository(private val inventoryDao: InventoryDao) {
         }
     }
 
-    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun getAddedItems() : List<RusalItem> {
+        return try {
+            inventoryDao.getAddedItems()
+        } catch (exc : EmptyResultSetException) {
+            listOf()
+        }
+    }
+
     @WorkerThread
     suspend fun findByBaseHeat(heat: String): List<RusalItem>? {
         return inventoryDao.findByBaseHeat("%$heat%")
     }
 
-    @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun updateIsAddedStatus(isAdded : Boolean, heat : String) {
         inventoryDao.updateIsAddedStatus(isAdded, heat)
     }
 
-    @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun insert(rusalItem: RusalItem) {
         inventoryDao.insert(rusalItem)
     }
 
-    @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun deleteAll(){
         inventoryDao.deleteAll()
     }
 
-    @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun delete(rusalItem: RusalItem) {
         inventoryDao.delete(rusalItem)
     }
 
-    @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun update(rusalItem : RusalItem) {
         inventoryDao.update(rusalItem)
     }
 
-    @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun removeAllAddedItems() {
         inventoryDao.removeAllAddedItems()
     }
 
-    @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun getNumberOfAddedItems() : Int {
         return inventoryDao.getNumberOfAddedItems()
+    }
+
+    @WorkerThread
+    suspend fun updateLoadFields(workOrder : String, loadNum : String, loader : String , loadTime : String, heatNum : String) {
+        inventoryDao.updateLoadFields(workOrder, loadNum, loader, loadTime, heatNum)
     }
 }
