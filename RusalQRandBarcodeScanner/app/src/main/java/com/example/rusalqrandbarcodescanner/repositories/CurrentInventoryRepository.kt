@@ -48,10 +48,17 @@ class CurrentInventoryRepository(private val currentInventoryDao: CurrentInvento
             null
         }
     }
+
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun findByBaseHeat(heat: String): List<RusalItem>? {
         return currentInventoryDao.findByBaseHeat("%$heat%")
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun updateIsAddedStatus(isAdded : Boolean, heat : String) {
+        currentInventoryDao.updateIsAddedStatus(isAdded, heat)
     }
 
     @Suppress("RedundantSuspendModifier")

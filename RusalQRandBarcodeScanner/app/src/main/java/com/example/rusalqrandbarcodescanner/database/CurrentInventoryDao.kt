@@ -26,6 +26,9 @@ interface CurrentInventoryDao {
     @Query("SELECT * FROM current_inventory WHERE heat_num LIKE :searchHeatNum")
     suspend fun findByBaseHeat(searchHeatNum: String): List<RusalItem>?
 
+    @Query("UPDATE current_inventory SET is_added = :reqIsAdded WHERE heat_num LIKE :searchHeatNum")
+    suspend fun updateIsAddedStatus(reqIsAdded : Boolean, searchHeatNum : String)
+
     @Update
     suspend fun update(rusalItem : RusalItem)
 

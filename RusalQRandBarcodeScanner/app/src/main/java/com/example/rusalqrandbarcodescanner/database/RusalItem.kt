@@ -25,5 +25,7 @@ data class RusalItem (
     @ColumnInfo(name = "barge") val barge : String = "",
     @ColumnInfo(name = "checker") val  checker : String = "",
     @ColumnInfo(name = "reception_date") val receptionDate : String = "",
-    @ColumnInfo(name = "mark") val mark : String = ""
+    @ColumnInfo(name = "mark") val mark : String = "",
+    @Transient
+    @ColumnInfo(name = "is_added") val isAdded : Boolean = false
 )
