@@ -7,7 +7,7 @@ import androidx.lifecycle.Observer
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
 import com.example.rusalqrandbarcodescanner.viewmodels.InventoryViewModel
-import com.example.rusalqrandbarcodescanner.viewmodels.ReviewViewModel
+import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReviewViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.ScannedCodeViewModel
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi

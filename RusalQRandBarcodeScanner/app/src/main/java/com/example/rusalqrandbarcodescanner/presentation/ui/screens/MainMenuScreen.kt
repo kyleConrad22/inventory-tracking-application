@@ -19,8 +19,8 @@ import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
-import com.example.rusalqrandbarcodescanner.viewmodels.MainMenuViewModel
-import com.example.rusalqrandbarcodescanner.viewmodels.MainMenuViewModel.MainMenuViewModelFactory
+import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.MainMenuViewModel
+import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.MainMenuViewModel.MainMenuViewModelFactory
 import kotlinx.coroutines.DelicateCoroutinesApi
 
 @DelicateCoroutinesApi

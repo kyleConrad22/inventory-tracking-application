@@ -30,7 +30,7 @@ import com.example.rusalqrandbarcodescanner.util.inputvalidation.BasicItemValida
 import com.example.rusalqrandbarcodescanner.util.inputvalidation.NameValidator
 import com.example.rusalqrandbarcodescanner.util.inputvalidation.NumberValidator
 import com.example.rusalqrandbarcodescanner.util.inputvalidation.WorkOrderValidator
-import com.example.rusalqrandbarcodescanner.viewmodels.InfoInputViewModel
+import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.InfoInputViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
 
 @ExperimentalAnimationApi

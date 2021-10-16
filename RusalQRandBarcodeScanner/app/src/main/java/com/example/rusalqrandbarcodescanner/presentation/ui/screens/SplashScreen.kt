@@ -22,8 +22,8 @@ import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.R
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.presentation.components.CircularIndeterminateProgressBar
-import com.example.rusalqrandbarcodescanner.viewmodels.SplashScreenViewModel
-import com.example.rusalqrandbarcodescanner.viewmodels.SplashScreenViewModel.SplashScreenViewModelFactory
+import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.SplashScreenViewModel
+import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.SplashScreenViewModel.SplashScreenViewModelFactory
 
 @Composable
 fun SplashScreen(navController: NavController) {

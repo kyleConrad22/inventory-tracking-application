@@ -27,8 +27,8 @@ import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.database.ScannedCode
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.viewmodels.InventoryViewModel
-import com.example.rusalqrandbarcodescanner.viewmodels.ReviewViewModel
-import com.example.rusalqrandbarcodescanner.viewmodels.ReviewViewModel.ReviewViewModelFactory
+import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReviewViewModel
+import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReviewViewModel.ReviewViewModelFactory
 import com.example.rusalqrandbarcodescanner.viewmodels.ScannedCodeViewModel
 
 

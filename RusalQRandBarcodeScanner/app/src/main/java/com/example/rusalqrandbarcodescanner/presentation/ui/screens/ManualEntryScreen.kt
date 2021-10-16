@@ -19,8 +19,8 @@ import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.presentation.components.BasicInputDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.util.inputvalidation.HeatNumberValidator
-import com.example.rusalqrandbarcodescanner.viewmodels.ManualEntryViewModel
-import com.example.rusalqrandbarcodescanner.viewmodels.ManualEntryViewModel.ManualEntryViewModelFactory
+import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ManualEntryViewModel
+import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ManualEntryViewModel.ManualEntryViewModelFactory
 import kotlinx.coroutines.DelicateCoroutinesApi
 
 @DelicateCoroutinesApi

@@ -29,8 +29,8 @@ import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.util.ScannedInfo
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
-import com.example.rusalqrandbarcodescanner.viewmodels.ScannerViewModel
-import com.example.rusalqrandbarcodescanner.viewmodels.ScannerViewModel.ScannerViewModelFactory
+import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ScannerViewModel
+import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ScannerViewModel.ScannerViewModelFactory
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -108,7 +108,8 @@ fun CameraPreview(
     cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA,
     scaleType: PreviewView.ScaleType = PreviewView.ScaleType.FILL_CENTER,
     navController: NavHostController,
-    scannerViewModel : ScannerViewModel) {
+    scannerViewModel : ScannerViewModel
+) {
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
