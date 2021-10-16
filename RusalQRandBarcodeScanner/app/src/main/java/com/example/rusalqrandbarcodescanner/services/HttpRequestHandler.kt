@@ -7,6 +7,8 @@ import com.example.rusalqrandbarcodescanner.repositories.CurrentInventoryReposit
 import com.example.rusalqrandbarcodescanner.viewmodels.CurrentInventoryViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.ReviewViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.ScannedCodeViewModel
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.Moshi
 import kotlinx.coroutines.*
 import java.io.*
 import java.net.HttpURLConnection
@@ -119,6 +121,9 @@ object HttpRequestHandler {
 
     private suspend fun addToRepo(invRepo : CurrentInventoryRepository) = withContext(Dispatchers.IO){
         currentInventory()
+        val moshi : Moshi = Moshi.Builder().build()
+        val adapter : JsonAdapter<CurrentInventoryLineItem> = moshi.adapter(CurrentInventoryLineItem::class.java)
+
         val lines = output.split("},{").toTypedArray()
         lines[0] = lines[0].replace("[{", "")
         lines[lines.size - 1] = lines[lines.size - 1].replace("}]", "")
@@ -141,6 +146,10 @@ object HttpRequestHandler {
             var loadNum: String = ""
             var loader: String = ""
             var loadTime: String = ""
+            var barge : String = ""
+            var checker : String = ""
+            var receptionDate : String = ""
+            var mark : String = ""
 
             for (fieldVal in lineFields) {
                 val fieldValClean = fieldVal.replace("\"", "").replace("\\n","")
@@ -161,6 +170,10 @@ object HttpRequestHandler {
                     "loadNum" -> loadNum = value
                     "loader" -> loader = value
                     "loadTime" -> loadTime = value
+                    "barge" -> barge = value
+                    "checker" -> checker = value
+                    "receptionDate" -> receptionDate = value
+                    "mark" -> mark = value
                     else -> {
                         Log.d("ERROR", "The field $field, with value $value does not match any predefined records")
                     }
@@ -183,7 +196,11 @@ object HttpRequestHandler {
                 workOrder = workOrder,
                 loadNum = loadNum,
                 loader = loader,
-                loadTime = loadTime
+                loadTime = loadTime,
+                barge = barge,
+                checker = checker,
+                receptionDate = receptionDate,
+                mark = mark
             ))
         }
     }

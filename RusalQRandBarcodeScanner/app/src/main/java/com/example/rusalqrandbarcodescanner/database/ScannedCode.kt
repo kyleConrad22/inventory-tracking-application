@@ -18,5 +18,8 @@ data class ScannedCode(
     @ColumnInfo(name = "loadNum") var loadNum: String? = "",
     @ColumnInfo(name = "loader") var loader: String? = "",
     @ColumnInfo(name = "bl") val bl: String? = "",
-    @ColumnInfo(name = "quantity") val quantity: String? = ""
+    @ColumnInfo(name = "quantity") val quantity: String? = "",
+    @ColumnInfo(name = "checker") val checker : String = "",
+    @ColumnInfo(name = "reception_date") val receptionDate : String = ""
+
 )

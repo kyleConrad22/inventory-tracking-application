@@ -3,7 +3,9 @@ package com.example.rusalqrandbarcodescanner.database
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 @Entity(tableName="current_inventory")
 data class CurrentInventoryLineItem (
     @ColumnInfo(name = "heat_num") val heatNum: String? = "",
@@ -19,5 +21,9 @@ data class CurrentInventoryLineItem (
     @ColumnInfo(name = "work_order") val workOrder: String? = "",
     @ColumnInfo(name = "load_num") val loadNum: String? = "",
     @ColumnInfo(name = "loader") val loader: String? = "",
-    @ColumnInfo(name = "load_time") val loadTime: String? = ""
+    @ColumnInfo(name = "load_time") val loadTime: String? = "",
+    @ColumnInfo(name = "barge") val barge : String = "",
+    @ColumnInfo(name = "checker") val  checker : String = "",
+    @ColumnInfo(name = "reception_date") val receptionDate : String = "",
+    @ColumnInfo(name = "mark") val mark : String = ""
 )
