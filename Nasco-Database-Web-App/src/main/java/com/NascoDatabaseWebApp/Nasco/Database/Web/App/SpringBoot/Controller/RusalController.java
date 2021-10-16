@@ -55,7 +55,11 @@ public class RusalController {
                 .loadNum("N/A")
                 .loader("N/A")
                 .loadTime("N/A")
-                .build());
+                .barge("N/A")
+                .receptionDate("N/A")
+                .checker("N/A")
+                .mark("N/A")
+                    .build());
     }
 
     @PostMapping("/update")
@@ -91,4 +95,28 @@ public class RusalController {
                 .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
                 .body(file);
     }
+
+    @GetMapping("excel/download-by-barge")
+    ResponseEntity<Resource> downloadByBarge(@RequestParam final String barge) {
+        String fileName = "rusal-barge-" + barge + ".xlsx";
+        InputStreamResource file = new InputStreamResource(rusalLineItemService.loadByBarge(barge));
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
+                .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+                .body(file);
+    }
+
+    @PostMapping("add-mark")
+    @ResponseStatus(HttpStatus.OK)
+    void addMark(@RequestParam final String bl, @RequestParam final String mark) {
+        rusalLineItemService.addMark(bl, mark);
+    }
+
+    @PostMapping("add-barge")
+    @ResponseStatus(HttpStatus.OK)
+    void addBarge(@RequestParam final String bl, @RequestParam final String barge) {
+        rusalLineItemService.addBarge(bl, barge);
+    }
+
 }

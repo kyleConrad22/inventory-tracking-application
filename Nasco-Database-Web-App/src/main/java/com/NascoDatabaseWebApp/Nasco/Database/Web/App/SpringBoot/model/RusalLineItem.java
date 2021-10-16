@@ -29,6 +29,10 @@ public class RusalLineItem {
     private String loadNum;
     private String loader;
     private String loadTime;
+    private String barge;
+    private String receptionDate;
+    private String checker;
+    private String mark;
 
     @Override
     public boolean equals(Object o) {
@@ -47,12 +51,18 @@ public class RusalLineItem {
                 Objects.equals(workOrder, rusalLineItem.workOrder) &&
                 Objects.equals(loadNum, rusalLineItem.loadNum) &&
                 Objects.equals(loader, rusalLineItem.loader) &&
-                Objects.equals(loadTime, rusalLineItem.loadTime);
+                Objects.equals(loadTime, rusalLineItem.loadTime) &&
+                Objects.equals(barge, rusalLineItem.barge) &&
+                Objects.equals(receptionDate, rusalLineItem.receptionDate) &&
+                Objects.equals(checker, rusalLineItem.checker) &&
+                Objects.equals(mark, rusalLineItem.mark);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(heatNum, grossWeightKg, netWeightKg, quantity, dimension, grade, certificateNum, blNum, barcode, workOrder, loadNum, loader, loadTime);
+        return Objects.hash(
+                heatNum, grossWeightKg, netWeightKg, quantity, dimension, grade, certificateNum, blNum, barcode, workOrder, loadNum, loader, loadTime, barge, receptionDate, checker, mark
+        );
     }
 
     @Override
@@ -71,6 +81,10 @@ public class RusalLineItem {
                 ", loadNum='" + loadNum + '\'' +
                 ", loader='" + loader + '\'' +
                 ", loadTime='" + loadTime + '\'' +
+                ", barge='" + barge + '\'' +
+                ", receptionDate='" + receptionDate + '\'' +
+                ", checker='" + checker + '\'' +
+                ", mark='" + mark + '\'' +
                 '}';
     }
 
@@ -113,6 +127,16 @@ public class RusalLineItem {
     public String getBarcode() {
         return barcode;
     }
+
+    public String getBarge() {
+        return barge;
+    }
+
+    public String getReceptionDate() { return receptionDate; }
+
+    public String getChecker() { return checker; }
+
+    public String getMark() { return mark; }
 
     public String getWorkOrder() {
         if (workOrder != null) {
@@ -200,5 +224,21 @@ public class RusalLineItem {
 
     public void setLoadTime(String loadTime) {
         this.loadTime = loadTime;
+    }
+
+    public void setBarge(String barge) {
+        this.barge = barge;
+    }
+
+    public void setReceptionDate(String receptionDate) {
+        this.receptionDate = receptionDate;
+    }
+
+    public void setChecker(String checker) {
+        this.checker = checker;
+    }
+
+    public void setMark(String mark) {
+        this.mark = mark;
     }
 }

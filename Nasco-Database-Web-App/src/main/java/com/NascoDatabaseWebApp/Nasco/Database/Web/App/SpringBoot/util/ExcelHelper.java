@@ -57,6 +57,11 @@ public class ExcelHelper {
                 row.createCell(13).setCellValue(lineItem.getLoadNum());
                 row.createCell(14).setCellValue(lineItem.getLoader());
                 row.createCell(15).setCellValue(lineItem.getLoadTime());
+                row.createCell(16).setCellValue(lineItem.getBarge());
+                row.createCell(17).setCellValue(lineItem.getReceptionDate());
+                row.createCell(18).setCellValue(lineItem.getChecker());
+                row.createCell(19).setCellValue(lineItem.getMark());
+
             }
 
             workbook.write(out);
