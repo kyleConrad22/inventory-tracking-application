@@ -1,6 +1,8 @@
 import React from "react";
 
 import ToBeImplemented from "../../core/to_be_implemented";
+import AddBarge from "./components/add_barge";
+import AddMark from "./components/add_mark";
 
 export default function RusalUpdateItem() {
 
@@ -54,8 +56,11 @@ export default function RusalUpdateItem() {
     return (
         <div id='update-rusal'>
             <h3>Update Rusal Item</h3>
-            <ToBeImplemented />
             <UpdateFields />
+            &nbsp;&nbsp;&nbsp;
+            <AddMark />
+            &nbsp;&nbsp;&nbsp;
+            <AddBarge />
         </div>
     );
 }

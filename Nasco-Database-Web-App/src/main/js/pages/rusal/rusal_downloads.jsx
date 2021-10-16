@@ -100,7 +100,9 @@ export default function RusalDownloads() {
         <div id='downloads'>
             <h3>Download Links</h3>
             <DownloadDatabase />
+            &nbsp;&nbsp;&nbsp;
             <DownloadByOrderAndLoad />
+            &nbsp;&nbsp;&nbsp;
             <DownloadByBarge />
         </div>
     );
