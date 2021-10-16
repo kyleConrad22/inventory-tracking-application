@@ -5,7 +5,7 @@ export default function AddMark() {
     function handleSubmit(evt) {
         evt.preventDefault();
 
-        fetch('api/rusal/add-mark', {
+        fetch('api/rusal/update/mark', {
             method: 'POST',
             body: new FormData(evt.target)
         }).then(
