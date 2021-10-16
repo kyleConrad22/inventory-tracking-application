@@ -64,7 +64,7 @@ export default function RusalDownloads() {
 
             params.set('barge', input.get('barge'))
 
-            fetch(`api/rusal/excel/download-by-barge?${params}`)
+            fetch(`/api/rusal/excel/download-by-barge?${params}`)
             .then(
                 (response) => response.blob()
             ).then((blob) => {
