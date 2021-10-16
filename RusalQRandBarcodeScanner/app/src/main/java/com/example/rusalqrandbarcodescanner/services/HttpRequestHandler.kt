@@ -8,7 +8,9 @@ import com.example.rusalqrandbarcodescanner.viewmodels.CurrentInventoryViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.ReviewViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.ScannedCodeViewModel
 import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.JsonReader
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
 import kotlinx.coroutines.*
 import java.io.*
 import java.net.HttpURLConnection
@@ -122,86 +124,14 @@ object HttpRequestHandler {
     private suspend fun addToRepo(invRepo : CurrentInventoryRepository) = withContext(Dispatchers.IO){
         currentInventory()
         val moshi : Moshi = Moshi.Builder().build()
-        val adapter : JsonAdapter<CurrentInventoryLineItem> = moshi.adapter(CurrentInventoryLineItem::class.java)
+        val listType = Types.newParameterizedType(List::class.java, CurrentInventoryLineItem::class.java)
+        val adapter : JsonAdapter<List<CurrentInventoryLineItem>> = moshi.adapter(listType)
 
-        val lines = output.split("},{").toTypedArray()
-        lines[0] = lines[0].replace("[{", "")
-        lines[lines.size - 1] = lines[lines.size - 1].replace("}]", "")
+        val rusalItems = adapter.fromJson(output);
 
-        var iterable = 0
-
-        for (line in lines) {
-            val lineFields = line.split(",").toTypedArray()
-            var heatNum: String = ""
-            var packageNum: String = ""
-            var grossWeightKg: String = ""
-            var netWeightKg: String = ""
-            var quantity: String = ""
-            var dimension: String = ""
-            var grade: String = ""
-            var certificateNum: String = ""
-            var blNum: String = ""
-            var barcode: String = ""
-            var workOrder: String = ""
-            var loadNum: String = ""
-            var loader: String = ""
-            var loadTime: String = ""
-            var barge : String = ""
-            var checker : String = ""
-            var receptionDate : String = ""
-            var mark : String = ""
-
-            for (fieldVal in lineFields) {
-                val fieldValClean = fieldVal.replace("\"", "").replace("\\n","")
-                val field = fieldValClean.split(":")[0]
-                val value = fieldValClean.split(":")[1]
-                when (field) {
-                    "heatNum" -> heatNum = value
-                    "packageNum" -> packageNum = value
-                    "grossWeightKg" -> grossWeightKg = value
-                    "netWeightKg" -> netWeightKg = value
-                    "quantity" -> quantity = value
-                    "dimension" -> dimension = value
-                    "grade" -> grade = value
-                    "certificateNum" -> certificateNum = value
-                    "blNum" -> blNum = value
-                    "barcode" -> barcode = value
-                    "workOrder" -> workOrder = value
-                    "loadNum" -> loadNum = value
-                    "loader" -> loader = value
-                    "loadTime" -> loadTime = value
-                    "barge" -> barge = value
-                    "checker" -> checker = value
-                    "receptionDate" -> receptionDate = value
-                    "mark" -> mark = value
-                    else -> {
-                        Log.d("ERROR", "The field $field, with value $value does not match any predefined records")
-                    }
-                }
-            }
-            iterable++
-            Log.d("DEBUG", iterable.toString())
-
-            invRepo.insert(CurrentInventoryLineItem(
-                heatNum = heatNum,
-                packageNum = packageNum,
-                grossWeightKg = grossWeightKg,
-                netWeightKg = netWeightKg,
-                quantity = quantity,
-                dimension = dimension,
-                grade = grade,
-                certificateNum = certificateNum,
-                blNum = blNum,
-                barcode = barcode,
-                workOrder = workOrder,
-                loadNum = loadNum,
-                loader = loader,
-                loadTime = loadTime,
-                barge = barge,
-                checker = checker,
-                receptionDate = receptionDate,
-                mark = mark
-            ))
+        for (item in rusalItems!!) {
+            invRepo.insert(item)
+            print(item.heatNum)
         }
     }
 
