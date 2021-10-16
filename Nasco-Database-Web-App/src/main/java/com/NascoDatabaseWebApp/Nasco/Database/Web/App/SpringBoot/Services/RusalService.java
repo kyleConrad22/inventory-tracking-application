@@ -1,6 +1,7 @@
 package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services;
 
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItem;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.UpdateRusalReceptionParam;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -19,4 +20,5 @@ public interface RusalService {
     ByteArrayInputStream loadByBarge(String barge);
     void addMark(String bl, String mark);
     void addBarge(String bl, String mark);
+    void updateReception(List<UpdateRusalReceptionParam> updateParams);
 }

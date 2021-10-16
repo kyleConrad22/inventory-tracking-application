@@ -2,6 +2,7 @@ package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services;
 
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItem;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItemRepository;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.UpdateRusalReceptionParam;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.util.ExcelHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,15 @@ public class RusalLineItemService implements RusalService {
     public void addMark(String bl, String mark) {
         repository.addMark(bl, mark);
     }
+
     public void addBarge(String bl, String barge) {
         repository.addBarge(bl, barge);
+    }
+
+    @Override
+    public void updateReception(List<UpdateRusalReceptionParam> updateParams) {
+        updateParams.forEach(it -> {
+            repository.updateReception(it.getHeatNum(), it.getReceptionDate(), it.getChecker());
+        });
     }
 }

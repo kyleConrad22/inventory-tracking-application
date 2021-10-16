@@ -2,6 +2,7 @@ package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Controller;
 
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.RusalLineItemService;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItem;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.UpdateRusalReceptionParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/rusal")
@@ -117,6 +119,12 @@ public class RusalController {
     @ResponseStatus(HttpStatus.OK)
     void addBarge(@RequestParam final String bl, @RequestParam final String barge) {
         rusalLineItemService.addBarge(bl, barge);
+    }
+
+    @PostMapping("/update/reception")
+    @ResponseStatus(HttpStatus.OK)
+    void updateReception(@RequestParam final List<UpdateRusalReceptionParam> updateParams) {
+        rusalLineItemService.updateReception(updateParams);
     }
 
 }
