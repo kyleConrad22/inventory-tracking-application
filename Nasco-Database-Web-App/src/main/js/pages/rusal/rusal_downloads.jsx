@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 export default function RusalDownloads() {
 
@@ -54,11 +54,54 @@ export default function RusalDownloads() {
         );
     }
 
+    function DownloadByBarge() {
+
+        function handleSubmit(evt) {
+            evt.preventDefault();
+
+            let params = new URLSearchParams()
+            let input = new FormData(evt.target);
+
+            params.set('barge', input.get('barge'))
+
+            fetch(`api/rusal/excel/download-by-barge?${params}`)
+            .then(
+                (response) => response.blob()
+            ).then((blob) => {
+                const url = window.URL.createObjectURL(new Blob([blob]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', `rusal-barge-${input.get('barge')}.xlsx`)
+
+                document.body.appendChild(link);
+
+                link.click();
+
+                link.parentNode.removeChild(link);
+            }).catch(
+                (error) => {
+                    alert(error)
+                }
+            )
+            evt.target.reset();
+            return false;
+        }
+
+        return (
+            <form onSubmit={ handleSubmit }>
+                <input id='barge' name='barge' type='text' placeholder='Enter Barge Identifier: '/>
+                &nbsp;&nbsp;&nbsp;
+                <button id='download-barge' type='submit'>Download By Barge</button> 
+            </form>
+        )
+    }
+
     return (
         <div id='downloads'>
             <h3>Download Links</h3>
             <DownloadDatabase />
             <DownloadByOrderAndLoad />
+            <DownloadByBarge />
         </div>
     );
 }
