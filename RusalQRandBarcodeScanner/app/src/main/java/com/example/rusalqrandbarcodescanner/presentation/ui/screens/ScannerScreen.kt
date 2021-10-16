@@ -82,7 +82,6 @@ private class ImageAnalyzer: ImageAnalysis.Analyzer {
                             val bounds = barcode.boundingBox
                             val corners = barcode.cornerPoints
                             val rawValue = barcode.rawValue
-                            println("HERE\nJER\neohe\nEOEJF\nosghsog")
 
                             val valueType = barcode.valueType
                             if (rawValue != null) {

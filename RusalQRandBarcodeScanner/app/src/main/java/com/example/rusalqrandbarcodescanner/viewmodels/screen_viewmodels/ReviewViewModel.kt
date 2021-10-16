@@ -5,39 +5,43 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.rusalqrandbarcodescanner.database.ScannedCode
+import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.database.UserInput
-import com.example.rusalqrandbarcodescanner.repositories.CodeRepository
+import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
 import com.example.rusalqrandbarcodescanner.repositories.UserInputRepository
 import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
 import kotlin.properties.Delegates
 
-class ReviewViewModel(private val codeRepo : CodeRepository, private val userRepo : UserInputRepository) : ViewModel() {
+class ReviewViewModel(private val invRepo : InventoryRepository, private val userRepo : UserInputRepository) : ViewModel() {
     private lateinit var currentInput : MutableState<UserInput>
     private var loadedBundles by Delegates.notNull<Int>()
 
     val loading = mutableStateOf(true)
-    val codes : MutableState<List<ScannedCode>> = mutableStateOf(listOf())
+    val codes : MutableState<List<RusalItem>> = mutableStateOf(listOf())
 
 
     init {
         viewModelScope.launch {
             currentInput = mutableStateOf(userRepo.getInputSuspend()!![0])
-            loadedBundles = codeRepo.getRowCount()!!
-            codes.value = codeRepo.getAllCodes()
+            loadedBundles = invRepo.getNumberOfAddedItems()
+            codes.value = invRepo.getAddedItems()
             loading.value = false
         }
     }
 
-    fun removeCode(code : ScannedCode) = viewModelScope.launch {
-        codeRepo.delete(code)
-        codes.value = codeRepo.getAllCodes()
-        loadedBundles = codeRepo.getRowCount()!!
+    fun removeCode(item : RusalItem) = viewModelScope.launch {
+        if (item.barcode.contains("u")) {
+            invRepo.delete(item)
+        } else {
+            invRepo.updateIsAddedStatus(false, item.heatNum)
+        }
+        codes.value = invRepo.getAddedItems()
+        loadedBundles = invRepo.getNumberOfAddedItems()
     }
 
-    fun deleteAll() = viewModelScope.launch {
-        codeRepo.deleteAll()
+    fun removeAllAddedItems() = viewModelScope.launch {
+        invRepo.removeAllAddedItems()
     }
 
     fun isLoad() : Boolean {
@@ -48,11 +52,11 @@ class ReviewViewModel(private val codeRepo : CodeRepository, private val userRep
         return Integer.parseInt(currentInput.value.bundleQuantity) - loadedBundles > 0
     }
 
-    class ReviewViewModelFactory(private val codeRepository: CodeRepository, private val userRepository: UserInputRepository) : ViewModelProvider.Factory {
+    class ReviewViewModelFactory(private val invRepo : InventoryRepository, private val userRepo: UserInputRepository) : ViewModelProvider.Factory {
         override fun<T : ViewModel> create(modelClass : Class<T>) : T {
             if (modelClass.isAssignableFrom(ReviewViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")
-                return ReviewViewModel(codeRepository, userRepository) as T
+                return ReviewViewModel(invRepo, userRepo) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }

@@ -24,7 +24,7 @@ import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.services.HttpRequestHandler
 import com.example.rusalqrandbarcodescanner.Screen
-import com.example.rusalqrandbarcodescanner.database.ScannedCode
+import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.viewmodels.InventoryViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReviewViewModel
@@ -37,9 +37,9 @@ import com.example.rusalqrandbarcodescanner.viewmodels.ScannedCodeViewModel
 fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: ScannedCodeViewModel, inventoryViewModel: InventoryViewModel) {
     val application = LocalContext.current.applicationContext
 
-    val reviewViewModel : ReviewViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ReviewVM", factory = ReviewViewModelFactory((application as CodeApplication).repository, application.userRepository))
+    val reviewViewModel : ReviewViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ReviewVM", factory = ReviewViewModelFactory((application as CodeApplication).invRepository, application.userRepository))
 
-    var code : ScannedCode? by remember { mutableStateOf(null) }
+    var code : RusalItem? by remember { mutableStateOf(null) }
 
     val loading = reviewViewModel.loading.value
     var showRemoveDialog by remember { mutableStateOf(false)}
@@ -58,7 +58,7 @@ fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: Scanned
             } else if (showRemoveDialog) {
                 RemoveDialog(onDismissRequest = { showRemoveDialog = false },
                     onRemoveRequest = { reviewViewModel.removeCode(code!!) },
-                    code = code!!)
+                    item = code!!)
             }else {
                 val loadType = if (reviewViewModel.isLoad()) { "Load" } else { "Reception" }
 
@@ -68,7 +68,7 @@ fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: Scanned
                     "Review $loadType; if you would like to remove a bundle please select it:"
                 }, modifier = Modifier.padding(16.dp))
 
-                GetCodeListView(
+                GetRusalItemListView(
                     reviewViewModel.codes.value,
                     onClick = {
                         code = it
@@ -93,7 +93,7 @@ fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: Scanned
                             } else {
                                 /*TODO - Add Reception Confirmation Logic */
                             }
-                            reviewViewModel.deleteAll()
+                            reviewViewModel.removeAllAddedItems()
                             confirmDialog.value = true
                         }) {
                             Text(text = "Confirm $loadType", modifier = Modifier.padding(16.dp))
@@ -127,7 +127,7 @@ fun ReviewScreen(navController: NavHostController, scannedCodeViewModel: Scanned
 
 
 @Composable
-private fun GetCodeListView(codes : List<ScannedCode>, onClick : (item : ScannedCode) -> Unit) {
+private fun GetRusalItemListView(items : List<RusalItem>, onClick : (item : RusalItem) -> Unit) {
 
     LazyColumn (
         modifier = Modifier
@@ -136,20 +136,20 @@ private fun GetCodeListView(codes : List<ScannedCode>, onClick : (item : Scanned
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
     ) {
         items(
-            items = codes,
+            items = items,
             itemContent = { it ->
-                CodeListItem(scannedCode = it, onClick = { onClick(it) })
+                RusalItemListItem(item = it, onClick = { onClick(it) })
             }
         )
     }
 }
 
 @Composable
-private fun CodeListItem(scannedCode: ScannedCode, onClick: (item : ScannedCode) -> Unit) {
+private fun RusalItemListItem(item: RusalItem, onClick: (item : RusalItem) -> Unit) {
     Card(
         modifier= Modifier
             .padding(horizontal = 8.dp, vertical = 8.dp)
-            .clickable(onClick = { onClick(scannedCode) })
+            .clickable(onClick = { onClick(item) })
             .fillMaxWidth(),
         elevation = 2.dp,
         backgroundColor = Color.White,
@@ -160,8 +160,8 @@ private fun CodeListItem(scannedCode: ScannedCode, onClick: (item : ScannedCode)
                 .padding(16.dp)
                 .fillMaxWidth()
                 .align(Alignment.CenterVertically)) {
-                Text(text = "Heat: ${scannedCode.heatNum}" , style = MaterialTheme.typography.h6)
-                Text(text="BL: ${scannedCode.bl}", style = MaterialTheme.typography.h6)
+                Text(text = "Heat: ${item.heatNum}" , style = MaterialTheme.typography.h6)
+                Text(text="BL: ${item.blNum}", style = MaterialTheme.typography.h6)
             }
         }
     }
@@ -169,17 +169,17 @@ private fun CodeListItem(scannedCode: ScannedCode, onClick: (item : ScannedCode)
 
 @ExperimentalComposeUiApi
 @Composable
-private fun RemoveDialog(onDismissRequest : () -> Unit, onRemoveRequest : () -> Unit, code : ScannedCode) {
+private fun RemoveDialog(onDismissRequest : () -> Unit, onRemoveRequest : () -> Unit, item : RusalItem) {
     Dialog(properties = DialogProperties(usePlatformDefaultWidth = false),
         onDismissRequest = onDismissRequest) {
         Surface(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
-                Text(text = "Heat Number: ${ code.heatNum }")
-                Text(text = "BL Number: ${ code.bl }")
-                Text(text = "Quantity: ${ code.quantity }")
-                Text(text = "Net Weight Kg: ${ code.netWgtKg }")
-                Text(text = "Gross Weight Kg: ${ code.grossWgtKg }")
-                Text(text = "Barcode: ${code.barCode}")
+                Text(text = "Heat Number: ${ item.heatNum }")
+                Text(text = "BL Number: ${ item.blNum }")
+                Text(text = "Quantity: ${ item.quantity }")
+                Text(text = "Net Weight Kg: ${ item.netWeightKg }")
+                Text(text = "Gross Weight Kg: ${ item.grossWeightKg }")
+                Text(text = "Barcode: ${item.barcode}")
                 Button(onClick = onDismissRequest) {
                     Text("Deny Removal", modifier = Modifier.padding(16.dp))
                 }

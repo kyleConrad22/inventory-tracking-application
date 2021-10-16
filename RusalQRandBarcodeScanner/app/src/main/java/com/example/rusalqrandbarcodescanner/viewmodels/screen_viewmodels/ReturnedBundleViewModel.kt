@@ -1,5 +1,6 @@
 package com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
 import com.example.rusalqrandbarcodescanner.database.RusalItem
@@ -15,7 +16,7 @@ import java.time.format.DateTimeFormatter
 @DelicateCoroutinesApi
 class ReturnedBundleViewModel(private val invRepo : InventoryRepository, private val userRepo : UserInputRepository) : ViewModel() {
     private var currentInput = UserInput(id = "null")
-    private val currentLoadedBundles = mutableStateOf(listOf<RusalItem>())
+    private val currentLoadedBundles : MutableState<List<RusalItem>> = mutableStateOf(listOf())
 
     private var returnedBundle : RusalItem? = null
     private var isIncorrectHeat = false
