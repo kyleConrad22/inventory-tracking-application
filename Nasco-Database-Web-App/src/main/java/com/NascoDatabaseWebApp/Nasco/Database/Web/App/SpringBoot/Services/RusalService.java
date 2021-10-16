@@ -17,4 +17,6 @@ public interface RusalService {
     ByteArrayInputStream loadAll();
     ByteArrayInputStream loadByOrderAndLoad(String workOrder, String loadNum);
     ByteArrayInputStream loadByBarge(String barge);
+    void addMark(String bl, String mark);
+    void addBarge(String bl, String mark);
 }

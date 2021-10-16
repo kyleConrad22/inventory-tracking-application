@@ -29,4 +29,20 @@ public interface RusalLineItemRepository extends JpaRepository<RusalLineItem, St
         nativeQuery = true
     )
     void update(@Param("searchHeat") String heatNum, @Param("reqOrder") String workOrder, @Param("reqLoadNum") String loadNum, @Param("reqLoader") String loader, @Param("reqLoadTime") String loadTime);
+
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query(
+        value = "UPDATE current_inventory SET mark = :reqMark WHERE bl_num = :searchBl",
+        nativeQuery = true
+    )
+    void addMark(@Param("searchBl") String bl, @Param("reqMark") String mark);
+
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query(
+        value = "UPDATE current_inventory SET barge = :reqBarge WHERE bl_num = :searchBl",
+        nativeQuery = true
+    )
+    void addBarge(@Param("searchBl") String bl, @Param("reqBarge") String barge);
 }

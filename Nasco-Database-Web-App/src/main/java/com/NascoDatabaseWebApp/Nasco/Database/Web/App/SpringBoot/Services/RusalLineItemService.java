@@ -46,4 +46,11 @@ public class RusalLineItemService implements RusalService {
     public ByteArrayInputStream loadByBarge(String barge) {
         return ExcelHelper.loadToExcel(findByBarge(barge));
     }
+
+    public void addMark(String bl, String mark) {
+        repository.addMark(bl, mark);
+    }
+    public void addBarge(String bl, String barge) {
+        repository.addBarge(bl, barge);
+    }
 }
