@@ -1,12 +1,13 @@
 package com.example.rusalqrandbarcodescanner.viewmodels
 
+import android.app.Application
 import androidx.lifecycle.*
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 
-class InventoryViewModel(private val repository: InventoryRepository): ViewModel() {
+class MainActivityViewModel(private val repository: InventoryRepository, application : Application): AndroidViewModel(application) {
 
     fun findByBarcode(barcode: String): LiveData<RusalItem?> {
         val result = MutableLiveData<RusalItem?>()
@@ -25,12 +26,12 @@ class InventoryViewModel(private val repository: InventoryRepository): ViewModel
         repository.deleteAll()
     }
 
-    class CurrentInventoryViewModelFactory(private val repository: InventoryRepository) :
+    class MainActivityViewModelFactory(private val repository: InventoryRepository, private val application : Application) :
         ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(InventoryViewModel::class.java)) {
+            if (modelClass.isAssignableFrom(MainActivityViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")
-                return InventoryViewModel(repository) as T
+                return MainActivityViewModel(repository, application) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }

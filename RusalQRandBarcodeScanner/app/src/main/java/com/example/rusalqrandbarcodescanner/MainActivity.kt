@@ -16,8 +16,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.rusalqrandbarcodescanner.presentation.ui.screens.*
 import com.example.rusalqrandbarcodescanner.presentation.ui.theme.RusalQRAndBarcodeScannerTheme
-import com.example.rusalqrandbarcodescanner.viewmodels.InventoryViewModel
-import com.example.rusalqrandbarcodescanner.viewmodels.InventoryViewModel.CurrentInventoryViewModelFactory
+import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
+import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel.MainActivityViewModelFactory
 import com.example.rusalqrandbarcodescanner.viewmodels.ScannedCodeViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.ScannedCodeViewModel.ScannedCodeViewModelFactory
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -30,8 +30,8 @@ class MainActivity : ComponentActivity() {
         ScannedCodeViewModelFactory((application as CodeApplication).repository)
     }
 
-    private val inventoryViewModel: InventoryViewModel by viewModels {
-        CurrentInventoryViewModelFactory((application as CodeApplication).invRepository)
+    private val mainActivityViewModel: MainActivityViewModel by viewModels {
+        MainActivityViewModelFactory((application as CodeApplication).invRepository, application)
     }
 
     @ExperimentalAnimationApi
@@ -73,7 +73,7 @@ class MainActivity : ComponentActivity() {
                 composable(Screen.ReviewScreen.title) {
                     ReviewScreen(navController,
                         scannedCodeViewModel,
-                        inventoryViewModel)
+                        mainActivityViewModel)
                 }
                 composable(Screen.ManualEntryScreen.title) { ManualEntryScreen(navController) }
                 composable(Screen.ScannerScreen.title) { ScannerScreen(navController) }

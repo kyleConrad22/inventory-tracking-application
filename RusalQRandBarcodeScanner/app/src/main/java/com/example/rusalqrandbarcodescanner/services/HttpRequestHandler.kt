@@ -6,7 +6,7 @@ import android.util.Log
 import androidx.lifecycle.Observer
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
-import com.example.rusalqrandbarcodescanner.viewmodels.InventoryViewModel
+import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReviewViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.ScannedCodeViewModel
 import com.squareup.moshi.JsonAdapter
@@ -44,7 +44,7 @@ object HttpRequestHandler {
             }
         }
 
-    private suspend fun updateDatabase(reviewViewModel : ReviewViewModel, viewModel: ScannedCodeViewModel, inventoryViewModel: InventoryViewModel) = withContext(Dispatchers.IO) {
+    private suspend fun updateDatabase(reviewViewModel : ReviewViewModel, viewModel: ScannedCodeViewModel, mainActivityViewModel: MainActivityViewModel) = withContext(Dispatchers.IO) {
         val codes = viewModel.allCodes.value
 
         if (codes != null) {
@@ -83,8 +83,8 @@ object HttpRequestHandler {
                         newCode = it
                     }
                     GlobalScope.launch(Dispatchers.Main){
-                        inventoryViewModel.findByBarcode(code.barCode).observeForever(uniObserver)
-                        inventoryViewModel.findByBarcode(code.barCode).removeObserver(uniObserver)
+                        mainActivityViewModel.findByBarcode(code.barCode).observeForever(uniObserver)
+                        mainActivityViewModel.findByBarcode(code.barCode).removeObserver(uniObserver)
                     }
                     val grossWeight = code.grossWgtKg
                     val netWeight = code.netWgtKg
@@ -145,9 +145,9 @@ object HttpRequestHandler {
         return false
     }
 
-    fun initUpdate(reviewViewModel: ReviewViewModel, viewModel: ScannedCodeViewModel, inventoryViewModel: InventoryViewModel) {
+    fun initUpdate(reviewViewModel: ReviewViewModel, viewModel: ScannedCodeViewModel, mainActivityViewModel: MainActivityViewModel) {
         CoroutineScope(Dispatchers.IO).launch {
-            updateDatabase(reviewViewModel = reviewViewModel, viewModel = viewModel, inventoryViewModel = inventoryViewModel)
+            updateDatabase(reviewViewModel = reviewViewModel, viewModel = viewModel, mainActivityViewModel = mainActivityViewModel)
         }
     }
 
