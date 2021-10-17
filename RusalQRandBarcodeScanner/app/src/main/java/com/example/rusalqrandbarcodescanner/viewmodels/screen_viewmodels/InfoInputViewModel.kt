@@ -20,10 +20,12 @@ class InfoInputViewModel(private val mainActivityVM : MainActivityViewModel, pri
     val loading = mutableStateOf(false)
 
     init {
-        viewModelScope.launch {
-            loading.value = true
-            blList.value = getUniqueBlList(invRepo.getAllSuspend()!!)
-            loading.value = false
+        if (mainActivityVM.sessionType.value == SessionType.SHIPMENT) {
+            viewModelScope.launch {
+                loading.value = true
+                blList.value = getUniqueBlList(invRepo.getAllSuspend()!!)
+                loading.value = false
+            }
         }
     }
 

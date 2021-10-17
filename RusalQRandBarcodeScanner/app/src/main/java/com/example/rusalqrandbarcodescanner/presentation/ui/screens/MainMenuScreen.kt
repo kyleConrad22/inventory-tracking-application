@@ -23,7 +23,6 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 @Composable
 fun MainMenuScreen(navController: NavHostController, mainActivityVM: MainActivityViewModel) {
 
-    val sessionType = mainActivityVM.sessionType.value
 
     Scaffold(topBar = { TopAppBar(title = { Text(text="Main Menu", textAlign = TextAlign.Center) }) }) {
 
@@ -33,9 +32,9 @@ fun MainMenuScreen(navController: NavHostController, mainActivityVM: MainActivit
 
             Button(onClick = {
                 mainActivityVM.sessionType.value = SessionType.SHIPMENT
-                handleClick(navController, sessionType)
+                handleClick(navController, mainActivityVM.sessionType.value)
             }) {
-                Text(text = "New Load",
+                Text(text = "New Shipment",
                     modifier = Modifier
                         .padding(16.dp)
                         .size(width = 200.dp, height = 20.dp)
@@ -44,7 +43,7 @@ fun MainMenuScreen(navController: NavHostController, mainActivityVM: MainActivit
             }
             Button(onClick = {
                 mainActivityVM.sessionType.value = SessionType.RECEPTION
-                handleClick(navController, sessionType)
+                handleClick(navController, mainActivityVM.sessionType.value)
             }) {
                 Text(text = "New Reception",
                     modifier = Modifier
@@ -55,7 +54,7 @@ fun MainMenuScreen(navController: NavHostController, mainActivityVM: MainActivit
             }
             Button(onClick = {
                 mainActivityVM.sessionType.value = SessionType.GENERAL
-                handleClick(navController, sessionType)
+                handleClick(navController, mainActivityVM.sessionType.value)
             }) {
                 Text(text = "Get Bundle Info",
                     modifier = Modifier
