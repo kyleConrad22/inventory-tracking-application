@@ -3,6 +3,7 @@ package com.example.rusalqrandbarcodescanner.viewmodels
 import android.app.Application
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
@@ -24,11 +25,22 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
     val pieceCount = mutableStateOf("")
     val quantity = mutableStateOf("")
 
+    val addedItemCount = mutableStateOf(0)
+
     init {
         viewModelScope.launch {
             repo.deleteAll()
             loading.value = HttpRequestHandler.initialize(repo)
         }
+    }
+
+    private fun updateAddedItemCount() = viewModelScope.launch() {
+        addedItemCount.value = repo.getNumberOfAddedItems()
+    }
+
+    fun removeAllAddedItems() = viewModelScope.launch {
+        repo.removeAllAddedItems()
+        updateAddedItemCount()
     }
 
     suspend fun getAddedItems() : List<RusalItem> {

@@ -8,105 +8,100 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
-import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
-import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.OptionsViewModel
+import com.example.rusalqrandbarcodescanner.domain.models.SessionType
+import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 
 @Composable
 fun OptionsScreen(navController: NavHostController) {
     val application = LocalContext.current.applicationContext as CodeApplication
 
-    val optionsVM : OptionsViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "optionsVM", factory = OptionsViewModel.OptionsViewModelFactory(application.userRepository, application.invRepository))
+    val mainActivityVM : MainActivityViewModel = viewModel(factory = MainActivityViewModel.MainActivityViewModelFactory(application.invRepository, application))
 
-    val loading = optionsVM.loading.value
-    val isLoad = optionsVM.isLoad.value
-    val userInput = optionsVM.userInput.value
-    val isDisplayAdditionalButtons = optionsVM.isDisplayAdditionalButtons.value
-    val isDisplayRemoveEntry = optionsVM.isDisplayRemoveEntry.value
+    val addedItemCount = mainActivityVM.addedItemCount.value
 
-    val resetDialog = remember { mutableStateOf(false) }
-    val type = if (isLoad) { "Load" } else { "Reception" }
+    val displayAdditionalOptions = addedItemCount > 0
+    val displayRemoveOption = addedItemCount - Integer.parseInt(mainActivityVM.quantity.value) > 0
 
-    Scaffold(topBar = { TopAppBar(title = { Text("Scanner Options", textAlign = TextAlign.Center) }) }) {
+    val sessionType = mainActivityVM.sessionType.value
+
+    val showResetDialog = remember { mutableStateOf(false) }
+
+    Scaffold(topBar = { TopAppBar(title = { Text("${sessionType.type} Options", textAlign = TextAlign.Center) }) }) {
 
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
-            if (loading) {
-                LoadingDialog(isDisplayed = true)
+            if (sessionType == SessionType.SHIPMENT) {
+                Text(text = "${mainActivityVM.workOrder.value} Load ${mainActivityVM.loadNum.value} Shipment")
             } else {
-                if (isLoad) {
-                    Text(text = "${userInput!!.order} Load ${userInput.load}")
-                } else {
-                    Text(text = "Vessel Project: ${userInput!!.vessel}")
-                }
-                Button(onClick = { navController.navigate(Screen.ScannerScreen.title) }) {
-                    Text(text = "Scan Code", modifier = Modifier
-                        .padding(16.dp)
-                        .size(width = 200.dp, height = 20.dp)
-                        .align(Alignment.CenterVertically), textAlign = TextAlign.Center)
-                }
-                if (isDisplayAdditionalButtons) {
-                    if (isLoad) {
-                        Button(onClick = {
-                            resetDialog.value = true
-                        }) {
-                            Text(text = "Reset Load",
-                                modifier = Modifier
-                                    .padding(16.dp)
-                                    .size(width = 200.dp, height = 20.dp)
-                                    .align(Alignment.CenterVertically),
-                                textAlign = TextAlign.Center)
-                        }
-                    }
-                }
-                Row(modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly) {
+                Text(text = "Barge ${mainActivityVM.barge.value} Reception")
+            }
+            Button(onClick = { navController.navigate(Screen.ScannerScreen.title) }) {
+                Text(text = "Scan Code", modifier = Modifier
+                    .padding(16.dp)
+                    .size(width = 200.dp, height = 20.dp)
+                    .align(Alignment.CenterVertically), textAlign = TextAlign.Center)
+            }
+            if (displayAdditionalOptions) {
+                if (sessionType == SessionType.SHIPMENT) {
                     Button(onClick = {
-                        navController.navigate(Screen.InfoInputScreen.title)
+                        showResetDialog.value = true
                     }) {
-                        Text(text = "Back", modifier = Modifier.padding(16.dp))
+                        Text(text = "Remove All from Shipment",
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .size(width = 200.dp, height = 20.dp)
+                                .align(Alignment.CenterVertically),
+                            textAlign = TextAlign.Center)
                     }
-                    if (isDisplayAdditionalButtons) {
-                        Button(onClick = {
-                            navController.navigate(Screen.ReviewScreen.title)
-                        }) {
-                            Text(text = if (isDisplayRemoveEntry) {
-                                "Remove Entry"
-                            } else {
-                                "Review $type"
-                            }, modifier = Modifier.padding(16.dp))
-                        }
+                }
+            }
+            Row(modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly) {
+                Button(onClick = {
+                    navController.navigate(Screen.InfoInputScreen.title)
+                }) {
+                    Text(text = "Back", modifier = Modifier.padding(16.dp))
+                }
+                if (displayAdditionalOptions) {
+                    Button(onClick = {
+                        navController.navigate(Screen.ReviewScreen.title)
+                    }) {
+                        Text(text = if (displayRemoveOption) {
+                            "Remove Item"
+                        } else {
+                            "Review ${sessionType.type}"
+                        }, modifier = Modifier.padding(16.dp))
                     }
-                    if (resetDialog.value) {
-                        AlertDialog(
-                            onDismissRequest = { resetDialog.value = false },
-                            title = { Text(text = "Reset $type Confirmation") },
-                            text = { Text(text = "Are you sure you would like to remove all bundles from this Load? This cannot be undone.") },
-                            buttons = {
-                                Row(modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceEvenly) {
-                                    Button(onClick = {
-                                        resetDialog.value = false
-                                    }) {
-                                        Text(text = "Deny Reset",
-                                            modifier = Modifier.padding(16.dp))
-                                    }
-                                    Button(onClick = {
-                                        resetDialog.value = false
-                                        optionsVM.deleteAll()
-                                    }) {
-                                        Text(text = "Confirm Reset",
-                                            modifier = Modifier.padding(16.dp))
-                                    }
+                }
+                if (showResetDialog.value) {
+                    AlertDialog(
+                        onDismissRequest = { showResetDialog.value = false },
+                        title = { Text(text = "Reset ${sessionType.type} Confirmation") },
+                        text = { Text(text = "Are you sure you would like to remove all bundles from this Load? This cannot be undone.") },
+                        buttons = {
+                            Row(modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceEvenly) {
+                                Button(onClick = {
+                                    showResetDialog.value = false
+                                }) {
+                                    Text(text = "Deny Reset",
+                                        modifier = Modifier.padding(16.dp))
                                 }
-                            })
-                    }
+                                Button(onClick = {
+                                    showResetDialog.value = false
+                                    mainActivityVM.removeAllAddedItems()
+                                }) {
+                                    Text(text = "Confirm Reset",
+                                        modifier = Modifier.padding(16.dp))
+                                }
+                            }
+                        })
                 }
             }
         }
