@@ -24,7 +24,7 @@ fun OptionsScreen(navController: NavHostController) {
     val addedItemCount = mainActivityVM.addedItemCount.value
 
     val displayAdditionalOptions = addedItemCount > 0
-    val displayRemoveOption = addedItemCount - Integer.parseInt(mainActivityVM.quantity.value) > 0
+    val displayRemoveOption = mainActivityVM.displayRemoveEntryContent.value
 
     val sessionType = mainActivityVM.sessionType.value
 

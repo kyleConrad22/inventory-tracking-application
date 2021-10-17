@@ -64,10 +64,7 @@ class MainActivity : ComponentActivity() {
             NavHost(navController = navController,
                 startDestination = (Screen.SplashScreen.title)) {
                 composable(Screen.MainMenuScreen.title) { MainMenuScreen(navController) }
-                composable(Screen.ReviewScreen.title) {
-                    ReviewScreen(navController,
-                        mainActivityViewModel)
-                }
+                composable(Screen.ReviewScreen.title) { ReviewScreen(navController) }
                 composable(Screen.ManualEntryScreen.title) { ManualEntryScreen(navController) }
                 composable(Screen.ScannerScreen.title) { ScannerScreen(navController) }
                 composable(Screen.OptionsScreen.title) { OptionsScreen(navController) }

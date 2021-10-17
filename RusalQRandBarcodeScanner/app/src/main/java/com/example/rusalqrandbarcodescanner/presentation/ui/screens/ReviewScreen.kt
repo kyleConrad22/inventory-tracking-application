@@ -25,6 +25,7 @@ import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.services.HttpRequestHandler
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.database.RusalItem
+import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReviewViewModel
@@ -33,16 +34,20 @@ import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReviewV
 
 @ExperimentalComposeUiApi
 @Composable
-fun ReviewScreen(navController: NavHostController, mainActivityViewModel: MainActivityViewModel) {
+fun ReviewScreen(navController: NavHostController) {
     val application = LocalContext.current.applicationContext as CodeApplication
 
-    val reviewVM : ReviewViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ReviewVM", factory = ReviewViewModelFactory(application.invRepository, application.userRepository))
+    val mainActivityVM : MainActivityViewModel = viewModel(factory = MainActivityViewModel.MainActivityViewModelFactory(application.invRepository, application))
 
-    var code : RusalItem? by remember { mutableStateOf(null) }
+    val reviewVM : ReviewViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ReviewVM", factory = ReviewViewModelFactory(application.invRepository))
+    var item : RusalItem? by remember { mutableStateOf(null) }
+
+    val sessionType = mainActivityVM.sessionType.value
+    val displayRemoveEntry = mainActivityVM.displayRemoveEntryContent.value
 
     val loading = reviewVM.loading.value
-    var showRemoveDialog by remember { mutableStateOf(false)}
-    val confirmDialog = remember { mutableStateOf(false) }
+    var showRemoveDialog by remember { mutableStateOf(false) }
+    val showConfirmDialog = remember { mutableStateOf(false) }
 
     Scaffold(topBar = { TopAppBar(title = { Text(text="Rusal Scanner", textAlign = TextAlign.Center) }) }) {
 
@@ -56,21 +61,22 @@ fun ReviewScreen(navController: NavHostController, mainActivityViewModel: MainAc
 
             } else if (showRemoveDialog) {
                 RemoveDialog(onDismissRequest = { showRemoveDialog = false },
-                    onRemoveRequest = { reviewVM.removeCode(code!!) },
-                    item = code!!)
+                    onRemoveRequest = {
+                        reviewVM.removeItem(item!!)
+                        mainActivityVM.refresh()
+                    },
+                    item = item!!)
             }else {
-                val loadType = if (reviewVM.isLoad()) { "Load" } else { "Reception" }
-
-                Text(text = if (reviewVM.showRemoveDialog()) {
+                Text(text = if (displayRemoveEntry) {
                     "Please select the bundle you would like to remove:"
                 } else {
-                    "Review $loadType; if you would like to remove a bundle please select it:"
+                    "Review ${sessionType.type}; if you would like to remove a bundle please select it:"
                 }, modifier = Modifier.padding(16.dp))
 
                 GetRusalItemListView(
-                    reviewVM.codes.value,
+                    reviewVM.items.value,
                     onClick = {
-                        code = it
+                        item = it
                         showRemoveDialog = true
                     }
                 )
@@ -83,28 +89,29 @@ fun ReviewScreen(navController: NavHostController, mainActivityViewModel: MainAc
                     }) {
                         Text(text = "Back", modifier = Modifier.padding(16.dp))
                     }
-                    if (!reviewVM.showRemoveDialog()) {
+                    if (!displayRemoveEntry) {
                         Button(onClick = {
-                            if (reviewVM.isLoad()) {
-                                HttpRequestHandler.initUpdate(mainActivityViewModel)
+                            if (sessionType == SessionType.SHIPMENT) {
+                                HttpRequestHandler.initUpdate(mainActivityVM)
                             } else {
                                 /*TODO - Add Reception Confirmation Logic */
                             }
                             reviewVM.removeAllAddedItems()
-                            confirmDialog.value = true
+                            mainActivityVM.refresh()
+                            showConfirmDialog.value = true
                         }) {
-                            Text(text = "Confirm $loadType", modifier = Modifier.padding(16.dp))
+                            Text(text = "Confirm ${sessionType.type}", modifier = Modifier.padding(16.dp))
                         }
                     }
                 }
-                if (confirmDialog.value) {
+                if (showConfirmDialog.value) {
                     AlertDialog(
                         onDismissRequest = {
                             navController.popBackStack(Screen.MainMenuScreen.title,
                                 inclusive = true)
                         },
-                        title = { Text(text = "$loadType Confirmation") },
-                        text = { Text(text = "$loadType Confirmed") },
+                        title = { Text(text = "${sessionType.type} Confirmation") },
+                        text = { Text(text = "${sessionType.type} Confirmed") },
                         buttons = {
                             Row(modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -159,6 +166,7 @@ private fun RusalItemListItem(item: RusalItem, onClick: (item : RusalItem) -> Un
                 .align(Alignment.CenterVertically)) {
                 Text(text = "Heat: ${item.heatNum}" , style = MaterialTheme.typography.h6)
                 Text(text="BL: ${item.blNum}", style = MaterialTheme.typography.h6)
+                Text("Mark: ${item.mark}", style = MaterialTheme.typography.h6)
             }
         }
     }
@@ -176,6 +184,7 @@ private fun RemoveDialog(onDismissRequest : () -> Unit, onRemoveRequest : () -> 
                 Text(text = "Quantity: ${ item.quantity }")
                 Text(text = "Net Weight Kg: ${ item.netWeightKg }")
                 Text(text = "Gross Weight Kg: ${ item.grossWeightKg }")
+                Text(text = "Mark: ${item.mark}")
                 Text(text = "Barcode: ${item.barcode}")
                 Button(onClick = onDismissRequest) {
                     Text("Deny Removal", modifier = Modifier.padding(16.dp))

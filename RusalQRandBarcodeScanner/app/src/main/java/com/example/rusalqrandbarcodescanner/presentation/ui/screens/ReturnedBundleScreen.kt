@@ -24,7 +24,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
+import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
+import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReturnedBundleViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReturnedBundleViewModel.ReturnedBundleViewModelFactory
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -34,14 +36,16 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 @Composable
 fun ReturnedBundleScreen(navController: NavHostController) {
     val application  = LocalContext.current.applicationContext as CodeApplication
-    val returnedBundleVM : ReturnedBundleViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ReturnedBundleVM", factory = ReturnedBundleViewModelFactory(application.invRepository, application.userRepository))
+
+    val mainActivityVM : MainActivityViewModel = viewModel(factory = MainActivityViewModel.MainActivityViewModelFactory(application.invRepository, application))
+    val returnedBundleVM : ReturnedBundleViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ReturnedBundleVM", factory = ReturnedBundleViewModelFactory(application.invRepository, mainActivityVM))
 
     val showAddedDialog = remember { mutableStateOf(false) }
 
     val loading = returnedBundleVM.loading.value
 
     if (showAddedDialog.value) {
-        BundleAddedDialog(navController, showAddedDialog, returnedBundleVM.getHeat(), returnedBundleVM.getType(), returnedBundleVM.isLastBundle())
+        BundleAddedDialog(navController, showAddedDialog, mainActivityVM.heatNum.value, mainActivityVM.sessionType.value.type, returnedBundleVM.isLastBundle())
     } else {
         Scaffold(topBar = { TopAppBar(title = { Text("Returned Bundle Info") }) }) {
 
@@ -65,12 +69,14 @@ fun ReturnedBundleScreen(navController: NavHostController) {
                         Row(modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceEvenly) {
                             Button(onClick = {
+                                mainActivityVM.deleteBaseHeat()
                                 navController.popBackStack()
                             }) {
                                 Text(text = "Deny", modifier = Modifier.padding(16.dp))
                             }
                             Button(onClick = {
                                 returnedBundleVM.addBundle()
+                                mainActivityVM.refresh()
                                 showAddedDialog.value = true
                             }) {
                                 Text(text = "Add", modifier = Modifier.padding(16.dp))

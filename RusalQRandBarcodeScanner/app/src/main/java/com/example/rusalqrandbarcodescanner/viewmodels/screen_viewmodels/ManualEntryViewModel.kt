@@ -2,7 +2,6 @@ package com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
-import com.example.rusalqrandbarcodescanner.repositories.UserInputRepository
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException

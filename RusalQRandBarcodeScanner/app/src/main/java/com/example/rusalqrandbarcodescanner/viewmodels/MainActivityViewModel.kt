@@ -27,6 +27,9 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
     val heatNum = mutableStateOf("")
 
     val addedItemCount = mutableStateOf(0)
+    val addedItems = mutableStateOf(listOf<RusalItem>())
+
+    val displayRemoveEntryContent = mutableStateOf(false)
 
     init {
         viewModelScope.launch {
@@ -35,8 +38,24 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
         }
     }
 
+    fun refresh() {
+        updateAddedItems()
+        updateAddedItemCount()
+    }
+
+    /* TODO */
+    fun deleteBaseHeat() {
+        if (heatNum.value.length == 6) {
+        }
+    }
+
+    private fun setDisplayRemoveEntryContent() {
+        displayRemoveEntryContent.value = addedItemCount.value - quantity.value.toInt() > 0
+    }
+
     private fun updateAddedItemCount() = viewModelScope.launch() {
         addedItemCount.value = repo.getNumberOfAddedItems()
+        setDisplayRemoveEntryContent()
     }
 
     fun removeAllAddedItems() = viewModelScope.launch {
@@ -44,8 +63,8 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
         updateAddedItemCount()
     }
 
-    suspend fun getAddedItems() : List<RusalItem> {
-       return repo.getAddedItems()
+    private fun updateAddedItems() = viewModelScope.launch {
+       addedItems.value = repo.getAddedItems()
     }
 
     fun findByBarcode(barcode: String): LiveData<RusalItem?> {
