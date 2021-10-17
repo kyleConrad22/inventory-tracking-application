@@ -1,16 +1,29 @@
 package com.example.rusalqrandbarcodescanner.viewmodels
 
 import android.app.Application
+import android.se.omapi.Session
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
 import com.example.rusalqrandbarcodescanner.database.RusalItem
+import com.example.rusalqrandbarcodescanner.domain.models.SessionType
+import com.example.rusalqrandbarcodescanner.services.HttpRequestHandler
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 
 class MainActivityViewModel(private val repo : InventoryRepository, application : Application): AndroidViewModel(application) {
+
+    val loading = mutableStateOf(true)
+    val sessionType = mutableStateOf(SessionType.GENERAL)
+
+    init {
+        viewModelScope.launch {
+            repo.deleteAll()
+            loading.value = HttpRequestHandler.initialize(repo)
+        }
+    }
 
     suspend fun getAddedItems() : List<RusalItem> {
        return repo.getAddedItems()
