@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
+import com.example.rusalqrandbarcodescanner.services.HttpRequestHandler
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
@@ -28,6 +29,10 @@ class ReviewViewModel(private val invRepo : InventoryRepository, private val mai
         }
         invRepo.removeAllAddedItems()
         mainActivityVM.refresh()
+    }
+
+    fun initiateUpdate() {
+        HttpRequestHandler.initUpdate(mainActivityVM.addedItems.value, mainActivityVM.sessionType.value)
     }
 
     class ReviewViewModelFactory(private val invRepo : InventoryRepository, private val mainActivityVM: MainActivityViewModel) : ViewModelProvider.Factory {

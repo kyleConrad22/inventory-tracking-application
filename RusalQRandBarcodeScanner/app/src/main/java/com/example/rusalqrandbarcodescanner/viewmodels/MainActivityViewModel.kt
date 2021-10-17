@@ -3,7 +3,6 @@ package com.example.rusalqrandbarcodescanner.viewmodels
 import android.app.Application
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
@@ -33,8 +32,9 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
 
     init {
         viewModelScope.launch {
+            loading.value = true
             repo.deleteAll()
-            loading.value = HttpRequestHandler.initialize(repo)
+            HttpRequestHandler.initialize(repo, loading)
         }
     }
 

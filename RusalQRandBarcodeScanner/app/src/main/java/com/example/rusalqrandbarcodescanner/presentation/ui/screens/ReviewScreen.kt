@@ -33,10 +33,8 @@ import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReviewV
 
 @ExperimentalComposeUiApi
 @Composable
-fun ReviewScreen(navController: NavHostController) {
+fun ReviewScreen(navController: NavHostController, mainActivityVM : MainActivityViewModel) {
     val application = LocalContext.current.applicationContext as CodeApplication
-
-    val mainActivityVM : MainActivityViewModel = viewModel(factory = MainActivityViewModel.MainActivityViewModelFactory(application.invRepository, application))
 
     val reviewVM : ReviewViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ReviewVM", factory = ReviewViewModelFactory(application.invRepository, mainActivityVM))
     var item : RusalItem? by remember { mutableStateOf(null) }
@@ -87,7 +85,7 @@ fun ReviewScreen(navController: NavHostController) {
                     if (!displayRemoveEntry) {
                         Button(onClick = {
                             if (sessionType == SessionType.SHIPMENT) {
-                                HttpRequestHandler.initUpdate(mainActivityVM)
+                                reviewVM.initiateUpdate()
                             } else {
                                 /*TODO - Add Reception Confirmation Logic */
                             }

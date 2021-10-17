@@ -1,5 +1,6 @@
 package com.example.rusalqrandbarcodescanner.presentation.ui.screens
 
+import android.util.Log
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -13,11 +14,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.R
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.presentation.components.CircularIndeterminateProgressBar
@@ -26,11 +24,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 
 @DelicateCoroutinesApi
 @Composable
-fun SplashScreen(navController: NavController) {
-
-    val application = LocalContext.current.applicationContext as CodeApplication
-
-    val mainActivityVM : MainActivityViewModel = viewModel(factory = MainActivityViewModel.MainActivityViewModelFactory(application.invRepository, application))
+fun SplashScreen(navController: NavController, mainActivityVM: MainActivityViewModel) {
 
     val loading = mainActivityVM.loading.value
 
@@ -38,8 +32,9 @@ fun SplashScreen(navController: NavController) {
         androidx.compose.animation.core.Animatable(0f)
     }
 
-    if (!loading)
+    if (!loading) {
         LaunchedEffect(key1 = true) { navController.navigate(Screen.MainMenuScreen.title) }
+    }
 
     // Animation Effect
     LaunchedEffect(key1 = true) {

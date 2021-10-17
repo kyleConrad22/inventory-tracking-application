@@ -25,11 +25,9 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 @DelicateCoroutinesApi
 @ExperimentalComposeUiApi
 @Composable
-fun ManualEntryScreen(navController : NavHostController) {
+fun ManualEntryScreen(navController : NavHostController, mainActivityVM : MainActivityViewModel) {
 
-    val application = LocalContext.current.applicationContext as CodeApplication
     val focusManager = LocalFocusManager.current
-    val mainActivityVM : MainActivityViewModel = viewModel(factory = MainActivityViewModel.MainActivityViewModelFactory(application.invRepository, application))
     val manualEntryVM : ManualEntryViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "manualEntryVM", factory = ManualEntryViewModel.ManualEntryViewModelFactory(mainActivityVM))
 
     val displaySearchButton = manualEntryVM.displaySearchButton.value

@@ -35,10 +35,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 @DelicateCoroutinesApi
 @ExperimentalComposeUiApi
 @Composable
-fun ScannerScreen(navController: NavHostController) {
-    val application = LocalContext.current.applicationContext as CodeApplication
-
-    val mainActivityVM: MainActivityViewModel = viewModel(factory = MainActivityViewModel.MainActivityViewModelFactory(application.invRepository, application))
+fun ScannerScreen(navController: NavHostController, mainActivityVM: MainActivityViewModel) {
 
     CameraPreview(modifier = Modifier.fillMaxSize(), navController = navController, mainActivityVM = mainActivityVM)
     Column(modifier = Modifier.fillMaxSize(),

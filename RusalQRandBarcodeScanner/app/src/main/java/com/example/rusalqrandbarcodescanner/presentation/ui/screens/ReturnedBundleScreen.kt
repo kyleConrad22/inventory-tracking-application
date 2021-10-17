@@ -34,10 +34,9 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 @DelicateCoroutinesApi
 @ExperimentalComposeUiApi
 @Composable
-fun ReturnedBundleScreen(navController: NavHostController) {
+fun ReturnedBundleScreen(navController: NavHostController, mainActivityVM : MainActivityViewModel) {
     val application  = LocalContext.current.applicationContext as CodeApplication
 
-    val mainActivityVM : MainActivityViewModel = viewModel(factory = MainActivityViewModel.MainActivityViewModelFactory(application.invRepository, application))
     val returnedBundleVM : ReturnedBundleViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ReturnedBundleVM", factory = ReturnedBundleViewModelFactory(application.invRepository, mainActivityVM))
 
     val showAddedDialog = remember { mutableStateOf(false) }

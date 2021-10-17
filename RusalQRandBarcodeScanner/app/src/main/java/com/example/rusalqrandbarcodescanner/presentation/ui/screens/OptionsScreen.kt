@@ -16,10 +16,7 @@ import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 
 @Composable
-fun OptionsScreen(navController: NavHostController) {
-    val application = LocalContext.current.applicationContext as CodeApplication
-
-    val mainActivityVM : MainActivityViewModel = viewModel(factory = MainActivityViewModel.MainActivityViewModelFactory(application.invRepository, application))
+fun OptionsScreen(navController: NavHostController, mainActivityVM : MainActivityViewModel) {
 
     val addedItemCount = mainActivityVM.addedItemCount.value
 

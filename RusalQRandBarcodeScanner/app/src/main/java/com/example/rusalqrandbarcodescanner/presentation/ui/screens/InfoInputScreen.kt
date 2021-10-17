@@ -39,10 +39,9 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 @DelicateCoroutinesApi
 @ExperimentalComposeUiApi
 @Composable
-fun InfoInputScreen(navController: NavHostController) {
+fun InfoInputScreen(navController: NavHostController, mainActivityVM: MainActivityViewModel) {
     val application = LocalContext.current.applicationContext as CodeApplication
 
-    val mainActivityVM : MainActivityViewModel = viewModel(factory = MainActivityViewModel.MainActivityViewModelFactory(application.invRepository, application))
     val infoInputVM: InfoInputViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "infoInputVM", factory = InfoInputViewModel.InfoInputViewModelFactory(mainActivityVM, application.invRepository))
 
     val focusManager = LocalFocusManager.current

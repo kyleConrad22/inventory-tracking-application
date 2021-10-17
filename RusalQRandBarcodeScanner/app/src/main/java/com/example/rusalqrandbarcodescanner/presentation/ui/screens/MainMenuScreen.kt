@@ -21,10 +21,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 
 @DelicateCoroutinesApi
 @Composable
-fun MainMenuScreen(navController: NavHostController) {
-    val application = LocalContext.current.applicationContext as CodeApplication
-
-    val mainActivityVM: MainActivityViewModel = viewModel(factory = MainActivityViewModel.MainActivityViewModelFactory(application.invRepository, application))
+fun MainMenuScreen(navController: NavHostController, mainActivityVM: MainActivityViewModel) {
 
     val sessionType = mainActivityVM.sessionType.value
 
