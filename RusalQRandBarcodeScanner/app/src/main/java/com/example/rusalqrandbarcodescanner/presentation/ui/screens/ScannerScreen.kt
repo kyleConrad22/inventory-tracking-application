@@ -22,15 +22,12 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.util.ScannedInfo
 import com.example.rusalqrandbarcodescanner.Screen
-import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
-import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ScannerViewModel
-import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ScannerViewModel.ScannerViewModelFactory
+import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -39,31 +36,27 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 @ExperimentalComposeUiApi
 @Composable
 fun ScannerScreen(navController: NavHostController) {
+    val application = LocalContext.current.applicationContext as CodeApplication
 
-    val scannerVM : ScannerViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ScannerVM", factory = ScannerViewModelFactory((LocalContext.current.applicationContext as CodeApplication).userRepository))
-    val loading = scannerVM.loading.value
+    val mainActivityVM: MainActivityViewModel = viewModel(factory = MainActivityViewModel.MainActivityViewModelFactory(application.invRepository, application))
 
-    CameraPreview(modifier = Modifier.fillMaxSize(), navController = navController, scannerViewModel = scannerVM)
+    CameraPreview(modifier = Modifier.fillMaxSize(), navController = navController, mainActivityVM = mainActivityVM)
     Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom) {
-        if (loading) {
-            LoadingDialog(isDisplayed = true)
-        } else {
-            Row(modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.SpaceEvenly) {
-                Button(onClick = {
-                    navController.popBackStack()
-                }) {
-                    Text(text = "Back", modifier = Modifier.padding(16.dp))
-                }
-                Button(onClick = { navController.navigate(Screen.ManualEntryScreen.title) }) {
-                    Text(text = "Manual Entry", modifier = Modifier.padding(16.dp))
-                }
+        Row(modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.SpaceEvenly) {
+            Button(onClick = {
+                navController.popBackStack()
+            }) {
+                Text(text = "Back", modifier = Modifier.padding(16.dp))
             }
-            Spacer(modifier = Modifier.padding(30.dp))
+            Button(onClick = { navController.navigate(Screen.ManualEntryScreen.title) }) {
+                Text(text = "Manual Entry", modifier = Modifier.padding(16.dp))
+            }
         }
+        Spacer(modifier = Modifier.padding(30.dp))
     }
 }
 
@@ -107,7 +100,7 @@ fun CameraPreview(
     cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA,
     scaleType: PreviewView.ScaleType = PreviewView.ScaleType.FILL_CENTER,
     navController: NavHostController,
-    scannerViewModel : ScannerViewModel
+    mainActivityVM : MainActivityViewModel
 ) {
 
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -137,7 +130,7 @@ fun CameraPreview(
                     { imageProxy ->
                         ImageAnalyzer().analyze(imageProxy)
                         if (ScannedInfo.heatNum != "" && ScannedInfo.isScanned) {
-                            scannerViewModel.updateHeat()
+                            mainActivityVM.heatNum.value = ScannedInfo.heatNum
                             navController.navigate(Screen.ReturnedBundleScreen.title)
                             ScannedInfo.isScanned = false
                         }
