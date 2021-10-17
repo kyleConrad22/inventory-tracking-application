@@ -1,6 +1,5 @@
 package com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
 import com.example.rusalqrandbarcodescanner.database.RusalItem
@@ -15,7 +14,6 @@ import java.time.format.DateTimeFormatter
 
 @DelicateCoroutinesApi
 class ReturnedBundleViewModel(private val invRepo : InventoryRepository, private val mainActivityVM : MainActivityViewModel) : ViewModel() {
-    private val currentLoadedBundles : MutableState<List<RusalItem>> = mutableStateOf(listOf())
 
     private var returnedBundle : RusalItem? = null
     private var isIncorrectHeat = false
@@ -30,17 +28,25 @@ class ReturnedBundleViewModel(private val invRepo : InventoryRepository, private
     val loading = mutableStateOf(false)
     var isIncorrectBundle = false
     var isMultipleOptions = false
-    var reasoning  = ""
+    lateinit var reasoning : String
 
     init {
         loading.value = true
         GlobalScope.launch {
-            currentLoadedBundles.value = invRepo.getAddedItems()
-            setUniqueList(mainActivityVM.heatNum.value)
-            setIsBundleLoadable(mainActivityVM.heatNum.value)
+            if (mainActivityVM.sessionType.value == SessionType.SHIPMENT) {
+                setUniqueList(mainActivityVM.heatNum.value)
+                setIsBundleLoadableShipment(mainActivityVM.heatNum.value)
+            } else {
+                setIsBundleReceivable(mainActivityVM.heatNum.value)
+            }
             loading.value = false
             ScannedInfo.heatNum = ""
         }
+    }
+
+    /* TODO */
+    fun setIsBundleReceivable(heat: String) {
+        setReasoning()
     }
 
     fun isLastBundle() : Boolean {
@@ -80,7 +86,7 @@ class ReturnedBundleViewModel(private val invRepo : InventoryRepository, private
             withContext(Dispatchers.Main) {
                 val uniqueCodes = mutableListOf<List<String>>()
                 for (code in invRepo.findByBaseHeat(heat)!!) {
-                    val combo = listOf(code.blNum, code.quantity)
+                    val combo = listOf(code.blNum, code.pieceCount)
                     if (!uniqueCodes.contains(combo)) {
                         uniqueCodes.add(combo)
                     }
@@ -106,7 +112,7 @@ class ReturnedBundleViewModel(private val invRepo : InventoryRepository, private
     private fun getLoadedHeats() : List<String> {
         val heatList : MutableList<String> = mutableListOf()
         if (!mainActivityVM.addedItems.value.isNullOrEmpty()) {
-            currentLoadedBundles.value.forEach {
+            mainActivityVM.addedItems.value.forEach {
                 val heat = it.heatNum.substring(0, 6)
                 if (!heatList.contains(heat)) {
                     heatList.add(heat)
@@ -146,7 +152,7 @@ class ReturnedBundleViewModel(private val invRepo : InventoryRepository, private
                     }
                     isIncorrectQuantity -> {
                         reasoning = """
-                            Incorrect quantity! The requested quantity is ${mainActivityVM.pieceCount.value}, but the scanned quantity is ${returnedBundle!!.quantity}.
+                            Incorrect quantity! The requested quantity is ${mainActivityVM.pieceCount.value}, but the scanned quantity is ${returnedBundle!!.pieceCount}.
                             Please load a different bundle.
                         """.trimIndent()
                     }
@@ -171,17 +177,17 @@ class ReturnedBundleViewModel(private val invRepo : InventoryRepository, private
                 reasoning = """
                     Heat Number: ${returnedBundle!!.heatNum}
                     Bl: ${returnedBundle!!.blNum}
-                    Quantity: ${returnedBundle!!.quantity}
+                    Mark: ${returnedBundle!!.mark}
+                    Piece Count: ${returnedBundle!!.pieceCount}
                     Net Weight Kg: ${returnedBundle!!.netWeightKg}
                     Gross Weight Kg: ${returnedBundle!!.grossWeightKg}
-                    Barcode : ${returnedBundle!!.barcode}
                 """.trimIndent()
             }
         }
     }
 
-    private suspend fun setIsBundleLoadable(heat : String) {
-        val value = GlobalScope.async() {
+    private suspend fun setIsBundleLoadableShipment(heat : String) {
+        val value = GlobalScope.async {
             withContext(Dispatchers.Main) {
                 setIsIncorrectBundle(heat)
                 setReasoning()
@@ -218,7 +224,7 @@ class ReturnedBundleViewModel(private val invRepo : InventoryRepository, private
 
                         uniqueList.size == 1 -> {
                             val repoData = invRepo.findByBaseHeat(heat)?.get(0)!!
-                            returnedBundle = RusalItem(heatNum = heat, blNum = repoData.blNum, quantity = repoData.quantity, grossWeightKg = "N/A", netWeightKg = "N/A", barcode = "${heat}u${getNumberOfUnidentifiedBundles(heat) + 1}")
+                            returnedBundle = RusalItem(heatNum = heat, blNum = repoData.blNum, pieceCount = repoData.pieceCount, grossWeightKg = "N/A", netWeightKg = "N/A", barcode = "${heat}u${getNumberOfUnidentifiedBundles(heat) + 1}")
                         }
 
                         uniqueList.size > 1 -> {
@@ -226,7 +232,7 @@ class ReturnedBundleViewModel(private val invRepo : InventoryRepository, private
                             val quantity = mainActivityVM.pieceCount.value
                             if (uniqueList.contains(listOf(bl, quantity))) {
                                 isMultipleOptions = true
-                                returnedBundle = RusalItem(heatNum = heat, blNum = bl, quantity = quantity, grossWeightKg = "N/A", netWeightKg = "N/A", barcode = "${heat}u${getNumberOfUnidentifiedBundles(heat) + 1}")
+                                returnedBundle = RusalItem(heatNum = heat, blNum = bl, pieceCount = quantity, grossWeightKg = "N/A", netWeightKg = "N/A", barcode = "${heat}u${getNumberOfUnidentifiedBundles(heat) + 1}")
                             } else {
                                 isIncorrectBundle = true
                                 isIncorrectCombo = true
@@ -272,7 +278,7 @@ class ReturnedBundleViewModel(private val invRepo : InventoryRepository, private
     }
 
     private fun setIsIncorrectQuantity() {
-        isIncorrectQuantity = returnedBundle!!.quantity != mainActivityVM.pieceCount.value
+        isIncorrectQuantity = returnedBundle!!.pieceCount != mainActivityVM.pieceCount.value
     }
 
     private suspend fun setIsDuplicate(heat : String) {

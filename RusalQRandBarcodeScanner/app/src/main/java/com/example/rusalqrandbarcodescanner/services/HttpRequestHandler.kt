@@ -89,7 +89,7 @@ object HttpRequestHandler {
                 val dimension = newCode.dimension
                 val grade = newCode.grade
                 val certificateNum = newCode.certificateNum
-                val quantity = newCode.quantity
+                val quantity = newCode.pieceCount
                 val barcode = item.barcode
                 val blNum = newCode.blNum
 
