@@ -22,7 +22,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
-import com.example.rusalqrandbarcodescanner.domain.models.Bl
+import com.example.rusalqrandbarcodescanner.domain.models.Barge
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.presentation.components.BasicInputDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
@@ -90,10 +90,7 @@ fun InfoInputScreen(navController: NavHostController, mainActivityVM: MainActivi
 
                 } else {
 
-                    BasicInputDialog(label = "Barge Identifier", userInput = mainActivityVM.barge, refresh = {
-                        BasicItemValidator().updateItem(it, mainActivityVM.barge)
-                        infoInputVM.refresh()
-                    }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Password)
+                    BargeInput(focusManager, infoInputVM, mainActivityVM)
 
                     BasicInputDialog(label = "Checker", userInput = mainActivityVM.checker, refresh = {
                         NameValidator().updateName(it, mainActivityVM.checker)
@@ -131,15 +128,15 @@ fun BlInput(focusManager: FocusManager, infoInputVM: InfoInputViewModel, mainAct
     AutoCompleteBox(
         items = blList,
         itemContent = { bl ->
-            BlAutoCompleteItem(bl)
+            AutoCompleteItem(bl.text)
         }
     ) {
 
         val value = mainActivityVM.bl.value
 
         onItemSelected { bl ->
-            mainActivityVM.bl.value = bl.blNumber
-            filter(bl.blNumber)
+            mainActivityVM.bl.value = bl.text
+            filter(bl.text)
             infoInputVM.refresh()
             focusManager.moveFocus(FocusDirection.Down)
         }
@@ -162,14 +159,54 @@ fun BlInput(focusManager: FocusManager, infoInputVM: InfoInputViewModel, mainAct
     }
 }
 
+@ExperimentalAnimationApi
+@DelicateCoroutinesApi
 @Composable
-fun BlAutoCompleteItem(bl : Bl) {
+fun BargeInput(focusManager: FocusManager, infoInputVM: InfoInputViewModel, mainActivityVM: MainActivityViewModel) {
+    val bargeList = infoInputVM.bargeList.value
+    AutoCompleteBox(
+        items = bargeList,
+        itemContent = { barge ->
+            AutoCompleteItem(text = barge.text)
+        }
+    ) {
+        val value = mainActivityVM.barge.value
+
+        onItemSelected { barge ->
+            mainActivityVM.barge.value = barge.text
+            filter(barge.text)
+            infoInputVM.refresh()
+            focusManager.moveFocus(FocusDirection.Down)
+        }
+        OutlinedTextField(
+            modifier = Modifier
+                .fillMaxWidth(.9f)
+                .onFocusChanged { focusState ->
+                    isSearching = focusState.isFocused
+                },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password, capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
+            value = value,
+            onValueChange = {
+                BasicItemValidator().updateItem(it, mainActivityVM.barge)
+                filter(it)
+                infoInputVM.refresh()
+            },
+            label= { Text(text="Barge Identifier: ") }
+        )
+    }
+}
+
+@Composable
+fun AutoCompleteItem(text : String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text(text=bl.blNumber, style = MaterialTheme.typography.subtitle2)
+        Text(text=text, style = MaterialTheme.typography.subtitle2)
     }
 }
+

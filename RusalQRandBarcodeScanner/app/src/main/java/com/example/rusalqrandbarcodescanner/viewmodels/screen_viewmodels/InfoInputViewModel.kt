@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
 import com.example.rusalqrandbarcodescanner.database.RusalItem
+import com.example.rusalqrandbarcodescanner.domain.models.Barge
 import com.example.rusalqrandbarcodescanner.domain.models.Bl
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
@@ -16,24 +17,37 @@ class InfoInputViewModel(private val mainActivityVM : MainActivityViewModel, pri
     val displayConfirmButton = mutableStateOf(false)
 
     val blList : MutableState<List<Bl>> = mutableStateOf(listOf())
+    val bargeList : MutableState<List<Barge>> = mutableStateOf(listOf())
 
     val loading = mutableStateOf(false)
 
     init {
-        if (mainActivityVM.sessionType.value == SessionType.SHIPMENT) {
-            viewModelScope.launch {
-                loading.value = true
+        viewModelScope.launch {
+            loading.value = true
+            if (mainActivityVM.sessionType.value == SessionType.SHIPMENT) {
                 blList.value = getUniqueBlList(invRepo.getAllSuspend()!!)
-                loading.value = false
+            } else {
+                bargeList.value = getUniqueBargeList(invRepo.getAllSuspend()!!)
             }
+            loading.value = false
         }
     }
 
-    private fun getUniqueBlList(lineItems : List<RusalItem>) : List<Bl> {
+    private fun getUniqueBargeList(items : List<RusalItem>) : List<Barge> {
+        val result = mutableListOf<Barge>()
+        for (item in items) {
+            if (result.find { it.text == item.barge } == null) {
+                result.add(Barge(item.barge))
+            }
+        }
+        return result.toList()
+    }
+
+    private fun getUniqueBlList(items : List<RusalItem>) : List<Bl> {
         val result = mutableListOf<Bl>()
-        for (lineItem in lineItems) {
-            if (result.find {it.blNumber == lineItem.blNum } == null) {
-                result.add(Bl(lineItem.blNum))
+        for (item in items) {
+            if (result.find {it.text == item.blNum } == null) {
+                result.add(Bl(item.blNum))
             }
         }
         return result.toList()
