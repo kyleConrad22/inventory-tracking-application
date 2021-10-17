@@ -18,15 +18,15 @@ import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.Options
 
 @Composable
 fun OptionsScreen(navController: NavHostController) {
-    val application = LocalContext.current.applicationContext
+    val application = LocalContext.current.applicationContext as CodeApplication
 
-    val optionsViewModel : OptionsViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "optionsVM", factory = OptionsViewModel.OptionsViewModelFactory((application as CodeApplication).userRepository, application.invRepository))
+    val optionsVM : OptionsViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "optionsVM", factory = OptionsViewModel.OptionsViewModelFactory(application.userRepository, application.invRepository))
 
-    val loading = optionsViewModel.loading.value
-    val isLoad = optionsViewModel.isLoad.value
-    val userInput = optionsViewModel.userInput.value
-    val isDisplayAdditionalButtons = optionsViewModel.isDisplayAdditionalButtons.value
-    val isDisplayRemoveEntry = optionsViewModel.isDisplayRemoveEntry.value
+    val loading = optionsVM.loading.value
+    val isLoad = optionsVM.isLoad.value
+    val userInput = optionsVM.userInput.value
+    val isDisplayAdditionalButtons = optionsVM.isDisplayAdditionalButtons.value
+    val isDisplayRemoveEntry = optionsVM.isDisplayRemoveEntry.value
 
     val resetDialog = remember { mutableStateOf(false) }
     val type = if (isLoad) { "Load" } else { "Reception" }
@@ -99,7 +99,7 @@ fun OptionsScreen(navController: NavHostController) {
                                     }
                                     Button(onClick = {
                                         resetDialog.value = false
-                                        optionsViewModel.deleteAll()
+                                        optionsVM.deleteAll()
                                     }) {
                                         Text(text = "Confirm Reset",
                                             modifier = Modifier.padding(16.dp))

@@ -40,10 +40,10 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 @Composable
 fun ScannerScreen(navController: NavHostController) {
 
-    val scannerViewModel : ScannerViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ScannerVM", factory = ScannerViewModelFactory((LocalContext.current.applicationContext as CodeApplication).userRepository))
-    val loading = scannerViewModel.loading.value
+    val scannerVM : ScannerViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ScannerVM", factory = ScannerViewModelFactory((LocalContext.current.applicationContext as CodeApplication).userRepository))
+    val loading = scannerVM.loading.value
 
-    CameraPreview(modifier = Modifier.fillMaxSize(), navController = navController, scannerViewModel = scannerViewModel)
+    CameraPreview(modifier = Modifier.fillMaxSize(), navController = navController, scannerViewModel = scannerVM)
     Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom) {

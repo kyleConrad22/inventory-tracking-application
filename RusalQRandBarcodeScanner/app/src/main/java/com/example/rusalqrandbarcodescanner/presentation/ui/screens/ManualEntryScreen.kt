@@ -29,11 +29,11 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 fun ManualEntryScreen(navController : NavHostController) {
 
     val focusManager = LocalFocusManager.current
-    val manualEntryViewModel : ManualEntryViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "manualEntryVM", ManualEntryViewModelFactory((LocalContext.current.applicationContext as CodeApplication).userRepository))
+    val manualEntryVM : ManualEntryViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "manualEntryVM", ManualEntryViewModelFactory((LocalContext.current.applicationContext as CodeApplication).userRepository))
 
-    val isSearchVis = manualEntryViewModel.isSearchVis.value
+    val isSearchVis = manualEntryVM.isSearchVis.value
 
-    val loading = manualEntryViewModel.loading.value
+    val loading = manualEntryVM.loading.value
     val isClicked = remember { mutableStateOf(false) }
 
     Scaffold(topBar = { TopAppBar(title = { Text("Manual Entry", textAlign = TextAlign.Center) }) }) {
@@ -46,9 +46,9 @@ fun ManualEntryScreen(navController : NavHostController) {
             } else {
                 Text(text = "Manual Heat Number Search: ", modifier = Modifier.padding(16.dp))
 
-                BasicInputDialog(label = "Heat Number", userInput = manualEntryViewModel.heat, refresh = {
-                    HeatNumberValidator().updateHeat(it, manualEntryViewModel.heat)
-                    manualEntryViewModel.refresh()
+                BasicInputDialog(label = "Heat Number", userInput = manualEntryVM.heat, refresh = {
+                    HeatNumberValidator().updateHeat(it, manualEntryVM.heat)
+                    manualEntryVM.refresh()
                     }, focusManager = focusManager, lastInput = true, keyboardType = KeyboardType.Number)
 
                 Row(modifier = Modifier.fillMaxWidth(),
@@ -61,7 +61,7 @@ fun ManualEntryScreen(navController : NavHostController) {
                     }
                     if (isSearchVis) {
                         Button(onClick = {
-                            manualEntryViewModel.updateHeat()
+                            manualEntryVM.updateHeat()
                             isClicked.value = true
                         }) {
                             Text(text = "Retrieve Bundle Info", modifier = Modifier.padding(16.dp))

@@ -33,15 +33,15 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 @ExperimentalComposeUiApi
 @Composable
 fun ReturnedBundleScreen(navController: NavHostController) {
-    val application  = LocalContext.current.applicationContext
-    val returnedBundleViewModel : ReturnedBundleViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ReturnedBundleVM", factory = ReturnedBundleViewModelFactory((application as CodeApplication).invRepository, application.userRepository))
+    val application  = LocalContext.current.applicationContext as CodeApplication
+    val returnedBundleVM : ReturnedBundleViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ReturnedBundleVM", factory = ReturnedBundleViewModelFactory(application.invRepository, application.userRepository))
 
     val showAddedDialog = remember { mutableStateOf(false) }
 
-    val loading = returnedBundleViewModel.loading.value
+    val loading = returnedBundleVM.loading.value
 
     if (showAddedDialog.value) {
-        BundleAddedDialog(navController, showAddedDialog, returnedBundleViewModel.getHeat(), returnedBundleViewModel.getType(), returnedBundleViewModel.isLastBundle())
+        BundleAddedDialog(navController, showAddedDialog, returnedBundleVM.getHeat(), returnedBundleVM.getType(), returnedBundleVM.isLastBundle())
     } else {
         Scaffold(topBar = { TopAppBar(title = { Text("Returned Bundle Info") }) }) {
 
@@ -51,16 +51,16 @@ fun ReturnedBundleScreen(navController: NavHostController) {
                 if (loading) {
                     LoadingDialog(isDisplayed = true)
                 } else {
-                    Text(text = returnedBundleViewModel.reasoning, modifier = Modifier.padding(16.dp))
-                    if (returnedBundleViewModel.isIncorrectBundle) {
+                    Text(text = returnedBundleVM.reasoning, modifier = Modifier.padding(16.dp))
+                    if (returnedBundleVM.isIncorrectBundle) {
                         Button(onClick = {
                             navController.popBackStack()
                         }) {
                             Text(text = "Ok", modifier = Modifier.padding(16.dp))
                         }
                     } else {
-                        if (returnedBundleViewModel.isMultipleOptions) {
-                            UniqueOptionsList(returnedBundleViewModel.uniqueList)
+                        if (returnedBundleVM.isMultipleOptions) {
+                            UniqueOptionsList(returnedBundleVM.uniqueList)
                         }
                         Row(modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -70,7 +70,7 @@ fun ReturnedBundleScreen(navController: NavHostController) {
                                 Text(text = "Deny", modifier = Modifier.padding(16.dp))
                             }
                             Button(onClick = {
-                                returnedBundleViewModel.addBundle()
+                                returnedBundleVM.addBundle()
                                 showAddedDialog.value = true
                             }) {
                                 Text(text = "Add", modifier = Modifier.padding(16.dp))

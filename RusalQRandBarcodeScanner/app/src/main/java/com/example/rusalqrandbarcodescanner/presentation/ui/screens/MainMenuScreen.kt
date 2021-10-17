@@ -24,9 +24,9 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 fun MainMenuScreen(navController: NavHostController) {
     val application = LocalContext.current.applicationContext as CodeApplication
 
-    val mainActivityViewModel: MainActivityViewModel = viewModel(factory = MainActivityViewModel.MainActivityViewModelFactory(application.invRepository, application))
+    val mainActivityVM: MainActivityViewModel = viewModel(factory = MainActivityViewModel.MainActivityViewModelFactory(application.invRepository, application))
 
-    val sessionType = mainActivityViewModel.sessionType.value
+    val sessionType = mainActivityVM.sessionType.value
 
     Scaffold(topBar = { TopAppBar(title = { Text(text="Main Menu", textAlign = TextAlign.Center) }) }) {
 
@@ -35,7 +35,7 @@ fun MainMenuScreen(navController: NavHostController) {
             verticalArrangement = Arrangement.SpaceEvenly) {
 
             Button(onClick = {
-                mainActivityViewModel.sessionType.value = SessionType.SHIPMENT
+                mainActivityVM.sessionType.value = SessionType.SHIPMENT
                 handleClick(navController, sessionType)
             }) {
                 Text(text = "New Load",
@@ -46,7 +46,7 @@ fun MainMenuScreen(navController: NavHostController) {
                     textAlign = TextAlign.Center)
             }
             Button(onClick = {
-                mainActivityViewModel.sessionType.value = SessionType.RECEPTION
+                mainActivityVM.sessionType.value = SessionType.RECEPTION
                 handleClick(navController, sessionType)
             }) {
                 Text(text = "New Reception",
@@ -57,7 +57,7 @@ fun MainMenuScreen(navController: NavHostController) {
                     textAlign = TextAlign.Center)
             }
             Button(onClick = {
-                mainActivityViewModel.sessionType.value = SessionType.GENERAL
+                mainActivityVM.sessionType.value = SessionType.GENERAL
                 handleClick(navController, sessionType)
             }) {
                 Text(text = "Get Bundle Info",

@@ -30,9 +30,9 @@ fun SplashScreen(navController: NavController) {
 
     val application = LocalContext.current.applicationContext as CodeApplication
 
-    val mainActivityViewModel : MainActivityViewModel = viewModel(factory = MainActivityViewModel.MainActivityViewModelFactory(application.invRepository, application))
+    val mainActivityVM : MainActivityViewModel = viewModel(factory = MainActivityViewModel.MainActivityViewModelFactory(application.invRepository, application))
 
-    val loading = mainActivityViewModel.loading.value
+    val loading = mainActivityVM.loading.value
 
     val scale = remember {
         androidx.compose.animation.core.Animatable(0f)

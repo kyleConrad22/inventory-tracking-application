@@ -23,6 +23,7 @@ import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.domain.models.Bl
+import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.presentation.components.BasicInputDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.autocomplete.AutoCompleteBox
@@ -30,6 +31,7 @@ import com.example.rusalqrandbarcodescanner.util.inputvalidation.BasicItemValida
 import com.example.rusalqrandbarcodescanner.util.inputvalidation.NameValidator
 import com.example.rusalqrandbarcodescanner.util.inputvalidation.NumberValidator
 import com.example.rusalqrandbarcodescanner.util.inputvalidation.WorkOrderValidator
+import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.InfoInputViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
 
@@ -38,70 +40,65 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 @ExperimentalComposeUiApi
 @Composable
 fun InfoInputScreen(navController: NavHostController) {
-    val application = LocalContext.current.applicationContext
-    val infoInputViewModel: InfoInputViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "infoInputVM", factory = InfoInputViewModel.InfoInputViewModelFactory((application as CodeApplication).userRepository, application.invRepository))
+    val application = LocalContext.current.applicationContext as CodeApplication
+
+    val mainActivityVM : MainActivityViewModel = viewModel(factory = MainActivityViewModel.MainActivityViewModelFactory(application.invRepository, application))
+    val infoInputVM: InfoInputViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "infoInputVM", factory = InfoInputViewModel.InfoInputViewModelFactory(mainActivityVM, application.invRepository))
 
     val focusManager = LocalFocusManager.current
 
-    val isConfirmVis = infoInputViewModel.isConfirmVis.value
-    val isLoad = infoInputViewModel.isLoad.value
-    val loading = infoInputViewModel.loading.value
-    val isClicked = remember { mutableStateOf(false) }
+    val isConfirmVis = infoInputVM.isConfirmVis.value
+    val loading = infoInputVM.loading.value
 
-    if (!loading && isClicked.value) {
-        navController.navigate(Screen.OptionsScreen.title)
-        isClicked.value = false
-    }
-
-    Scaffold(topBar = { TopAppBar(title = { Text(text = "Info Input", textAlign = TextAlign.Center) }) }) {
+    Scaffold(topBar = { TopAppBar(title = { Text(text = "${mainActivityVM.sessionType.value.type} Info Input", textAlign = TextAlign.Center) }) }) {
 
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
 
-            if (loading || isClicked.value) {
+            if (loading) {
                 LoadingDialog(isDisplayed = true)
 
             } else {
-                if (isLoad) {
+                if (mainActivityVM.sessionType.value == SessionType.SHIPMENT) {
 
-                    BasicInputDialog(label = "Work Order", userInput = infoInputViewModel.order, refresh = {
-                        WorkOrderValidator().updateWorkOrder(it, infoInputViewModel.order)
-                        infoInputViewModel.refresh()
+                    BasicInputDialog(label = "Work Order", userInput = mainActivityVM.workOrder, refresh = {
+                        WorkOrderValidator().updateWorkOrder(it, mainActivityVM.workOrder)
+                        infoInputVM.refresh()
                     }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Password)
 
-                    BasicInputDialog(label = "Load", userInput = infoInputViewModel.load, refresh = {
-                        NumberValidator().updateNumber(it, infoInputViewModel.load)
-                        infoInputViewModel.refresh()
+                    BasicInputDialog(label = "Load", userInput = mainActivityVM.loadNum, refresh = {
+                        NumberValidator().updateNumber(it, mainActivityVM.loadNum)
+                        infoInputVM.refresh()
                     }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Number)
 
-                    BasicInputDialog(label = "Loader", userInput = infoInputViewModel.loader, refresh = {
-                        NameValidator().updateName(it, infoInputViewModel.loader)
-                        infoInputViewModel.refresh()
+                    BasicInputDialog(label = "Loader", userInput = mainActivityVM.loader, refresh = {
+                        NameValidator().updateName(it, mainActivityVM.loader)
+                        infoInputVM.refresh()
                     }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Text)
 
-                    BlInput(focusManager, infoInputViewModel)
+                    BlInput(focusManager, infoInputVM, mainActivityVM)
 
-                    BasicInputDialog(label = "Piece Count", userInput = infoInputViewModel.quantity, refresh = {
-                        NumberValidator().updateNumber(it, infoInputViewModel.quantity)
-                        infoInputViewModel.refresh()
+                    BasicInputDialog(label = "Piece Count", userInput = mainActivityVM.pieceCount, refresh = {
+                        NumberValidator().updateNumber(it, mainActivityVM.pieceCount)
+                        infoInputVM.refresh()
                     }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Number)
 
-                    BasicInputDialog(label = "Number of Bundles", userInput = infoInputViewModel.bundles, refresh = {
-                        NumberValidator().updateNumber(it, infoInputViewModel.bundles)
-                        infoInputViewModel.refresh()
+                    BasicInputDialog(label = "Quantity", userInput = mainActivityVM.quantity, refresh = {
+                        NumberValidator().updateNumber(it, mainActivityVM.quantity)
+                        infoInputVM.refresh()
                     }, focusManager = focusManager, lastInput = true, keyboardType = KeyboardType.Number)
 
                 } else {
 
-                    BasicInputDialog(label = "Vessel Project", userInput = infoInputViewModel.vessel, refresh = {
-                        BasicItemValidator().updateItem(it, infoInputViewModel.vessel)
-                        infoInputViewModel.refresh()
+                    BasicInputDialog(label = "Barge Identifier", userInput = mainActivityVM.barge, refresh = {
+                        BasicItemValidator().updateItem(it, mainActivityVM.barge)
+                        infoInputVM.refresh()
                     }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Password)
 
-                    BasicInputDialog(label = "Checker", userInput = infoInputViewModel.checker, refresh = {
-                        NameValidator().updateName(it, infoInputViewModel.checker)
-                        infoInputViewModel.refresh()
+                    BasicInputDialog(label = "Checker", userInput = mainActivityVM.checker, refresh = {
+                        NameValidator().updateName(it, mainActivityVM.checker)
+                        infoInputVM.refresh()
                     }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Text)
                 }
 
@@ -109,27 +106,15 @@ fun InfoInputScreen(navController: NavHostController) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly) {
                     Button(onClick = {
-                        if (!isClicked.value) {
-                            navController.popBackStack(Screen.MainMenuScreen.title,
-                                inclusive = false)
-                        }
+                        navController.popBackStack(Screen.MainMenuScreen.title, inclusive = false)
                     }) {
                         Text(text = "Back", modifier = Modifier.padding(14.dp))
                     }
                     if (isConfirmVis) {
                         Button(onClick = {
-                            if (!isClicked.value) {
-                                infoInputViewModel.getUpdate()
-                                isClicked.value = true
-                            }
+                            navController.navigate(Screen.OptionsScreen.title)
                         }) {
-                            Text(text = "Confirm ${
-                                if (isLoad) {
-                                    "Load"
-                                } else {
-                                    "Reception"
-                                }
-                            } Info",
+                            Text(text = "Confirm ${mainActivityVM.sessionType.value.type} Info",
                                 modifier = Modifier.padding(14.dp))
                         }
                     }
@@ -142,8 +127,8 @@ fun InfoInputScreen(navController: NavHostController) {
 @DelicateCoroutinesApi
 @ExperimentalAnimationApi
 @Composable
-fun BlInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewModel) {
-    val blList = infoInputViewModel.blList.value
+fun BlInput(focusManager: FocusManager, infoInputVM: InfoInputViewModel, mainActivityVM: MainActivityViewModel) {
+    val blList = infoInputVM.blList.value
     AutoCompleteBox(
         items = blList,
         itemContent = { bl ->
@@ -151,12 +136,12 @@ fun BlInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewModel) 
         }
     ) {
 
-        val value = infoInputViewModel.bl.value
+        val value = mainActivityVM.bl.value
 
         onItemSelected { bl ->
-            infoInputViewModel.bl.value = bl.blNumber
+            mainActivityVM.bl.value = bl.blNumber
             filter(bl.blNumber)
-            infoInputViewModel.refresh()
+            infoInputVM.refresh()
             focusManager.moveFocus(FocusDirection.Down)
         }
         OutlinedTextField(
@@ -170,9 +155,9 @@ fun BlInput(focusManager: FocusManager, infoInputViewModel: InfoInputViewModel) 
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
             value = value,
             onValueChange = {  it ->
-                BasicItemValidator().updateItem(it, infoInputViewModel.bl)
+                BasicItemValidator().updateItem(it, mainActivityVM.bl)
                 filter(it)
-                infoInputViewModel.refresh()
+                infoInputVM.refresh()
             },
             label = { Text(text="BL Number: ") })
     }

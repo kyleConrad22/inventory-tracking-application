@@ -34,13 +34,13 @@ import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReviewV
 @ExperimentalComposeUiApi
 @Composable
 fun ReviewScreen(navController: NavHostController, mainActivityViewModel: MainActivityViewModel) {
-    val application = LocalContext.current.applicationContext
+    val application = LocalContext.current.applicationContext as CodeApplication
 
-    val reviewViewModel : ReviewViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ReviewVM", factory = ReviewViewModelFactory((application as CodeApplication).invRepository, application.userRepository))
+    val reviewVM : ReviewViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ReviewVM", factory = ReviewViewModelFactory(application.invRepository, application.userRepository))
 
     var code : RusalItem? by remember { mutableStateOf(null) }
 
-    val loading = reviewViewModel.loading.value
+    val loading = reviewVM.loading.value
     var showRemoveDialog by remember { mutableStateOf(false)}
     val confirmDialog = remember { mutableStateOf(false) }
 
@@ -56,19 +56,19 @@ fun ReviewScreen(navController: NavHostController, mainActivityViewModel: MainAc
 
             } else if (showRemoveDialog) {
                 RemoveDialog(onDismissRequest = { showRemoveDialog = false },
-                    onRemoveRequest = { reviewViewModel.removeCode(code!!) },
+                    onRemoveRequest = { reviewVM.removeCode(code!!) },
                     item = code!!)
             }else {
-                val loadType = if (reviewViewModel.isLoad()) { "Load" } else { "Reception" }
+                val loadType = if (reviewVM.isLoad()) { "Load" } else { "Reception" }
 
-                Text(text = if (reviewViewModel.showRemoveDialog()) {
+                Text(text = if (reviewVM.showRemoveDialog()) {
                     "Please select the bundle you would like to remove:"
                 } else {
                     "Review $loadType; if you would like to remove a bundle please select it:"
                 }, modifier = Modifier.padding(16.dp))
 
                 GetRusalItemListView(
-                    reviewViewModel.codes.value,
+                    reviewVM.codes.value,
                     onClick = {
                         code = it
                         showRemoveDialog = true
@@ -83,14 +83,14 @@ fun ReviewScreen(navController: NavHostController, mainActivityViewModel: MainAc
                     }) {
                         Text(text = "Back", modifier = Modifier.padding(16.dp))
                     }
-                    if (!reviewViewModel.showRemoveDialog()) {
+                    if (!reviewVM.showRemoveDialog()) {
                         Button(onClick = {
-                            if (reviewViewModel.isLoad()) {
+                            if (reviewVM.isLoad()) {
                                 HttpRequestHandler.initUpdate(mainActivityViewModel)
                             } else {
                                 /*TODO - Add Reception Confirmation Logic */
                             }
-                            reviewViewModel.removeAllAddedItems()
+                            reviewVM.removeAllAddedItems()
                             confirmDialog.value = true
                         }) {
                             Text(text = "Confirm $loadType", modifier = Modifier.padding(16.dp))
