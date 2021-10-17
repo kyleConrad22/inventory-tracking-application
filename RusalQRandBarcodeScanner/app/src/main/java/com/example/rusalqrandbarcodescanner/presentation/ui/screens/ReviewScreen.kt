@@ -26,7 +26,6 @@ import com.example.rusalqrandbarcodescanner.services.HttpRequestHandler
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
-import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReviewViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReviewViewModel.ReviewViewModelFactory
@@ -39,13 +38,12 @@ fun ReviewScreen(navController: NavHostController) {
 
     val mainActivityVM : MainActivityViewModel = viewModel(factory = MainActivityViewModel.MainActivityViewModelFactory(application.invRepository, application))
 
-    val reviewVM : ReviewViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ReviewVM", factory = ReviewViewModelFactory(application.invRepository))
+    val reviewVM : ReviewViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ReviewVM", factory = ReviewViewModelFactory(application.invRepository, mainActivityVM))
     var item : RusalItem? by remember { mutableStateOf(null) }
 
     val sessionType = mainActivityVM.sessionType.value
     val displayRemoveEntry = mainActivityVM.displayRemoveEntryContent.value
 
-    val loading = reviewVM.loading.value
     var showRemoveDialog by remember { mutableStateOf(false) }
     val showConfirmDialog = remember { mutableStateOf(false) }
 
@@ -56,10 +54,7 @@ fun ReviewScreen(navController: NavHostController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
-            if (loading) {
-                LoadingDialog(isDisplayed = true)
-
-            } else if (showRemoveDialog) {
+            if (showRemoveDialog) {
                 RemoveDialog(onDismissRequest = { showRemoveDialog = false },
                     onRemoveRequest = {
                         reviewVM.removeItem(item!!)
@@ -74,7 +69,7 @@ fun ReviewScreen(navController: NavHostController) {
                 }, modifier = Modifier.padding(16.dp))
 
                 GetRusalItemListView(
-                    reviewVM.items.value,
+                    mainActivityVM.addedItems.value,
                     onClick = {
                         item = it
                         showRemoveDialog = true
