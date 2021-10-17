@@ -4,18 +4,16 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
 import com.example.rusalqrandbarcodescanner.database.RusalItem
-import com.example.rusalqrandbarcodescanner.database.UserInput
 import com.example.rusalqrandbarcodescanner.domain.models.Bl
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
-import com.example.rusalqrandbarcodescanner.repositories.UserInputRepository
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
 
 @DelicateCoroutinesApi
 class InfoInputViewModel(private val mainActivityVM : MainActivityViewModel, private val invRepo : InventoryRepository) : ViewModel() {
-    val isConfirmVis = mutableStateOf(false)
+    val displayConfirmButton = mutableStateOf(false)
 
     val blList : MutableState<List<Bl>> = mutableStateOf(listOf())
 
@@ -55,7 +53,7 @@ class InfoInputViewModel(private val mainActivityVM : MainActivityViewModel, pri
                 mainActivityVM.checker.value
             )
         }
-        isConfirmVis.value = !valueList.contains("")
+        displayConfirmButton.value = !valueList.contains("")
     }
 
     class InfoInputViewModelFactory(private val mainActivityVM : MainActivityViewModel, private val invRepo : InventoryRepository) : ViewModelProvider.Factory {

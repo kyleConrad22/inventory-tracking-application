@@ -47,7 +47,7 @@ fun InfoInputScreen(navController: NavHostController) {
 
     val focusManager = LocalFocusManager.current
 
-    val isConfirmVis = infoInputVM.isConfirmVis.value
+    val displayConfirmButton = infoInputVM.displayConfirmButton.value
     val loading = infoInputVM.loading.value
 
     Scaffold(topBar = { TopAppBar(title = { Text(text = "${mainActivityVM.sessionType.value.type} Info Input", textAlign = TextAlign.Center) }) }) {
@@ -110,7 +110,7 @@ fun InfoInputScreen(navController: NavHostController) {
                     }) {
                         Text(text = "Back", modifier = Modifier.padding(14.dp))
                     }
-                    if (isConfirmVis) {
+                    if (displayConfirmButton) {
                         Button(onClick = {
                             navController.navigate(Screen.OptionsScreen.title)
                         }) {

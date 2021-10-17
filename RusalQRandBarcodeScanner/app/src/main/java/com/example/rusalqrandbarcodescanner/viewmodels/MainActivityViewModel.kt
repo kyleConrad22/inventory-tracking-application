@@ -24,6 +24,7 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
     val bl = mutableStateOf("")
     val pieceCount = mutableStateOf("")
     val quantity = mutableStateOf("")
+    val heatNum = mutableStateOf("")
 
     val addedItemCount = mutableStateOf(0)
 

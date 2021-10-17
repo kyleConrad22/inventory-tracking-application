@@ -17,10 +17,9 @@ import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.presentation.components.BasicInputDialog
-import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.util.inputvalidation.HeatNumberValidator
+import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ManualEntryViewModel
-import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ManualEntryViewModel.ManualEntryViewModelFactory
 import kotlinx.coroutines.DelicateCoroutinesApi
 
 @DelicateCoroutinesApi
@@ -28,51 +27,42 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 @Composable
 fun ManualEntryScreen(navController : NavHostController) {
 
+    val application = LocalContext.current.applicationContext as CodeApplication
     val focusManager = LocalFocusManager.current
-    val manualEntryVM : ManualEntryViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "manualEntryVM", ManualEntryViewModelFactory((LocalContext.current.applicationContext as CodeApplication).userRepository))
+    val mainActivityVM : MainActivityViewModel = viewModel(factory = MainActivityViewModel.MainActivityViewModelFactory(application.invRepository, application))
+    val manualEntryVM : ManualEntryViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "manualEntryVM", factory = ManualEntryViewModel.ManualEntryViewModelFactory(mainActivityVM))
 
-    val isSearchVis = manualEntryVM.isSearchVis.value
-
-    val loading = manualEntryVM.loading.value
-    val isClicked = remember { mutableStateOf(false) }
+    val displaySearchButton = manualEntryVM.displaySearchButton.value
 
     Scaffold(topBar = { TopAppBar(title = { Text("Manual Entry", textAlign = TextAlign.Center) }) }) {
 
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
-            if (loading || isClicked.value) {
-                LoadingDialog(isDisplayed = true)
-            } else {
-                Text(text = "Manual Heat Number Search: ", modifier = Modifier.padding(16.dp))
 
-                BasicInputDialog(label = "Heat Number", userInput = manualEntryVM.heat, refresh = {
-                    HeatNumberValidator().updateHeat(it, manualEntryVM.heat)
-                    manualEntryVM.refresh()
-                    }, focusManager = focusManager, lastInput = true, keyboardType = KeyboardType.Number)
+            Text(text = "Manual Heat Number Search: ", modifier = Modifier.padding(16.dp))
 
-                Row(modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly) {
+            BasicInputDialog(label = "Heat Number", userInput = mainActivityVM.heatNum, refresh = {
+                HeatNumberValidator().updateHeat(it, mainActivityVM.heatNum)
+                manualEntryVM.refresh()
+                }, focusManager = focusManager, lastInput = true, keyboardType = KeyboardType.Number)
+
+            Row(modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly) {
+                Button(onClick = {
+                    navController.navigateUp()
+                }) {
+                    Text(text = "Back", modifier = Modifier.padding(16.dp))
+                }
+                if (displaySearchButton) {
                     Button(onClick = {
-                        navController.navigateUp()
+                        navController.navigate(Screen.ReturnedBundleScreen.title)
                     }) {
-                        Text(text = "Back", modifier = Modifier.padding(16.dp))
-                    }
-                    if (isSearchVis) {
-                        Button(onClick = {
-                            manualEntryVM.updateHeat()
-                            isClicked.value = true
-                        }) {
-                            Text(text = "Retrieve Bundle Info", modifier = Modifier.padding(16.dp))
-                        }
+                        Text(text = "Retrieve Bundle Info", modifier = Modifier.padding(16.dp))
                     }
                 }
             }
         }
-    }
-    if (!loading && isClicked.value) {
-        navController.navigate(Screen.ReturnedBundleScreen.title)
-        isClicked.value = false
     }
 }
