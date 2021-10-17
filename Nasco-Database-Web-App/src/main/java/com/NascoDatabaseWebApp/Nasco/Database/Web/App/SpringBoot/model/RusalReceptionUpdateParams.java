@@ -2,7 +2,7 @@ package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model;
 
 import java.util.Objects;
 
-public class UpdateRusalReceptionParam {
+public class RusalReceptionUpdateParams {
     private String heatNum;
     private String checker;
     private String receptionDate;
@@ -35,7 +35,7 @@ public class UpdateRusalReceptionParam {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UpdateRusalReceptionParam that = (UpdateRusalReceptionParam) o;
+        RusalReceptionUpdateParams that = (RusalReceptionUpdateParams) o;
         return heatNum.equals(that.heatNum) && checker.equals(that.checker) && receptionDate.equals(that.receptionDate);
     }
 

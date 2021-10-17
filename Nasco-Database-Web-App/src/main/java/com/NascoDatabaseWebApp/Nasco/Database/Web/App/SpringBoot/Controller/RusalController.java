@@ -2,7 +2,7 @@ package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Controller;
 
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.RusalLineItemService;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItem;
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.UpdateRusalReceptionParam;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalReceptionUpdateParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -39,7 +39,15 @@ public class RusalController {
         @RequestParam final String grade,
         @RequestParam final String certificateNum,
         @RequestParam final String blNum,
-        @RequestParam final String barcode
+        @RequestParam final String barcode,
+        @RequestParam final String workOrder,
+        @RequestParam final String loadNum,
+        @RequestParam final String loader,
+        @RequestParam final String loadTime,
+        @RequestParam final String barge,
+        @RequestParam final String mark,
+        @RequestParam final String receptionDate,
+        @RequestParam final String checker
         ) {
         return this.rusalLineItemService.save(
             RusalLineItem.builder()
@@ -53,14 +61,14 @@ public class RusalController {
                 .certificateNum(certificateNum)
                 .blNum(blNum)
                 .barcode(barcode)
-                .workOrder("N/A")
-                .loadNum("N/A")
-                .loader("N/A")
-                .loadTime("N/A")
-                .barge("N/A")
-                .receptionDate("N/A")
-                .checker("N/A")
-                .mark("N/A")
+                .workOrder(workOrder)
+                .loadNum(loadNum)
+                .loader(loader)
+                .loadTime(loadTime)
+                .barge(barge)
+                .receptionDate(receptionDate)
+                .checker(checker)
+                .mark(mark)
                     .build());
     }
 
@@ -123,7 +131,7 @@ public class RusalController {
 
     @PostMapping("/update/reception")
     @ResponseStatus(HttpStatus.OK)
-    void updateReception(@RequestParam final List<UpdateRusalReceptionParam> updateParams) {
+    void updateReception(@RequestParam final List<RusalReceptionUpdateParams> updateParams) {
         rusalLineItemService.updateReception(updateParams);
     }
 

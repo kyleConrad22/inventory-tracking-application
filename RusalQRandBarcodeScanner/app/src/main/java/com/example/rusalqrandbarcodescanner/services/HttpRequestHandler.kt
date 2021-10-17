@@ -2,129 +2,127 @@
 
 package com.example.rusalqrandbarcodescanner.services
 
-import android.util.Log
-import androidx.lifecycle.Observer
+import android.content.Context
+import com.android.volley.Request
+import com.android.volley.RequestQueue
+import com.android.volley.VolleyError
+import com.android.volley.toolbox.*
 import com.example.rusalqrandbarcodescanner.database.RusalItem
+import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
-import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import kotlinx.coroutines.*
-import java.io.*
-import java.net.HttpURLConnection
-import java.net.URL
-import java.nio.charset.StandardCharsets
-import java.util.stream.Collectors
+import org.json.JSONArray
+import org.json.JSONException
+import org.json.JSONObject
 
 object HttpRequestHandler {
 
-    private var output: String = ""
+    private const val WEB_API: String = "http://45.22.133.47:8081/api/rusal"
 
-    private suspend fun currentInventory() = withContext(Dispatchers.IO) {
-            try {
-                val url = URL("http", "45.22.122.47", 8081, "/api/rusal")
-
-                val urlConnection = url.openConnection() as HttpURLConnection
-
-                try {
-                    val input: InputStream = BufferedInputStream(urlConnection.inputStream)
-                    output = BufferedReader(InputStreamReader(input, StandardCharsets.UTF_8)).lines()
-                            .collect(Collectors.joining("\n"))
-                    Log.d("DEBUG",
-                        BufferedReader(InputStreamReader(input, StandardCharsets.UTF_8)).lines()
-                            .collect(Collectors.joining("\n")))
-                } finally {
-                    urlConnection.disconnect()
+    private suspend fun retrieveInventory(context: Context, invRepo: InventoryRepository) =
+        withContext(Dispatchers.IO) {
+            val requestQueue: RequestQueue = Volley.newRequestQueue(context)
+            val stringRequest = StringRequest(Request.Method.GET, WEB_API, {
+                @Override
+                fun onResponse(response: String) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val value = CoroutineScope(Dispatchers.IO).async {
+                            addToRepo(response, invRepo)
+                        }
+                        value.await()
+                    }
                 }
-            } catch (e: IOException) {
-                e.printStackTrace()
+            }, {
+                @Override
+                fun onErrorResponse(error: VolleyError) {
+                    error.printStackTrace()
+                }
+            })
+
+            requestQueue.add(stringRequest)
+        }
+
+    private suspend fun confirmShipment(context: Context, items: List<RusalItem>) =
+        withContext(Dispatchers.IO) {
+            for (item in items) {
+
+                if (!item.barcode.contains('u')) {
+                    updateDatabaseForShipment(context, item)
+                } else {
+                    createInventoryItem(context, item)
+                }
             }
         }
 
-    private suspend fun updateDatabase(mainActivityViewModel : MainActivityViewModel) = withContext(Dispatchers.IO) {
-        val items = mainActivityViewModel.getAddedItems()
 
-        for (item in items) {
+    private fun updateDatabaseForShipment(context : Context, item : RusalItem) {
+        val url = "$WEB_API/update"
+        val requestQueue : RequestQueue = Volley.newRequestQueue(context)
 
-                val heatNum = item.heatNum.replace("-", "")
-                val workOrder = item.workOrder
-                val loadNum = item.loadNum
-                val loader = item.loader.replace(" ", "_")
-                val loadTime = item.loadTime.replace(" ", "_")
-
-            if (!item.barcode.contains('u')) {
-                try {
-                    val url = URL("http",
-                        "45.22.122.47",
-                        8081,
-                        "/api/rusal/update?heatNum=$heatNum&workOrder=$workOrder&loadNum=$loadNum&loader=$loader&loadTime=$loadTime")
-                    val urlConnection = url.openConnection() as HttpURLConnection
-
-                    try {
-                        val input: InputStream = BufferedInputStream(urlConnection.inputStream)
-                        val result =
-                            BufferedReader(InputStreamReader(input,
-                                StandardCharsets.UTF_8)).lines()
-                                .collect(Collectors.joining("\n"))
-                        Log.d("DEBUG", result)
-                    } finally {
-                        urlConnection.disconnect()
-                    }
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
-            } else {
-                var newCode = RusalItem("","","","","","","","","","","","","","")
-                val uniObserver = Observer<RusalItem?> { it ->
-                    newCode = it
-                }
-                GlobalScope.launch(Dispatchers.Main){
-                    mainActivityViewModel.findByBarcode(item.barcode).observeForever(uniObserver)
-                    mainActivityViewModel.findByBarcode(item.barcode).removeObserver(uniObserver)
-                }
-                val grossWeight = item.grossWeightKg
-                val netWeight = item.netWeightKg
-                val packageNum = item.packageNum
-                val dimension = newCode.dimension
-                val grade = newCode.grade
-                val certificateNum = newCode.certificateNum
-                val quantity = newCode.pieceCount
-                val barcode = item.barcode
-                val blNum = newCode.blNum
-
-                try {
-                    val url = URL("http",
-                        "45.22.122.47",
-                        8081,
-                        "demo/add?heatNum=$heatNum&packageNum=$packageNum&grossWeightKg=$grossWeight&netWeightKg=$netWeight&quantity=$quantity&dimension=$dimension&grade=$grade&certificateNum=$certificateNum&blNum=$blNum&barcode=$barcode&workOrder=$workOrder&loadNum=$loadNum&loader=$loader&loadTime=$loadTime")
-
-                    val urlConnection = url.openConnection() as HttpURLConnection
-
-                    try {
-                        val input: InputStream = BufferedInputStream(urlConnection.inputStream)
-                        val result =
-                            BufferedReader(InputStreamReader(input,
-                                StandardCharsets.UTF_8)).lines()
-                                .collect(Collectors.joining("\n"))
-                        Log.d("DEBUG", result)
-                    } finally {
-                        urlConnection.disconnect()
-                    }
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
-            }
+        val postData : JSONObject = JSONObject()
+        try {
+            postData.put("heatNum", item.heatNum)
+            postData.put("workOrder", item.workOrder)
+            postData.put("loadNum", item.loadNum)
+            postData.put("loader", item.loader)
+            postData.put("loadTime", item.loadTime)
+        } catch (e : JSONException) {
+            e.printStackTrace()
         }
+
+        val jsonObjectRequest = JsonObjectRequest(Request.Method.POST, url, postData, {
+            @Override
+            fun onResponse(response : String) {
+                print(response)
+            }
+        }, {
+            @Override
+            fun onErrorResponse(error : VolleyError) {
+                error.printStackTrace()
+            }
+        })
+
+        requestQueue.add(jsonObjectRequest)
     }
 
-    private suspend fun addToRepo(invRepo : InventoryRepository) = withContext(Dispatchers.IO){
-        currentInventory()
+    private fun createInventoryItem(context : Context, item : RusalItem) {
+
+        val moshi : Moshi = Moshi.Builder().build()
+        val adapter : JsonAdapter<RusalItem> = moshi.adapter(RusalItem::class.java)
+
+        try {
+            val postData = JSONObject(adapter.toJson(item))
+
+            val requestQueue : RequestQueue = Volley.newRequestQueue(context)
+
+            val jsonObjectRequest = JsonObjectRequest(Request.Method.POST, WEB_API, postData, {
+                @Override
+                fun onResponse(response : String) {
+                    print(response)
+                }
+            }, {
+                fun onErrorResponse(error : VolleyError) {
+                    error.printStackTrace()
+                }
+            })
+
+            requestQueue.add(jsonObjectRequest)
+
+        } catch (e : JSONException) {
+            e.printStackTrace()
+        }
+
+    }
+
+    private suspend fun addToRepo(response : String, invRepo : InventoryRepository) = withContext(Dispatchers.IO){
         val moshi : Moshi = Moshi.Builder().build()
         val listType = Types.newParameterizedType(List::class.java, RusalItem::class.java)
         val adapter : JsonAdapter<List<RusalItem>> = moshi.adapter(listType)
 
-        val rusalItems = adapter.fromJson(output);
+        val rusalItems = adapter.fromJson(response);
 
         for (item in rusalItems!!) {
             invRepo.insert(item)
@@ -132,18 +130,53 @@ object HttpRequestHandler {
         }
     }
 
-    // Returns false when update complete to signify loading as completed
-    suspend fun initialize(invRepo: InventoryRepository): Boolean {
-        val value = CoroutineScope(Dispatchers.IO).async {
-            addToRepo(invRepo)
+    /* TODO */
+    private fun confirmReception(context : Context, items: List<RusalItem>) {
+        val url = "$WEB_API/update/reception"
+
+        val updateParams = RusalReceptionUpdateParams().getUpdateParamsList(items)
+
+        val moshi : Moshi = Moshi.Builder().build()
+        val listType = Types.newParameterizedType(List::class.java, RusalReceptionUpdateParams::class.java)
+        val adapter : JsonAdapter<List<RusalReceptionUpdateParams>> = moshi.adapter(listType)
+
+        try {
+            val postData = JSONArray(adapter.toJson(updateParams))
+
+            val requestQueue : RequestQueue = Volley.newRequestQueue(context)
+
+            val jsonArrayRequest = JsonArrayRequest(Request.Method.POST, url, postData, {
+                @Override
+                fun onResponse(response : String) {
+                    print(response)
+                }
+            }, {
+                @Override
+                fun onErrorResponse(error : VolleyError) {
+                    error.printStackTrace()
+                }
+            })
+
+            requestQueue.add(jsonArrayRequest)
+
+        } catch (e : JSONException) {
+            e.printStackTrace()
         }
-        value.await()
+    }
+
+    // Returns false when update complete to signify loading as completed
+    suspend fun initialize(context : Context, invRepo: InventoryRepository): Boolean {
+        retrieveInventory(context, invRepo)
         return false
     }
 
-    fun initUpdate(mainActivityViewModel : MainActivityViewModel) {
+    fun initUpdate(context : Context, items: List<RusalItem>, sessionType: SessionType) {
         CoroutineScope(Dispatchers.IO).launch {
-            updateDatabase(mainActivityViewModel = mainActivityViewModel)
+            if (sessionType == SessionType.SHIPMENT) {
+                confirmShipment(context, items)
+            } else {
+                confirmReception(context, items)
+            }
         }
     }
 
