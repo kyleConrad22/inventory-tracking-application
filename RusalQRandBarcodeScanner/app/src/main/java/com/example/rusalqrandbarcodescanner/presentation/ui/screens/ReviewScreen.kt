@@ -173,7 +173,7 @@ private fun RemoveDialog(onDismissRequest : () -> Unit, onRemoveRequest : () -> 
             Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
                 Text(text = "Heat Number: ${ item.heatNum }")
                 Text(text = "BL Number: ${ item.blNum }")
-                Text(text = "Quantity: ${ item.quantity }")
+                Text(text = "Piece Count: ${ item.quantity }")
                 Text(text = "Net Weight Kg: ${ item.netWeightKg }")
                 Text(text = "Gross Weight Kg: ${ item.grossWeightKg }")
                 Text(text = "Mark: ${item.mark}")
