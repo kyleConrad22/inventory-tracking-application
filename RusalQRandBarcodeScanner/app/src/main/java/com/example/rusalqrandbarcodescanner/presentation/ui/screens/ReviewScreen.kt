@@ -66,9 +66,9 @@ fun ReviewScreen(navController: NavHostController, mainActivityVM : MainActivity
                 )
             }else {
                 Text(text = if (displayRemoveEntry) {
-                    "Please select the bundle you would like to remove:"
+                    "Please select the item you would like to remove or view additional information for:"
                 } else {
-                    "Review ${sessionType.type}; if you would like to remove a bundle please select it:"
+                    "Review ${sessionType.type}; if you would like to remove or view additional information for an item please select it:"
                 }, modifier = Modifier.padding(16.dp))
 
                 GetRusalItemListView(
