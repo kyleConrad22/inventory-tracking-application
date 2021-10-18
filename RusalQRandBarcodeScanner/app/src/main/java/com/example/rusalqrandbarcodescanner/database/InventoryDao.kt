@@ -48,6 +48,8 @@ interface InventoryDao {
     suspend fun getAddedItems() : List<RusalItem>
 
     @Query("UPDATE current_inventory SET work_order = :reqWorkOrder AND load_num = :reqLoadNum AND loader = :reqLoader AND load_time = :reqLoadTime WHERE heat_num = :searchHeatNum")
-    suspend fun updateLoadFields(reqWorkOrder : String, reqLoadNum : String, reqLoader : String, reqLoadTime : String, searchHeatNum : String)
+    suspend fun updateShipmentFields(reqWorkOrder : String, reqLoadNum : String, reqLoader : String, reqLoadTime : String, searchHeatNum : String)
 
+    @Query("UPDATE current_inventory SET reception_date = :reqReceptionDate AND checker = :reqChecker WHERE heat_num = :searchHeatNum")
+    suspend fun updateReceptionFields(reqReceptionDate : String, reqChecker : String, searchHeatNum : String)
 }

@@ -22,7 +22,6 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.CodeApplication
-import com.example.rusalqrandbarcodescanner.services.HttpRequestHandler
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
@@ -174,7 +173,7 @@ private fun RemoveDialog(onDismissRequest : () -> Unit, onRemoveRequest : () -> 
             Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
                 Text(text = "Heat Number: ${ item.heatNum }")
                 Text(text = "BL Number: ${ item.blNum }")
-                Text(text = "Quantity: ${ item.pieceCount }")
+                Text(text = "Quantity: ${ item.quantity }")
                 Text(text = "Net Weight Kg: ${ item.netWeightKg }")
                 Text(text = "Gross Weight Kg: ${ item.grossWeightKg }")
                 Text(text = "Mark: ${item.mark}")

@@ -7,7 +7,7 @@ object ScannedInfo {
     fun setValues(rawValue: String) {
         if (rawValue.contains("_")) {
             val elements = rawValue.split("_").toTypedArray()
-            heatNum = elements[1].replace("-", "")
+            heatNum = elements[1]
         }
     }
 

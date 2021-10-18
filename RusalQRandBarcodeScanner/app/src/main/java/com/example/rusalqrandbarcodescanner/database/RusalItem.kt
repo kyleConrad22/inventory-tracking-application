@@ -12,7 +12,7 @@ data class RusalItem (
     @ColumnInfo(name = "package_num") val packageNum: String = "",
     @ColumnInfo(name = "gross_weight") val grossWeightKg: String = "",
     @ColumnInfo(name = "net_weight") val netWeightKg: String = "",
-    @ColumnInfo(name = "quantity") val pieceCount: String = "",
+    @ColumnInfo(name = "quantity") val quantity: String = "",
     @ColumnInfo(name = "dimension") val dimension: String = "",
     @ColumnInfo(name = "grade") val grade: String = "",
     @ColumnInfo(name = "certificate_num") val certificateNum: String = "",

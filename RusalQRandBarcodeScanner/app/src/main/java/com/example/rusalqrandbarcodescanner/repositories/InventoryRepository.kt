@@ -4,99 +4,92 @@ import androidx.annotation.WorkerThread
 import androidx.room.EmptyResultSetException
 import com.example.rusalqrandbarcodescanner.database.InventoryDao
 import com.example.rusalqrandbarcodescanner.database.RusalItem
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 
 @Suppress("RedundantSuspendModifier")
+@WorkerThread
 class InventoryRepository(private val inventoryDao: InventoryDao) {
     val fullInventory: Flow<List<RusalItem>> = inventoryDao.getAll()
 
-    @WorkerThread
-    suspend fun getAllSuspend() : List<RusalItem>? {
-        return try {
+    suspend fun getAllSuspend() : List<RusalItem>? = withContext(Dispatchers.IO) {
+        return@withContext try {
             inventoryDao.getAllSuspend()
         } catch (exc : EmptyResultSetException) {
             null
         }
     }
 
-    @WorkerThread
-    suspend fun findByHeat(heat: String): RusalItem? {
-        return try {
+    suspend fun findByHeat(heat: String): RusalItem? = withContext(Dispatchers.IO) {
+        return@withContext try {
             inventoryDao.findByHeat(heat)
         } catch (exc: EmptyResultSetException) {
             null
         }
     }
 
-    @WorkerThread
-    suspend fun findByBarcodes(barcode: String): List<RusalItem>? {
-        return try {
+    suspend fun findByBarcodes(barcode: String): List<RusalItem>? = withContext(Dispatchers.IO) {
+        return@withContext try {
             inventoryDao.findByBarcodes("%$barcode%")
         } catch (exc: EmptyResultSetException) {
             null
         }
     }
 
-    @WorkerThread
-    suspend fun findByBarcode(barcode: String): RusalItem? {
-        return try {
+    suspend fun findByBarcode(barcode: String): RusalItem? = withContext(Dispatchers.IO) {
+        return@withContext try {
             inventoryDao.findByBarcode(barcode)
         } catch (exc: EmptyResultSetException) {
             null
         }
     }
 
-    @WorkerThread
-    suspend fun getAddedItems() : List<RusalItem> {
-        return try {
+    suspend fun getAddedItems() : List<RusalItem> = withContext(Dispatchers.IO) {
+        return@withContext try {
             inventoryDao.getAddedItems()
         } catch (exc : EmptyResultSetException) {
             listOf()
         }
     }
 
-    @WorkerThread
-    suspend fun findByBaseHeat(heat: String): List<RusalItem>? {
-        return inventoryDao.findByBaseHeat("%$heat%")
+    suspend fun findByBaseHeat(heat: String): List<RusalItem>? = withContext(Dispatchers.IO) {
+        return@withContext inventoryDao.findByBaseHeat("%$heat%")
     }
 
-    @WorkerThread
-    suspend fun updateIsAddedStatus(isAdded : Boolean, heat : String) {
+    suspend fun updateIsAddedStatus(isAdded : Boolean, heat : String) = withContext(Dispatchers.IO) {
         inventoryDao.updateIsAddedStatus(isAdded, heat)
     }
 
-    @WorkerThread
-    suspend fun insert(rusalItem: RusalItem) {
+    suspend fun insert(rusalItem: RusalItem) = withContext(Dispatchers.IO) {
         inventoryDao.insert(rusalItem)
     }
 
-    @WorkerThread
-    suspend fun deleteAll(){
+    suspend fun deleteAll() = withContext(Dispatchers.IO) {
         inventoryDao.deleteAll()
     }
 
-    @WorkerThread
-    suspend fun delete(rusalItem: RusalItem) {
+    suspend fun delete(rusalItem: RusalItem) = withContext(Dispatchers.IO) {
         inventoryDao.delete(rusalItem)
     }
 
-    @WorkerThread
-    suspend fun update(rusalItem : RusalItem) {
+    suspend fun update(rusalItem : RusalItem) = withContext(Dispatchers.IO) {
         inventoryDao.update(rusalItem)
     }
 
-    @WorkerThread
-    suspend fun removeAllAddedItems() {
+    suspend fun removeAllAddedItems() = withContext(Dispatchers.IO) {
         inventoryDao.removeAllAddedItems()
     }
 
-    @WorkerThread
-    suspend fun getNumberOfAddedItems() : Int {
-        return inventoryDao.getNumberOfAddedItems()
+    suspend fun getNumberOfAddedItems() : Int = withContext(Dispatchers.IO) {
+        return@withContext inventoryDao.getNumberOfAddedItems()
     }
 
-    @WorkerThread
-    suspend fun updateLoadFields(workOrder : String, loadNum : String, loader : String , loadTime : String, heatNum : String) {
-        inventoryDao.updateLoadFields(workOrder, loadNum, loader, loadTime, heatNum)
+    suspend fun updateShipmentFields(workOrder : String, loadNum : String, loader : String, loadTime : String, heatNum : String) = withContext(Dispatchers.IO) {
+        inventoryDao.updateShipmentFields(workOrder, loadNum, loader, loadTime, heatNum)
+    }
+
+    suspend fun updateReceptionFields(receptionDate : String, checker : String, heatNum : String) = withContext(Dispatchers.IO) {
+        inventoryDao.updateReceptionFields(receptionDate, checker, heatNum)
     }
 }
