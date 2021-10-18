@@ -56,6 +56,9 @@ fun ReviewScreen(navController: NavHostController, mainActivityVM : MainActivity
                     onRemoveRequest = {
                         reviewVM.removeItem(item!!)
                         mainActivityVM.refresh()
+                        if (mainActivityVM.addedItemCount.value == 1) {
+                            navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)
+                        }
                     },
                     item = item!!)
             }else {
