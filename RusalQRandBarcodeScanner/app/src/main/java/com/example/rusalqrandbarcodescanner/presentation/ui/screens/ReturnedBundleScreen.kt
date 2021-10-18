@@ -214,7 +214,7 @@ private fun BundleAddedDialog(navController : NavHostController, showDialog : Mu
         }) {
         Surface(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
-                Text(text="Bundle $heat, has been added to the $type.", Modifier.padding(16.dp))
+                Text(text="Item with heat $heat, has been added to the $type.", Modifier.padding(16.dp))
                 Button(onClick = {
                     showDialog.value = false
                     if (!isLastBundle) {
@@ -223,7 +223,7 @@ private fun BundleAddedDialog(navController : NavHostController, showDialog : Mu
                         navController.navigate(Screen.ReviewScreen.title)
                     }
                 }) {
-                    Text(if (!isLastBundle) {"Ok"} else { "Review Load" }, modifier = Modifier.padding(16.dp))
+                    Text(if (!isLastBundle) {"Ok"} else { "Review $type" }, modifier = Modifier.padding(16.dp))
                 }
             }
 
