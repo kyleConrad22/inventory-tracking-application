@@ -48,10 +48,9 @@ class ReturnedBundleViewModel(private val invRepo : InventoryRepository, private
 
                     uniqueList.value.size > 1 -> ItemActionType.MULTIPLE_BLS_OR_PIECE_COUNTS
 
-                    mainActivityVM.sessionType.value == SessionType.SHIPMENT -> getShipmentItemType(
-                        locatedItem.value!!)
+                    mainActivityVM.sessionType.value == SessionType.SHIPMENT -> getShipmentItemType(locatedItem.value!!)
 
-                    else -> ItemActionType.VALID
+                    else -> getReceptionItemType(locatedItem.value!!)
                 }
 
                 canBeLoaded.value = !(itemActionType.value in listOf(ItemActionType.INCORRECT_BL,
@@ -108,6 +107,13 @@ class ReturnedBundleViewModel(private val invRepo : InventoryRepository, private
         }
     }
 
+    private fun getReceptionItemType(item : RusalItem) : ItemActionType {
+        return when {
+            item.barge != mainActivityVM.barge.value -> ItemActionType.INCORRECT_BARGE
+            else -> ItemActionType.VALID
+        }
+    }
+
     fun getLoadedHeats() : List<String> {
         val result = mutableListOf<String>()
         mainActivityVM.addedItems.value.forEach { item ->
@@ -118,9 +124,13 @@ class ReturnedBundleViewModel(private val invRepo : InventoryRepository, private
         return result.toList()
     }
 
-    fun isLastBundle() : Boolean {
-        val requestedQuantity = mainActivityVM.quantity.value.toInt()
-        return requestedQuantity - mainActivityVM.addedItemCount.value == 1
+    fun isLastBundle(sessionType: SessionType) : Boolean {
+        if (sessionType == SessionType.SHIPMENT) {
+            val requestedQuantity = mainActivityVM.quantity.value.toInt()
+            return requestedQuantity - mainActivityVM.addedItemCount.value == 1
+        }
+
+        return false
     }
 
     fun addItem() {

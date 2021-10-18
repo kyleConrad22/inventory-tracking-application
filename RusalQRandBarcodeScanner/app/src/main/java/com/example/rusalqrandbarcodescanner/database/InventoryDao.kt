@@ -52,4 +52,7 @@ interface InventoryDao {
 
     @Query("UPDATE current_inventory SET reception_date = :reqReceptionDate AND checker = :reqChecker WHERE heat_num = :searchHeatNum")
     suspend fun updateReceptionFields(reqReceptionDate : String, reqChecker : String, searchHeatNum : String)
+
+    @Query("SELECT COUNT(barge) FROM CURRENT_INVENTORY WHERE barge = :searchBarge")
+    suspend fun getInboundItemCount(searchBarge : String) : Int
 }

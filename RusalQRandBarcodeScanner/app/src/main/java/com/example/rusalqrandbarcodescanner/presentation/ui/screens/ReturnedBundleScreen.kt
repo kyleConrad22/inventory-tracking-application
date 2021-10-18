@@ -50,7 +50,7 @@ fun ReturnedBundleScreen(navController: NavHostController, mainActivityVM : Main
     val locatedItem = returnedBundleVM.locatedItem.value
 
     if (showAddedDialog.value) {
-        BundleAddedDialog(navController, showAddedDialog, heat, mainActivityVM.sessionType.value.type, returnedBundleVM.isLastBundle())
+        BundleAddedDialog(navController, showAddedDialog, heat, mainActivityVM.sessionType.value.type, returnedBundleVM.isLastBundle(sessionType))
     } else {
         Scaffold(topBar = { TopAppBar(title = { Text("Returned Bundle Info") }) }) {
 
@@ -68,11 +68,17 @@ fun ReturnedBundleScreen(navController: NavHostController, mainActivityVM : Main
                         ItemActionType.NOT_IN_LOADED_HEATS -> NotInLoadedHeats(loadedHeatList = returnedBundleVM.getLoadedHeats(), heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) })
                         ItemActionType.INCORRECT_PIECE_COUNT -> IncorrectField(field = "Piece Count", retrievedValue = locatedItem!!.quantity, requestedValue = mainActivityVM.pieceCount.value, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) })
                         ItemActionType.INCORRECT_BL -> IncorrectField(field = "BL Number", retrievedValue = locatedItem!!.blNum, requestedValue = mainActivityVM.bl.value, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) })
-                        ItemActionType.DUPLICATE -> DuplicateItem(sessionType = sessionType.type, scanTime = returnedBundleVM.locatedItem.value!!.loadTime, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) })
+                        ItemActionType.DUPLICATE -> DuplicateItem(sessionType = sessionType.type, scanTime = locatedItem!!.loadTime, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) })
                         ItemActionType.INVALID_HEAT -> InvalidHeat(sessionType = sessionType, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) }, onConfirm = {
                             handleAddition()
                             showAddedDialog.value = true
                         })
+                        ItemActionType.INCORRECT_BARGE -> IncorrectField(field = "Barge",
+                            heat = heat,
+                            retrievedValue = locatedItem!!.barge,
+                            requestedValue = mainActivityVM.barge.value, onDismiss = {
+                                handleDismiss(navController, mainActivityVM.heatNum)
+                            })
                         ItemActionType.VALID -> ValidHeat(item = locatedItem!!, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) }, onConfirm = {
                             returnedBundleVM.addItem()
                             showAddedDialog.value = true
@@ -84,14 +90,14 @@ fun ReturnedBundleScreen(navController: NavHostController, mainActivityVM : Main
     }
 }
 
-/*TODO*/
+/*TODO - Allow user to manually enter data / scan data to retrieve bundle information*/
 fun handleAddition() {
 
 }
 
 fun handleDismiss(navController: NavHostController, heat : MutableState<String>) {
     heat.value = ""
-    navController.popBackStack(Screen.ScannerScreen.title, inclusive = true)
+    navController.popBackStack(Screen.OptionsScreen.title, inclusive = true)
 }
 
 @Composable
@@ -211,7 +217,7 @@ private fun BundleAddedDialog(navController : NavHostController, showDialog : Mu
                 Button(onClick = {
                     showDialog.value = false
                     if (!isLastBundle) {
-                        navController.popBackStack()
+                        navController.popBackStack(Screen.OptionsScreen.title, inclusive = true)
                     } else {
                         navController.navigate(Screen.ReviewScreen.title)
                     }

@@ -7,5 +7,6 @@ enum class ItemActionType(val type : String) {
     INVALID_HEAT("Invalid Heat"),
     NOT_IN_LOADED_HEATS("Not In Loaded Heats"),
     MULTIPLE_BLS_OR_PIECE_COUNTS("Multiple BLs or Quantities"),
+    INCORRECT_BARGE("Incorrect Barge"),
     VALID("Can Be Added")
 }

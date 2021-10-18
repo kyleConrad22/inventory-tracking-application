@@ -73,10 +73,6 @@ class InventoryRepository(private val inventoryDao: InventoryDao) {
         inventoryDao.delete(rusalItem)
     }
 
-    suspend fun update(rusalItem : RusalItem) = withContext(Dispatchers.IO) {
-        inventoryDao.update(rusalItem)
-    }
-
     suspend fun removeAllAddedItems() = withContext(Dispatchers.IO) {
         inventoryDao.removeAllAddedItems()
     }
@@ -91,5 +87,9 @@ class InventoryRepository(private val inventoryDao: InventoryDao) {
 
     suspend fun updateReceptionFields(receptionDate : String, checker : String, heatNum : String) = withContext(Dispatchers.IO) {
         inventoryDao.updateReceptionFields(receptionDate, checker, heatNum)
+    }
+
+    suspend fun getInboundItemCount(barge : String) : Int = withContext(Dispatchers.IO) {
+        return@withContext inventoryDao.getInboundItemCount(barge)
     }
 }

@@ -26,6 +26,7 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
     val heatNum = mutableStateOf("")
 
     val addedItemCount = mutableStateOf(0)
+    val inboundItemCount = mutableStateOf(0)
     val addedItems = mutableStateOf(listOf<RusalItem>())
 
     val displayRemoveEntryContent = mutableStateOf(false)
@@ -41,16 +42,19 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
     fun refresh() {
         updateAddedItems()
         updateAddedItemCount()
+        updateInboundItemCount()
     }
 
-    /* TODO */
-    fun deleteBaseHeat() {
-        if (heatNum.value.length == 6) {
-        }
+    private fun updateInboundItemCount() = viewModelScope.launch {
+        inboundItemCount.value = repo.getInboundItemCount(barge.value)
     }
 
     private fun setDisplayRemoveEntryContent() {
-        displayRemoveEntryContent.value = addedItemCount.value - quantity.value.toInt() > 0
+        if (sessionType.value == SessionType.SHIPMENT) {
+            displayRemoveEntryContent.value = quantity.value.toInt() - addedItemCount.value > 0
+        } else {
+            displayRemoveEntryContent.value = false
+        }
     }
 
     private fun updateAddedItemCount() = viewModelScope.launch() {
@@ -67,21 +71,8 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
        addedItems.value = repo.getAddedItems()
     }
 
-    fun findByBarcode(barcode: String): LiveData<RusalItem?> {
-        val result = MutableLiveData<RusalItem?>()
-        viewModelScope.launch {
-            val returnedResult = repo.findByBarcode(barcode)
-            result.postValue(returnedResult)
-        }
-        return result
-    }
-
     fun insert(lineItem: RusalItem) = viewModelScope.launch {
         repo.insert(lineItem)
-    }
-
-    fun deleteAll() = viewModelScope.launch {
-        repo.deleteAll()
     }
 
     class MainActivityViewModelFactory(private val repository: InventoryRepository, private val application : Application) :
