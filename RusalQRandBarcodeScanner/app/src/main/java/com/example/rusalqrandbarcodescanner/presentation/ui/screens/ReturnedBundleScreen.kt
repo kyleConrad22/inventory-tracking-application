@@ -170,6 +170,7 @@ private fun ValidHeat(item : RusalItem, onDismiss: () -> Unit, onConfirm: () -> 
 
 @Composable
 private fun MultipleBlsOrPieceCounts(uniqueComboList : List<RusalItem>, heat : String, onDismiss: () -> Unit, onConfirm: () -> Unit) {
+    Text(text="Item  with heat $heat returned multiple possible BLs / options, please ensure that the correct BL / option is being loaded.", modifier = Modifier.padding(16.dp))
     UniqueOptionsList(uniqueComboList)
     DenyOrConfirm(onDismiss = { onDismiss() }, onConfirm = { onConfirm() })
 }
