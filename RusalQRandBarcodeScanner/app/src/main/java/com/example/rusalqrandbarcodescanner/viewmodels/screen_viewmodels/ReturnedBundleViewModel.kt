@@ -22,6 +22,7 @@ class ReturnedBundleViewModel(private val invRepo : InventoryRepository, private
     private val heat = mainActivityVM.heatNum.value.replace("-","")
 
     val uniqueList = mutableStateOf(listOf<RusalItem>())
+    val loadedHeats = mutableStateOf(listOf<String>())
     val loading = mutableStateOf(true)
     private val canBeLoaded = mutableStateOf(false)
     val locatedItem : MutableState<RusalItem?> = mutableStateOf(null)
@@ -124,6 +125,7 @@ class ReturnedBundleViewModel(private val invRepo : InventoryRepository, private
                 }
             }
         }
+        loadedHeats.value = result.toList()
         return result.toList()
     }
 

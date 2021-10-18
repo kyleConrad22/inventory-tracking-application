@@ -65,7 +65,7 @@ fun ReturnedBundleScreen(navController: NavHostController, mainActivityVM : Main
                             returnedBundleVM.addItem()
                             showAddedDialog.value = true
                         })
-                        ItemActionType.NOT_IN_LOADED_HEATS -> NotInLoadedHeats(loadedHeatList = returnedBundleVM.getLoadedHeats(), heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) })
+                        ItemActionType.NOT_IN_LOADED_HEATS -> NotInLoadedHeats(loadedHeatList = returnedBundleVM.loadedHeats.value, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) })
                         ItemActionType.INCORRECT_PIECE_COUNT -> IncorrectField(field = "Piece Count", retrievedValue = locatedItem!!.quantity, requestedValue = mainActivityVM.pieceCount.value, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) })
                         ItemActionType.INCORRECT_BL -> IncorrectField(field = "BL Number", retrievedValue = locatedItem!!.blNum, requestedValue = mainActivityVM.bl.value, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) })
                         ItemActionType.DUPLICATE -> DuplicateItem(sessionType = sessionType.type, scanTime = locatedItem!!.loadTime, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) })
