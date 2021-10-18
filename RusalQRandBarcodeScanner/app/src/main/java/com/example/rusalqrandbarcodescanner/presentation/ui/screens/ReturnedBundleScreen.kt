@@ -97,7 +97,7 @@ fun handleAddition() {
 
 fun handleDismiss(navController: NavHostController, heat : MutableState<String>) {
     heat.value = ""
-    navController.popBackStack(Screen.OptionsScreen.title, inclusive = true)
+    navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)
 }
 
 @Composable
@@ -218,7 +218,7 @@ private fun BundleAddedDialog(navController : NavHostController, showDialog : Mu
                 Button(onClick = {
                     showDialog.value = false
                     if (!isLastBundle) {
-                        navController.popBackStack(Screen.OptionsScreen.title, inclusive = true)
+                        navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)
                     } else {
                         navController.navigate(Screen.ReviewScreen.title)
                     }
