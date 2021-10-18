@@ -27,8 +27,8 @@ object HttpRequestHandler {
 
     private fun retrieveInventory(callBack : VolleyCallBack) {
         val stringRequest = StringRequest(Request.Method.GET, WEB_API, { response ->
-                print(response)
-                jsonResponse = response
+                print(response.replace("\\n", ""))
+                jsonResponse = response.replace("\\n", "")
                 callBack.onSuccess()
         }, { error ->
                 error.printStackTrace()

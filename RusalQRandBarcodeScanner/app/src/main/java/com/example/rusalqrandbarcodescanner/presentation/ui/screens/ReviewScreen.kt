@@ -109,7 +109,7 @@ fun ReviewScreen(navController: NavHostController, mainActivityVM : MainActivity
                                 horizontalArrangement = Arrangement.SpaceEvenly) {
                                 Button(onClick = {
                                     navController.popBackStack(Screen.MainMenuScreen.title,
-                                        inclusive = true)
+                                        inclusive = false)
                                 }) { Text(text = "Ok", modifier = Modifier.padding(16.dp)) }
                             }
                         }

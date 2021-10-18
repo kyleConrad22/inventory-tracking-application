@@ -49,7 +49,7 @@ fun ManualEntryScreen(navController : NavHostController, mainActivityVM : MainAc
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                 Button(onClick = {
-                    navController.navigateUp()
+                    navController.popBackStack()
                 }) {
                     Text(text = "Back", modifier = Modifier.padding(16.dp))
                 }
