@@ -37,14 +37,6 @@ class InventoryRepository(private val inventoryDao: InventoryDao) {
         }
     }
 
-    suspend fun findByBarcode(barcode: String): RusalItem? = withContext(Dispatchers.IO) {
-        return@withContext try {
-            inventoryDao.findByBarcode(barcode)
-        } catch (exc: EmptyResultSetException) {
-            null
-        }
-    }
-
     suspend fun getAddedItems() : List<RusalItem> = withContext(Dispatchers.IO) {
         return@withContext try {
             inventoryDao.getAddedItems()
@@ -91,5 +83,9 @@ class InventoryRepository(private val inventoryDao: InventoryDao) {
 
     suspend fun getInboundItemCount(barge : String) : Int = withContext(Dispatchers.IO) {
         return@withContext inventoryDao.getInboundItemCount(barge)
+    }
+
+    suspend fun getReceivedItemCount(barge : String) : Int = withContext(Dispatchers.IO) {
+        return@withContext inventoryDao.getReceivedItemCount(barge)
     }
 }

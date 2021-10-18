@@ -28,6 +28,7 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
     val addedItemCount = mutableStateOf(0)
     val inboundItemCount = mutableStateOf(0)
     val addedItems = mutableStateOf(listOf<RusalItem>())
+    val receivedItemCount = mutableStateOf(0)
 
     val displayRemoveEntryContent = mutableStateOf(false)
 
@@ -43,6 +44,11 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
         updateAddedItems()
         updateAddedItemCount()
         updateInboundItemCount()
+        updateReceivedItemCount()
+    }
+
+    private fun updateReceivedItemCount() = viewModelScope.launch {
+        receivedItemCount.value = repo.getReceivedItemCount(barge.value)
     }
 
     private fun updateInboundItemCount() = viewModelScope.launch {

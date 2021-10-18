@@ -108,6 +108,7 @@ fun InfoInputScreen(navController: NavHostController, mainActivityVM: MainActivi
                     }
                     if (displayConfirmButton) {
                         Button(onClick = {
+                            mainActivityVM.refresh()
                             navController.navigate(Screen.OptionsScreen.title)
                         }) {
                             Text(text = "Confirm ${mainActivityVM.sessionType.value.type} Info",
