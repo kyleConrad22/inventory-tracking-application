@@ -10,6 +10,6 @@ class NameValidator {
     }
 
     fun updateName(input : String, output : MutableState<String>) {
-        UpdateMutableStringState().toTitleCase(input, output)
+        UpdateMutableStringState().capitalizeInput(input, output)
     }
 }
