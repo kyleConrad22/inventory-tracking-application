@@ -25,6 +25,7 @@ import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
+import com.example.rusalqrandbarcodescanner.util.Commodity
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReviewViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReviewViewModel.ReviewViewModelFactory
@@ -60,7 +61,9 @@ fun ReviewScreen(navController: NavHostController, mainActivityVM : MainActivity
                             navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)
                         }
                     },
-                    item = item!!)
+                    item = item!!,
+                    getCommodity = { mainActivityVM.getItemCommodity(item!!) }
+                )
             }else {
                 Text(text = if (displayRemoveEntry) {
                     "Please select the bundle you would like to remove:"
@@ -73,6 +76,9 @@ fun ReviewScreen(navController: NavHostController, mainActivityVM : MainActivity
                     onClick = {
                         item = it
                         showRemoveDialog = true
+                    },
+                    getCommodity = {
+                        mainActivityVM.getItemCommodity(it)
                     }
                 )
 
@@ -126,7 +132,7 @@ fun ReviewScreen(navController: NavHostController, mainActivityVM : MainActivity
 
 
 @Composable
-private fun GetRusalItemListView(items : List<RusalItem>, onClick : (item : RusalItem) -> Unit) {
+private fun GetRusalItemListView(items : List<RusalItem>, onClick : (item : RusalItem) -> Unit, getCommodity: (item: RusalItem) -> Commodity) {
 
     LazyColumn (
         modifier = Modifier
@@ -137,14 +143,14 @@ private fun GetRusalItemListView(items : List<RusalItem>, onClick : (item : Rusa
         items(
             items = items,
             itemContent = { it ->
-                RusalItemListItem(item = it, onClick = { onClick(it) })
+                RusalItemListItem(item = it, onClick = { onClick(it) }, getCommodity = { getCommodity(it) })
             }
         )
     }
 }
 
 @Composable
-private fun RusalItemListItem(item: RusalItem, onClick: (item : RusalItem) -> Unit) {
+private fun RusalItemListItem(item: RusalItem, onClick: (item : RusalItem) -> Unit, getCommodity : (item : RusalItem) -> Commodity) {
     Card(
         modifier= Modifier
             .padding(horizontal = 8.dp, vertical = 8.dp)
@@ -161,7 +167,7 @@ private fun RusalItemListItem(item: RusalItem, onClick: (item : RusalItem) -> Un
                 .align(Alignment.CenterVertically)) {
                 Text(text = "Heat: ${item.heatNum}" , style = MaterialTheme.typography.h6)
                 Text(text="BL: ${item.blNum}", style = MaterialTheme.typography.h6)
-                Text("Mark: ${item.mark}", style = MaterialTheme.typography.h6)
+                Text(if (getCommodity(item) == Commodity.BILLETS) {"Mark: ${item.mark}"} else {"Lot: TO BE IMPLEMENTED"}, style = MaterialTheme.typography.h6)
             }
         }
     }
@@ -169,7 +175,7 @@ private fun RusalItemListItem(item: RusalItem, onClick: (item : RusalItem) -> Un
 
 @ExperimentalComposeUiApi
 @Composable
-private fun RemoveDialog(onDismissRequest : () -> Unit, onRemoveRequest : () -> Unit, item : RusalItem) {
+private fun RemoveDialog(onDismissRequest : () -> Unit, onRemoveRequest : () -> Unit, item : RusalItem, getCommodity: (item: RusalItem) -> Commodity) {
     Dialog(properties = DialogProperties(usePlatformDefaultWidth = false),
         onDismissRequest = onDismissRequest) {
         Surface(modifier = Modifier.fillMaxSize()) {
@@ -180,7 +186,9 @@ private fun RemoveDialog(onDismissRequest : () -> Unit, onRemoveRequest : () -> 
                 Text(text = "Net Weight Kg: ${ item.netWeightKg }")
                 Text(text = "Gross Weight Kg: ${ item.grossWeightKg }")
                 Text(text = "Mark: ${item.mark}")
-                Text(text = "Lot: TO BE IMPLEMENTED")
+                if (getCommodity(item) == Commodity.INGOTS) {
+                    Text(text = "Lot: TO BE IMPLEMENTED")
+                }
                 Button(onClick = onDismissRequest) {
                     Text("Deny Removal", modifier = Modifier.padding(16.dp))
                 }

@@ -7,6 +7,7 @@ import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.services.HttpRequestHandler
+import com.example.rusalqrandbarcodescanner.util.Commodity
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 
@@ -66,6 +67,13 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
     private fun updateAddedItemCount() = viewModelScope.launch() {
         addedItemCount.value = repo.getNumberOfAddedItems()
         setDisplayRemoveEntryContent()
+    }
+
+    fun getItemCommodity(item : RusalItem) : Commodity {
+        if (item.grade.contains("INGOTS")) {
+            return Commodity.INGOTS
+        }
+        return Commodity.BILLETS
     }
 
     fun removeAllAddedItems() = viewModelScope.launch {
