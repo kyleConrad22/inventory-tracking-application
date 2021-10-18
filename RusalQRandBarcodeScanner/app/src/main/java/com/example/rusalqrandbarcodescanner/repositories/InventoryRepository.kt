@@ -88,4 +88,12 @@ class InventoryRepository(private val inventoryDao: InventoryDao) {
     suspend fun getReceivedItemCount(barge : String) : Int = withContext(Dispatchers.IO) {
         return@withContext inventoryDao.getReceivedItemCount(barge)
     }
+
+    suspend fun findByBl(bl : String) : List<RusalItem> = withContext(Dispatchers.IO) {
+        return@withContext try {
+            inventoryDao.findByBl(bl)
+        } catch (e : EmptyResultSetException) {
+            listOf<RusalItem>()
+        }
+    }
 }

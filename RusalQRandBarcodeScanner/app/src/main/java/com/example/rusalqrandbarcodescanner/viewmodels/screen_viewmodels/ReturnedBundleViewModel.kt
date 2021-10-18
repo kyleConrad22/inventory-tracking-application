@@ -8,6 +8,7 @@ import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.ItemActionType
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
+import com.example.rusalqrandbarcodescanner.util.Commodity
 import com.example.rusalqrandbarcodescanner.util.ScannedInfo
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import kotlinx.coroutines.*
@@ -98,7 +99,7 @@ class ReturnedBundleViewModel(private val invRepo : InventoryRepository, private
         }
     }
 
-    private fun getShipmentItemType(item : RusalItem) : ItemActionType {
+    private suspend fun getShipmentItemType(item : RusalItem) : ItemActionType {
         return when {
             item.blNum != mainActivityVM.bl.value -> ItemActionType.INCORRECT_BL
             item.quantity != mainActivityVM.pieceCount.value -> ItemActionType.INCORRECT_PIECE_COUNT
@@ -114,14 +115,23 @@ class ReturnedBundleViewModel(private val invRepo : InventoryRepository, private
         }
     }
 
-    fun getLoadedHeats() : List<String> {
+    suspend fun getLoadedHeats() : List<String> {
         val result = mutableListOf<String>()
-        mainActivityVM.addedItems.value.forEach { item ->
-            if (result.find{ it == item.heatNum } == null) {
-                result.add(item.heatNum)
+        if (getCommodity(invRepo.findByBl(mainActivityVM.bl.value)) == Commodity.INGOTS) {
+            mainActivityVM.addedItems.value.forEach { item ->
+                if (result.find { it == item.heatNum } == null) {
+                    result.add(item.heatNum)
+                }
             }
         }
         return result.toList()
+    }
+
+    private fun getCommodity(items : List<RusalItem>) : Commodity {
+        if (items[0].grade.contains("INGOTS")) {
+            return Commodity.INGOTS
+        }
+        return Commodity.BILLETS
     }
 
     fun isLastBundle(sessionType: SessionType) : Boolean {

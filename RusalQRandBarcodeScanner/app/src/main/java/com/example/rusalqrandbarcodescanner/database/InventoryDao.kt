@@ -58,4 +58,7 @@ interface InventoryDao {
 
     @Query("SELECT COUNT(reception_date) FROM current_inventory WHERE barge = :searchBarge AND reception_date != ''")
     suspend fun getReceivedItemCount(searchBarge : String) : Int
+
+    @Query("SELECT * FROM current_inventory WHERE bl_num = :searchBl")
+    suspend fun findByBl(searchBl : String) : List<RusalItem>
 }
