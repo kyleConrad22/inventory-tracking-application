@@ -177,7 +177,7 @@ private fun RemoveDialog(onDismissRequest : () -> Unit, onRemoveRequest : () -> 
                 Text(text = "Net Weight Kg: ${ item.netWeightKg }")
                 Text(text = "Gross Weight Kg: ${ item.grossWeightKg }")
                 Text(text = "Mark: ${item.mark}")
-                Text(text = "Lot: ${item.barcode}")
+                Text(text = "Lot: TO BE IMPLEMENTED")
                 Button(onClick = onDismissRequest) {
                     Text("Deny Removal", modifier = Modifier.padding(16.dp))
                 }
