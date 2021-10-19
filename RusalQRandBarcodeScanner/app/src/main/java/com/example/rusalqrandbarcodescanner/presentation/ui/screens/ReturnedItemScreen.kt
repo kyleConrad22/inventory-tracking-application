@@ -69,7 +69,7 @@ fun ReturnedItemScreen(navController: NavHostController, mainActivityVM : MainAc
                         ItemActionType.NOT_IN_LOADED_HEATS -> NotInLoadedHeats(loadedHeatList = returnedItemVM.loadedHeats.value, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) })
                         ItemActionType.INCORRECT_PIECE_COUNT -> IncorrectField(field = "Piece Count", retrievedValue = locatedItem!!.quantity, requestedValue = mainActivityVM.pieceCount.value, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) })
                         ItemActionType.INCORRECT_BL -> IncorrectField(field = "BL Number", retrievedValue = locatedItem!!.blNum, requestedValue = mainActivityVM.bl.value, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) })
-                        ItemActionType.DUPLICATE -> DuplicateItem(sessionType = sessionType.type, scanTime = locatedItem!!.loadTime, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) })
+                        ItemActionType.DUPLICATE -> DuplicateItem(sessionType = sessionType, scanTime = if (sessionType == SessionType.SHIPMENT) locatedItem!!.loadTime else locatedItem!!.receptionDate, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) })
                         ItemActionType.INVALID_HEAT -> InvalidHeat(sessionType = sessionType, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) }, onConfirm = {
                             handleAddition()
                             showAddedDialog.value = true
@@ -114,10 +114,10 @@ private fun IncorrectField(field: String, heat: String, retrievedValue: String, 
 }
 
 @Composable
-private fun DuplicateItem(sessionType : String, scanTime : String, heat : String, onDismiss: () -> Unit) {
+private fun DuplicateItem(sessionType : SessionType, scanTime : String, heat : String, onDismiss: () -> Unit) {
     Text(text="""
-        Item with heat $heat cannot be added to $sessionType!
-        Item was already added at $scanTime.
+        Item with heat $heat cannot be added to ${sessionType.type}!
+        Item was already added ${if(sessionType == SessionType.SHIPMENT) "at" else "on"} $scanTime.
     """.trimIndent(), modifier = Modifier.padding(16.dp))
     DismissButton {
         onDismiss()

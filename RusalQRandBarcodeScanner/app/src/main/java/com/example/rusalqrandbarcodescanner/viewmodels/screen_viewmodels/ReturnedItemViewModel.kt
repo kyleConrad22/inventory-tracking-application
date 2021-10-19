@@ -25,7 +25,6 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
     val uniqueList = mutableStateOf(listOf<RusalItem>())
     val loadedHeats = mutableStateOf(listOf<String>())
     val loading = mutableStateOf(true)
-    private val canBeLoaded = mutableStateOf(false)
     val locatedItem : MutableState<RusalItem?> = mutableStateOf(null)
     val itemActionType = mutableStateOf(ItemActionType.INVALID_HEAT)
 
@@ -47,7 +46,7 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
                 itemActionType.value = when {
                     locatedItem.value == null -> ItemActionType.INVALID_HEAT
 
-                    mainActivityVM.addedItems.value.find { it.heatNum == heat } != null -> ItemActionType.DUPLICATE
+                    mainActivityVM.addedItems.value.find { it.heatNum == heat } != null || (mainActivityVM.sessionType.value == SessionType.RECEPTION && locatedItem.value!!.receptionDate != "") -> ItemActionType.DUPLICATE
 
                     uniqueList.value.size > 1 -> ItemActionType.MULTIPLE_BLS_OR_PIECE_COUNTS
 
@@ -55,12 +54,6 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
 
                     else -> getReceptionItemType(locatedItem.value!!)
                 }
-
-                canBeLoaded.value = !(itemActionType.value in listOf(ItemActionType.INCORRECT_BL,
-                    ItemActionType.DUPLICATE,
-                    ItemActionType.INCORRECT_PIECE_COUNT,
-                    ItemActionType.NOT_IN_LOADED_HEATS) || (itemActionType.value == ItemActionType.INVALID_HEAT && mainActivityVM.sessionType.value == SessionType.SHIPMENT))
-
 
             Log.d("DEBUG", "here")
             loading.value = false
