@@ -1,4 +1,4 @@
-package com.example.rusalqrandbarcodescanner.presentation.components
+package com.example.rusalqrandbarcodescanner.presentation.components.inputdialog
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
@@ -12,6 +12,7 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import com.example.rusalqrandbarcodescanner.presentation.components.inputdialog.visaltransformation.SingleHyphenTransformation
 
 @Composable
 fun SingleHyphenTransformedInputDialog(

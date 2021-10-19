@@ -22,11 +22,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
-import com.example.rusalqrandbarcodescanner.domain.models.Barge
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
-import com.example.rusalqrandbarcodescanner.presentation.components.BasicInputDialog
+import com.example.rusalqrandbarcodescanner.presentation.components.loading.BasicInputDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
-import com.example.rusalqrandbarcodescanner.presentation.components.SingleHyphenTransformedInputDialog
+import com.example.rusalqrandbarcodescanner.presentation.components.inputdialog.SingleHyphenTransformedInputDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.autocomplete.AutoCompleteBox
 import com.example.rusalqrandbarcodescanner.util.inputvalidation.BasicItemValidator
 import com.example.rusalqrandbarcodescanner.util.inputvalidation.NameValidator

@@ -1,4 +1,4 @@
-package com.example.rusalqrandbarcodescanner.presentation.components
+package com.example.rusalqrandbarcodescanner.presentation.components.inputdialog.visaltransformation
 
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.OffsetMapping

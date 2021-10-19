@@ -1,4 +1,4 @@
-package com.example.rusalqrandbarcodescanner.presentation.components
+package com.example.rusalqrandbarcodescanner.presentation.components.loading
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions

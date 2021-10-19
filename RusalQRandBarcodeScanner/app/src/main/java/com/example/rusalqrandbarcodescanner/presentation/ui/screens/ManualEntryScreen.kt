@@ -14,9 +14,7 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.Screen
-import com.example.rusalqrandbarcodescanner.presentation.components.BasicInputDialog
-import com.example.rusalqrandbarcodescanner.presentation.components.SingleHyphenTransformedInputDialog
-import com.example.rusalqrandbarcodescanner.util.inputvalidation.HeatNumberValidator
+import com.example.rusalqrandbarcodescanner.presentation.components.inputdialog.SingleHyphenTransformedInputDialog
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ManualEntryViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
