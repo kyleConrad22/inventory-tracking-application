@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.print.attribute.standard.Media;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -129,9 +130,9 @@ public class RusalController {
         rusalLineItemService.addBarge(bl, barge);
     }
 
-    @PostMapping("/update/reception")
+    @PostMapping(value = "/update/reception", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    void updateReception(@RequestParam final List<RusalReceptionUpdateParams> updateParams) {
+    void updateReception(@RequestBody List<RusalReceptionUpdateParams> updateParams) {
         rusalLineItemService.updateReception(updateParams);
     }
 
