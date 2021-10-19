@@ -70,7 +70,10 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
 
     private fun setDisplayRemoveEntryContent() {
         if (sessionType.value == SessionType.SHIPMENT) {
-            displayRemoveEntryContent.value = quantity.value.toInt() - addedItemCount.value > 0
+            val calcQuantity : Int = if (quantity.value == "") { 0 } else { quantity.value.toInt() }
+
+            displayRemoveEntryContent.value = calcQuantity - addedItemCount.value > 0
+
         } else {
             displayRemoveEntryContent.value = false
         }

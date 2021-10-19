@@ -33,6 +33,7 @@ fun MainMenuScreen(navController: NavHostController, mainActivityVM: MainActivit
             verticalArrangement = Arrangement.SpaceEvenly) {
 
             Button(onClick = {
+                newSessionType.value = SessionType.SHIPMENT
                 handleClick(navController, mainActivityVM.sessionType, SessionType.SHIPMENT, hasItems, showAlertDialog)
             }) {
                 Text(text = "New Shipment",
@@ -54,6 +55,7 @@ fun MainMenuScreen(navController: NavHostController, mainActivityVM: MainActivit
                     textAlign = TextAlign.Center)
             }
             Button(onClick = {
+                newSessionType.value = SessionType.GENERAL
                 handleClick(navController, mainActivityVM.sessionType, SessionType.GENERAL, hasItems, showAlertDialog)
             }) {
                 Text(text = "Get Bundle Info",
@@ -111,11 +113,6 @@ fun NavigationAlertDialog(onDismiss : () -> Unit, onConfirm: () -> Unit, onRevie
                     Are you sure you would like to navigate start a new ${newSessionType.type}?
                     """.trimIndent()
                 , modifier = Modifier.padding(16.dp))
-                Button(onClick = {
-                    onDismiss()
-                }) {
-                    Text(text = "Dismiss", modifier = Modifier.padding(16.dp))
-                }
                 Row(modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly) {
                     Button(onClick = {
@@ -130,6 +127,11 @@ fun NavigationAlertDialog(onDismiss : () -> Unit, onConfirm: () -> Unit, onRevie
                         Text("Review ${currentSessionType.type}",
                             modifier = Modifier.padding(16.dp))
                     }
+                }
+                Button(onClick = {
+                    onDismiss()
+                }) {
+                    Text(text = "Dismiss", modifier = Modifier.padding(16.dp))
                 }
             }
         }
