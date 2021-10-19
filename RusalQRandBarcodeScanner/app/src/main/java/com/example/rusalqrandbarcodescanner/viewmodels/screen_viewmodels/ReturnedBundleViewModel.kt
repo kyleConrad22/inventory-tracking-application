@@ -69,7 +69,7 @@ class ReturnedBundleViewModel(private val invRepo : InventoryRepository, private
         }
     }
 
-    // Used to set parameters locatedItem, and unique list if necessary if the given heat is a base heat number
+    // Used to set parameters {locatedItem, and unique list (if necessary)} if the given heat is a base heat number
     private suspend fun useBaseHeatLogic() {
         val items = invRepo.findByBaseHeat(heat)
 
@@ -116,7 +116,7 @@ class ReturnedBundleViewModel(private val invRepo : InventoryRepository, private
         }
     }
 
-    suspend fun getLoadedHeats() : List<String> {
+    private suspend fun getLoadedHeats() : List<String> {
         val result = mutableListOf<String>()
         if (getCommodity(invRepo.findByBl(mainActivityVM.bl.value)) == Commodity.INGOTS) {
             mainActivityVM.addedItems.value.forEach { item ->
@@ -169,7 +169,6 @@ class ReturnedBundleViewModel(private val invRepo : InventoryRepository, private
                 )
             }
             mainActivityVM.refresh()
-            mainActivityVM.heatNum.value = ""
             loading.value = false
         }
     }

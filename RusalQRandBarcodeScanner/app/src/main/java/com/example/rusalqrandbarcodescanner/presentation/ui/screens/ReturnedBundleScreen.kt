@@ -50,7 +50,7 @@ fun ReturnedBundleScreen(navController: NavHostController, mainActivityVM : Main
     val locatedItem = returnedBundleVM.locatedItem.value
 
     if (showAddedDialog.value) {
-        BundleAddedDialog(navController, showAddedDialog, heat, mainActivityVM.sessionType.value.type, returnedBundleVM.isLastBundle(sessionType))
+        BundleAddedDialog(navController, showAddedDialog, heat, mainActivityVM.sessionType.value.type, returnedBundleVM.isLastBundle(sessionType), onDismiss = { mainActivityVM.heatNum.value = "" })
     } else {
         Scaffold(topBar = { TopAppBar(title = { Text("Returned Bundle Info") }) }) {
 
@@ -206,7 +206,7 @@ private fun DenyOrConfirm(onDismiss: () -> Unit, onConfirm: () -> Unit) {
 
 @ExperimentalComposeUiApi
 @Composable
-private fun BundleAddedDialog(navController : NavHostController, showDialog : MutableState<Boolean>, heat : String, type : String, isLastBundle : Boolean) {
+private fun BundleAddedDialog(navController : NavHostController, showDialog : MutableState<Boolean>, heat : String, type : String, isLastBundle : Boolean, onDismiss : () -> Unit) {
     Dialog(properties = DialogProperties(usePlatformDefaultWidth = false),
         onDismissRequest = {
             showDialog.value = false
@@ -222,6 +222,7 @@ private fun BundleAddedDialog(navController : NavHostController, showDialog : Mu
                     } else {
                         navController.navigate(Screen.ReviewScreen.title)
                     }
+                    onDismiss()
                 }) {
                     Text(if (!isLastBundle) {"Ok"} else { "Review $type" }, modifier = Modifier.padding(16.dp))
                 }

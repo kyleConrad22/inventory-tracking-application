@@ -86,6 +86,7 @@ fun ReviewScreen(navController: NavHostController, mainActivityVM : MainActivity
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly) {
                     Button(onClick = {
+                        /*TODO - Navigate Back to Main Menu if coming from main menu*/
                         navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)
                     }) {
                         Text(text = "Back", modifier = Modifier.padding(16.dp))
@@ -99,6 +100,7 @@ fun ReviewScreen(navController: NavHostController, mainActivityVM : MainActivity
                             }
                             reviewVM.removeAllAddedItems()
                             mainActivityVM.refresh()
+                            mainActivityVM.clearInputFields()
                             showConfirmDialog.value = true
                         }) {
                             Text(text = "Confirm ${sessionType.type}", modifier = Modifier.padding(16.dp))

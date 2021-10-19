@@ -4,15 +4,19 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
 
+@ExperimentalComposeUiApi
 @DelicateCoroutinesApi
 @Composable
 fun MainMenuScreen(navController: NavHostController, mainActivityVM: MainActivityViewModel) {
@@ -67,6 +71,7 @@ fun MainMenuScreen(navController: NavHostController, mainActivityVM: MainActivit
                 showAlertDialog.value = false
             }, onConfirm = {
                 mainActivityVM.removeAllAddedItems()
+                mainActivityVM.clearInputFields()
                 handleClick(navController, mainActivityVM.sessionType, newSessionType.value, containsItems = false, showAlertDialog)
             }, onReview = {
                 navController.navigate(Screen.ReviewScreen.title)
@@ -90,38 +95,43 @@ fun handleClick(navController: NavHostController, currentSessionType: MutableSta
     }
 }
 
+@ExperimentalComposeUiApi
 @Composable
 fun NavigationAlertDialog(onDismiss : () -> Unit, onConfirm: () -> Unit, onReview : () -> Unit, currentSessionType: SessionType, newSessionType: SessionType) {
-    AlertDialog(
+    Dialog(properties = DialogProperties(usePlatformDefaultWidth = false),
         onDismissRequest = {
             onDismiss()
-        },
-        title = { Text(text = "Navigation Confirmation") },
-        text = { Text(text =
-            """
-            You have already added items to a ${currentSessionType.type}, starting another session will delete all saved items from current session. 
-            Are you sure you would like to navigate start a new ${newSessionType.type}?
-            """
-        ) },
-        buttons = {
-            Row(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly) {
+        }) {
+        Surface(modifier = Modifier.fillMaxSize()) {
+            Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
+                Text(text = "Navigation Confirmation", modifier = Modifier.padding(16.dp) )
+                Text(text = """
+                    You have already added items to a ${currentSessionType.type}, starting another session will delete all saved items from current session. 
+                    
+                    Are you sure you would like to navigate start a new ${newSessionType.type}?
+                    """.trimIndent()
+                , modifier = Modifier.padding(16.dp))
                 Button(onClick = {
                     onDismiss()
                 }) {
                     Text(text = "Dismiss", modifier = Modifier.padding(16.dp))
                 }
-                Button(onClick = {
-                    onConfirm()
-                }) {
-                    Text(text="Continue to ${newSessionType.type})", modifier = Modifier.padding(16.dp))
-                }
-                Button(onClick ={
-                    onReview()
-                }) {
-                    Text("Review ${currentSessionType.type}", modifier = Modifier.padding(16.dp))
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly) {
+                    Button(onClick = {
+                        onConfirm()
+                    }) {
+                        Text(text = "Continue to ${newSessionType.type}",
+                            modifier = Modifier.padding(16.dp))
+                    }
+                    Button(onClick = {
+                        onReview()
+                    }) {
+                        Text("Review ${currentSessionType.type}",
+                            modifier = Modifier.padding(16.dp))
+                    }
                 }
             }
         }
-    )
+    }
 }

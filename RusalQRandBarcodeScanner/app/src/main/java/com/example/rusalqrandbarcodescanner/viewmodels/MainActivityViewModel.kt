@@ -48,6 +48,18 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
         updateReceivedItemCount()
     }
 
+    fun clearInputFields() {
+        workOrder.value = ""
+        checker.value = ""
+        loadNum.value = ""
+        loader.value = ""
+        barge.value = ""
+        heatNum.value = ""
+        quantity.value = ""
+        pieceCount.value = ""
+        bl.value = ""
+    }
+
     private fun updateReceivedItemCount() = viewModelScope.launch {
         receivedItemCount.value = repo.getReceivedItemCount(barge.value)
     }
