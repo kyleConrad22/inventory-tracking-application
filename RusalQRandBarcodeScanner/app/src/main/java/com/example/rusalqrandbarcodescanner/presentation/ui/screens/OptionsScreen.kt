@@ -13,6 +13,7 @@ import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
+import com.example.rusalqrandbarcodescanner.util.displayedStringPostStringInsertion
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 
 @Composable
@@ -33,7 +34,7 @@ fun OptionsScreen(navController: NavHostController, mainActivityVM : MainActivit
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
             if (sessionType == SessionType.SHIPMENT) {
-                Text(text = "${mainActivityVM.workOrder.value} Load ${mainActivityVM.loadNum.value} Shipment")
+                Text(text = "${displayedStringPostStringInsertion(mainActivityVM.workOrder.value, 3, "-")} Load ${mainActivityVM.loadNum.value} Shipment")
             } else {
                 Text(text = "Barge ${mainActivityVM.barge.value} Reception")
             }

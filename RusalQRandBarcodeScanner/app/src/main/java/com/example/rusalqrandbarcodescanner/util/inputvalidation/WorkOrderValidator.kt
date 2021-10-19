@@ -9,7 +9,6 @@ class WorkOrderValidator {
     }
 
     fun updateWorkOrder(input : String, output : MutableState<String>) {
-        UpdateMutableStringState().insertCharIntoString(input, output, 3, '-')
-        UpdateMutableStringState().capitalizeInput(output.value, output)
+        UpdateMutableStringState().capitalizeInput(input, output)
     }
 }

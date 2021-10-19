@@ -26,6 +26,7 @@ import com.example.rusalqrandbarcodescanner.domain.models.Barge
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.presentation.components.BasicInputDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
+import com.example.rusalqrandbarcodescanner.presentation.components.SingleHyphenTransformedInputDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.autocomplete.AutoCompleteBox
 import com.example.rusalqrandbarcodescanner.util.inputvalidation.BasicItemValidator
 import com.example.rusalqrandbarcodescanner.util.inputvalidation.NameValidator
@@ -61,10 +62,10 @@ fun InfoInputScreen(navController: NavHostController, mainActivityVM: MainActivi
             } else {
                 if (mainActivityVM.sessionType.value == SessionType.SHIPMENT) {
 
-                    BasicInputDialog(label = "Work Order", userInput = mainActivityVM.workOrder, refresh = {
+                    SingleHyphenTransformedInputDialog(label = "Work Order", userInput = mainActivityVM.workOrder, refresh = {
                         WorkOrderValidator().updateWorkOrder(it, mainActivityVM.workOrder)
                         infoInputVM.refresh()
-                    }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Password)
+                    }, focusManager = focusManager, lastInput = false, keyBoardType = KeyboardType.Password, insertionIndex = 3)
 
                     BasicInputDialog(label = "Load", userInput = mainActivityVM.loadNum, refresh = {
                         NumberValidator().updateNumber(it, mainActivityVM.loadNum)

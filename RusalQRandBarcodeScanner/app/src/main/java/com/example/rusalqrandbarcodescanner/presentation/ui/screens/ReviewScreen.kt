@@ -26,6 +26,7 @@ import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.util.Commodity
+import com.example.rusalqrandbarcodescanner.util.displayedStringPostStringInsertion
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReviewViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReviewViewModel.ReviewViewModelFactory
@@ -167,7 +168,7 @@ private fun RusalItemListItem(item: RusalItem, onClick: (item : RusalItem) -> Un
                 .padding(16.dp)
                 .fillMaxWidth()
                 .align(Alignment.CenterVertically)) {
-                Text(text = "Heat: ${item.heatNum}" , style = MaterialTheme.typography.h6)
+                Text(text = "Heat: ${ displayedStringPostStringInsertion(item.heatNum, 6, "-") }" , style = MaterialTheme.typography.h6)
                 Text(text="BL: ${item.blNum}", style = MaterialTheme.typography.h6)
                 Text(if (getCommodity(item) == Commodity.BILLETS) {"Mark: ${item.mark}"} else {"Lot: TO BE IMPLEMENTED"}, style = MaterialTheme.typography.h6)
             }
@@ -182,7 +183,7 @@ private fun RemoveDialog(onDismissRequest : () -> Unit, onRemoveRequest : () -> 
         onDismissRequest = onDismissRequest) {
         Surface(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
-                Text(text = "Heat Number: ${ item.heatNum }")
+                Text(text = "Heat Number: ${ displayedStringPostStringInsertion(item.heatNum, 6, "-") }")
                 Text(text = "BL Number: ${ item.blNum }")
                 Text(text = "Piece Count: ${ item.quantity }")
                 Text(text = "Net Weight Kg: ${ item.netWeightKg }")

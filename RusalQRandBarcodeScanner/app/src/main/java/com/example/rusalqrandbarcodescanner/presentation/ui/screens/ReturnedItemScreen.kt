@@ -28,6 +28,7 @@ import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.ItemActionType
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
+import com.example.rusalqrandbarcodescanner.util.displayedStringPostStringInsertion
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReturnedItemViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReturnedItemViewModel.ReturnedItemViewModelFactory
@@ -43,7 +44,7 @@ fun ReturnedItemScreen(navController: NavHostController, mainActivityVM : MainAc
 
     val showAddedDialog = remember { mutableStateOf(false) }
 
-    val heat = mainActivityVM.heatNum.value
+    val heat = displayedStringPostStringInsertion(mainActivityVM.heatNum.value, 6, "-")
     val loading = returnedItemVM.loading.value
     val sessionType = mainActivityVM.sessionType.value
     val itemType = returnedItemVM.itemActionType.value
@@ -160,7 +161,7 @@ private fun NotInLoadedHeats(loadedHeatList : List<String>, heat : String, onDis
 private fun ValidHeat(item : RusalItem, onDismiss: () -> Unit, onConfirm: () -> Unit) {
     Text(text =
     """
-        Heat Number: ${item.heatNum}
+        Heat Number: ${ displayedStringPostStringInsertion(item.heatNum, 6, "-") }
         Piece Count: ${item.quantity}
         BL Number: ${item.blNum}
         Mark: ${item.mark}
@@ -214,7 +215,7 @@ private fun ItemAddedDialog(navController : NavHostController, showDialog : Muta
         }) {
         Surface(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
-                Text(text="Item with heat $heat, has been added to the $type.", Modifier.padding(16.dp))
+                Text(text="Item with heat $heat has been added to the $type.", Modifier.padding(16.dp))
                 Button(onClick = {
                     showDialog.value = false
                     if (!isLastItem) {

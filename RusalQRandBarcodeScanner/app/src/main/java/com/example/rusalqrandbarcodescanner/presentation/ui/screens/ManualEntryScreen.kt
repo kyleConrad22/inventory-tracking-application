@@ -15,6 +15,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.presentation.components.BasicInputDialog
+import com.example.rusalqrandbarcodescanner.presentation.components.SingleHyphenTransformedInputDialog
 import com.example.rusalqrandbarcodescanner.util.inputvalidation.HeatNumberValidator
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ManualEntryViewModel
@@ -38,10 +39,10 @@ fun ManualEntryScreen(navController : NavHostController, mainActivityVM : MainAc
 
             Text(text = "Manual Heat Number Search: ", modifier = Modifier.padding(16.dp))
 
-            BasicInputDialog(label = "Heat Number", userInput = mainActivityVM.heatNum, refresh = {
-                HeatNumberValidator().updateHeat(it, mainActivityVM.heatNum)
+            SingleHyphenTransformedInputDialog(label = "Heat Number", userInput = mainActivityVM.heatNum, refresh = {
+                mainActivityVM.heatNum.value = it
                 manualEntryVM.refresh()
-                }, focusManager = focusManager, lastInput = true, keyboardType = KeyboardType.Number)
+            }, focusManager = focusManager, lastInput = true, keyBoardType = KeyboardType.Number, insertionIndex = 6)
 
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,

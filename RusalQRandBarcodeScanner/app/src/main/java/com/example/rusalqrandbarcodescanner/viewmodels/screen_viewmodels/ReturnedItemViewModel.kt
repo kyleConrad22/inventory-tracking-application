@@ -10,6 +10,7 @@ import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
 import com.example.rusalqrandbarcodescanner.util.Commodity
 import com.example.rusalqrandbarcodescanner.util.ScannedInfo
+import com.example.rusalqrandbarcodescanner.util.displayedStringPostStringInsertion
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
@@ -19,7 +20,7 @@ import java.time.format.DateTimeFormatter
 @DelicateCoroutinesApi
 class ReturnedItemViewModel(private val invRepo : InventoryRepository, private val mainActivityVM : MainActivityViewModel) : ViewModel() {
 
-    private val heat = mainActivityVM.heatNum.value.replace("-","")
+    private val heat = mainActivityVM.heatNum.value
 
     val uniqueList = mutableStateOf(listOf<RusalItem>())
     val loadedHeats = mutableStateOf(listOf<String>())
