@@ -80,7 +80,7 @@ fun OptionsScreen(navController: NavHostController, mainActivityVM : MainActivit
                     AlertDialog(
                         onDismissRequest = { showResetDialog.value = false },
                         title = { Text(text = "Reset ${sessionType.type} Confirmation") },
-                        text = { Text(text = "Are you sure you would like to remove all bundles from this Load? This cannot be undone.") },
+                        text = { Text(text = "Are you sure you would like to remove all items from this Load? This cannot be undone.") },
                         buttons = {
                             Row(modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceEvenly) {

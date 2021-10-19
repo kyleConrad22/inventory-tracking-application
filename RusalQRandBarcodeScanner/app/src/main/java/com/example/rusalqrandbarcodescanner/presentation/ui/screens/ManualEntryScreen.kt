@@ -6,7 +6,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -14,7 +13,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.presentation.components.BasicInputDialog
 import com.example.rusalqrandbarcodescanner.util.inputvalidation.HeatNumberValidator
@@ -55,9 +53,9 @@ fun ManualEntryScreen(navController : NavHostController, mainActivityVM : MainAc
                 }
                 if (displaySearchButton) {
                     Button(onClick = {
-                        navController.navigate(Screen.ReturnedBundleScreen.title)
+                        navController.navigate(Screen.ReturnedItemScreen.title)
                     }) {
-                        Text(text = "Retrieve Bundle Info", modifier = Modifier.padding(16.dp))
+                        Text(text = "Retrieve Item Info", modifier = Modifier.padding(16.dp))
                     }
                 }
             }

@@ -58,7 +58,7 @@ fun MainMenuScreen(navController: NavHostController, mainActivityVM: MainActivit
                 newSessionType.value = SessionType.GENERAL
                 handleClick(navController, mainActivityVM.sessionType, SessionType.GENERAL, hasItems, showAlertDialog)
             }) {
-                Text(text = "Get Bundle Info",
+                Text(text = "Get Item Info",
                     modifier = Modifier
                         .padding(16.dp)
                         .size(width = 200.dp, height = 20.dp)

@@ -29,30 +29,30 @@ import com.example.rusalqrandbarcodescanner.domain.models.ItemActionType
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
-import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReturnedBundleViewModel
-import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReturnedBundleViewModel.ReturnedBundleViewModelFactory
+import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReturnedItemViewModel
+import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReturnedItemViewModel.ReturnedItemViewModelFactory
 import kotlinx.coroutines.DelicateCoroutinesApi
 
 @DelicateCoroutinesApi
 @ExperimentalComposeUiApi
 @Composable
-fun ReturnedBundleScreen(navController: NavHostController, mainActivityVM : MainActivityViewModel) {
+fun ReturnedItemScreen(navController: NavHostController, mainActivityVM : MainActivityViewModel) {
     val application  = LocalContext.current.applicationContext as CodeApplication
 
-    val returnedBundleVM : ReturnedBundleViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ReturnedBundleVM", factory = ReturnedBundleViewModelFactory(application.invRepository, mainActivityVM))
+    val returnedItemVM : ReturnedItemViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ReturnedItemVM", factory = ReturnedItemViewModelFactory(application.invRepository, mainActivityVM))
 
     val showAddedDialog = remember { mutableStateOf(false) }
 
     val heat = mainActivityVM.heatNum.value
-    val loading = returnedBundleVM.loading.value
+    val loading = returnedItemVM.loading.value
     val sessionType = mainActivityVM.sessionType.value
-    val itemType = returnedBundleVM.itemActionType.value
-    val locatedItem = returnedBundleVM.locatedItem.value
+    val itemType = returnedItemVM.itemActionType.value
+    val locatedItem = returnedItemVM.locatedItem.value
 
     if (showAddedDialog.value) {
-        BundleAddedDialog(navController, showAddedDialog, heat, mainActivityVM.sessionType.value.type, returnedBundleVM.isLastBundle(sessionType), onDismiss = { mainActivityVM.heatNum.value = "" })
+        ItemAddedDialog(navController, showAddedDialog, heat, mainActivityVM.sessionType.value.type, returnedItemVM.isLastItem(sessionType), onDismiss = { mainActivityVM.heatNum.value = "" })
     } else {
-        Scaffold(topBar = { TopAppBar(title = { Text("Returned Bundle Info") }) }) {
+        Scaffold(topBar = { TopAppBar(title = { Text("Returned Item Info") }) }) {
 
             Column(modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -61,11 +61,11 @@ fun ReturnedBundleScreen(navController: NavHostController, mainActivityVM : Main
                     LoadingDialog(isDisplayed = true)
                 } else {
                     when (itemType) {
-                        ItemActionType.MULTIPLE_BLS_OR_PIECE_COUNTS -> MultipleBlsOrPieceCounts(uniqueComboList = returnedBundleVM.uniqueList.value, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) }, onConfirm = {
-                            returnedBundleVM.addItem()
+                        ItemActionType.MULTIPLE_BLS_OR_PIECE_COUNTS -> MultipleBlsOrPieceCounts(uniqueComboList = returnedItemVM.uniqueList.value, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) }, onConfirm = {
+                            returnedItemVM.addItem()
                             showAddedDialog.value = true
                         })
-                        ItemActionType.NOT_IN_LOADED_HEATS -> NotInLoadedHeats(loadedHeatList = returnedBundleVM.loadedHeats.value, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) })
+                        ItemActionType.NOT_IN_LOADED_HEATS -> NotInLoadedHeats(loadedHeatList = returnedItemVM.loadedHeats.value, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) })
                         ItemActionType.INCORRECT_PIECE_COUNT -> IncorrectField(field = "Piece Count", retrievedValue = locatedItem!!.quantity, requestedValue = mainActivityVM.pieceCount.value, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) })
                         ItemActionType.INCORRECT_BL -> IncorrectField(field = "BL Number", retrievedValue = locatedItem!!.blNum, requestedValue = mainActivityVM.bl.value, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) })
                         ItemActionType.DUPLICATE -> DuplicateItem(sessionType = sessionType.type, scanTime = locatedItem!!.loadTime, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) })
@@ -80,7 +80,7 @@ fun ReturnedBundleScreen(navController: NavHostController, mainActivityVM : Main
                                 handleDismiss(navController, mainActivityVM.heatNum)
                             })
                         ItemActionType.VALID -> ValidHeat(item = locatedItem!!, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) }, onConfirm = {
-                            returnedBundleVM.addItem()
+                            returnedItemVM.addItem()
                             showAddedDialog.value = true
                         })
                     }
@@ -90,7 +90,7 @@ fun ReturnedBundleScreen(navController: NavHostController, mainActivityVM : Main
     }
 }
 
-/*TODO - Allow user to manually enter data / scan data to retrieve bundle information*/
+/*TODO - Allow user to manually enter data / scan data to retrieve item information*/
 fun handleAddition() {
 
 }
@@ -206,7 +206,7 @@ private fun DenyOrConfirm(onDismiss: () -> Unit, onConfirm: () -> Unit) {
 
 @ExperimentalComposeUiApi
 @Composable
-private fun BundleAddedDialog(navController : NavHostController, showDialog : MutableState<Boolean>, heat : String, type : String, isLastBundle : Boolean, onDismiss : () -> Unit) {
+private fun ItemAddedDialog(navController : NavHostController, showDialog : MutableState<Boolean>, heat : String, type : String, isLastItem : Boolean, onDismiss : () -> Unit) {
     Dialog(properties = DialogProperties(usePlatformDefaultWidth = false),
         onDismissRequest = {
             showDialog.value = false
@@ -217,14 +217,14 @@ private fun BundleAddedDialog(navController : NavHostController, showDialog : Mu
                 Text(text="Item with heat $heat, has been added to the $type.", Modifier.padding(16.dp))
                 Button(onClick = {
                     showDialog.value = false
-                    if (!isLastBundle) {
+                    if (!isLastItem) {
                         navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)
                     } else {
                         navController.navigate(Screen.ReviewScreen.title)
                     }
                     onDismiss()
                 }) {
-                    Text(if (!isLastBundle) {"Ok"} else { "Review $type" }, modifier = Modifier.padding(16.dp))
+                    Text(if (!isLastItem) {"Ok"} else { "Review $type" }, modifier = Modifier.padding(16.dp))
                 }
             }
 

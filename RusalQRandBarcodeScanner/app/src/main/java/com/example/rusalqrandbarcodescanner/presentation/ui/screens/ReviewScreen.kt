@@ -198,7 +198,7 @@ private fun RemoveDialog(onDismissRequest : () -> Unit, onRemoveRequest : () -> 
                     onRemoveRequest()
                     onDismissRequest()
                 }) {
-                    Text("Remove Bundle", modifier = Modifier.padding(16.dp))
+                    Text("Remove Item", modifier = Modifier.padding(16.dp))
                 }
             }
 

@@ -17,7 +17,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @DelicateCoroutinesApi
-class ReturnedBundleViewModel(private val invRepo : InventoryRepository, private val mainActivityVM : MainActivityViewModel) : ViewModel() {
+class ReturnedItemViewModel(private val invRepo : InventoryRepository, private val mainActivityVM : MainActivityViewModel) : ViewModel() {
 
     private val heat = mainActivityVM.heatNum.value.replace("-","")
 
@@ -136,7 +136,7 @@ class ReturnedBundleViewModel(private val invRepo : InventoryRepository, private
         return Commodity.BILLETS
     }
 
-    fun isLastBundle(sessionType: SessionType) : Boolean {
+    fun isLastItem(sessionType: SessionType) : Boolean {
         if (sessionType == SessionType.SHIPMENT) {
             val requestedQuantity = mainActivityVM.quantity.value.toInt()
             return requestedQuantity - mainActivityVM.addedItemCount.value == 1
@@ -213,11 +213,11 @@ class ReturnedBundleViewModel(private val invRepo : InventoryRepository, private
         return result
     }
 
-    class ReturnedBundleViewModelFactory(private val invRepo : InventoryRepository, private val mainActivityVM : MainActivityViewModel) : ViewModelProvider.Factory {
+    class ReturnedItemViewModelFactory(private val invRepo : InventoryRepository, private val mainActivityVM : MainActivityViewModel) : ViewModelProvider.Factory {
         override fun<T : ViewModel> create(modelClass : Class<T>) : T {
             @Suppress("UNCHECKED_CAST")
-            if (modelClass.isAssignableFrom(ReturnedBundleViewModel::class.java)) {
-                return ReturnedBundleViewModel(invRepo, mainActivityVM) as T
+            if (modelClass.isAssignableFrom(ReturnedItemViewModel::class.java)) {
+                return ReturnedItemViewModel(invRepo, mainActivityVM) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }

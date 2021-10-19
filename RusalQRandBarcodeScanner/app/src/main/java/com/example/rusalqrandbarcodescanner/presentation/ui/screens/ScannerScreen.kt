@@ -17,14 +17,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.util.ScannedInfo
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
@@ -128,7 +125,7 @@ fun CameraPreview(
                         ImageAnalyzer().analyze(imageProxy)
                         if (ScannedInfo.heatNum != "" && ScannedInfo.isScanned) {
                             mainActivityVM.heatNum.value = ScannedInfo.heatNum
-                            navController.navigate(Screen.ReturnedBundleScreen.title)
+                            navController.navigate(Screen.ReturnedItemScreen.title)
                             ScannedInfo.isScanned = false
                         }
                     })

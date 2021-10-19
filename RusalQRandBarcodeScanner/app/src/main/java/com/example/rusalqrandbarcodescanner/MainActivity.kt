@@ -75,7 +75,7 @@ class MainActivity : ComponentActivity() {
                 composable(Screen.InfoInputScreen.title) { InfoInputScreen(navController, mainActivityVM) }
                 composable(Screen.ToBeImplementedScreen.title) { ToBeImplementedScreen(navController) }
                 composable(Screen.SplashScreen.title) { SplashScreen(navController, mainActivityVM) }
-                composable(Screen.ReturnedBundleScreen.title) { ReturnedBundleScreen(navController, mainActivityVM) }
+                composable(Screen.ReturnedItemScreen.title) { ReturnedItemScreen(navController, mainActivityVM) }
             }
         }
     }
@@ -90,5 +90,5 @@ sealed class Screen(val title: String) {
     object ManualEntryScreen: Screen("ManualEntry")
     object ToBeImplementedScreen: Screen("ToBeImplemented")
     object ReviewScreen: Screen("Review")
-    object ReturnedBundleScreen : Screen("ReturnedBundle")
+    object ReturnedItemScreen : Screen("ReturnedItem")
 }
