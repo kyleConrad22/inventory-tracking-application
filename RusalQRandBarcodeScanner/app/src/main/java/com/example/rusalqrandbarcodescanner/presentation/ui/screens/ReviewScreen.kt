@@ -102,11 +102,7 @@ fun ReviewScreen(navController: NavHostController, mainActivityVM : MainActivity
                     }
                     if (!displayRemoveEntry) {
                         Button(onClick = {
-                            if (sessionType == SessionType.SHIPMENT) {
-                                reviewVM.initiateUpdate()
-                            } else {
-                                /*TODO - Add Reception Confirmation Logic */
-                            }
+                            reviewVM.initiateUpdate()
                             reviewVM.removeAllAddedItems()
                             mainActivityVM.refresh()
                             mainActivityVM.clearInputFields()

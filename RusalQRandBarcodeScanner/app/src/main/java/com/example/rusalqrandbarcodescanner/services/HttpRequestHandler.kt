@@ -37,17 +37,11 @@ object HttpRequestHandler {
         requestQueue.add(stringRequest)
         }
 
-    private suspend fun confirmShipment(items: List<RusalItem>) =
-        withContext(Dispatchers.IO) {
-            for (item in items) {
-
-                if (!item.barcode.contains('u')) {
-                    updateDatabaseForShipment(item)
-                } else {
-                    createInventoryItem(item)
-                }
-            }
+    private suspend fun confirmShipment(items: List<RusalItem>) = withContext(Dispatchers.IO) {
+        for (item in items) {
+            createInventoryItem(item)
         }
+    }
 
 
     private fun updateDatabaseForShipment(item : RusalItem) {
@@ -109,6 +103,7 @@ object HttpRequestHandler {
     }
 
     private fun confirmReception(items: List<RusalItem>) {
+
         val url = "$WEB_API/update/reception"
 
         val updateParams = RusalReceptionUpdateParams().getUpdateParamsList(items)
@@ -145,13 +140,17 @@ object HttpRequestHandler {
         })
     }
 
-    fun initUpdate(items: List<RusalItem>, sessionType: SessionType) {
-        CoroutineScope(Dispatchers.IO).launch {
-            if (sessionType == SessionType.SHIPMENT) {
-                confirmShipment(items)
-            } else {
-                confirmReception(items)
+    fun initUpdate(items: List<RusalItem>, sessionType: SessionType) = CoroutineScope(Dispatchers.IO).launch {
+        for (item in items) {
+            if (item.heatNum.length == 6) {
+                createInventoryItem(item)
             }
+        }
+
+        if (sessionType == SessionType.SHIPMENT) {
+            confirmShipment(items)
+        } else {
+            confirmReception(items)
         }
     }
 
