@@ -25,6 +25,7 @@ import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
+import com.example.rusalqrandbarcodescanner.presentation.components.progress.SessionProgress
 import com.example.rusalqrandbarcodescanner.util.Commodity
 import com.example.rusalqrandbarcodescanner.util.displayedStringPostStringInsertion
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
@@ -47,6 +48,13 @@ fun ReviewScreen(navController: NavHostController, mainActivityVM : MainActivity
     val showConfirmDialog = remember { mutableStateOf(false) }
 
     Scaffold(topBar = { TopAppBar(title = { Text(text="Rusal Scanner", textAlign = TextAlign.Center) }) }) {
+
+        SessionProgress(
+            sessionType = sessionType,
+            addedItems = mainActivityVM.addedItemCount.value,
+            expectedItems = if (sessionType == SessionType.SHIPMENT) mainActivityVM.quantity.value.toInt() else mainActivityVM.inboundItemCount.value,
+            partiallyIdentifiedItems = 0,
+            newItems = 0)
 
         Column(
             modifier = Modifier.fillMaxSize(),

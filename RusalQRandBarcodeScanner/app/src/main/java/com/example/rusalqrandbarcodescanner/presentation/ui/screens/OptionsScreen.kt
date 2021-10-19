@@ -13,6 +13,7 @@ import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
+import com.example.rusalqrandbarcodescanner.presentation.components.progress.SessionProgress
 import com.example.rusalqrandbarcodescanner.util.displayedStringPostStringInsertion
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 
@@ -30,6 +31,13 @@ fun OptionsScreen(navController: NavHostController, mainActivityVM : MainActivit
 
     Scaffold(topBar = { TopAppBar(title = { Text("${sessionType.type} Options", textAlign = TextAlign.Center) }) }) {
 
+        SessionProgress(
+            sessionType = sessionType,
+            addedItems = mainActivityVM.addedItemCount.value,
+            expectedItems = if (sessionType == SessionType.SHIPMENT) mainActivityVM.quantity.value.toInt() else mainActivityVM.inboundItemCount.value,
+            partiallyIdentifiedItems = 0,
+            newItems = 0)
+
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
@@ -38,6 +46,7 @@ fun OptionsScreen(navController: NavHostController, mainActivityVM : MainActivit
             } else {
                 Text(text = "Barge ${mainActivityVM.barge.value} Reception")
             }
+
             Button(onClick = { navController.navigate(Screen.ScannerScreen.title) }) {
                 Text(text = "Scan Code", modifier = Modifier
                     .padding(16.dp)

@@ -24,6 +24,8 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.util.ScannedInfo
 import com.example.rusalqrandbarcodescanner.Screen
+import com.example.rusalqrandbarcodescanner.domain.models.SessionType
+import com.example.rusalqrandbarcodescanner.presentation.components.progress.SessionProgress
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
@@ -35,6 +37,13 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 fun ScannerScreen(navController: NavHostController, mainActivityVM: MainActivityViewModel) {
 
     CameraPreview(modifier = Modifier.fillMaxSize(), navController = navController, mainActivityVM = mainActivityVM)
+    SessionProgress(
+        sessionType = mainActivityVM.sessionType.value,
+        addedItems = mainActivityVM.addedItemCount.value,
+        expectedItems = if (mainActivityVM.sessionType.value == SessionType.SHIPMENT) mainActivityVM.quantity.value.toInt() else mainActivityVM.inboundItemCount.value,
+        partiallyIdentifiedItems = 0,
+        newItems = 0)
+
     Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom) {

@@ -14,7 +14,9 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.Screen
+import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.presentation.components.inputdialog.SingleHyphenTransformedInputDialog
+import com.example.rusalqrandbarcodescanner.presentation.components.progress.SessionProgress
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ManualEntryViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -30,6 +32,13 @@ fun ManualEntryScreen(navController : NavHostController, mainActivityVM : MainAc
     val displaySearchButton = manualEntryVM.displaySearchButton.value
 
     Scaffold(topBar = { TopAppBar(title = { Text("Manual Entry", textAlign = TextAlign.Center) }) }) {
+
+        SessionProgress(
+            sessionType = mainActivityVM.sessionType.value,
+            addedItems = mainActivityVM.addedItemCount.value,
+            expectedItems = if (mainActivityVM.sessionType.value == SessionType.SHIPMENT) mainActivityVM.quantity.value.toInt() else mainActivityVM.inboundItemCount.value,
+            partiallyIdentifiedItems = 0,
+            newItems = 0)
 
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
