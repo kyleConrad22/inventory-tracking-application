@@ -35,7 +35,7 @@ fun ManualEntryScreen(navController : NavHostController, mainActivityVM : MainAc
 
         SessionProgress(
             sessionType = mainActivityVM.sessionType.value,
-            addedItems = mainActivityVM.addedItemCount.value,
+            addedItems = if (mainActivityVM.sessionType.value == SessionType.SHIPMENT) mainActivityVM.addedItemCount.value else mainActivityVM.receivedItemCount.value,
             expectedItems = if (mainActivityVM.sessionType.value == SessionType.SHIPMENT) mainActivityVM.quantity.value.toInt() else mainActivityVM.inboundItemCount.value,
             partiallyIdentifiedItems = 0,
             newItems = 0)
