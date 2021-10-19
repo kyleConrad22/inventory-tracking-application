@@ -24,6 +24,7 @@ public class RusalController {
     private RusalLineItemService rusalLineItemService;
 
     @GetMapping
+    @ResponseBody
     Iterable<RusalLineItem> list() {
         return rusalLineItemService.findAll();
     }
@@ -132,7 +133,11 @@ public class RusalController {
 
     @PostMapping(value = "/update/reception", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
+<<<<<<< Updated upstream
     void updateReception(@RequestBody List<RusalReceptionUpdateParams> updateParams) {
+=======
+    void updateReception(@RequestBody final List<UpdateRusalReceptionParam> updateParams) {
+>>>>>>> Stashed changes
         rusalLineItemService.updateReception(updateParams);
     }
 
