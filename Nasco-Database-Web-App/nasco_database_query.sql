@@ -31,6 +31,9 @@ SELECT * FROM current_inventory;
 DELETE FROM current_inventory WHERE heat_num = NULL;
 
 UPDATE current_inventory
+SET heat_num = REPLACE(heat_num, '\n', '');
+
+UPDATE current_inventory
 SET heat_num = REPLACE(heat_num, ' ', '');
 
 UPDATE current_inventory
@@ -49,4 +52,5 @@ ALTER TABLE current_inventory
 	ADD barge VARCHAR(50) NOT NULL,
     ADD reception_date VARCHAR(20) NOT NULL,
     ADD checker VARCHAR(30) NOT NULL,
-    ADD mark VARCHAR(30) NOT NULL;
+    ADD mark VARCHAR(30) NOT NULL,
+    ADD lot VARCHAR(6) NOT NULL;
