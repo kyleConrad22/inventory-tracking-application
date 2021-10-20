@@ -133,7 +133,7 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
     fun isLastItem(sessionType: SessionType) : Boolean {
         if (sessionType == SessionType.SHIPMENT) {
             val requestedQuantity = mainActivityVM.quantity.value.toInt()
-            return requestedQuantity - mainActivityVM.addedItemCount.value == 1
+            return requestedQuantity - mainActivityVM.addedItemCount.value == 0
         }
 
         return false
