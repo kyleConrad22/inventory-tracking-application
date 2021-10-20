@@ -32,12 +32,17 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
     val receivedItemCount = mutableStateOf(0)
 
     val displayRemoveEntryContent = mutableStateOf(false)
+    val isSessionStarted = mutableStateOf(false)
 
     init {
         viewModelScope.launch {
             loading.value = true
-            repo.deleteAll()
-            HttpRequestHandler.initialize(repo, loading)
+            if (repo.getAddedItems().isNotEmpty()) {
+                /*TODO - Add Code for if session already started on startup to recreate session*/
+            } else {
+                repo.deleteAll()
+                HttpRequestHandler.initialize(repo, loading)
+            }
         }
     }
 
