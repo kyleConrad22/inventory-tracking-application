@@ -57,7 +57,7 @@ public interface RusalLineItemRepository extends JpaRepository<RusalLineItem, St
     @Transactional
     @Modifying(clearAutomatically = true)
     @Query(
-        value = "UPDATE current_inventory SET lot = :reqLot WHERE bl = :searchBl AND heat = :searchHeat",
+        value = "UPDATE current_inventory SET lot = :reqLot WHERE bl_num = :searchBl AND heat_num LIKE CONCAT('%', :searchHeat, '%')",
         nativeQuery = true
     )
     void addLot(@Param("reqLot") String lot, @Param("searchBl") String bl, @Param("searchHeat") String heat);

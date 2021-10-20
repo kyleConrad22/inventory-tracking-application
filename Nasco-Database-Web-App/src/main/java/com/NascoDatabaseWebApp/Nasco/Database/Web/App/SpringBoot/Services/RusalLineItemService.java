@@ -67,4 +67,8 @@ public class RusalLineItemService implements RusalService {
     public void addLot(LotUpdateParams updateParams) {
         repository.addLot(updateParams.getLot(), updateParams.getBl(), updateParams.getHeat());
     }
+
+    public void addLotSite(String lot, String bl, String heat) {
+        repository.addLot(lot, bl, heat);
+    }
 }

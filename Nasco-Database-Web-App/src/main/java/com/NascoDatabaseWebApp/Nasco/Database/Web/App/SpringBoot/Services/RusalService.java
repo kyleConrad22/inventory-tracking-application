@@ -23,4 +23,5 @@ public interface RusalService {
     void addBarge(String bl, String mark);
     void updateReception(List<RusalReceptionUpdateParams> updateParams);
     void addLot(LotUpdateParams updateParams);
+    void addLotSite(String lot, String bl, String heat);
 }
