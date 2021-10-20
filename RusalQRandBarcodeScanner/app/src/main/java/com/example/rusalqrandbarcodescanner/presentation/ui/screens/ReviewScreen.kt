@@ -178,7 +178,7 @@ private fun RusalItemListItem(item: RusalItem, onClick: (item : RusalItem) -> Un
                 .align(Alignment.CenterVertically)) {
                 Text(text = "Heat: ${ displayedStringPostStringInsertion(item.heatNum, 6, "-") }" , style = MaterialTheme.typography.h6)
                 Text(text="BL: ${item.blNum}", style = MaterialTheme.typography.h6)
-                Text(if (getCommodity(item) == Commodity.BILLETS) {"Mark: ${item.mark}"} else {"Lot: TO BE IMPLEMENTED"}, style = MaterialTheme.typography.h6)
+                Text(if (getCommodity(item) == Commodity.BILLETS) {"Mark: ${item.mark}"} else {"Lot: ${item.lot}"}, style = MaterialTheme.typography.h6)
             }
         }
     }
@@ -198,7 +198,7 @@ private fun RemoveDialog(onDismissRequest : () -> Unit, onRemoveRequest : () -> 
                 Text(text = "Gross Weight Kg: ${ item.grossWeightKg }")
                 Text(text = "Mark: ${item.mark}")
                 if (getCommodity(item) == Commodity.INGOTS) {
-                    Text(text = "Lot: TO BE IMPLEMENTED")
+                    Text(text = "Lot: ${item.lot}")
                 }
                 Button(onClick = onDismissRequest) {
                     Text("Deny Removal", modifier = Modifier.padding(16.dp))

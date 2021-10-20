@@ -39,6 +39,8 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
             loading.value = true
             if (repo.getAddedItems().isNotEmpty()) {
                 /*TODO - Add Code for if session already started on startup to recreate session*/
+                repo.deleteAll()
+                HttpRequestHandler.initialize(repo, loading)
             } else {
                 repo.deleteAll()
                 HttpRequestHandler.initialize(repo, loading)

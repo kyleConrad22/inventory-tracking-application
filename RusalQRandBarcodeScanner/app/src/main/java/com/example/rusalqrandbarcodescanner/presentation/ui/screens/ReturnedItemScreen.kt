@@ -28,7 +28,9 @@ import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.ItemActionType
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
+import com.example.rusalqrandbarcodescanner.util.Commodity
 import com.example.rusalqrandbarcodescanner.util.displayedStringPostStringInsertion
+import com.example.rusalqrandbarcodescanner.util.getCommodity
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReturnedItemViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReturnedItemViewModel.ReturnedItemViewModelFactory
@@ -103,8 +105,7 @@ fun handleDismiss(navController: NavHostController, heat : MutableState<String>)
 
 @Composable
 private fun IncorrectField(field: String, heat: String, retrievedValue: String, requestedValue: String, onDismiss : () -> Unit) {
-    Text(text =
-    """
+    Text(text = """
         Item with heat $heat cannot be added to shipment!
         Incorrect $field, returned item has a $field of $retrievedValue and the requested $field is $requestedValue.
     """.trimIndent(), modifier = Modifier.padding(16.dp))
@@ -116,8 +117,8 @@ private fun IncorrectField(field: String, heat: String, retrievedValue: String, 
 @Composable
 private fun DuplicateItem(sessionType : SessionType, scanTime : String, heat : String, onDismiss: () -> Unit) {
     Text(text="""
-        Item with heat $heat cannot be added to ${sessionType.type}!
-        Item was already added ${if(sessionType == SessionType.SHIPMENT) "at" else "on"} $scanTime.
+       Item with heat $heat cannot be added to ${sessionType.type}!
+       Item was already added ${if(sessionType == SessionType.SHIPMENT) "at" else "on"} $scanTime.
     """.trimIndent(), modifier = Modifier.padding(16.dp))
     DismissButton {
         onDismiss()
@@ -159,13 +160,12 @@ private fun NotInLoadedHeats(loadedHeatList : List<String>, heat : String, onDis
 
 @Composable
 private fun ValidHeat(item : RusalItem, onDismiss: () -> Unit, onConfirm: () -> Unit) {
-    Text(text =
-    """
+    Text(text = """
         Heat Number: ${ displayedStringPostStringInsertion(item.heatNum, 6, "-") }
         Piece Count: ${item.quantity}
         BL Number: ${item.blNum}
         Mark: ${item.mark}
-    """.trimIndent())
+    """.trimIndent() + if (getCommodity(item) == Commodity.INGOTS) "\nLot: ${item.lot}" else "")
     DenyOrConfirm(onDismiss = { onDismiss() }, onConfirm = { onConfirm() })
 }
 
