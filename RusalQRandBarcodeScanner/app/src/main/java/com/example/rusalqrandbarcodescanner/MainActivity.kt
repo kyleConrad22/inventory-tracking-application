@@ -17,10 +17,12 @@ import androidx.navigation.compose.rememberNavController
 import com.android.volley.toolbox.Volley
 import com.example.rusalqrandbarcodescanner.presentation.ui.screens.*
 import com.example.rusalqrandbarcodescanner.presentation.ui.theme.RusalQRAndBarcodeScannerTheme
+import com.example.rusalqrandbarcodescanner.services.FileStorage
 import com.example.rusalqrandbarcodescanner.services.HttpRequestHandler
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel.MainActivityViewModelFactory
 import kotlinx.coroutines.DelicateCoroutinesApi
+import java.io.File
 
 @DelicateCoroutinesApi
 @ExperimentalComposeUiApi
@@ -33,6 +35,8 @@ class MainActivity : ComponentActivity() {
         val mainActivityVM: MainActivityViewModel by viewModels {
             MainActivityViewModelFactory((application as CodeApplication).invRepository, application)
         }
+
+        FileStorage.file = File(this.applicationContext.getExternalFilesDir(null), "data.txt")
 
         HttpRequestHandler.requestQueue = Volley.newRequestQueue(this.applicationContext)
 

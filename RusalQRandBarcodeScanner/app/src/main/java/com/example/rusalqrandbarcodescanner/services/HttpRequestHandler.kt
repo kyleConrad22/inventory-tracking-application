@@ -112,6 +112,8 @@ object HttpRequestHandler {
         val listType = Types.newParameterizedType(List::class.java, RusalReceptionUpdateParams::class.java)
         val adapter : JsonAdapter<List<RusalReceptionUpdateParams>> = moshi.adapter(listType)
 
+        FileStorage.writeDataToFile(adapter.toJson(updateParams))
+
         try {
             val postData = JSONArray(adapter.toJson(updateParams))
 
