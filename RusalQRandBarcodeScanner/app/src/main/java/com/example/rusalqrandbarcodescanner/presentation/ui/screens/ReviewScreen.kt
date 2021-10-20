@@ -200,14 +200,20 @@ private fun RemoveDialog(onDismissRequest : () -> Unit, onRemoveRequest : () -> 
                 if (getCommodity(item) == Commodity.INGOTS) {
                     Text(text = "Lot: ${item.lot}")
                 }
-                Button(onClick = onDismissRequest) {
-                    Text("Deny Removal", modifier = Modifier.padding(16.dp))
-                }
-                Button(onClick = {
-                    onRemoveRequest()
-                    onDismissRequest()
-                }) {
-                    Text("Remove Item", modifier = Modifier.padding(16.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Button(onClick = onDismissRequest) {
+                        Text("Dismiss", modifier = Modifier.padding(16.dp))
+                    }
+                    Button(onClick = {
+                        onRemoveRequest()
+                        onDismissRequest()
+                    }) {
+                        Text("Remove Item", modifier = Modifier.padding(16.dp))
+                    }
                 }
             }
 

@@ -55,10 +55,8 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
                     else -> getReceptionItemType(locatedItem.value!!)
                 }
 
-            Log.d("DEBUG", "here")
             loading.value = false
             ScannedInfo.heatNum = ""
-            Log.d("DEBUG", locatedItem.value!!.mark)
             Log.d("Debug", itemActionType.value.type)
         }
     }
