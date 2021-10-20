@@ -42,7 +42,8 @@ fun ScannerScreen(navController: NavHostController, mainActivityVM: MainActivity
         addedItems = if (mainActivityVM.sessionType.value == SessionType.SHIPMENT) mainActivityVM.addedItemCount.value else mainActivityVM.receivedItemCount.value,
         expectedItems = if (mainActivityVM.sessionType.value == SessionType.SHIPMENT) mainActivityVM.quantity.value.toInt() else mainActivityVM.inboundItemCount.value,
         partiallyIdentifiedItems = 0,
-        newItems = 0)
+        newItems = 0
+    )
 
     Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,

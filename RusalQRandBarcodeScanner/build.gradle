@@ -4,6 +4,7 @@ buildscript {
         compose_version = '1.0.0'
         camerax_version = '1.0.1'
         room_version = '2.3.0'
+        work_version = '2.7.0'
     }
     repositories {
         google()

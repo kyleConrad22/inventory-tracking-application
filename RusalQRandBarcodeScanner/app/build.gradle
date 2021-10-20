@@ -67,6 +67,9 @@ dependencies {
     implementation "androidx.navigation:navigation-compose:2.4.0-alpha06"
     implementation 'androidx.activity:activity-compose:1.3.0-alpha06'
 
+    // Work Manager Implementation
+    implementation "androidx.work:work-runtime-ktx:$work_version"
+
     // Google Accompanist Implementation
     implementation "com.google.accompanist:accompanist-permissions:0.16.0"
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.18.0"
