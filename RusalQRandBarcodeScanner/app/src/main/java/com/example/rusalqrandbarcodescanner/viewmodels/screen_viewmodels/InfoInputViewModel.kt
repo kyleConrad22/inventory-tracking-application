@@ -24,6 +24,7 @@ class InfoInputViewModel(private val mainActivityVM : MainActivityViewModel, pri
     init {
         viewModelScope.launch {
             loading.value = true
+            refresh()
             if (mainActivityVM.sessionType.value == SessionType.SHIPMENT) {
                 blList.value = getUniqueBlList(invRepo.getAllSuspend()!!)
             } else {
