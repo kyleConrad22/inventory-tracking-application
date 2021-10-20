@@ -3,6 +3,7 @@ import React from 'react'
 export default function AddLot() {
 
     function handleSubmit(evt) {
+        
         evt.preventDefault()
 
         fetch('/api/rusal/update/lot/site', {
