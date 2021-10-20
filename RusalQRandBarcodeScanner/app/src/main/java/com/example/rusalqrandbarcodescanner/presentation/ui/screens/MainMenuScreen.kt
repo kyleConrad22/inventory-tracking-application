@@ -116,15 +116,15 @@ fun NavigationAlertDialog(onDismiss : () -> Unit, onConfirm: () -> Unit, onRevie
                 Row(modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly) {
                     Button(onClick = {
-                        onConfirm()
-                    }) {
-                        Text(text = "Continue to ${newSessionType.type}",
-                            modifier = Modifier.padding(16.dp))
-                    }
-                    Button(onClick = {
                         onReview()
                     }) {
                         Text("Review ${currentSessionType.type}",
+                            modifier = Modifier.padding(16.dp))
+                    }
+                    Button(onClick = {
+                        onConfirm()
+                    }) {
+                        Text(text = "Continue to ${newSessionType.type}",
                             modifier = Modifier.padding(16.dp))
                     }
                 }
