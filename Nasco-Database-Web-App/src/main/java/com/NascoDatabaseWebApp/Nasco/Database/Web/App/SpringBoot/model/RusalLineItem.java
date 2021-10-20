@@ -33,6 +33,7 @@ public class RusalLineItem {
     private String receptionDate;
     private String checker;
     private String mark;
+    private String lot;
 
     @Override
     public boolean equals(Object o) {
@@ -138,6 +139,8 @@ public class RusalLineItem {
 
     public String getMark() { return mark; }
 
+    public String getLot() { return lot; }
+
     public String getWorkOrder() {
         if (workOrder != null) {
             return workOrder;
@@ -240,5 +243,9 @@ public class RusalLineItem {
 
     public void setMark(String mark) {
         this.mark = mark;
+    }
+
+    public void setLot(String lot) {
+        this.lot = lot;
     }
 }

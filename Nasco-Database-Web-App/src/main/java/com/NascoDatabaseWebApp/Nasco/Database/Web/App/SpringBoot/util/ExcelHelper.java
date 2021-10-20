@@ -24,7 +24,7 @@ public class ExcelHelper {
     static String SHEET = "Load Information";
     static String[] HEADERS = {
             "Heat Number", "Package Number", "Net Weight Kg", "Gross Weight Kg", "Net Weight Lbs", "Gross Weight Lbs", "Quantity", "Dimensions", "Grade",
-            "Certificate Number", "BL", "Barcode", "Order", "Load", "Loader", "Load Date", "Barge", "Reception Date", "Checker", "Mark"
+            "Certificate Number", "BL", "Barcode", "Order", "Load", "Loader", "Load Date", "Barge", "Reception Date", "Checker", "Mark", "Lot"
     };
 
     // Create an excel worksheet representation of items
@@ -64,6 +64,7 @@ public class ExcelHelper {
                 row.createCell(17).setCellValue(lineItem.getReceptionDate());
                 row.createCell(18).setCellValue(lineItem.getChecker());
                 row.createCell(19).setCellValue(lineItem.getMark());
+                row.createCell(20).setCellValue(lineItem.getLot());
 
             }
 

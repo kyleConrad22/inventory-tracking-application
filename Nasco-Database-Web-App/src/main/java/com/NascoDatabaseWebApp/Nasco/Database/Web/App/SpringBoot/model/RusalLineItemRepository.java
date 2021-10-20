@@ -53,4 +53,12 @@ public interface RusalLineItemRepository extends JpaRepository<RusalLineItem, St
         nativeQuery = true
     )
     void updateReception(@Param("searchHeat") String heat, @Param("reqReceptionDate") String receptionDate, @Param("reqChecker") String checker);
+
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query(
+        value = "UPDATE current_inventory SET lot = :reqLot WHERE bl = :searchBl AND heat = :searchHeat",
+        nativeQuery = true
+    )
+    void addLot(@Param("reqLot") String lot, @Param("searchBl") String bl, @Param("searchHeat") String heat);
 }

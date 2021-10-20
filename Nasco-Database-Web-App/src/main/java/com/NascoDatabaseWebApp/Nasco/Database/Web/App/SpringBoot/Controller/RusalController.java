@@ -1,6 +1,7 @@
 package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Controller;
 
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.RusalLineItemService;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.LotUpdateParams;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItem;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalReceptionUpdateParams;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.print.attribute.standard.Media;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -125,6 +125,12 @@ public class RusalController {
         rusalLineItemService.addMark(bl, mark);
     }
 
+    @PostMapping("/update/lot")
+    @ResponseStatus(HttpStatus.OK)
+    void addLot(@RequestBody LotUpdateParams updateParams) {
+        rusalLineItemService.addLot(updateParams);
+    }
+
     @PostMapping("/update/barge")
     @ResponseStatus(HttpStatus.OK)
     void addBarge(@RequestParam final String bl, @RequestParam final String barge) {
@@ -133,11 +139,8 @@ public class RusalController {
 
     @PostMapping(value = "/update/reception", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-<<<<<<< Updated upstream
-    void updateReception(@RequestBody List<RusalReceptionUpdateParams> updateParams) {
-=======
-    void updateReception(@RequestBody final List<UpdateRusalReceptionParam> updateParams) {
->>>>>>> Stashed changes
+
+    void updateReception(@RequestBody final List<RusalReceptionUpdateParams> updateParams) {
         rusalLineItemService.updateReception(updateParams);
     }
 

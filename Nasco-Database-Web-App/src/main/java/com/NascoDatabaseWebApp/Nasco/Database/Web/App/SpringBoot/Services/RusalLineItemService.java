@@ -1,5 +1,6 @@
 package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services;
 
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.LotUpdateParams;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItem;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItemRepository;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalReceptionUpdateParams;
@@ -61,5 +62,9 @@ public class RusalLineItemService implements RusalService {
         updateParams.forEach(it -> {
             repository.updateReception(it.getHeatNum(), it.getReceptionDate(), it.getChecker());
         });
+    }
+
+    public void addLot(LotUpdateParams updateParams) {
+        repository.addLot(updateParams.getLot(), updateParams.getBl(), updateParams.getHeat());
     }
 }
