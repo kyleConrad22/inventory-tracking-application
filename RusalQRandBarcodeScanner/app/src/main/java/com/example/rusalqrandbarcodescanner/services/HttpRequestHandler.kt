@@ -39,7 +39,7 @@ object HttpRequestHandler {
 
     private suspend fun confirmShipment(items: List<RusalItem>) = withContext(Dispatchers.IO) {
         for (item in items) {
-            createInventoryItem(item)
+            updateDatabaseForShipment(item)
         }
     }
 

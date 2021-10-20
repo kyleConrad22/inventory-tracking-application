@@ -14,26 +14,38 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.R
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.presentation.components.CircularIndeterminateProgressBar
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
+import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.SplashViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
 
 @DelicateCoroutinesApi
 @Composable
 fun SplashScreen(navController: NavController, mainActivityVM: MainActivityViewModel) {
 
+    val splashVM : SplashViewModel = viewModel(factory = SplashViewModel.SplashViewModelFactory((LocalContext.current.applicationContext as CodeApplication).invRepository, mainActivityVM))
+
     val loading = mainActivityVM.loading.value
+    val destination = splashVM.destination.value
 
     val scale = remember {
         androidx.compose.animation.core.Animatable(0f)
     }
 
     if (!loading) {
-        LaunchedEffect(key1 = true) { navController.navigate(Screen.MainMenuScreen.title) }
+        LaunchedEffect(key1 = true) {
+            if (destination == Screen.InfoInputScreen.title) {
+                navController.navigate(Screen.MainMenuScreen.title)
+            }
+            navController.navigate(destination)
+        }
     }
 
     // Animation Effect

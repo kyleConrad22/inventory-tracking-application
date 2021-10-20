@@ -8,7 +8,9 @@ import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.services.HttpRequestHandler
 import com.example.rusalqrandbarcodescanner.util.Commodity
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.lang.IllegalArgumentException
 
 class MainActivityViewModel(private val repo : InventoryRepository, application : Application): AndroidViewModel(application) {
@@ -32,20 +34,29 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
     val receivedItemCount = mutableStateOf(0)
 
     val displayRemoveEntryContent = mutableStateOf(false)
-    val isSessionStarted = mutableStateOf(false)
 
-    init {
-        viewModelScope.launch {
-            loading.value = true
-            if (repo.getAddedItems().isNotEmpty()) {
-                /*TODO - Add Code for if session already started on startup to recreate session*/
-                repo.deleteAll()
-                HttpRequestHandler.initialize(repo, loading)
-            } else {
-                repo.deleteAll()
-                HttpRequestHandler.initialize(repo, loading)
-            }
-        }
+    fun recreateSession(savedItem : RusalItem) {
+        sessionType.value =
+            if (savedItem.loadTime != "") SessionType.SHIPMENT
+            else SessionType.RECEPTION
+
+        if (sessionType.value == SessionType.SHIPMENT) {
+            workOrder.value = savedItem.workOrder
+            loadNum.value = savedItem.loadNum
+            loader.value = savedItem.loader
+            bl.value = savedItem.blNum
+            pieceCount.value = savedItem.quantity
+            quantity.value = "10" // TODO - Add saved state handle such that quantity can be retained across process death
+
+        } else
+            barge.value = savedItem.barge
+            checker.value = savedItem.checker
+    }
+
+    /* TODO - Replace logic replacing local copy of database with logic updating local database */
+    suspend fun updateLocalDatabase() = withContext(Dispatchers.IO) {
+        repo.deleteAll()
+        HttpRequestHandler.initialize(repo, loading)
     }
 
     fun refresh() {
