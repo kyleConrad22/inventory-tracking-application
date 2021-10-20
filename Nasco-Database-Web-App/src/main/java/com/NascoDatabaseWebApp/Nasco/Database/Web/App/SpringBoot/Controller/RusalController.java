@@ -131,6 +131,12 @@ public class RusalController {
         rusalLineItemService.addLot(updateParams);
     }
 
+    @PostMapping("/update/lot/site")
+    @ResponseStatus(HttpStatus.OK)
+    void addLotSite(@RequestParam String lot, @RequestParam String bl, @RequestParam String heat) {
+        rusalLineItemService.addLotSite(lot, bl, heat);
+    }
+
     @PostMapping("/update/barge")
     @ResponseStatus(HttpStatus.OK)
     void addBarge(@RequestParam final String bl, @RequestParam final String barge) {
