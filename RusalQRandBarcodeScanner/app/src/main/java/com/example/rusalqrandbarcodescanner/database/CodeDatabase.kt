@@ -8,7 +8,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@Database (entities = arrayOf(RusalItem::class), version = 16)
+@Database (entities = arrayOf(RusalItem::class), version = 17)
 abstract class CodeDatabase: RoomDatabase() {
     abstract fun inventoryDao(): InventoryDao
 
