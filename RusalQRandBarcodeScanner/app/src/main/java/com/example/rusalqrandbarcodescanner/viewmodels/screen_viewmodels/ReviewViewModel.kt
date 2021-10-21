@@ -36,25 +36,7 @@ class ReviewViewModel(private val invRepo : InventoryRepository, private val mai
     }
 
     fun initiateUpdate() {
-
-        val uuidFileName = UUID.randomUUID().toString() + ".txt"
-
-        HttpRequestHandler.initUpdate(mainActivityVM.addedItems.value, mainActivityVM.sessionType.value, mainActivityVM.getApplication(), uuidFileName)
-
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
-
-        val data = Data.Builder()
-            .putString(FileStorage.DATA_FILE_PATH, uuidFileName)
-            .build()
-
-        val oneTimeWorkRequest : OneTimeWorkRequest = OneTimeWorkRequestBuilder<ReceptionUploadWorker>()
-            .setConstraints(constraints)
-            .setInputData(data)
-            .build()
-
-        WorkManager.getInstance(mainActivityVM.getApplication()).enqueue(oneTimeWorkRequest)
+        HttpRequestHandler.initUpdate(mainActivityVM.addedItems.value, mainActivityVM.sessionType.value, mainActivityVM.getApplication())
     }
 
     class ReviewViewModelFactory(private val invRepo : InventoryRepository, private val mainActivityVM: MainActivityViewModel) : ViewModelProvider.Factory {

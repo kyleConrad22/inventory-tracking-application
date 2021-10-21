@@ -3,8 +3,7 @@ package com.example.rusalqrandbarcodescanner.services
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.MutableState
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
+import androidx.work.*
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
@@ -21,6 +20,7 @@ import kotlinx.coroutines.*
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import java.util.*
 
 object HttpRequestHandler {
 
@@ -40,17 +40,20 @@ object HttpRequestHandler {
         requestQueue.add(stringRequest)
         }
 
-    private suspend fun confirmShipment(items: List<RusalItem>) = withContext(Dispatchers.IO) {
+    private suspend fun confirmShipment(items: List<RusalItem>, context : Context) = withContext(Dispatchers.IO) {
         for (item in items) {
-            updateDatabaseForShipment(item)
+            updateDatabaseForShipment(item, context)
         }
     }
 
 
-    private fun updateDatabaseForShipment(item : RusalItem) {
-        val url = "$WEB_API/update"
 
-        val postData : JSONObject = JSONObject()
+    // Update - replace logic with Moshi update parameter class -- To Be Created
+    private fun updateDatabaseForShipment(item : RusalItem, context : Context) {
+
+        val uuidFileName = UUID.randomUUID().toString() + ".txt"
+
+        val postData = JSONObject()
         try {
             postData.put("heatNum", item.heatNum)
             postData.put("workOrder", item.workOrder)
@@ -61,34 +64,25 @@ object HttpRequestHandler {
             e.printStackTrace()
         }
 
-        val jsonObjectRequest = JsonObjectRequest(Request.Method.POST, url, postData, { response ->
-            print(response.toString())
-        }, { error ->
-            error.printStackTrace()
-        })
+        FileStorage.writeDataToFile(context, postData.toString(), uuidFileName)
 
-        requestQueue.add(jsonObjectRequest)
+        val oneTimeWorkRequest = createDefaultOneTimeWorkRequest(fileName = uuidFileName)
+
+        WorkManager.getInstance(context).enqueue(oneTimeWorkRequest)
     }
 
-    private fun createInventoryItem(item : RusalItem) {
+    private fun createInventoryItem(item : RusalItem, context : Context) {
+
+        val uuidFileName = UUID.randomUUID().toString() + ".txt"
 
         val moshi : Moshi = Moshi.Builder().build()
         val adapter : JsonAdapter<RusalItem> = moshi.adapter(RusalItem::class.java)
 
-        try {
-            val postData = JSONObject(adapter.toJson(item))
+        FileStorage.writeDataToFile(context, adapter.toJson(item), uuidFileName)
 
-            val jsonObjectRequest = JsonObjectRequest(Request.Method.POST, WEB_API, postData, { response ->
-                print(response)
-            }, { error ->
-                error.printStackTrace()
-            })
+        val oneTimeWorkRequest = createDefaultOneTimeWorkRequest(fileName = uuidFileName)
 
-            requestQueue.add(jsonObjectRequest)
-
-        } catch (e : JSONException) {
-            e.printStackTrace()
-        }
+        WorkManager.getInstance(context).enqueue(oneTimeWorkRequest)
 
     }
 
@@ -105,7 +99,9 @@ object HttpRequestHandler {
         }
     }
 
-    private fun confirmReception(items: List<RusalItem>, context : Context, uuidFileName: String) {
+    private fun confirmReception(items: List<RusalItem>, context : Context) {
+
+        val uuidFileName = UUID.randomUUID().toString() + ".txt"
 
         val updateParams = RusalReceptionUpdateParams().getUpdateParamsList(items)
 
@@ -115,22 +111,25 @@ object HttpRequestHandler {
 
         FileStorage.writeDataToFile(context, adapter.toJson(updateParams), uuidFileName)
 
-    /*
-        try {
-            val postData = JSONArray(adapter.toJson(updateParams))
+        val oneTimeWorkRequest = createDefaultOneTimeWorkRequest(fileName = uuidFileName)
 
-            val jsonArrayRequest = JsonArrayRequest(Request.Method.POST, url, postData, { response ->
-                Log.d("DEBUG", response.toString())
-            }, { error ->
-                error.printStackTrace()
-            })
+        WorkManager.getInstance(context).enqueue(oneTimeWorkRequest)
 
-            requestQueue.add(jsonArrayRequest)
+    }
 
-        } catch (e : JSONException) {
-            e.printStackTrace()
-        }
-         */
+    private fun createDefaultOneTimeWorkRequest(fileName : String) : OneTimeWorkRequest {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val data = Data.Builder()
+            .putString(FileStorage.DATA_FILE_PATH, fileName)
+            .build()
+
+        return OneTimeWorkRequestBuilder<ReceptionUploadWorker>()
+            .setConstraints(constraints)
+            .setInputData(data)
+            .build()
     }
 
     // Returns false when update complete to signify loading as completed
@@ -145,17 +144,17 @@ object HttpRequestHandler {
         })
     }
 
-    fun initUpdate(items: List<RusalItem>, sessionType: SessionType, context : Context, uuidFilePath : String) = CoroutineScope(Dispatchers.IO).launch {
+    fun initUpdate(items: List<RusalItem>, sessionType: SessionType, context : Context) = CoroutineScope(Dispatchers.IO).launch {
         for (item in items) {
             if (item.heatNum.length == 6) {
-                createInventoryItem(item)
+                createInventoryItem(item, context)
             }
         }
 
         if (sessionType == SessionType.SHIPMENT) {
-            confirmShipment(items)
+            confirmShipment(items, context)
         } else {
-            confirmReception(items, context, uuidFilePath)
+            confirmReception(items, context)
         }
     }
 

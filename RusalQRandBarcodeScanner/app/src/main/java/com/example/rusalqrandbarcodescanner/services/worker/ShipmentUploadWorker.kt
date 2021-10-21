@@ -87,6 +87,6 @@ class ShipmentUploadWorker(context : Context, workerParams : WorkerParameters) :
 
     companion object {
         private const val TAG = "ShipmentUploadWorker"
-        private const val WEB_API_URL = "http://45.22.122.47:8081/api/rusal/update/shipment"
+        private const val WEB_API_URL = "http://45.22.122.47:8081/api/rusal/update"
     }
 }
