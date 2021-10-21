@@ -17,7 +17,8 @@ import java.util.concurrent.TimeoutException
 class ReceptionUploadWorker(context : Context, workerParams : WorkerParameters) : Worker(context, workerParams) {
     override fun doWork(): Result {
 
-        val inputStream = applicationContext.openFileInput(DATA_FILE)
+        val inputStream = applicationContext.openFileInput(inputData.getString(FileStorage.DATA_FILE_PATH))
+
         return try {
 
             if (inputStream != null) {

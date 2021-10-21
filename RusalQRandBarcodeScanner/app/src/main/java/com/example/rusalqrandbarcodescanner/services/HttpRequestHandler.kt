@@ -105,9 +105,7 @@ object HttpRequestHandler {
         }
     }
 
-    private fun confirmReception(items: List<RusalItem>, context : Context) {
-
-        val url = "$WEB_API/update/reception"
+    private fun confirmReception(items: List<RusalItem>, context : Context, uuidFileName: String) {
 
         val updateParams = RusalReceptionUpdateParams().getUpdateParamsList(items)
 
@@ -115,7 +113,7 @@ object HttpRequestHandler {
         val listType = Types.newParameterizedType(List::class.java, RusalReceptionUpdateParams::class.java)
         val adapter : JsonAdapter<List<RusalReceptionUpdateParams>> = moshi.adapter(listType)
 
-        FileStorage.writeDataToFile(context, adapter.toJson(updateParams))
+        FileStorage.writeDataToFile(context, adapter.toJson(updateParams), uuidFileName)
 
     /*
         try {
@@ -147,7 +145,7 @@ object HttpRequestHandler {
         })
     }
 
-    fun initUpdate(items: List<RusalItem>, sessionType: SessionType, context : Context) = CoroutineScope(Dispatchers.IO).launch {
+    fun initUpdate(items: List<RusalItem>, sessionType: SessionType, context : Context, uuidFilePath : String) = CoroutineScope(Dispatchers.IO).launch {
         for (item in items) {
             if (item.heatNum.length == 6) {
                 createInventoryItem(item)
@@ -157,7 +155,7 @@ object HttpRequestHandler {
         if (sessionType == SessionType.SHIPMENT) {
             confirmShipment(items)
         } else {
-            confirmReception(items, context)
+            confirmReception(items, context, uuidFilePath)
         }
     }
 

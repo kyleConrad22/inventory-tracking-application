@@ -6,11 +6,13 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.*
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
+import com.example.rusalqrandbarcodescanner.services.FileStorage
 import com.example.rusalqrandbarcodescanner.services.HttpRequestHandler
 import com.example.rusalqrandbarcodescanner.services.worker.ReceptionUploadWorker
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
+import java.util.*
 
 class ReviewViewModel(private val invRepo : InventoryRepository, private val mainActivityVM: MainActivityViewModel) : ViewModel() {
 
@@ -34,14 +36,22 @@ class ReviewViewModel(private val invRepo : InventoryRepository, private val mai
     }
 
     fun initiateUpdate() {
-        HttpRequestHandler.initUpdate(mainActivityVM.addedItems.value, mainActivityVM.sessionType.value, mainActivityVM.getApplication())
+
+        val uuidFileName = UUID.randomUUID().toString() + ".txt"
+
+        HttpRequestHandler.initUpdate(mainActivityVM.addedItems.value, mainActivityVM.sessionType.value, mainActivityVM.getApplication(), uuidFileName)
 
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
+        val data = Data.Builder()
+            .putString(FileStorage.DATA_FILE_PATH, uuidFileName)
+            .build()
+
         val oneTimeWorkRequest : OneTimeWorkRequest = OneTimeWorkRequestBuilder<ReceptionUploadWorker>()
             .setConstraints(constraints)
+            .setInputData(data)
             .build()
 
         WorkManager.getInstance(mainActivityVM.getApplication()).enqueue(oneTimeWorkRequest)

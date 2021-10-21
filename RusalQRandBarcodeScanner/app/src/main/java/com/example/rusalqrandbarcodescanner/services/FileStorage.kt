@@ -10,16 +10,16 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStreamWriter
 import java.lang.StringBuilder
-import java.nio.Buffer
 
 object FileStorage {
 
     private const val TAG = "FileStorage"
+    const val DATA_FILE_PATH = "dataFilePath"
 
-    fun writeDataToFile(context : Context, fileBody : String) {
+    fun writeDataToFile(context : Context, fileBody : String, uuidFileName : String) {
 
         try {
-            val outputStreamWriter = OutputStreamWriter(context.openFileOutput("data.txt", Context.MODE_PRIVATE))
+            val outputStreamWriter = OutputStreamWriter(context.openFileOutput(uuidFileName, Context.MODE_PRIVATE))
             outputStreamWriter.write(fileBody)
             outputStreamWriter.close()
 
