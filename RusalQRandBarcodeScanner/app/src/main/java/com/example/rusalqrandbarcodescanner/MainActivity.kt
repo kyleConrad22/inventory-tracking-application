@@ -36,8 +36,6 @@ class MainActivity : ComponentActivity() {
             MainActivityViewModelFactory((application as CodeApplication).invRepository, application)
         }
 
-        FileStorage.file = File(this.applicationContext.getExternalFilesDir(null), "data.txt")
-
         HttpRequestHandler.requestQueue = Volley.newRequestQueue(this.applicationContext)
 
         setContent {

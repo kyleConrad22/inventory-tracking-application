@@ -3,6 +3,8 @@ package com.example.rusalqrandbarcodescanner.services
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.MutableState
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
@@ -11,6 +13,7 @@ import com.android.volley.toolbox.*
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
+import com.example.rusalqrandbarcodescanner.services.worker.ReceptionUploadWorker
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
@@ -102,7 +105,7 @@ object HttpRequestHandler {
         }
     }
 
-    private fun confirmReception(items: List<RusalItem>) {
+    private fun confirmReception(items: List<RusalItem>, context : Context) {
 
         val url = "$WEB_API/update/reception"
 
@@ -112,8 +115,9 @@ object HttpRequestHandler {
         val listType = Types.newParameterizedType(List::class.java, RusalReceptionUpdateParams::class.java)
         val adapter : JsonAdapter<List<RusalReceptionUpdateParams>> = moshi.adapter(listType)
 
-        FileStorage.writeDataToFile(adapter.toJson(updateParams))
+        FileStorage.writeDataToFile(context, adapter.toJson(updateParams))
 
+    /*
         try {
             val postData = JSONArray(adapter.toJson(updateParams))
 
@@ -128,6 +132,7 @@ object HttpRequestHandler {
         } catch (e : JSONException) {
             e.printStackTrace()
         }
+         */
     }
 
     // Returns false when update complete to signify loading as completed
@@ -142,7 +147,7 @@ object HttpRequestHandler {
         })
     }
 
-    fun initUpdate(items: List<RusalItem>, sessionType: SessionType) = CoroutineScope(Dispatchers.IO).launch {
+    fun initUpdate(items: List<RusalItem>, sessionType: SessionType, context : Context) = CoroutineScope(Dispatchers.IO).launch {
         for (item in items) {
             if (item.heatNum.length == 6) {
                 createInventoryItem(item)
@@ -152,7 +157,7 @@ object HttpRequestHandler {
         if (sessionType == SessionType.SHIPMENT) {
             confirmShipment(items)
         } else {
-            confirmReception(items)
+            confirmReception(items, context)
         }
     }
 
