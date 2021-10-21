@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.android.volley.Request
-import com.android.volley.toolbox.HttpResponse
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.RequestFuture
 import com.example.rusalqrandbarcodescanner.services.FileStorage
