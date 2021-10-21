@@ -1,4 +1,4 @@
-package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services;
+package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.rusal;
 
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.LotUpdateParams;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItem;
@@ -7,9 +7,12 @@ import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalRece
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.util.ExcelHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
+
+import static com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.rusal.PackingListParser.parsePackingList;
 
 @Service
 public class RusalLineItemService implements RusalService {
@@ -70,5 +73,10 @@ public class RusalLineItemService implements RusalService {
 
     public void addLotSite(String lot, String bl, String heat) {
         repository.addLot(lot, bl, heat);
+    }
+
+    public void importPackingList(MultipartFile file) {
+        List<RusalLineItem> rusalItems = parsePackingList(file);
+        rusalItems.forEach(this::save);
     }
 }

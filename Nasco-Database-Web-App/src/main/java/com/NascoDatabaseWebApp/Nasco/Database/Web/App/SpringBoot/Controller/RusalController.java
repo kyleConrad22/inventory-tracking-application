@@ -1,6 +1,6 @@
 package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Controller;
 
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.RusalLineItemService;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.rusal.RusalLineItemService;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.LotUpdateParams;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItem;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalReceptionUpdateParams;
@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -118,6 +119,13 @@ public class RusalController {
                 .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
                 .body(file);
     }
+
+    @PostMapping("/import/packing-list")
+    @ResponseStatus(HttpStatus.CREATED)
+    void importPackingList(@RequestParam final MultipartFile file) {
+        rusalLineItemService.importPackingList(file);
+    }
+
 
     @PostMapping("/update/mark")
     @ResponseStatus(HttpStatus.OK)

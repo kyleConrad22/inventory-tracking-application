@@ -1,9 +1,10 @@
-package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services;
+package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.rusal;
 
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.LotUpdateParams;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItem;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalReceptionUpdateParams;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
@@ -24,4 +25,5 @@ public interface RusalService {
     void updateReception(List<RusalReceptionUpdateParams> updateParams);
     void addLot(LotUpdateParams updateParams);
     void addLotSite(String lot, String bl, String heat);
+    void importPackingList(MultipartFile file);
 }
