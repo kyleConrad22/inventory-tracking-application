@@ -10,7 +10,6 @@ import com.android.volley.toolbox.RequestFuture
 import com.example.rusalqrandbarcodescanner.services.FileStorage
 import com.example.rusalqrandbarcodescanner.services.HttpRequestHandler
 import org.json.JSONArray
-import org.json.JSONException
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
@@ -23,37 +22,31 @@ class ReceptionUploadWorker(context : Context, workerParams : WorkerParameters) 
 
             if (inputStream != null) {
 
+                val postData = FileStorage.convertToJsonArray(inputStream)
+
+                val future: RequestFuture<JSONArray> = RequestFuture.newFuture()
+
+                val jsonArrayRequest = JsonArrayRequest(Request.Method.POST,
+                    WEB_API_URL,
+                    postData,
+                    future,
+                    future)
+
+                HttpRequestHandler.requestQueue.add(jsonArrayRequest)
+
                 try {
-
-                    val postData = FileStorage.convertToJsonArray(inputStream)
-
-                    val future: RequestFuture<JSONArray> = RequestFuture.newFuture()
-
-                    val jsonArrayRequest = JsonArrayRequest(Request.Method.POST,
-                        WEB_API_URL,
-                        postData,
-                        future,
-                        future)
-
-                    HttpRequestHandler.requestQueue.add(jsonArrayRequest)
-
-                    try {
-                        val response = future.get(30, TimeUnit.SECONDS)
-                        Log.e(TAG, response.toString())
-                        Result.success()
-                    } catch (e: InterruptedException) {
-                        Log.d(TAG, "Error uploading reception data", e)
-                        Result.retry()
-                    } catch (e: ExecutionException) {
-                        Log.d(TAG, "Error uploading reception data", e)
-                        Result.retry()
-                    } catch (e: TimeoutException) {
-                        Log.d(TAG, "Error uploading reception data", e)
-                        Result.retry()
-                    }
-                } catch (e : JSONException) {
-                    Log.d(TAG, "Error uploading reception data - could not parse json request", e)
-                    Result.failure()
+                    val response = future.get(30, TimeUnit.SECONDS)
+                    Log.e(TAG, response.toString())
+                    Result.success()
+                } catch (e: InterruptedException) {
+                    Log.d(TAG, "Error uploading reception data", e)
+                    Result.retry()
+                } catch (e: ExecutionException) {
+                    Log.d(TAG, "Error uploading reception data", e)
+                    Result.retry()
+                } catch (e: TimeoutException) {
+                    Log.d(TAG, "Error uploading reception data", e)
+                    Result.retry()
                 }
 
             } else {
