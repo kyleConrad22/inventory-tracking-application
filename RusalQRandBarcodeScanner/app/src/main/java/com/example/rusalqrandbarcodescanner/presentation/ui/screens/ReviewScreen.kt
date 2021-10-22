@@ -99,8 +99,7 @@ fun ReviewScreen(navController: NavHostController, mainActivityVM : MainActivity
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly) {
                     Button(onClick = {
-                        /*TODO - Navigate Back to Main Menu if coming from main menu*/
-                        navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)
+                        if (!navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)) navController.popBackStack(Screen.MainMenuScreen.title, inclusive = false)
                     }) {
                         Text(text = "Back", modifier = Modifier.padding(16.dp))
                     }
