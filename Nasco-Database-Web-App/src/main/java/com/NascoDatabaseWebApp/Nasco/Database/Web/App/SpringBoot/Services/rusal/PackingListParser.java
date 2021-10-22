@@ -156,29 +156,48 @@ public final class PackingListParser {
         return rusalItems;
     }
 
-    private static String getNextLotAlphabeticIdentifier(List<String> lotIdentifiers) {
+    public static String getNextLotAlphabeticIdentifier(List<String> lotIdentifiers) {
         AtomicInteger largestLastCharAscii = new AtomicInteger(0);
         AtomicInteger firstCharAscii = new AtomicInteger(0);
 
         lotIdentifiers.forEach(identifier -> {
             if (!identifier.isEmpty()) {
-                String alphabeticIdentifier = identifier.split("-")[0];
+                if (identifier.contains("-") && identifier.split("-").length > 0) {
+                    String alphabeticIdentifier = identifier.split("-")[0];
 
-                if (alphabeticIdentifier.length() > 0) {
-                    int ascii = alphabeticIdentifier.charAt(alphabeticIdentifier.length() - 1);
-                    if (largestLastCharAscii.get() < ascii) {
-                        largestLastCharAscii.set(ascii);
+                    if (alphabeticIdentifier.length() > 0) {
+
+                        boolean isValidFormat = true;
+                        for (char c : alphabeticIdentifier.toCharArray()) {
+                            if (((int) c) > 90 || ((int) c) < 65 ) {
+                                isValidFormat = false;
+                                break;
+                            }
+                        }
+
+                        if (isValidFormat) {
+                            int ascii = alphabeticIdentifier.charAt(alphabeticIdentifier.length() - 1);
+                            if (largestLastCharAscii.get() < ascii) {
+                                largestLastCharAscii.set(ascii);
+                            }
+                        }
                     }
                 }
             }
         });
 
-        if (firstCharAscii.get() == 0 && largestLastCharAscii.get() < 91) {
-            return (char)largestLastCharAscii.addAndGet(1) + "";
-        } else {
-            /* TODO - Add logic to set lot identifiers when there are more than 1 letters in identifier i.e. AA, AB, ect. */
-            return "AA";
+        if (largestLastCharAscii.get() == 0) {
+            return "A";
         }
+        if (firstCharAscii.get() == 0) {
+            if (largestLastCharAscii.get() == 90) {
+                return "AA";
+            }
+            return (char)largestLastCharAscii.addAndGet(1) + "";
+        }
+        
+        /* TODO - Add logic to set lot identifiers when there are more than 1 letters in identifier i.e. AA, AB, ect. */
+        return "AA";
 
     }
 
