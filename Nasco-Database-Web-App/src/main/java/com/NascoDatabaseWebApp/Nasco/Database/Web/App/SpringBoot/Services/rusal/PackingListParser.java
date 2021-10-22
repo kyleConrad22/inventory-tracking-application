@@ -3,15 +3,12 @@ package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.rusal
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItem;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.util.ExcelHelper;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.util.RusalField;
-import com.google.common.base.Ascii;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.lang.NonNull;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
 
 import static com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.util.ExcelHelper.getCellValueAsString;
@@ -195,7 +192,7 @@ public final class PackingListParser {
             }
             return (char)largestLastCharAscii.addAndGet(1) + "";
         }
-        
+
         /* TODO - Add logic to set lot identifiers when there are more than 1 letters in identifier i.e. AA, AB, ect. */
         return "AA";
 
