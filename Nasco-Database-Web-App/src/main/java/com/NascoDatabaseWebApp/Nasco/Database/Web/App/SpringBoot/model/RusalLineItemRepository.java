@@ -22,6 +22,13 @@ public interface RusalLineItemRepository extends JpaRepository<RusalLineItem, St
     )
     List<RusalLineItem> findByBarge(@Param("searchBarge") String barge);
 
+    /* TODO - Update such that it uses reception date to reset lot numbers at beginning of each year / returns reception data as well*/
+    @Query(
+            value = "SELECT DISTINCT lot FROM current_inventory",
+            nativeQuery = true
+    )
+    List<String> getUniqueLots();
+
     @Transactional
     @Modifying(clearAutomatically = true)
     @Query(

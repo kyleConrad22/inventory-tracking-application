@@ -162,25 +162,7 @@ public class ExcelHelper {
 
                 Cell cell = source.getRow(i).getCell(j);
 
-                String value;
-                switch (cell.getCellType()) {
-                    case BOOLEAN:
-                        value = Boolean.toString(cell.getBooleanCellValue());
-                        break;
-
-                    case NUMERIC:
-                        value = Double.toString(cell.getNumericCellValue());
-                        break;
-
-                    case STRING:
-                        value = cell.getStringCellValue();
-                        break;
-
-                    default:
-                        value = "";
-                        break;
-                }
-                row.createCell(j).setCellValue(value);
+                row.createCell(j).setCellValue(getCellValueAsString(cell));
 
             });
         });
@@ -205,5 +187,30 @@ public class ExcelHelper {
             lastRow++;
         }
         return lastRow;
+    }
+
+    // Get cell value as a string
+    public static String getCellValueAsString(Cell cell) {
+        String value;
+
+        switch (cell.getCellType()) {
+            case BOOLEAN:
+                value = Boolean.toString(cell.getBooleanCellValue());
+                break;
+
+            case NUMERIC:
+                value = Double.toString(cell.getNumericCellValue());
+                break;
+
+            case STRING:
+                value = cell.getStringCellValue();
+                break;
+
+            default:
+                value = "";
+                break;
+        }
+
+        return value;
     }
 }

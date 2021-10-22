@@ -26,4 +26,5 @@ public interface RusalService {
     void addLot(LotUpdateParams updateParams);
     void addLotSite(String lot, String bl, String heat);
     void importPackingList(MultipartFile file);
+    List<String> getUniqueLots();
 }
