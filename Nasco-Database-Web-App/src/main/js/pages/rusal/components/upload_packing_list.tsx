@@ -30,7 +30,9 @@ export default function UploadPackingList() {
         <form onSubmit={handleSubmit}>
             <input id='packing-list-input' name='file' type='file' />
             &nbsp;&nbsp;&nbsp;
-            <button id='submit' type='submit' >Upload Packing List</button>
+            <input id='barge' name='barge' type='text' placeholder='Enter Barge Identifier: ' />
+            &nbsp;&nbsp;&nbsp;
+            <button id='submit' type='submit'>Upload Packing List</button>
         </form>
     )
 }

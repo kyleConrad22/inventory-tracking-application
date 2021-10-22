@@ -75,9 +75,12 @@ public class RusalLineItemService implements RusalService {
         repository.addLot(lot, bl, heat);
     }
 
-    public void importPackingList(MultipartFile file) {
+    public void importPackingList(MultipartFile file, String barge) {
         List<RusalLineItem> rusalItems = parsePackingList(file, getUniqueLots());
-        rusalItems.forEach(this::save);
+        rusalItems.forEach(item -> {
+            item.setBarge(barge);
+            repository.save(item);
+        });
     }
 
     public List<String> getUniqueLots() {

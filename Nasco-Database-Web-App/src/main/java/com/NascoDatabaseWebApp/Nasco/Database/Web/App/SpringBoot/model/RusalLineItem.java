@@ -78,7 +78,7 @@ public class RusalLineItem {
     @Override
     public String toString() {
         return "RusalLineItem{" +
-                ", heatNum='" + heatNum + '\'' +
+                "heatNum='" + heatNum + '\'' +
                 ", grossWeightKg='" + grossWeightKg + '\'' +
                 ", netWeightKg='" + netWeightKg + '\'' +
                 ", quantity='" + quantity + '\'' +

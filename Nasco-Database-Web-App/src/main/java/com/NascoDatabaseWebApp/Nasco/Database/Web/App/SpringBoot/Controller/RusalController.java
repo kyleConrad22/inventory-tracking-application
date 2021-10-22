@@ -122,8 +122,8 @@ public class RusalController {
 
     @PostMapping("/import/packing-list")
     @ResponseStatus(HttpStatus.CREATED)
-    void importPackingList(@RequestParam final MultipartFile file) {
-        rusalLineItemService.importPackingList(file);
+    void importPackingList(@RequestParam final MultipartFile file, @RequestParam final String barge) {
+        rusalLineItemService.importPackingList(file, barge);
     }
 
 
