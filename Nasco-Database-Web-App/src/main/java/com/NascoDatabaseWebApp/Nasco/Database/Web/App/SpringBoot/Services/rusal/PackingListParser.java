@@ -36,71 +36,73 @@ public final class PackingListParser {
     public static @NonNull List<RusalLineItem> getItemsFromWorkbook(@NonNull Sheet sheet, @NonNull HashMap<Integer, String> headerColumnMap) {
         List<RusalLineItem> items = new ArrayList<>();
 
-        IntStream.range(1, sheet.getLastRowNum() + 1).forEach(rowInd -> {
+        IntStream.range(1, sheet.getLastRowNum()).forEach(rowInd -> {
             Row row = sheet.getRow(rowInd);
 
             HashMap<RusalField, String> fieldValueMap = new HashMap<>();
 
-            IntStream.range(0, row.getLastCellNum() + 1).forEach(colInd -> {
-                if (headerColumnMap.containsKey(colInd)) {
-                    String cellValue = getCellValueAsString(row.getCell(rowInd));
+            headerColumnMap.keySet().forEach(colInd -> {
 
-                    switch (headerColumnMap.get(colInd)) {
-                        case "Heat_number":
-                            fieldValueMap.put(RusalField.HEAT, cellValue);
-                            break;
+                String cellValue = getCellValueAsString(row.getCell(colInd));
 
-                        case "Package_No":
-                            fieldValueMap.put(RusalField.PACKAGE, cellValue);
-                            break;
+                switch (headerColumnMap.get(colInd)) {
+                    case "Heat_number":
+                        fieldValueMap.put(RusalField.HEAT, cellValue.replace(" ", ""));
+                        break;
 
-                        case "WEIGHT_GROSS":
-                            fieldValueMap.put(RusalField.GROSS_WEIGHT, cellValue);
-                            break;
+                    case "Package_No":
+                        fieldValueMap.put(RusalField.PACKAGE, cellValue.split("\\.")[0]);
+                        break;
 
-                        case "WEIGHT":
-                            fieldValueMap.put(RusalField.NET_WEIGHT, cellValue);
-                            break;
+                    case "WEIGHT_GROSS":
+                        fieldValueMap.put(RusalField.GROSS_WEIGHT, cellValue);
+                        break;
 
-                        case "Dimension":
-                            fieldValueMap.put(RusalField.DIMENSION, cellValue);
-                            break;
+                    case "WEIGHT":
+                        fieldValueMap.put(RusalField.NET_WEIGHT, cellValue);
+                        break;
 
-                        case "Grade":
-                            fieldValueMap.put(RusalField.GRADE, cellValue);
-                            break;
+                    case "DIMENSION":
+                        fieldValueMap.put(RusalField.DIMENSION, cellValue.replace("?","X"));
+                        break;
 
-                        case "QUANTITY":
-                            fieldValueMap.put(RusalField.QUANTITY, cellValue);
-                            break;
+                    case "Grade":
+                        fieldValueMap.put(RusalField.GRADE, cellValue);
+                        break;
 
-                        case "certificate_NO":
-                            fieldValueMap.put(RusalField.CERTIFICATE, cellValue);
-                            break;
+                    case "QUANTITY":
+                        fieldValueMap.put(RusalField.QUANTITY, cellValue.split("\\.")[0]);
+                        break;
 
-                        case "BL":
-                            fieldValueMap.put(RusalField.BL, cellValue);
-                            break;
+                    case "certificate_NO":
+                        fieldValueMap.put(RusalField.CERTIFICATE, cellValue.split("\\.")[0]);
+                        break;
 
-                        case "BARCODE":
-                            fieldValueMap.put(RusalField.BARCODE, cellValue);
-                            break;
-                    }
+                    case "BL":
+                        fieldValueMap.put(RusalField.BL, cellValue.replace(" ", ""));
+                        break;
+
+                    case "BARCODE":
+                        fieldValueMap.put(RusalField.BARCODE, cellValue);
+                        break;
                 }
             });
 
-            items.add(RusalLineItem.builder()
-                    .heatNum(fieldValueMap.get(RusalField.HEAT))
-                    .blNum(fieldValueMap.get(RusalField.BL))
-                    .barcode(fieldValueMap.get(RusalField.BARCODE))
-                    .grade(fieldValueMap.get(RusalField.GRADE))
-                    .dimension(fieldValueMap.get(RusalField.DIMENSION))
-                    .grossWeightKg(fieldValueMap.get(RusalField.GROSS_WEIGHT))
-                    .netWeightKg(fieldValueMap.get(RusalField.NET_WEIGHT))
-                    .certificateNum(fieldValueMap.get(RusalField.CERTIFICATE))
-                    .packageNum(fieldValueMap.get(RusalField.PACKAGE))
-                    .quantity(fieldValueMap.get(RusalField.QUANTITY))
-                    .build());
+            if (!fieldValueMap.get(RusalField.HEAT).isEmpty()) {
+
+                items.add(RusalLineItem.builder()
+                        .heatNum(fieldValueMap.get(RusalField.HEAT))
+                        .blNum(fieldValueMap.get(RusalField.BL))
+                        .barcode(fieldValueMap.get(RusalField.BARCODE))
+                        .grade(fieldValueMap.get(RusalField.GRADE))
+                        .dimension(fieldValueMap.get(RusalField.DIMENSION))
+                        .grossWeightKg(fieldValueMap.get(RusalField.GROSS_WEIGHT))
+                        .netWeightKg(fieldValueMap.get(RusalField.NET_WEIGHT))
+                        .certificateNum(fieldValueMap.get(RusalField.CERTIFICATE))
+                        .packageNum(fieldValueMap.get(RusalField.PACKAGE))
+                        .quantity(fieldValueMap.get(RusalField.QUANTITY))
+                        .build());
+            }
         });
 
         return items;
@@ -111,19 +113,15 @@ public final class PackingListParser {
         HashMap<Integer, String> hm = new HashMap<>();
         Row firstRow = sheet.getRow(0);
 
-        for (int i = 0; i < firstRow.getLastCellNum() + 1; i++) {
+        for (int i = 0; i < firstRow.getLastCellNum(); i++) {
             Cell cell = firstRow.getCell(i);
 
-            if (cell.getCellType() != CellType.STRING) {
                 String cellValue = cell.getStringCellValue();
 
                 if (headers.contains(cellValue) && !hm.containsValue(cellValue)) {
                     hm.put(i, cellValue);
                 }
 
-            } else {
-                throw new RuntimeException("Sheet not of correct format, header row of sheet should contain string values!");
-            }
         }
 
         return hm;
@@ -149,6 +147,10 @@ public final class PackingListParser {
 
             }
         });
+
+        for (RusalLineItem item : rusalItems) {
+            System.out.println(item.toString());
+        }
 
         return rusalItems;
     }

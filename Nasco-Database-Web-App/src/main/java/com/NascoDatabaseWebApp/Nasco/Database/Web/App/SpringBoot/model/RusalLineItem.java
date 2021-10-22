@@ -25,15 +25,24 @@ public class RusalLineItem {
     private String certificateNum;
     private String blNum;
     private @Id String barcode;
-    private String workOrder;
-    private String loadNum;
-    private String loader;
-    private String loadTime;
-    private String barge;
-    private String receptionDate;
-    private String checker;
-    private String mark;
-    private String lot;
+    @Builder.Default
+    private String workOrder = "";
+    @Builder.Default
+    private String loadNum = "";
+    @Builder.Default
+    private String loader = "";
+    @Builder.Default
+    private String loadTime = "";
+    @Builder.Default
+    private String barge = "";
+    @Builder.Default
+    private String receptionDate = "";
+    @Builder.Default
+    private String checker = "";
+    @Builder.Default
+    private String mark = "";
+    @Builder.Default
+    private String lot = "";
 
     @Override
     public boolean equals(Object o) {
@@ -77,6 +86,7 @@ public class RusalLineItem {
                 ", grade='" + grade + '\'' +
                 ", certificateNum='" + certificateNum + '\'' +
                 ", blNum='" + blNum + '\'' +
+                ", lot='" + lot + '\'' +
                 ", barcode='" + barcode + '\'' +
                 ", workOrder='" + workOrder + '\'' +
                 ", loadNum='" + loadNum + '\'' +

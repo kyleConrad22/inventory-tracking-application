@@ -191,26 +191,24 @@ public class ExcelHelper {
 
     // Get cell value as a string
     public static String getCellValueAsString(Cell cell) {
-        String value;
+
+        if (cell == null) {
+            return "";
+        }
 
         switch (cell.getCellType()) {
             case BOOLEAN:
-                value = Boolean.toString(cell.getBooleanCellValue());
-                break;
+                return Boolean.toString(cell.getBooleanCellValue());
+
 
             case NUMERIC:
-                value = Double.toString(cell.getNumericCellValue());
-                break;
+                return Double.toString(cell.getNumericCellValue());
 
             case STRING:
-                value = cell.getStringCellValue();
-                break;
+                return cell.getStringCellValue();
 
             default:
-                value = "";
-                break;
+                return "";
         }
-
-        return value;
     }
 }
