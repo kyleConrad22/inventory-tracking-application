@@ -17,7 +17,7 @@ export default function AddBarge() {
                     alert('Failed to add barge identifier to BL')
                 }
             }
-        ).catch(
+        ).catch (
             (error) => {
                 alert(error)
             }

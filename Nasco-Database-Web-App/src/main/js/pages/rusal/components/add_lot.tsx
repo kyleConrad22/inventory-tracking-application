@@ -17,7 +17,7 @@ export default function AddLot() {
                     alert('Failed to add lot to heats')
                 }
             }
-        ).catch(
+        ).catch (
             (error) => {
                 alert(error)
             }

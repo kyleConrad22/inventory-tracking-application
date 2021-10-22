@@ -4,6 +4,7 @@ import ToBeImplemented from "../../core/to_be_implemented";
 import AddBarge from "./components/add_barge";
 import AddLot from "./components/add_lot";
 import AddMark from "./components/add_mark";
+import UploadPackingList from "./components/upload_packing_list";
 
 export default function RusalUpdateItem() {
 
@@ -64,6 +65,8 @@ export default function RusalUpdateItem() {
             <AddBarge />
             &nbsp;&nbsp;&nbsp;
             <AddLot />
+            &nbsp;&nbsp;&nbsp;
+            <UploadPackingList />
         </div>
-    );
+    )
 }
