@@ -6,18 +6,19 @@ import androidx.compose.runtime.MutableState
 import androidx.work.*
 import com.android.volley.Request
 import com.android.volley.RequestQueue
-import com.android.volley.Response
-import com.android.volley.VolleyError
 import com.android.volley.toolbox.*
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
+import com.example.rusalqrandbarcodescanner.services.util.RusalReceptionUpdateParams
+import com.example.rusalqrandbarcodescanner.services.util.RusalShipmentUpdateParams
+import com.example.rusalqrandbarcodescanner.services.worker.NewItemUploadWorker
 import com.example.rusalqrandbarcodescanner.services.worker.ReceptionUploadWorker
+import com.example.rusalqrandbarcodescanner.services.worker.ShipmentUploadWorker
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import kotlinx.coroutines.*
-import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
@@ -41,35 +42,21 @@ object HttpRequestHandler {
         }
 
     private suspend fun confirmShipment(items: List<RusalItem>, context : Context) = withContext(Dispatchers.IO) {
-        for (item in items) {
-            updateDatabaseForShipment(item, context)
-        }
-    }
-
-
-
-    // Update - replace logic with Moshi update parameter class -- To Be Created
-    private fun updateDatabaseForShipment(item : RusalItem, context : Context) {
-
         val uuidFileName = UUID.randomUUID().toString() + ".txt"
 
-        val postData = JSONObject()
-        try {
-            postData.put("heatNum", item.heatNum)
-            postData.put("workOrder", item.workOrder)
-            postData.put("loadNum", item.loadNum)
-            postData.put("loader", item.loader)
-            postData.put("loadTime", item.loadTime)
-        } catch (e : JSONException) {
-            e.printStackTrace()
-        }
+        val updateParams = RusalShipmentUpdateParams().getUpdateParamsList(items)
 
-        FileStorage.writeDataToFile(context, postData.toString(), uuidFileName)
+        val moshi : Moshi = Moshi.Builder().build()
+        val listType = Types.newParameterizedType(List::class.java, RusalShipmentUpdateParams::class.java)
+        val adapter : JsonAdapter<List<RusalShipmentUpdateParams>> = moshi.adapter(listType)
 
-        val oneTimeWorkRequest = createDefaultOneTimeWorkRequest(fileName = uuidFileName)
+        FileStorage.writeDataToFile(context, adapter.toJson(updateParams), uuidFileName)
+
+        val oneTimeWorkRequest = createDefaultOneTimeWorkRequest<ShipmentUploadWorker>(fileName = uuidFileName)
 
         WorkManager.getInstance(context).enqueue(oneTimeWorkRequest)
     }
+
 
     private fun createInventoryItem(item : RusalItem, context : Context) {
 
@@ -80,7 +67,7 @@ object HttpRequestHandler {
 
         FileStorage.writeDataToFile(context, adapter.toJson(item), uuidFileName)
 
-        val oneTimeWorkRequest = createDefaultOneTimeWorkRequest(fileName = uuidFileName)
+        val oneTimeWorkRequest = createDefaultOneTimeWorkRequest<NewItemUploadWorker>(fileName = uuidFileName)
 
         WorkManager.getInstance(context).enqueue(oneTimeWorkRequest)
 
@@ -111,13 +98,13 @@ object HttpRequestHandler {
 
         FileStorage.writeDataToFile(context, adapter.toJson(updateParams), uuidFileName)
 
-        val oneTimeWorkRequest = createDefaultOneTimeWorkRequest(fileName = uuidFileName)
+        val oneTimeWorkRequest = createDefaultOneTimeWorkRequest<ReceptionUploadWorker>(fileName = uuidFileName)
 
         WorkManager.getInstance(context).enqueue(oneTimeWorkRequest)
 
     }
 
-    private fun createDefaultOneTimeWorkRequest(fileName : String) : OneTimeWorkRequest {
+    private inline fun <reified T : ListenableWorker>createDefaultOneTimeWorkRequest(fileName : String) : OneTimeWorkRequest {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
@@ -126,7 +113,7 @@ object HttpRequestHandler {
             .putString(FileStorage.DATA_FILE_PATH, fileName)
             .build()
 
-        return OneTimeWorkRequestBuilder<ReceptionUploadWorker>()
+        return OneTimeWorkRequestBuilder<T>()
             .setConstraints(constraints)
             .setInputData(data)
             .build()

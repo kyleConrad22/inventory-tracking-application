@@ -79,7 +79,7 @@ class MainActivity : ComponentActivity() {
                     onBack = {
                         if (!navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)) navController.popBackStack(Screen.MainMenuScreen.title, inclusive = false)
                     }, onConfirm = {
-                        navController.popBackStack(Screen.ManualEntryScreen.title, inclusive = false)
+                        navController.popBackStack(Screen.MainMenuScreen.title, inclusive = false)
                     }
                 )}
                 composable(Screen.ManualEntryScreen.title) { ManualEntryScreen(
