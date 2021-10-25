@@ -1,4 +1,4 @@
-package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services;
+package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.util;
 
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.macros.AlgomaReport;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.macros.SsabReport;
