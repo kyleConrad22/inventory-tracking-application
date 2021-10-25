@@ -16,7 +16,7 @@ import static com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.util.Exc
 public final class PackingListParser {
 
     private static final List<String> HEADERS = Arrays.asList(
-            "Heat_number", "Package_No", "WEIGHT_GROSS", "WEIGHT", "DIMENSION", "Grade", "QUANTITY",
+            "Heat_number", "Package No", "WEIGHT_GROSS", "WEIGHT", "DIMENSION", "Grade", "QUANTITY",
             "certificate_NO", "BL", "BARCODE"
     );
 
@@ -50,7 +50,7 @@ public final class PackingListParser {
                         fieldValueMap.put(RusalField.HEAT, cellValue.replace(" ", ""));
                         break;
 
-                    case "Package_No":
+                    case "Package No":
                         fieldValueMap.put(RusalField.PACKAGE, cellValue.split("\\.")[0]);
                         break;
 
