@@ -1,4 +1,4 @@
-package com.example.rusalqrandbarcodescanner.services
+package com.example.rusalqrandbarcodescanner.services.util
 
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.squareup.moshi.JsonClass

@@ -6,13 +6,12 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.android.volley.ParseError
 import com.android.volley.Request
-import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.RequestFuture
 import com.example.rusalqrandbarcodescanner.services.FileStorage
 import com.example.rusalqrandbarcodescanner.services.HttpRequestHandler
+import org.json.JSONArray
 import org.json.JSONException
-import org.json.JSONObject
-import java.io.File
 import java.lang.Exception
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
@@ -29,17 +28,17 @@ class ShipmentUploadWorker(context : Context, workerParams : WorkerParameters) :
             try {
                 if (inputStream != null) {
 
-                    val postData = FileStorage.convertToJsonObject(inputStream)
+                    val postData = FileStorage.convertToJsonArray(inputStream)
 
-                    val future: RequestFuture<JSONObject> = RequestFuture.newFuture()
+                    val future: RequestFuture<JSONArray> = RequestFuture.newFuture()
 
-                    val jsonObjectRequest = JsonObjectRequest(Request.Method.POST,
+                    val jsonArrayRequest = JsonArrayRequest(Request.Method.POST,
                         WEB_API_URL,
                         postData,
                         future,
                         future)
 
-                    HttpRequestHandler.requestQueue.add(jsonObjectRequest)
+                    HttpRequestHandler.requestQueue.add(jsonArrayRequest)
 
                     try {
                         val response = future.get(30, TimeUnit.SECONDS)
@@ -87,6 +86,6 @@ class ShipmentUploadWorker(context : Context, workerParams : WorkerParameters) :
 
     companion object {
         private const val TAG = "ShipmentUploadWorker"
-        private const val WEB_API_URL = "http://45.22.122.47:8081/api/rusal/update"
+        private const val WEB_API_URL = "http://45.22.122.47:8081/api/rusal/update/shipment"
     }
 }
