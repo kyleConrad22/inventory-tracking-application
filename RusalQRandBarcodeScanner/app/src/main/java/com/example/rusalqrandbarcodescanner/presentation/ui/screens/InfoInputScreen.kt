@@ -101,9 +101,7 @@ fun InfoInputScreen(mainActivityVM: MainActivityViewModel, onBack : () -> Unit, 
                 Row(modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly) {
-                    Button(onClick = {
-                        onBack()
-                    }) {
+                    Button(onClick = onBack) {
                         Text(text = "Back", modifier = Modifier.padding(14.dp))
                     }
                     if (displayConfirmButton) {

@@ -34,9 +34,9 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 @DelicateCoroutinesApi
 @ExperimentalComposeUiApi
 @Composable
-fun ScannerScreen(navController: NavHostController, mainActivityVM: MainActivityViewModel) {
+fun ScannerScreen(mainActivityVM: MainActivityViewModel, onBack : () -> Unit, onScan : () -> Unit, onManualRequest : () -> Unit) {
 
-    CameraPreview(modifier = Modifier.fillMaxSize(), navController = navController, mainActivityVM = mainActivityVM)
+    CameraPreview(modifier = Modifier.fillMaxSize(), mainActivityVM = mainActivityVM, onScan = onScan)
     SessionProgress(
         sessionType = mainActivityVM.sessionType.value,
         addedItems = if (mainActivityVM.sessionType.value == SessionType.SHIPMENT) mainActivityVM.addedItemCount.value else mainActivityVM.receivedItemCount.value,
@@ -51,12 +51,10 @@ fun ScannerScreen(navController: NavHostController, mainActivityVM: MainActivity
         Row(modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.Bottom,
             horizontalArrangement = Arrangement.SpaceEvenly) {
-            Button(onClick = {
-                navController.popBackStack()
-            }) {
+            Button(onClick = onBack) {
                 Text(text = "Back", modifier = Modifier.padding(16.dp))
             }
-            Button(onClick = { navController.navigate(Screen.ManualEntryScreen.title) }) {
+            Button(onClick = onManualRequest) {
                 Text(text = "Manual Entry", modifier = Modifier.padding(16.dp))
             }
         }
@@ -103,7 +101,7 @@ fun CameraPreview(
     modifier: Modifier = Modifier,
     cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA,
     scaleType: PreviewView.ScaleType = PreviewView.ScaleType.FILL_CENTER,
-    navController: NavHostController,
+    onScan : () -> Unit,
     mainActivityVM : MainActivityViewModel
 ) {
 
@@ -135,7 +133,7 @@ fun CameraPreview(
                         ImageAnalyzer().analyze(imageProxy)
                         if (ScannedInfo.heatNum != "" && ScannedInfo.isScanned) {
                             mainActivityVM.heatNum.value = ScannedInfo.heatNum
-                            navController.navigate(Screen.ReturnedItemScreen.title)
+                            onScan()
                             ScannedInfo.isScanned = false
                         }
                     })
