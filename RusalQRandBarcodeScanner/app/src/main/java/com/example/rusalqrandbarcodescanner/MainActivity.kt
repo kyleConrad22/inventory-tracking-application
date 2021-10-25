@@ -123,7 +123,15 @@ class MainActivity : ComponentActivity() {
                         navController.popBackStack()
                     }
                 )}
-                composable(Screen.SplashScreen.title) { SplashScreen(navController, mainActivityVM) }
+                composable(Screen.SplashScreen.title) { SplashScreen(
+                    mainActivityVM = mainActivityVM,
+                    onNavRequest = { dest ->
+                        if (dest == Screen.InfoInputScreen.title) {
+                            navController.navigate(Screen.MainMenuScreen.title)
+                        }
+                        navController.navigate(dest)
+                    }
+                )}
                 composable(Screen.ReturnedItemScreen.title) { ReturnedItemScreen(
                     mainActivityVM = mainActivityVM,
                     onDismissNav = {

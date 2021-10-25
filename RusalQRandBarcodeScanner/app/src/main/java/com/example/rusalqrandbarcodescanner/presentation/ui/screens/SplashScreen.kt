@@ -16,10 +16,8 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.R
-import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.presentation.components.CircularIndeterminateProgressBar
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.SplashViewModel
@@ -27,7 +25,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 
 @DelicateCoroutinesApi
 @Composable
-fun SplashScreen(navController: NavController, mainActivityVM: MainActivityViewModel) {
+fun SplashScreen(mainActivityVM: MainActivityViewModel, onNavRequest : (dest : String) -> Unit) {
 
     val splashVM : SplashViewModel = viewModel(factory = SplashViewModel.SplashViewModelFactory((LocalContext.current.applicationContext as CodeApplication).invRepository, mainActivityVM))
 
@@ -40,10 +38,7 @@ fun SplashScreen(navController: NavController, mainActivityVM: MainActivityViewM
 
     if (!loading) {
         LaunchedEffect(key1 = true) {
-            if (destination == Screen.InfoInputScreen.title) {
-                navController.navigate(Screen.MainMenuScreen.title)
-            }
-            navController.navigate(destination)
+            onNavRequest(destination)
         }
     }
 
