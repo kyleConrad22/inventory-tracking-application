@@ -39,7 +39,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 @DelicateCoroutinesApi
 @ExperimentalComposeUiApi
 @Composable
-fun InfoInputScreen(navController: NavHostController, mainActivityVM: MainActivityViewModel) {
+fun InfoInputScreen(mainActivityVM: MainActivityViewModel, onBack : () -> Unit, onConfirm : () -> Unit) {
     val application = LocalContext.current.applicationContext as CodeApplication
 
     val infoInputVM: InfoInputViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "infoInputVM", factory = InfoInputViewModel.InfoInputViewModelFactory(mainActivityVM, application.invRepository))
@@ -102,14 +102,14 @@ fun InfoInputScreen(navController: NavHostController, mainActivityVM: MainActivi
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly) {
                     Button(onClick = {
-                        navController.popBackStack(Screen.MainMenuScreen.title, inclusive = false)
+                        onBack()
                     }) {
                         Text(text = "Back", modifier = Modifier.padding(14.dp))
                     }
                     if (displayConfirmButton) {
                         Button(onClick = {
                             mainActivityVM.refresh()
-                            navController.navigate(Screen.OptionsScreen.title)
+                            onConfirm()
                         }) {
                             Text(text = "Confirm ${mainActivityVM.sessionType.value.type} Info",
                                 modifier = Modifier.padding(14.dp))

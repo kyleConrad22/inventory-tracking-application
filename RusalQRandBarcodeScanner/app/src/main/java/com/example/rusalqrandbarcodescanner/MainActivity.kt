@@ -74,7 +74,14 @@ class MainActivity : ComponentActivity() {
                 composable(Screen.ManualEntryScreen.title) { ManualEntryScreen(navController, mainActivityVM) }
                 composable(Screen.ScannerScreen.title) { ScannerScreen(navController, mainActivityVM) }
                 composable(Screen.OptionsScreen.title) { OptionsScreen(navController, mainActivityVM) }
-                composable(Screen.InfoInputScreen.title) { InfoInputScreen(navController, mainActivityVM) }
+                composable(Screen.InfoInputScreen.title) { InfoInputScreen(
+                    mainActivityVM = mainActivityVM,
+                    onBack = {
+                        navController.popBackStack(Screen.MainMenuScreen.title, inclusive = false)
+                    }, onConfirm = {
+                        navController.navigate(Screen.OptionsScreen.title)
+                    }
+                )}
                 composable(Screen.ToBeImplementedScreen.title) { ToBeImplementedScreen(navController) }
                 composable(Screen.SplashScreen.title) { SplashScreen(navController, mainActivityVM) }
                 composable(Screen.ReturnedItemScreen.title) { ReturnedItemScreen(navController, mainActivityVM) }
