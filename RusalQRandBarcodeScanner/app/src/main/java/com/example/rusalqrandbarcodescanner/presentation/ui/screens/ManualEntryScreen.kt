@@ -12,8 +12,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.presentation.components.inputdialog.SingleHyphenTransformedInputDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.progress.SessionProgress
@@ -24,7 +22,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 @DelicateCoroutinesApi
 @ExperimentalComposeUiApi
 @Composable
-fun ManualEntryScreen(navController : NavHostController, mainActivityVM : MainActivityViewModel) {
+fun ManualEntryScreen(mainActivityVM : MainActivityViewModel, onBack : () -> Unit, onRetrieve : () -> Unit) {
 
     val focusManager = LocalFocusManager.current
     val manualEntryVM : ManualEntryViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "manualEntryVM", factory = ManualEntryViewModel.ManualEntryViewModelFactory(mainActivityVM))
@@ -54,15 +52,11 @@ fun ManualEntryScreen(navController : NavHostController, mainActivityVM : MainAc
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
-                Button(onClick = {
-                    navController.popBackStack()
-                }) {
+                Button(onClick = onBack) {
                     Text(text = "Back", modifier = Modifier.padding(16.dp))
                 }
                 if (displaySearchButton) {
-                    Button(onClick = {
-                        navController.navigate(Screen.ReturnedItemScreen.title)
-                    }) {
+                    Button(onClick = onRetrieve) {
                         Text(text = "Retrieve Item Info", modifier = Modifier.padding(16.dp))
                     }
                 }
