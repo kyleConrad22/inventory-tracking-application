@@ -4,6 +4,7 @@ import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.rusal.
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.LotUpdateParams;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItem;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalReceptionUpdateParams;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalShipmentUpdateParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -153,9 +154,14 @@ public class RusalController {
 
     @PostMapping(value = "/update/reception", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-
     void updateReception(@RequestBody final List<RusalReceptionUpdateParams> updateParams) {
         rusalLineItemService.updateReception(updateParams);
+    }
+
+    @PostMapping(value = "/update/shipment", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    void updateShipment(@RequestBody final List<RusalShipmentUpdateParams> updateParams) {
+        rusalLineItemService.updateShipment(updateParams);
     }
 
 }

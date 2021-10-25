@@ -3,6 +3,7 @@ package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.rusal
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.LotUpdateParams;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItem;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalReceptionUpdateParams;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalShipmentUpdateParams;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,4 +28,5 @@ public interface RusalService {
     void addLotSite(String lot, String bl, String heat);
     void importPackingList(MultipartFile file, String barge);
     List<String> getUniqueLots();
+    void updateShipment(List<RusalShipmentUpdateParams> updateParams);
 }

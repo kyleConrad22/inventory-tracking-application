@@ -1,9 +1,6 @@
 package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.rusal;
 
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.LotUpdateParams;
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItem;
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItemRepository;
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalReceptionUpdateParams;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.*;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.util.ExcelHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -85,5 +82,11 @@ public class RusalLineItemService implements RusalService {
 
     public List<String> getUniqueLots() {
         return repository.getUniqueLots();
+    }
+
+    public void updateShipment(List<RusalShipmentUpdateParams> updateParams) {
+        updateParams.forEach(it -> {
+            repository.updateShipment(it.getHeatNum(), it.getWorkOrder(), it.getLoadNum(), it.getLoader(), it.getLoadTime());
+        });
     }
 }
