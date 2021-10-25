@@ -11,18 +11,17 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.android.volley.toolbox.Volley
 import com.example.rusalqrandbarcodescanner.presentation.ui.screens.*
 import com.example.rusalqrandbarcodescanner.presentation.ui.theme.RusalQRAndBarcodeScannerTheme
-import com.example.rusalqrandbarcodescanner.services.FileStorage
 import com.example.rusalqrandbarcodescanner.services.HttpRequestHandler
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel.MainActivityViewModelFactory
 import kotlinx.coroutines.DelicateCoroutinesApi
-import java.io.File
 
 @DelicateCoroutinesApi
 @ExperimentalComposeUiApi
@@ -102,7 +101,14 @@ class MainActivity : ComponentActivity() {
                 )}
                 composable(Screen.ToBeImplementedScreen.title) { ToBeImplementedScreen(navController) }
                 composable(Screen.SplashScreen.title) { SplashScreen(navController, mainActivityVM) }
-                composable(Screen.ReturnedItemScreen.title) { ReturnedItemScreen(navController, mainActivityVM) }
+                composable(Screen.ReturnedItemScreen.title) { ReturnedItemScreen(
+                    mainActivityVM = mainActivityVM,
+                    onDismissNav = {
+                        navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)
+                    }, onReviewNav = {
+                        navController.navigate(Screen.ReviewScreen.title, NavOptions.Builder().setPopUpTo(Screen.OptionsScreen.title, inclusive = false).build())
+                    }
+                )}
             }
         }
     }

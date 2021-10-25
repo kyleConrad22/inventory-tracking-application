@@ -21,9 +21,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.CodeApplication
-import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.ItemActionType
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
@@ -39,7 +37,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 @DelicateCoroutinesApi
 @ExperimentalComposeUiApi
 @Composable
-fun ReturnedItemScreen(navController: NavHostController, mainActivityVM : MainActivityViewModel) {
+fun ReturnedItemScreen(mainActivityVM : MainActivityViewModel, onDismissNav : () -> Unit, onReviewNav : () -> Unit) {
     val application  = LocalContext.current.applicationContext as CodeApplication
 
     val returnedItemVM : ReturnedItemViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ReturnedItemVM", factory = ReturnedItemViewModelFactory(application.invRepository, mainActivityVM))
@@ -53,7 +51,24 @@ fun ReturnedItemScreen(navController: NavHostController, mainActivityVM : MainAc
     val locatedItem = returnedItemVM.locatedItem.value
 
     if (showAddedDialog.value) {
-        ItemAddedDialog(navController, showAddedDialog, heat, mainActivityVM.sessionType.value.type, returnedItemVM.isLastItem(sessionType), onDismiss = { mainActivityVM.heatNum.value = "" })
+        ItemAddedDialog(heat, mainActivityVM.sessionType.value.type, returnedItemVM.isLastItem(sessionType),
+            onDismiss = {
+                handleDismiss(
+                    onDismiss = {
+                        showAddedDialog.value = false
+                        onDismissNav()
+                    }, heat = mainActivityVM.heatNum
+                )
+            }, onAddition = {
+                showAddedDialog.value = false
+                if (!returnedItemVM.isLastItem(sessionType)) {
+                    onDismissNav()
+                } else {
+                    onReviewNav()
+                }
+                mainActivityVM.heatNum.value = ""
+            }
+        )
     } else {
         Scaffold(topBar = { TopAppBar(title = { Text("Returned Item Info") }) }) {
 
@@ -64,15 +79,15 @@ fun ReturnedItemScreen(navController: NavHostController, mainActivityVM : MainAc
                     LoadingDialog(isDisplayed = true)
                 } else {
                     when (itemType) {
-                        ItemActionType.MULTIPLE_BLS_OR_PIECE_COUNTS -> MultipleBlsOrPieceCounts(uniqueComboList = returnedItemVM.uniqueList.value, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) }, onConfirm = {
+                        ItemActionType.MULTIPLE_BLS_OR_PIECE_COUNTS -> MultipleBlsOrPieceCounts(uniqueComboList = returnedItemVM.uniqueList.value, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) }, onConfirm = {
                             returnedItemVM.addItem()
                             showAddedDialog.value = true
                         })
-                        ItemActionType.NOT_IN_LOADED_HEATS -> NotInLoadedHeats(loadedHeatList = returnedItemVM.loadedHeats.value, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) })
-                        ItemActionType.INCORRECT_PIECE_COUNT -> IncorrectField(field = "Piece Count", retrievedValue = locatedItem!!.quantity, requestedValue = mainActivityVM.pieceCount.value, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) })
-                        ItemActionType.INCORRECT_BL -> IncorrectField(field = "BL Number", retrievedValue = locatedItem!!.blNum, requestedValue = mainActivityVM.bl.value, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) })
-                        ItemActionType.DUPLICATE -> DuplicateItem(sessionType = sessionType, scanTime = if (sessionType == SessionType.SHIPMENT) locatedItem!!.loadTime else locatedItem!!.receptionDate, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) })
-                        ItemActionType.INVALID_HEAT -> InvalidHeat(sessionType = sessionType, heat = heat, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) }, onConfirm = {
+                        ItemActionType.NOT_IN_LOADED_HEATS -> NotInLoadedHeats(loadedHeatList = returnedItemVM.loadedHeats.value, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) })
+                        ItemActionType.INCORRECT_PIECE_COUNT -> IncorrectField(field = "Piece Count", retrievedValue = locatedItem!!.quantity, requestedValue = mainActivityVM.pieceCount.value, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) })
+                        ItemActionType.INCORRECT_BL -> IncorrectField(field = "BL Number", retrievedValue = locatedItem!!.blNum, requestedValue = mainActivityVM.bl.value, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) })
+                        ItemActionType.DUPLICATE -> DuplicateItem(sessionType = sessionType, scanTime = if (sessionType == SessionType.SHIPMENT) locatedItem!!.loadTime else locatedItem!!.receptionDate, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat =mainActivityVM.heatNum) })
+                        ItemActionType.INVALID_HEAT -> InvalidHeat(sessionType = sessionType, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) }, onConfirm = {
                             handleAddition()
                             showAddedDialog.value = true
                         })
@@ -80,9 +95,9 @@ fun ReturnedItemScreen(navController: NavHostController, mainActivityVM : MainAc
                             heat = heat,
                             retrievedValue = locatedItem!!.barge,
                             requestedValue = mainActivityVM.barge.value, onDismiss = {
-                                handleDismiss(navController, mainActivityVM.heatNum)
+                                handleDismiss(onDismiss = onDismissNav, heat =mainActivityVM.heatNum)
                             })
-                        ItemActionType.VALID -> ValidHeat(item = locatedItem!!, onDismiss = { handleDismiss(navController, mainActivityVM.heatNum) }, onConfirm = {
+                        ItemActionType.VALID -> ValidHeat(item = locatedItem!!, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) }, onConfirm = {
                             returnedItemVM.addItem()
                             showAddedDialog.value = true
                         })
@@ -98,9 +113,9 @@ fun handleAddition() {
 
 }
 
-fun handleDismiss(navController: NavHostController, heat : MutableState<String>) {
+fun handleDismiss(onDismiss: () -> Unit, heat : MutableState<String>) {
     heat.value = ""
-    navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)
+    onDismiss()
 }
 
 @Composable
@@ -207,23 +222,16 @@ private fun DenyOrConfirm(onDismiss: () -> Unit, onConfirm: () -> Unit) {
 
 @ExperimentalComposeUiApi
 @Composable
-private fun ItemAddedDialog(navController : NavHostController, showDialog : MutableState<Boolean>, heat : String, type : String, isLastItem : Boolean, onDismiss : () -> Unit) {
+private fun ItemAddedDialog(heat : String, type : String, isLastItem : Boolean, onDismiss : () -> Unit, onAddition : () -> Unit) {
     Dialog(properties = DialogProperties(usePlatformDefaultWidth = false),
         onDismissRequest = {
-            showDialog.value = false
-            navController.popBackStack()
+            onDismiss()
         }) {
         Surface(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
                 Text(text="Item with heat $heat has been added to the $type.", Modifier.padding(16.dp))
                 Button(onClick = {
-                    showDialog.value = false
-                    if (!isLastItem) {
-                        navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)
-                    } else {
-                        navController.navigate(Screen.ReviewScreen.title)
-                    }
-                    onDismiss()
+                    onAddition()
                 }) {
                     Text(if (!isLastItem) {"Ok"} else { "Review $type" }, modifier = Modifier.padding(16.dp))
                 }
