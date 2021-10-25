@@ -1,6 +1,6 @@
 package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.util;
 
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.macros.AcceptedSheet;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.macros.reports.AcceptedSheet;
 
 public class SheetContainer {
 

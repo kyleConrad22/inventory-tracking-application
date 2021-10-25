@@ -1,7 +1,7 @@
-package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.util;
+package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.macros;
 
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.macros.AlgomaReport;
-import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.macros.SsabReport;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.macros.reports.AlgomaReport;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.macros.reports.SsabReport;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
