@@ -20,9 +20,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.CodeApplication
-import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.presentation.components.progress.SessionProgress
@@ -35,7 +33,7 @@ import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReviewV
 
 @ExperimentalComposeUiApi
 @Composable
-fun ReviewScreen(navController: NavHostController, mainActivityVM : MainActivityViewModel) {
+fun ReviewScreen(mainActivityVM : MainActivityViewModel, onBack : () -> Unit, onConfirm : () -> Unit) {
     val application = LocalContext.current.applicationContext as CodeApplication
 
     val reviewVM : ReviewViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ReviewVM", factory = ReviewViewModelFactory(application.invRepository, mainActivityVM))
@@ -71,7 +69,7 @@ fun ReviewScreen(navController: NavHostController, mainActivityVM : MainActivity
                         reviewVM.removeItem(item!!)
                         mainActivityVM.refresh()
                         if (mainActivityVM.addedItemCount.value == 1) {
-                            navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)
+                            onBack()
                         }
                     },
                     item = item!!,
@@ -98,9 +96,7 @@ fun ReviewScreen(navController: NavHostController, mainActivityVM : MainActivity
                 Row(modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly) {
-                    Button(onClick = {
-                        if (!navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)) navController.popBackStack(Screen.MainMenuScreen.title, inclusive = false)
-                    }) {
+                    Button(onClick = onBack) {
                         Text(text = "Back", modifier = Modifier.padding(16.dp))
                     }
                     if (!displayRemoveEntry) {
@@ -117,19 +113,13 @@ fun ReviewScreen(navController: NavHostController, mainActivityVM : MainActivity
                 }
                 if (showConfirmDialog.value) {
                     AlertDialog(
-                        onDismissRequest = {
-                            navController.popBackStack(Screen.MainMenuScreen.title,
-                                inclusive = true)
-                        },
+                        onDismissRequest = onConfirm,
                         title = { Text(text = "${sessionType.type} Confirmation") },
                         text = { Text(text = "${sessionType.type} Confirmed") },
                         buttons = {
                             Row(modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceEvenly) {
-                                Button(onClick = {
-                                    navController.popBackStack(Screen.MainMenuScreen.title,
-                                        inclusive = false)
-                                }) { Text(text = "Ok", modifier = Modifier.padding(16.dp)) }
+                                Button(onClick = onConfirm) { Text(text = "Ok", modifier = Modifier.padding(16.dp)) }
                             }
                         }
                     )

@@ -74,7 +74,14 @@ class MainActivity : ComponentActivity() {
                         navController.navigate(dest)
                     }
                 )}
-                composable(Screen.ReviewScreen.title) { ReviewScreen(navController, mainActivityVM) }
+                composable(Screen.ReviewScreen.title) { ReviewScreen(
+                    mainActivityVM = mainActivityVM,
+                    onBack = {
+                        if (!navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)) navController.popBackStack(Screen.MainMenuScreen.title, inclusive = false)
+                    }, onConfirm = {
+                        navController.popBackStack(Screen.ManualEntryScreen.title, inclusive = false)
+                    }
+                )}
                 composable(Screen.ManualEntryScreen.title) { ManualEntryScreen(
                     mainActivityVM = mainActivityVM,
                     onBack = {
