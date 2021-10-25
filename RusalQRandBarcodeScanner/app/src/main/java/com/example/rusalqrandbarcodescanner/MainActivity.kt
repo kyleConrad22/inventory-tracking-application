@@ -68,7 +68,12 @@ class MainActivity : ComponentActivity() {
         RusalQRAndBarcodeScannerTheme() {
             NavHost(navController = navController,
                 startDestination = (Screen.SplashScreen.title)) {
-                composable(Screen.MainMenuScreen.title) { MainMenuScreen(navController, mainActivityVM) }
+                composable(Screen.MainMenuScreen.title) { MainMenuScreen(
+                    mainActivityVM = mainActivityVM,
+                    onNavRequest = { dest ->
+                        navController.navigate(dest)
+                    }
+                )}
                 composable(Screen.ReviewScreen.title) { ReviewScreen(navController, mainActivityVM) }
                 composable(Screen.ManualEntryScreen.title) { ManualEntryScreen(
                     mainActivityVM = mainActivityVM,
@@ -106,7 +111,11 @@ class MainActivity : ComponentActivity() {
                         navController.navigate(Screen.OptionsScreen.title)
                     }
                 )}
-                composable(Screen.ToBeImplementedScreen.title) { ToBeImplementedScreen(navController) }
+                composable(Screen.ToBeImplementedScreen.title) { ToBeImplementedScreen(
+                    onBack = {
+                        navController.popBackStack()
+                    }
+                )}
                 composable(Screen.SplashScreen.title) { SplashScreen(navController, mainActivityVM) }
                 composable(Screen.ReturnedItemScreen.title) { ReturnedItemScreen(
                     mainActivityVM = mainActivityVM,

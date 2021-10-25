@@ -10,7 +10,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
@@ -19,7 +18,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 @ExperimentalComposeUiApi
 @DelicateCoroutinesApi
 @Composable
-fun MainMenuScreen(navController: NavHostController, mainActivityVM: MainActivityViewModel) {
+fun MainMenuScreen(mainActivityVM: MainActivityViewModel, onNavRequest : (dest : String) -> Unit) {
 
     val newSessionType = remember { mutableStateOf(mainActivityVM.sessionType.value) }
     val showAlertDialog = remember { mutableStateOf(false) }
@@ -34,7 +33,7 @@ fun MainMenuScreen(navController: NavHostController, mainActivityVM: MainActivit
 
             Button(onClick = {
                 newSessionType.value = SessionType.SHIPMENT
-                handleClick(navController, mainActivityVM.sessionType, SessionType.SHIPMENT, hasItems, showAlertDialog)
+                handleClick(onNavRequest = onNavRequest, mainActivityVM.sessionType, SessionType.SHIPMENT, hasItems, showAlertDialog)
             }) {
                 Text(text = "New Shipment",
                     modifier = Modifier
@@ -45,7 +44,7 @@ fun MainMenuScreen(navController: NavHostController, mainActivityVM: MainActivit
             }
             Button(onClick = {
                 newSessionType.value = SessionType.RECEPTION
-                handleClick(navController, mainActivityVM.sessionType, SessionType.RECEPTION, hasItems, showAlertDialog)
+                handleClick(onNavRequest = onNavRequest, mainActivityVM.sessionType, SessionType.RECEPTION, hasItems, showAlertDialog)
             }) {
                 Text(text = "New Reception",
                     modifier = Modifier
@@ -56,7 +55,7 @@ fun MainMenuScreen(navController: NavHostController, mainActivityVM: MainActivit
             }
             Button(onClick = {
                 newSessionType.value = SessionType.GENERAL
-                handleClick(navController, mainActivityVM.sessionType, SessionType.GENERAL, hasItems, showAlertDialog)
+                handleClick(onNavRequest = onNavRequest, mainActivityVM.sessionType, SessionType.GENERAL, hasItems, showAlertDialog)
             }) {
                 Text(text = "Get Item Info",
                     modifier = Modifier
@@ -74,23 +73,23 @@ fun MainMenuScreen(navController: NavHostController, mainActivityVM: MainActivit
             }, onConfirm = {
                 mainActivityVM.removeAllAddedItems()
                 mainActivityVM.clearInputFields()
-                handleClick(navController, mainActivityVM.sessionType, newSessionType.value, containsItems = false, showAlertDialog)
+                handleClick(onNavRequest = onNavRequest, mainActivityVM.sessionType, newSessionType.value, containsItems = false, showAlertDialog)
             }, onReview = {
-                navController.navigate(Screen.ReviewScreen.title)
-            }, currentSessionType = mainActivityVM.sessionType.value, newSessionType = newSessionType.value)
+                onNavRequest(Screen.ReviewScreen.title)
+            }, currentSessionType = mainActivityVM.sessionType.value, newSessionType = newSessionType.value
+        )
     }
 }
 
-fun handleClick(navController: NavHostController, currentSessionType: MutableState<SessionType>, newSessionType: SessionType, containsItems: Boolean, showAlertDialog : MutableState<Boolean>) {
+fun handleClick(onNavRequest: (dest: String) -> Unit, currentSessionType: MutableState<SessionType>, newSessionType: SessionType, containsItems: Boolean, showAlertDialog : MutableState<Boolean>) {
     if (!containsItems || currentSessionType.value == newSessionType) {
 
         currentSessionType.value = newSessionType
 
-        if (newSessionType != SessionType.GENERAL) {
-            navController.navigate(Screen.InfoInputScreen.title)
-        } else {
-            navController.navigate(Screen.ToBeImplementedScreen.title)
-        }
+        onNavRequest(
+            if (newSessionType != SessionType.GENERAL) Screen.InfoInputScreen.title
+            else Screen.ToBeImplementedScreen.title
+        )
 
     } else {
         showAlertDialog.value = true

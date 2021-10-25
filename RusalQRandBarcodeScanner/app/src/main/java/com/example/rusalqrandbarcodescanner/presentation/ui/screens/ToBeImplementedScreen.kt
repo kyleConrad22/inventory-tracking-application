@@ -14,18 +14,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 
 @Composable
-fun ToBeImplementedScreen(navController: NavHostController) {
+fun ToBeImplementedScreen(onBack : () -> Unit) {
     Scaffold(topBar = { TopAppBar(title = { Text(text= "Not Yet Implemented", textAlign = TextAlign.Center) }) }) {
         Column(modifier = Modifier.padding(16.dp).fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
             Text(text = "This feature has yet to be implemented!")
-            Button(onClick = {
-                navController.popBackStack()
-            }) {
+            Button(onClick = onBack) {
                 Text(text = "Back to Safety!", modifier = Modifier.padding(16.dp))
             }
         }
