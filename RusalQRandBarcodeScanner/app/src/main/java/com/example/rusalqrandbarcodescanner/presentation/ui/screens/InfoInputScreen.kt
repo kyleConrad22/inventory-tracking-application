@@ -19,9 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.CodeApplication
-import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.presentation.components.loading.BasicInputDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog

@@ -5,20 +5,15 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import com.example.rusalqrandbarcodescanner.CodeApplication
-import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.presentation.components.progress.SessionProgress
 import com.example.rusalqrandbarcodescanner.util.displayedStringPostStringInsertion
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 
 @Composable
-fun OptionsScreen(navController: NavHostController, mainActivityVM : MainActivityViewModel) {
+fun OptionsScreen(mainActivityVM : MainActivityViewModel, onScanRequest : () -> Unit, onBack : () -> Unit, onReview : () -> Unit) {
 
     val addedItemCount = mainActivityVM.addedItemCount.value
 
@@ -47,7 +42,7 @@ fun OptionsScreen(navController: NavHostController, mainActivityVM : MainActivit
                 Text(text = "Barge ${mainActivityVM.barge.value} Reception")
             }
 
-            Button(onClick = { navController.navigate(Screen.ScannerScreen.title) }) {
+            Button(onClick = onScanRequest) {
                 Text(text = "Scan Code", modifier = Modifier
                     .padding(16.dp)
                     .size(width = 200.dp, height = 20.dp)
@@ -70,15 +65,11 @@ fun OptionsScreen(navController: NavHostController, mainActivityVM : MainActivit
             Row(modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
-                Button(onClick = {
-                    navController.navigate(Screen.InfoInputScreen.title)
-                }) {
+                Button(onClick = onBack) {
                     Text(text = "Back", modifier = Modifier.padding(16.dp))
                 }
                 if (displayAdditionalOptions) {
-                    Button(onClick = {
-                        navController.navigate(Screen.ReviewScreen.title)
-                    }) {
+                    Button(onClick = onReview) {
                         Text(text = if (displayRemoveOption) {
                             "Remove Item"
                         } else {

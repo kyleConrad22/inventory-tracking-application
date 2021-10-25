@@ -1,6 +1,5 @@
 package com.example.rusalqrandbarcodescanner.presentation.ui.screens
 
-import android.util.Log
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image

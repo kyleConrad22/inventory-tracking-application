@@ -21,9 +21,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.navigation.NavHostController
 import com.example.rusalqrandbarcodescanner.util.ScannedInfo
-import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.presentation.components.progress.SessionProgress
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel

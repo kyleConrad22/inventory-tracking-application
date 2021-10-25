@@ -82,7 +82,16 @@ class MainActivity : ComponentActivity() {
                         navController.navigate(Screen.ManualEntryScreen.title)
                     }
                 )}
-                composable(Screen.OptionsScreen.title) { OptionsScreen(navController, mainActivityVM) }
+                composable(Screen.OptionsScreen.title) { OptionsScreen(
+                    mainActivityVM = mainActivityVM,
+                    onBack = {
+                        navController.popBackStack()
+                    }, onReview = {
+                        navController.navigate(Screen.ReviewScreen.title)
+                    }, onScanRequest = {
+                        navController.navigate(Screen.ScannerScreen.title)
+                    }
+                )}
                 composable(Screen.InfoInputScreen.title) { InfoInputScreen(
                     mainActivityVM = mainActivityVM,
                     onBack = {
