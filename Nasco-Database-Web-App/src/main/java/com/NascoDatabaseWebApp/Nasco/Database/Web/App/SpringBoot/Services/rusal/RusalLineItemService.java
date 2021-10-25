@@ -34,7 +34,7 @@ public class RusalLineItemService implements RusalService {
     }
 
     public void update(String heatNum, String workOrder, String loadNum, String loader, String loadTime) {
-        repository.update(heatNum, workOrder, loadNum, loader, loadTime);
+        repository.updateShipment(heatNum, workOrder, loadNum, loader, loadTime);
     }
 
     public ByteArrayInputStream loadAll() {
