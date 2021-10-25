@@ -96,4 +96,14 @@ class InventoryRepository(private val inventoryDao: InventoryDao) {
             listOf<RusalItem>()
         }
     }
+
+    suspend fun removeItemFromShipment(heatNum : String) = withContext(Dispatchers.IO) {
+        inventoryDao.updateIsAddedStatus(reqIsAdded = false, searchHeatNum = heatNum)
+        inventoryDao.updateShipmentFields(reqWorkOrder = "", reqLoadNum = "", reqLoader = "", reqLoadTime = "", searchHeatNum = heatNum)
+    }
+
+    suspend fun removeItemFromReception(heatNum : String) = withContext(Dispatchers.IO) {
+        inventoryDao.updateIsAddedStatus(reqIsAdded = false, searchHeatNum = heatNum)
+        inventoryDao.updateReceptionFields(reqChecker = "", reqReceptionDate = "", searchHeatNum = heatNum)
+    }
 }

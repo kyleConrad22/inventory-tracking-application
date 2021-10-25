@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.work.*
 import com.example.rusalqrandbarcodescanner.database.RusalItem
+import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
 import com.example.rusalqrandbarcodescanner.services.FileStorage
 import com.example.rusalqrandbarcodescanner.services.HttpRequestHandler
@@ -20,7 +21,8 @@ class ReviewViewModel(private val invRepo : InventoryRepository, private val mai
         if (item.barcode.contains("u")) {
             invRepo.delete(item)
         } else {
-            invRepo.updateIsAddedStatus(false, item.heatNum)
+            if (mainActivityVM.sessionType.value == SessionType.SHIPMENT) invRepo.removeItemFromShipment(item.heatNum)
+            else invRepo.removeItemFromReception(item.heatNum)
         }
         mainActivityVM.refresh()
     }
