@@ -61,7 +61,7 @@ export default function RusalPage() {
                     <RusalAddNewForm handleSubmit={ handleSubmit } /> 
                     <RusalUploadPackingList />
                 </Route>
-                <Route path={`${path}/update`}>
+                <Route path={`${path}/inventory`}>
                     <RusalUpdateItem />
                 </Route>
                 <Route path={`${path}/downloads`}>
@@ -73,7 +73,7 @@ export default function RusalPage() {
                     <Link to={`${url}/add`}>Add Inventory Items</Link>
                 </li>
                 <li>
-                    <Link to={`${url}/update`}>Update Inventory Item</Link>
+                    <Link to={`${url}/inventory`}>Update Inventory Item</Link>
                 </li>
                 <li>
                     <Link to={`${url}/downloads`}>Download Options</Link>

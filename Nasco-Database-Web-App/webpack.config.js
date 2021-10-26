@@ -1,7 +1,12 @@
+const path = require('path')
+
 module.exports = {
     devtool: 'source-map',
+    entry: 'app.jsx',
     output: {
-        filename: 'react-app.js'
+        path: path.resolve(__dirname, './src/main/resources/static/dist'),
+        filename: 'react-app.js',
+        publicPath: '/'
     },
     module: {
         rules: [{
@@ -19,5 +24,8 @@ module.exports = {
     },
     resolve: {
         extensions: ['.js', '.jsx', '.css', '.tsx']
+    }, 
+    devServer: {
+        historyApiFallback: true
     }
 }
