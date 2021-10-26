@@ -12,7 +12,7 @@ export default function LandingPage() {
 
         return (
             <button id="rusal-button" type="button" onClick={ () => { handleClick() } }>
-                Rusal App
+                Rusal Application
             </button>
         );
     }
@@ -21,12 +21,12 @@ export default function LandingPage() {
         let history = useHistory();
 
         function handleClick() {
-            history.push("/clerical");
+            history.push("/browser");
         }
 
         return (
-            <button id="truck-support-button" type="button" onClick={ () => { handleClick() } }>
-                Truck Support App
+            <button id="browser-automation-button" type="button" onClick={ () => { handleClick() } }>
+                Browser Automation
             </button>
         );
     }

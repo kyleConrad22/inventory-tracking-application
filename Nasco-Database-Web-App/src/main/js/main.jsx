@@ -3,7 +3,7 @@ import { Switch, Route } from "react-router-dom";
 
 import LandingPage from "./pages/landing/landing_page";
 import MiscFunctionsPage from "./pages/other/misc_functions_page";
-import CheckinCheckoutPage from "./pages/clerical/checkin_checkout_app_page";
+import BrowserAutomationPage from "./pages/browser_automation/browser_automation_page";
 import RusalPage from "./pages/rusal/rusal_app_page";
 
 const Main = () => {
@@ -18,8 +18,8 @@ const Main = () => {
             <Route path='/misc'>
                 <MiscFunctionsPage />
             </Route>
-            <Route path='/clerical'>
-                <CheckinCheckoutPage />
+            <Route path='/browser'>
+                <BrowserAutomationPage />
             </Route>
         </Switch>
     );
