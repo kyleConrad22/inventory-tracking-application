@@ -1,30 +1,43 @@
 package com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.rusalqrandbarcodescanner.database.RusalItem
+import com.example.rusalqrandbarcodescanner.domain.models.SessionType
+import com.example.rusalqrandbarcodescanner.util.QRParser
 import com.example.rusalqrandbarcodescanner.util.inputvalidation.QRValidator
+import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import java.lang.IllegalArgumentException
 
-class ScannerViewModel() : ViewModel() {
-    val rawValue = mutableStateOf("")
+class ScannerViewModel(private val mainActivityVM : MainActivityViewModel) : ViewModel() {
     val uiState = mutableStateOf<ScannerState>(ScannerState.Scanning)
 
-    fun checkIsValid() {
+    // Checks if scanned code is valid and sets UI State accordingly
+    private fun checkIsValid(rawValue : String) {
         uiState.value = ScannerState.Loading
         uiState.value =
-            if (QRValidator.isValidRusalCode()) ScannerState.ValidScan
+            if (QRValidator.isValidRusalCode(rawValue)) ScannerState.ValidScan
             else ScannerState.InvalidScan
     }
 
+    // Logic to be taken on scan, if valid code sends relevant retrieved information to Main Activity ViewModel
+    fun onScan(rawValue : String) {
+        checkIsValid(rawValue)
+        if (uiState.value == ScannerState.ValidScan) {
+            val scannedItem : RusalItem = QRParser.parseRusalCode(rawValue)
+            mainActivityVM.heatNum.value = scannedItem.heatNum
+            if (mainActivityVM.sessionType.value == SessionType.RECEPTION) {
+                mainActivityVM.scannedItem = scannedItem
+            }
+        }
+    }
 
-
-    class ScannerViewModelFactory() : ViewModelProvider.Factory {
+    class ScannerViewModelFactory(private val mainActivityVM : MainActivityViewModel) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
             if (modelClass.isAssignableFrom(ScannerViewModel::class.java)) {
-                return ScannerViewModel() as T
+                return ScannerViewModel(mainActivityVM) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }

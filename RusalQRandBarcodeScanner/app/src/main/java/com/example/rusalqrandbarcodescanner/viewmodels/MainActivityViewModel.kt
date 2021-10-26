@@ -34,6 +34,8 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
     val addedItems = mutableStateOf(listOf<RusalItem>())
     val receivedItemCount = mutableStateOf(0)
 
+    lateinit var scannedItem : RusalItem
+
     val displayRemoveEntryContent = mutableStateOf(false)
 
     fun recreateSession(savedItem : RusalItem) {
