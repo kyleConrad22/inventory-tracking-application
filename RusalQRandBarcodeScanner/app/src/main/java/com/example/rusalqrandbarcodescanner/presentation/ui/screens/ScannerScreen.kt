@@ -17,14 +17,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.util.ScannedInfo
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.presentation.components.progress.SessionProgress
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
+import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ScannerViewModel
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -34,7 +39,9 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 @Composable
 fun ScannerScreen(mainActivityVM: MainActivityViewModel, onBack : () -> Unit, onScan : () -> Unit, onManualRequest : () -> Unit) {
 
-    CameraPreview(modifier = Modifier.fillMaxSize(), mainActivityVM = mainActivityVM, onScan = onScan)
+    val scannerVM : ScannerViewModel = viewModel(factory = ScannerViewModel.ScannerViewModelFactory())
+
+    CameraPreview(modifier = Modifier.fillMaxSize(), mainActivityVM = mainActivityVM, onScan = onScan, scannerVM = scannerVM)
     SessionProgress(
         sessionType = mainActivityVM.sessionType.value,
         addedItems = if (mainActivityVM.sessionType.value == SessionType.SHIPMENT) mainActivityVM.addedItemCount.value else mainActivityVM.receivedItemCount.value,
@@ -60,7 +67,7 @@ fun ScannerScreen(mainActivityVM: MainActivityViewModel, onBack : () -> Unit, on
     }
 }
 
-private class ImageAnalyzer: ImageAnalysis.Analyzer {
+private class ImageAnalyzer(scannerVM : ScannerViewModel): ImageAnalysis.Analyzer {
 
     @SuppressLint("UnsafeOptInUsageError")
     override fun analyze(imageProxy: ImageProxy) {
@@ -78,6 +85,7 @@ private class ImageAnalyzer: ImageAnalysis.Analyzer {
 
                             val valueType = barcode.valueType
                             if (rawValue != null) {
+                                ScannedInfo.rawValue = rawValue
                                 ScannedInfo.setValues(rawValue)
                                 ScannedInfo.isScanned = true
                             }
@@ -100,6 +108,7 @@ fun CameraPreview(
     cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA,
     scaleType: PreviewView.ScaleType = PreviewView.ScaleType.FILL_CENTER,
     onScan : () -> Unit,
+    scannerVM : ScannerViewModel,
     mainActivityVM : MainActivityViewModel
 ) {
 
@@ -128,7 +137,7 @@ fun CameraPreview(
 
                 imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context),
                     { imageProxy ->
-                        ImageAnalyzer().analyze(imageProxy)
+                        ImageAnalyzer(scannerVM).analyze(imageProxy)
                         if (ScannedInfo.heatNum != "" && ScannedInfo.isScanned) {
                             mainActivityVM.heatNum.value = ScannedInfo.heatNum
                             onScan()
