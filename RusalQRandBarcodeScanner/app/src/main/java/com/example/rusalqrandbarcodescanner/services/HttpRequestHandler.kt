@@ -58,14 +58,15 @@ object HttpRequestHandler {
     }
 
 
-    private fun createInventoryItem(item : RusalItem, context : Context) {
+    private fun createInventoryItems(items : List<RusalItem>, context : Context) {
 
         val uuidFileName = UUID.randomUUID().toString() + ".txt"
 
         val moshi : Moshi = Moshi.Builder().build()
-        val adapter : JsonAdapter<RusalItem> = moshi.adapter(RusalItem::class.java)
+        val listType = Types.newParameterizedType(List::class.java, RusalItem::class.java)
+        val adapter : JsonAdapter<List<RusalItem>> = moshi.adapter(listType)
 
-        FileStorage.writeDataToFile(context, adapter.toJson(item), uuidFileName)
+        FileStorage.writeDataToFile(context, adapter.toJson(items), uuidFileName)
 
         val oneTimeWorkRequest = createDefaultOneTimeWorkRequest<NewItemUploadWorker>(fileName = uuidFileName)
 
@@ -131,12 +132,13 @@ object HttpRequestHandler {
         })
     }
 
+    // Initializes update to api given a list of items, creating new entries if the item was not found in the database
     fun initUpdate(items: List<RusalItem>, sessionType: SessionType, context : Context) = CoroutineScope(Dispatchers.IO).launch {
-        for (item in items) {
-            if (item.heatNum.length == 6) {
-                createInventoryItem(item, context)
-            }
+        val additionList = mutableListOf<RusalItem>()
+        items.forEach { item ->
+            if (item.barcode.contains("u")) additionList.add(item)
         }
+        if (additionList.isNotEmpty()) createInventoryItems(additionList, context)
 
         if (sessionType == SessionType.SHIPMENT) {
             confirmShipment(items, context)

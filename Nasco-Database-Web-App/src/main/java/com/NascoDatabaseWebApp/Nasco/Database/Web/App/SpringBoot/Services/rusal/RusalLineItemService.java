@@ -89,4 +89,10 @@ public class RusalLineItemService implements RusalService {
             repository.updateShipment(it.getHeatNum(), it.getWorkOrder(), it.getLoadNum(), it.getLoader(), it.getLoadTime());
         });
     }
+
+    public void insertItems(List<RusalLineItem> items) {
+        items.forEach(item -> {
+            repository.save(item);
+        });
+    }
 }

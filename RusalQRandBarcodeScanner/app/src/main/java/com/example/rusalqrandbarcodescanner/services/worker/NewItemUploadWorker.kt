@@ -6,10 +6,12 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.android.volley.ParseError
 import com.android.volley.Request
+import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.RequestFuture
 import com.example.rusalqrandbarcodescanner.services.FileStorage
 import com.example.rusalqrandbarcodescanner.services.HttpRequestHandler
+import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
@@ -27,17 +29,17 @@ class NewItemUploadWorker(context : Context, workerParams : WorkerParameters) : 
 
             try {
                 if (inputStream != null) {
-                    val postData = FileStorage.convertToJsonObject(inputStream)
+                    val postData = FileStorage.convertToJsonArray(inputStream)
 
-                    val future: RequestFuture<JSONObject> = RequestFuture.newFuture()
+                    val future: RequestFuture<JSONArray> = RequestFuture.newFuture()
 
-                    val jsonObjectRequest = JsonObjectRequest(Request.Method.POST,
+                    val jsonArrayRequest = JsonArrayRequest(Request.Method.POST,
                         WEB_API_URL,
                         postData,
                         future,
                         future)
 
-                    HttpRequestHandler.requestQueue.add(jsonObjectRequest)
+                    HttpRequestHandler.requestQueue.add(jsonArrayRequest)
 
                     try {
                         val response = future.get(30, TimeUnit.SECONDS)

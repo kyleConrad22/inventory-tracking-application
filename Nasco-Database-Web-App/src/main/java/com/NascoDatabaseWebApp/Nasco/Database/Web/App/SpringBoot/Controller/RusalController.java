@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.print.attribute.standard.Media;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -164,4 +165,9 @@ public class RusalController {
         rusalLineItemService.updateShipment(updateParams);
     }
 
+    @PostMapping(value = "/update/new", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    void insertItems(@RequestBody final List<RusalLineItem> newItems) {
+        rusalLineItemService.insertItems(newItems);
+    }
 }

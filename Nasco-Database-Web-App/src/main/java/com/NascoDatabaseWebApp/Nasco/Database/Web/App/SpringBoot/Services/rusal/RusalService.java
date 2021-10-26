@@ -29,4 +29,5 @@ public interface RusalService {
     void importPackingList(MultipartFile file, String barge);
     List<String> getUniqueLots();
     void updateShipment(List<RusalShipmentUpdateParams> updateParams);
+    void insertItems(List<RusalLineItem> items);
 }
