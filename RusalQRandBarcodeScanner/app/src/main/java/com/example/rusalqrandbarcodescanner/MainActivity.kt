@@ -94,7 +94,7 @@ class MainActivity : ComponentActivity() {
                     mainActivityVM =  mainActivityVM,
                     onBack = {
                         navController.popBackStack()
-                    }, onScanNav = {
+                    }, onValidScan = {
                         navController.navigate(Screen.ReturnedItemScreen.title)
                     }, onManualRequest = {
                         navController.navigate(Screen.ManualEntryScreen.title)
