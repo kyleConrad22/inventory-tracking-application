@@ -104,7 +104,7 @@ private class ImageAnalyzer(private val onScan : (rawValue : String) -> Unit, pr
             val results = scanner.process(image)
                 .addOnSuccessListener { barcodes ->
                     for (barcode in barcodes) {
-                        if (ScannedInfo.heatNum == "" && uiState == ScannerState.Scanning) {
+                        if (uiState == ScannerState.Scanning) {
                             val bounds = barcode.boundingBox
                             val corners = barcode.cornerPoints
                             val rawValue = barcode.rawValue
@@ -112,8 +112,6 @@ private class ImageAnalyzer(private val onScan : (rawValue : String) -> Unit, pr
                             val valueType = barcode.valueType
                             if (rawValue != null) {
                                 onScan(rawValue)
-                                ScannedInfo.setValues(rawValue)
-                                ScannedInfo.isScanned = true
                             }
                         }
                     }
@@ -163,9 +161,6 @@ fun CameraPreview(
                 imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context),
                     { imageProxy ->
                         ImageAnalyzer(onScan, uiState).analyze(imageProxy)
-                        if (ScannedInfo.heatNum != "" && ScannedInfo.isScanned) {
-                            ScannedInfo.isScanned = false
-                        }
                     })
 
                 val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
