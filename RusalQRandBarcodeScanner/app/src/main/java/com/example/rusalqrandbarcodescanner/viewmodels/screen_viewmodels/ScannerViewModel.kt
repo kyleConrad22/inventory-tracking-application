@@ -1,5 +1,6 @@
 package com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -22,14 +23,16 @@ class ScannerViewModel(private val mainActivityVM : MainActivityViewModel) : Vie
     }
 
     // Logic to be taken on scan, if valid code sends relevant retrieved information to Main Activity ViewModel
-    fun onScan(rawValue : String) {
+    fun onScan(rawValue : String, onValidScan : () -> Unit) {
         checkIsValid(rawValue)
         if (uiState.value == ScannerState.ValidScan) {
             val scannedItem : RusalItem = QRParser.parseRusalCode(rawValue)
+            Log.d(TAG, scannedItem.heatNum)
             mainActivityVM.heatNum.value = scannedItem.heatNum
             if (mainActivityVM.sessionType.value == SessionType.RECEPTION) {
                 mainActivityVM.scannedItem = scannedItem
             }
+            onValidScan()
         }
     }
 
@@ -42,6 +45,10 @@ class ScannerViewModel(private val mainActivityVM : MainActivityViewModel) : Vie
             throw IllegalArgumentException("Unknown ViewModel class")
         }
 
+    }
+
+    companion object {
+        private const val TAG = "ScannerViewModel"
     }
 }
 

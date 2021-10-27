@@ -41,9 +41,9 @@ fun ScannerScreen(mainActivityVM: MainActivityViewModel, onBack : () -> Unit, on
 
     val uiState = scannerVM.uiState.value
 
-    CameraPreview(modifier = Modifier.fillMaxSize(), mainActivityVM = mainActivityVM, onValidScan = onValidScan,
+    CameraPreview(modifier = Modifier.fillMaxSize(),
         onScan = {
-            scannerVM.onScan(rawValue = it)
+            scannerVM.onScan(rawValue = it, onValidScan = onValidScan)
         }, uiState = uiState
     )
 
@@ -83,7 +83,9 @@ fun ScannerScreen(mainActivityVM: MainActivityViewModel, onBack : () -> Unit, on
                 Button(onClick = {
                     scannerVM.uiState.value = ScannerState.Scanning
                 }) {
-                    Text(text = "Dismiss", modifier = Modifier.padding(16.dp))
+                    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceEvenly, horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(text = "Dismiss", modifier = Modifier.padding(16.dp))
+                    }
                 }
             }
         )
@@ -110,7 +112,6 @@ private class ImageAnalyzer(private val onScan : (rawValue : String) -> Unit, pr
                             val valueType = barcode.valueType
                             if (rawValue != null) {
                                 onScan(rawValue)
-                                ScannedInfo.rawValue = rawValue
                                 ScannedInfo.setValues(rawValue)
                                 ScannedInfo.isScanned = true
                             }
@@ -133,9 +134,7 @@ fun CameraPreview(
     cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA,
     scaleType: PreviewView.ScaleType = PreviewView.ScaleType.FILL_CENTER,
     onScan : (rawValue : String) -> Unit,
-    onValidScan : () -> Unit,
     uiState : ScannerState,
-    mainActivityVM : MainActivityViewModel
 ) {
 
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -165,8 +164,6 @@ fun CameraPreview(
                     { imageProxy ->
                         ImageAnalyzer(onScan, uiState).analyze(imageProxy)
                         if (ScannedInfo.heatNum != "" && ScannedInfo.isScanned) {
-                            mainActivityVM.heatNum.value = ScannedInfo.heatNum
-                            onValidScan()
                             ScannedInfo.isScanned = false
                         }
                     })
