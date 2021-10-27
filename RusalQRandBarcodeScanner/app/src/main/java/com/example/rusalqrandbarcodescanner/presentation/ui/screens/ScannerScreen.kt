@@ -43,7 +43,8 @@ fun ScannerScreen(mainActivityVM: MainActivityViewModel, onBack : () -> Unit, on
     CameraPreview(modifier = Modifier.fillMaxSize(),
         onScan = {
             scannerVM.onScan(rawValue = it, onValidScan = onValidScan)
-        }, uiState = uiState
+        }, uiState = uiState,
+        isScanned = scannerVM.isScanned
     )
 
     SessionProgress(
@@ -74,15 +75,17 @@ fun ScannerScreen(mainActivityVM: MainActivityViewModel, onBack : () -> Unit, on
         AlertDialog(
             onDismissRequest = {
                 scannerVM.uiState.value = ScannerState.Scanning
+                scannerVM.isScanned.value = false
             }, title = {
                 Text(text="Invalid QR Code")
             }, text = {
                 Text(text = "The scanned QR code / barcode was not a valid Rusal code. Try another code.", Modifier.padding(16.dp))
             }, buttons = {
-                Button(onClick = {
-                    scannerVM.uiState.value = ScannerState.Scanning
-                }) {
-                    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceEvenly, horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.SpaceEvenly, horizontalAlignment = Alignment.CenterHorizontally) {
+                    Button(onClick = {
+                        scannerVM.uiState.value = ScannerState.Scanning
+                        scannerVM.isScanned.value = false
+                    }) {
                         Text(text = "Dismiss", modifier = Modifier.padding(16.dp))
                     }
                 }
@@ -92,7 +95,7 @@ fun ScannerScreen(mainActivityVM: MainActivityViewModel, onBack : () -> Unit, on
 
 }
 
-private class ImageAnalyzer(private val onScan : (rawValue : String) -> Unit, private val uiState : ScannerState): ImageAnalysis.Analyzer {
+private class ImageAnalyzer(private val onScan : (rawValue : String) -> Unit, private val uiState : ScannerState, private val isScanned : MutableState<Boolean>): ImageAnalysis.Analyzer {
 
     @SuppressLint("UnsafeOptInUsageError")
     override fun analyze(imageProxy: ImageProxy) {
@@ -109,7 +112,8 @@ private class ImageAnalyzer(private val onScan : (rawValue : String) -> Unit, pr
                             val rawValue = barcode.rawValue
 
                             val valueType = barcode.valueType
-                            if (rawValue != null) {
+                            if (rawValue != null && !isScanned.value) {
+                                isScanned.value = true
                                 onScan(rawValue)
                             }
                         }
@@ -132,6 +136,7 @@ fun CameraPreview(
     scaleType: PreviewView.ScaleType = PreviewView.ScaleType.FILL_CENTER,
     onScan : (rawValue : String) -> Unit,
     uiState : ScannerState,
+    isScanned : MutableState<Boolean>
 ) {
 
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -159,7 +164,7 @@ fun CameraPreview(
 
                 imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context),
                     { imageProxy ->
-                        ImageAnalyzer(onScan, uiState).analyze(imageProxy)
+                        ImageAnalyzer(onScan, uiState, isScanned).analyze(imageProxy)
                     })
 
                 val cameraProviderFuture = ProcessCameraProvider.getInstance(context)

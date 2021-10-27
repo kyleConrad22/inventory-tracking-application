@@ -13,6 +13,7 @@ import java.lang.IllegalArgumentException
 
 class ScannerViewModel(private val mainActivityVM : MainActivityViewModel) : ViewModel() {
     val uiState = mutableStateOf<ScannerState>(ScannerState.Scanning)
+    val isScanned = mutableStateOf(false)
 
     // Checks if scanned code is valid and sets UI State accordingly
     private fun checkIsValid(rawValue : String) {
@@ -32,6 +33,7 @@ class ScannerViewModel(private val mainActivityVM : MainActivityViewModel) : Vie
             if (mainActivityVM.sessionType.value == SessionType.RECEPTION) {
                 mainActivityVM.scannedItem = scannedItem
             }
+            Log.d(TAG, "Trigger")
             onValidScan()
         }
     }
