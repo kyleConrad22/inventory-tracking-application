@@ -136,7 +136,7 @@ object HttpRequestHandler {
     fun initUpdate(items: List<RusalItem>, sessionType: SessionType, context : Context) = CoroutineScope(Dispatchers.IO).launch {
         val additionList = mutableListOf<RusalItem>()
         items.forEach { item ->
-            if (item.barcode.contains("u")) additionList.add(item)
+            if ('u' in item.barcode || 'n' in item.barcode) additionList.add(item)
         }
         if (additionList.isNotEmpty()) createInventoryItems(additionList, context)
 

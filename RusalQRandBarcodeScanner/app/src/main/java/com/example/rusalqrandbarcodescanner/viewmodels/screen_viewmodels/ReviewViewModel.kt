@@ -3,22 +3,18 @@ package com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.work.*
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
-import com.example.rusalqrandbarcodescanner.services.FileStorage
 import com.example.rusalqrandbarcodescanner.services.HttpRequestHandler
-import com.example.rusalqrandbarcodescanner.services.worker.ReceptionUploadWorker
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
-import java.util.*
 
 class ReviewViewModel(private val invRepo : InventoryRepository, private val mainActivityVM: MainActivityViewModel) : ViewModel() {
 
     fun removeItem(item : RusalItem) = viewModelScope.launch {
-        if (item.barcode.contains("u")) {
+        if ('u' in item.barcode || 'n' in item.barcode) {
             invRepo.delete(item)
         } else {
             if (mainActivityVM.sessionType.value == SessionType.SHIPMENT) invRepo.removeItemFromShipment(item.heatNum)
@@ -29,7 +25,7 @@ class ReviewViewModel(private val invRepo : InventoryRepository, private val mai
 
     fun removeAllAddedItems() = viewModelScope.launch {
         mainActivityVM.addedItems.value.forEach { it ->
-            if (it.barcode.contains('u')) {
+            if ('u' in it.barcode || 'n' in it.barcode) {
                 removeItem(it)
             }
         }
@@ -49,5 +45,9 @@ class ReviewViewModel(private val invRepo : InventoryRepository, private val mai
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }
+    }
+
+    companion object {
+        private const val TAG = "ReviewViewModel"
     }
 }

@@ -18,7 +18,7 @@ object QRParser {
             grade = "${elements[3]} ${if (elements[10] == "BIL") "BILLETS" else "INGOTS"}",
             certificateNum = elements[4],
             blNum = "N/A",
-            barcode = "${elements[0]}u"
+            barcode = "${elements[0]}n"
         )
     }
 }

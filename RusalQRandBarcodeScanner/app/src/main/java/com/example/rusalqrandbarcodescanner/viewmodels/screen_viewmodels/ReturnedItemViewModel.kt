@@ -195,7 +195,7 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
                 netWeightKg = scannedItemNetWeight.value,
                 grade = scannedItemGrade.value,
                 quantity = scannedItemQuantity.value,
-                barcode = "${heat}new",
+                barcode = "${heat}n",
             )
         }
         scannedItem.mark = scannedItemMark.value
