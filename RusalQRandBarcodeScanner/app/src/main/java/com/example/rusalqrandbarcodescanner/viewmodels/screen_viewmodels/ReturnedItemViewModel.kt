@@ -9,8 +9,6 @@ import com.example.rusalqrandbarcodescanner.domain.models.ItemActionType
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
 import com.example.rusalqrandbarcodescanner.util.Commodity
-import com.example.rusalqrandbarcodescanner.util.ScannedInfo
-import com.example.rusalqrandbarcodescanner.util.displayedStringPostStringInsertion
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
@@ -37,11 +35,7 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
                     useBaseHeatLogic()
                 } else {
                     locatedItem.value = invRepo.findByHeat(heat)
-                    Log.d("Debug", locatedItem.value.toString())
                 }
-
-
-                Log.d("DEBUG", itemActionType.value.type)
 
                 itemActionType.value = when {
                     locatedItem.value == null -> ItemActionType.INVALID_HEAT
@@ -56,8 +50,6 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
                 }
 
             loading.value = false
-            ScannedInfo.heatNum = ""
-            Log.d("Debug", itemActionType.value.type)
         }
     }
 
