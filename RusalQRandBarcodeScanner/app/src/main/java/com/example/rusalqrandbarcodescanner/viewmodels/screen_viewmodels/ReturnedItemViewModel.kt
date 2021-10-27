@@ -15,17 +15,25 @@ import java.lang.IllegalArgumentException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-@DelicateCoroutinesApi
 class ReturnedItemViewModel(private val invRepo : InventoryRepository, private val mainActivityVM : MainActivityViewModel) : ViewModel() {
 
     private val heat = mainActivityVM.heatNum.value
+    private var scannedItem = RusalItem(barcode = "") // Item returned from scanner and/or with values set through manual entry
 
     val uniqueList = mutableStateOf(listOf<RusalItem>())
     val loadedHeats = mutableStateOf(listOf<String>())
     val loading = mutableStateOf(true)
-    val locatedItem : MutableState<RusalItem?> = mutableStateOf(null)
+    val locatedItem : MutableState<RusalItem?> = mutableStateOf(null) // Item returned from database
     val itemActionType = mutableStateOf(ItemActionType.INVALID_HEAT)
 
+    val scannedItemGrade = mutableStateOf(scannedItem.grade)
+    val scannedItemGrossWeight = mutableStateOf(scannedItem.grossWeightKg)
+    val scannedItemNetWeight = mutableStateOf(scannedItem.netWeightKg)
+    val scannedItemQuantity = mutableStateOf(scannedItem.quantity)
+    val scannedItemMark = mutableStateOf("")
+    val isConfirmAdditionVisible = mutableStateOf(false)
+
+    // Sets the state of ReturnedItem Screen on load
     init {
         loading.value = true
 
@@ -49,8 +57,22 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
                     else -> getReceptionItemType(locatedItem.value!!)
                 }
 
+            // Sets scannedItem value if item was returned through a QR scan rather than through manual entry
+            if (itemActionType.value == ItemActionType.INVALID_HEAT && mainActivityVM.sessionType.value == SessionType.RECEPTION && mainActivityVM.scannedItem.barcode != "") {
+                scannedItem = mainActivityVM.scannedItem
+                scannedItemGrade.value = mainActivityVM.scannedItem.grade
+                scannedItemQuantity.value = mainActivityVM.scannedItem.quantity
+                scannedItemGrossWeight.value = mainActivityVM.scannedItem.grossWeightKg
+                scannedItemNetWeight.value = mainActivityVM.scannedItem.netWeightKg
+                refresh()
+            }
             loading.value = false
         }
+    }
+
+    // Checks if the confirm addition button should be visible, setting visibility as necessary
+    fun refresh() {
+        isConfirmAdditionVisible.value = "" !in listOf(scannedItemGrade.value, scannedItemGrossWeight.value, scannedItemNetWeight.value, scannedItemQuantity.value, scannedItemMark.value)
     }
 
     // Used to set parameters {locatedItem, and unique list (if necessary)} if the given heat is a base heat number
@@ -84,6 +106,7 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
         }
     }
 
+    // Gets the item type of an item given that the session is a shipment
     private suspend fun getShipmentItemType(item : RusalItem) : ItemActionType {
         return when {
             item.blNum != mainActivityVM.bl.value -> ItemActionType.INCORRECT_BL
@@ -93,6 +116,7 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
         }
     }
 
+    // Gets the item type of an item given that the session is a reception
     private fun getReceptionItemType(item : RusalItem) : ItemActionType {
         return when {
             item.barge != mainActivityVM.barge.value -> ItemActionType.INCORRECT_BARGE
@@ -100,6 +124,7 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
         }
     }
 
+    // Gets the list of all base heats currently added to the session
     private suspend fun getLoadedHeats() : List<String> {
         val result = mutableListOf<String>()
         if (getCommodity(invRepo.findByBl(mainActivityVM.bl.value)) == Commodity.INGOTS) {
@@ -129,10 +154,13 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
         return false
     }
 
-    fun addItem() {
+    // Adds item to current session using appropriate logic based on session type, if item is not null then will add item to inventory first
+    fun addItem(item : RusalItem? = null) {
         loading.value = true
         viewModelScope.launch {
-            if (isBaseHeat(heat)) {
+            if (item != null) {
+                invRepo.insert(item)
+            } else if (isBaseHeat(heat)) {
                 invRepo.insert(locatedItem.value!!)
             }
 
@@ -152,9 +180,28 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
                     heat
                 )
             }
+            mainActivityVM.scannedItem = RusalItem(barcode = "")
             mainActivityVM.refresh()
             loading.value = false
         }
+    }
+
+    // Adds new item to inventory if being added through reception as a new item
+    fun receiveNewItem() {
+        if (scannedItem.barcode == "") {
+            scannedItem = RusalItem(
+                heatNum = heat,
+                grossWeightKg = scannedItemGrossWeight.value,
+                netWeightKg = scannedItemNetWeight.value,
+                grade = scannedItemGrade.value,
+                quantity = scannedItemQuantity.value,
+                barcode = "${heat}new",
+            )
+        }
+        scannedItem.mark = scannedItemMark.value
+        scannedItem.barge = mainActivityVM.barge.value
+        scannedItem.lot = "N/A"
+        addItem(scannedItem)
     }
 
     private fun getCurrentDate() : String {
@@ -177,6 +224,7 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
         return uniqueList
     }
 
+    // Determines if the given heat is a base heat
     private fun isBaseHeat(heat : String) : Boolean {
         return heat.length == 6
     }
@@ -205,5 +253,9 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }
+    }
+
+    companion object {
+        private const val TAG = "ReturnedItemViewModel"
     }
 }

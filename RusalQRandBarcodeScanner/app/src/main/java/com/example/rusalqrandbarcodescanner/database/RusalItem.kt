@@ -22,11 +22,11 @@ data class RusalItem (
     @ColumnInfo(name = "load_num") val loadNum: String = "",
     @ColumnInfo(name = "loader") val loader: String = "",
     @ColumnInfo(name = "load_time") val loadTime: String = "",
-    @ColumnInfo(name = "barge") val barge : String = "",
+    @ColumnInfo(name = "barge") var barge : String = "",
     @ColumnInfo(name = "checker") val  checker : String = "",
     @ColumnInfo(name = "reception_date") val receptionDate : String = "",
-    @ColumnInfo(name = "mark") val mark : String = "",
-    @ColumnInfo(name = "lot") val lot : String = "",
+    @ColumnInfo(name = "mark") var mark : String = "",
+    @ColumnInfo(name = "lot") var lot : String = "",
     @Transient
     @ColumnInfo(name = "is_added") val isAdded : Boolean = false
 )

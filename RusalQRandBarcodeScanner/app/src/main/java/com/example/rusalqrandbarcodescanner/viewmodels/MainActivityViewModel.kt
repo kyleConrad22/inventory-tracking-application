@@ -3,7 +3,6 @@ package com.example.rusalqrandbarcodescanner.viewmodels
 import android.app.Application
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
-import androidx.work.WorkManager
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
@@ -34,7 +33,7 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
     val addedItems = mutableStateOf(listOf<RusalItem>())
     val receivedItemCount = mutableStateOf(0)
 
-    lateinit var scannedItem : RusalItem
+    var scannedItem = RusalItem(barcode = "")
 
     val displayRemoveEntryContent = mutableStateOf(false)
 
