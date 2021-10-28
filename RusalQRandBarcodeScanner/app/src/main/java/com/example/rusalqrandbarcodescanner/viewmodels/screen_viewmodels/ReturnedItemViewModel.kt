@@ -175,7 +175,7 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
                     heat)
             } else {
                 invRepo.updateReceptionFields(
-                    getCurrentDate(),
+                    getCurrentDateTime(),
                     mainActivityVM.checker.value,
                     heat
                 )
@@ -205,11 +205,6 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
         scannedItem.barge = mainActivityVM.barge.value
         scannedItem.lot = "N/A"
         addItem(scannedItem)
-    }
-
-    private fun getCurrentDate() : String {
-        val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy")
-        return LocalDateTime.now().format(formatter)
     }
 
     private fun getCurrentDateTime() : String {
