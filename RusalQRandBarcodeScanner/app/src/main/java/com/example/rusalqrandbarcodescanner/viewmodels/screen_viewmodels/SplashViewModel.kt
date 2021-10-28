@@ -12,12 +12,14 @@ import java.lang.IllegalArgumentException
 
 class SplashViewModel(private val repo : InventoryRepository, private val mainActivityVM : MainActivityViewModel) : ViewModel() {
     val destination = mutableStateOf("")
+    val uiState = mutableStateOf<SplashState>(SplashState.Base)
 
     init {
         mainActivityVM.loading.value = true
         viewModelScope.launch {
             val items = repo.getAddedItems()
             if (items.isNotEmpty()) {
+                uiState.value = SplashState.Recreation
                 mainActivityVM.recreateSession(items[0])
                 mainActivityVM.refresh()
                 destination.value = Screen.InfoInputScreen.title
@@ -37,6 +39,10 @@ class SplashViewModel(private val repo : InventoryRepository, private val mainAc
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }
-
     }
+}
+
+sealed class SplashState {
+    object Recreation : SplashState()
+    object Base : SplashState()
 }
