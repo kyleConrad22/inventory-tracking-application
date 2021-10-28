@@ -38,6 +38,7 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
     val displayRemoveEntryContent = mutableStateOf(false)
 
     fun recreateSession(savedItem : RusalItem) {
+
         sessionType.value =
             if (savedItem.loadTime != "") SessionType.SHIPMENT
             else SessionType.RECEPTION
@@ -61,11 +62,12 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
         HttpRequestHandler.initialize(repo, loading)
     }
 
-    fun refresh() {
+    fun refresh(optionalCall : () -> Unit = { /* Ignore */ }) {
         updateAddedItems()
         updateAddedItemCount()
         updateInboundItemCount()
         updateReceivedItemCount()
+        optionalCall()
     }
 
     fun clearInputFields() {
@@ -78,6 +80,7 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
         quantity.value = ""
         pieceCount.value = ""
         bl.value = ""
+        refresh()
     }
 
     private fun updateReceivedItemCount() = viewModelScope.launch {
@@ -111,9 +114,10 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
         return Commodity.BILLETS
     }
 
+    /* TODO - Ensure that all removed items have their shipment or reception fields cleared, and if they are new items that they are removed from the inventory*/
     fun removeAllAddedItems() = viewModelScope.launch {
         repo.removeAllAddedItems()
-        updateAddedItemCount()
+        refresh()
     }
 
     private fun updateAddedItems() = viewModelScope.launch {

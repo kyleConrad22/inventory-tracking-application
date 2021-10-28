@@ -103,8 +103,7 @@ fun ReviewScreen(mainActivityVM : MainActivityViewModel, onBack : () -> Unit, on
                     if (!displayRemoveEntry) {
                         Button(onClick = {
                             reviewVM.initiateUpdate()
-                            reviewVM.removeAllAddedItems()
-                            mainActivityVM.refresh()
+                            reviewVM.clearAddedItems()
                             mainActivityVM.clearInputFields()
                             showConfirmDialog.value = true
                         }) {
@@ -116,7 +115,6 @@ fun ReviewScreen(mainActivityVM : MainActivityViewModel, onBack : () -> Unit, on
                     AlertDialog(
                         onDismissRequest = {
                            onConfirm()
-                           mainActivityVM.refresh()
                         }, title = { Text(text = "${sessionType.type} Confirmation") },
                         text = { Text(text = "${sessionType.type} Confirmed") },
                         buttons = {

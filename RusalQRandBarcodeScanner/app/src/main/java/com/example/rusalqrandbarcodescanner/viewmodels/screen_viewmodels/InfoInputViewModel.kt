@@ -16,8 +16,6 @@ import java.lang.IllegalArgumentException
 class InfoInputViewModel(private val mainActivityVM : MainActivityViewModel, private val invRepo : InventoryRepository) : ViewModel() {
     val displayConfirmButton = mutableStateOf(false)
 
-    val uiState = mutableStateOf<InfoInputState>(InfoInputState.Editable)
-
     val blList : MutableState<List<Bl>> = mutableStateOf(listOf())
     val bargeList : MutableState<List<Barge>> = mutableStateOf(listOf())
 
@@ -27,9 +25,6 @@ class InfoInputViewModel(private val mainActivityVM : MainActivityViewModel, pri
         viewModelScope.launch {
             loading.value = true
             refresh()
-            if (mainActivityVM.addedItemCount.value != 0) {
-                uiState.value = InfoInputState.Uneditable
-            }
             if (mainActivityVM.sessionType.value == SessionType.SHIPMENT) {
                 blList.value = getUniqueBlList(invRepo.getAllSuspend()!!)
             } else {
@@ -86,10 +81,5 @@ class InfoInputViewModel(private val mainActivityVM : MainActivityViewModel, pri
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }
-    }
-
-    sealed class InfoInputState {
-        object Editable : InfoInputState()
-        object Uneditable : InfoInputState()
     }
 }

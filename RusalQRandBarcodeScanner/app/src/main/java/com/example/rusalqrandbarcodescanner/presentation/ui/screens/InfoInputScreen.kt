@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.*
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
@@ -17,12 +18,14 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.rusalqrandbarcodescanner.CodeApplication
+import com.example.rusalqrandbarcodescanner.domain.models.Barge
+import com.example.rusalqrandbarcodescanner.domain.models.Bl
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.presentation.components.loading.BasicInputDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
+import com.example.rusalqrandbarcodescanner.presentation.components.StyledCardItem
 import com.example.rusalqrandbarcodescanner.presentation.components.inputdialog.SingleHyphenTransformedInputDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.autocomplete.AutoCompleteBox
 import com.example.rusalqrandbarcodescanner.util.inputvalidation.BasicItemValidator
@@ -40,7 +43,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 fun InfoInputScreen(mainActivityVM: MainActivityViewModel, onBack : () -> Unit, onConfirm : () -> Unit) {
     val application = LocalContext.current.applicationContext as CodeApplication
 
-    val infoInputVM: InfoInputViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "infoInputVM", factory = InfoInputViewModel.InfoInputViewModelFactory(mainActivityVM, application.invRepository))
+    val infoInputVM: InfoInputViewModel = viewModel(factory = InfoInputViewModel.InfoInputViewModelFactory(mainActivityVM, application.invRepository))
 
     val focusManager = LocalFocusManager.current
 
@@ -57,44 +60,31 @@ fun InfoInputScreen(mainActivityVM: MainActivityViewModel, onBack : () -> Unit, 
                 LoadingDialog(isDisplayed = true)
 
             } else {
-                if (mainActivityVM.sessionType.value == SessionType.SHIPMENT) {
-
-                    SingleHyphenTransformedInputDialog(label = "Work Order", userInput = mainActivityVM.workOrder, refresh = {
-                        WorkOrderValidator().updateWorkOrder(it, mainActivityVM.workOrder)
-                        infoInputVM.refresh()
-                    }, focusManager = focusManager, lastInput = false, keyBoardType = KeyboardType.Password, insertionIndex = 3)
-
-                    BasicInputDialog(label = "Load", userInput = mainActivityVM.loadNum, refresh = {
-                        NumberValidator().updateNumber(it, mainActivityVM.loadNum)
-                        infoInputVM.refresh()
-                    }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Number)
-
-                    BasicInputDialog(label = "Loader", userInput = mainActivityVM.loader, refresh = {
-                        NameValidator().updateName(it, mainActivityVM.loader)
-                        infoInputVM.refresh()
-                    }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Text)
-
-                    BlInput(focusManager, infoInputVM, mainActivityVM)
-
-                    BasicInputDialog(label = "Piece Count", userInput = mainActivityVM.pieceCount, refresh = {
-                        NumberValidator().updateNumber(it, mainActivityVM.pieceCount)
-                        infoInputVM.refresh()
-                    }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Number)
-
-                    BasicInputDialog(label = "Quantity", userInput = mainActivityVM.quantity, refresh = {
-                        NumberValidator().updateNumber(it, mainActivityVM.quantity)
-                        infoInputVM.refresh()
-                    }, focusManager = focusManager, lastInput = true, keyboardType = KeyboardType.Number)
-
-                } else {
-
-                    BargeInput(focusManager, infoInputVM, mainActivityVM)
-
-                    BasicInputDialog(label = "Checker", userInput = mainActivityVM.checker, refresh = {
-                        NameValidator().updateName(it, mainActivityVM.checker)
-                        infoInputVM.refresh()
-                    }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Text)
-                }
+                if (mainActivityVM.addedItemCount.value == 0)
+                    EditableFields(sessionType = mainActivityVM.sessionType.value,
+                        focusManager = focusManager,
+                        workOrderState = mainActivityVM.workOrder,
+                        loadNumberState = mainActivityVM.loadNum,
+                        loaderState = mainActivityVM.loader,
+                        pieceCountState = mainActivityVM.pieceCount,
+                        quantityState = mainActivityVM.quantity,
+                        checkerState = mainActivityVM.checker,
+                        bargeIdentifierState = mainActivityVM.barge,
+                        blNumberState = mainActivityVM.bl,
+                        blList = infoInputVM.blList.value,
+                        bargeList = infoInputVM.bargeList.value,
+                        onChange = { infoInputVM.refresh() }
+                    )
+                else
+                    NonEditableFields(sessionType = mainActivityVM.sessionType.value,
+                        workOrder = mainActivityVM.workOrder.value,
+                        loadNumber = mainActivityVM.loadNum.value,
+                        loader = mainActivityVM.loader.value,
+                        pieceCount = mainActivityVM.pieceCount.value,
+                        quantity = mainActivityVM.quantity.value,
+                        blNumber = mainActivityVM.bl.value,
+                        checker = mainActivityVM.checker.value,
+                        bargeIdentifier = mainActivityVM.barge.value)
 
                 Row(modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -120,8 +110,70 @@ fun InfoInputScreen(mainActivityVM: MainActivityViewModel, onBack : () -> Unit, 
 @DelicateCoroutinesApi
 @ExperimentalAnimationApi
 @Composable
-fun BlInput(focusManager: FocusManager, infoInputVM: InfoInputViewModel, mainActivityVM: MainActivityViewModel) {
-    val blList = infoInputVM.blList.value
+private fun EditableFields(sessionType : SessionType, focusManager : FocusManager, workOrderState : MutableState<String>, loadNumberState : MutableState<String>, loaderState : MutableState<String>, pieceCountState : MutableState<String>, quantityState : MutableState<String>, checkerState : MutableState<String>, bargeIdentifierState : MutableState<String>, blNumberState : MutableState<String>, blList : List<Bl>, bargeList : List<Barge>, onChange : () -> Unit) {
+    if (sessionType == SessionType.SHIPMENT) {
+
+        SingleHyphenTransformedInputDialog(label = "Work Order", userInput = workOrderState, refresh = {
+            WorkOrderValidator().updateWorkOrder(it, workOrderState)
+            onChange()
+        }, focusManager = focusManager, lastInput = false, keyBoardType = KeyboardType.Password, insertionIndex = 3)
+
+        BasicInputDialog(label = "Load", userInput = loadNumberState, refresh = {
+            NumberValidator().updateNumber(it, loadNumberState)
+            onChange()
+        }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Number)
+
+        BasicInputDialog(label = "Loader", userInput = loaderState, refresh = {
+            NameValidator().updateName(it, loaderState)
+            onChange()
+        }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Text)
+
+        BlInput(focusManager = focusManager, blList = blList, blNumberState = blNumberState, onChange = onChange)
+
+        BasicInputDialog(label = "Piece Count", userInput = pieceCountState, refresh = {
+            NumberValidator().updateNumber(it, pieceCountState)
+            onChange()
+        }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Number)
+
+        BasicInputDialog(label = "Quantity", userInput = quantityState, refresh = {
+            NumberValidator().updateNumber(it, quantityState)
+            onChange()
+        }, focusManager = focusManager, lastInput = true, keyboardType = KeyboardType.Number)
+
+    } else {
+
+        BargeInput(focusManager = focusManager, bargeList = bargeList, bargeIdentifierState = bargeIdentifierState, onChange = onChange )
+
+        BasicInputDialog(label = "Checker", userInput = checkerState, refresh = {
+            NameValidator().updateName(it, checkerState)
+            onChange()
+        }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Text)
+    }
+}
+
+@Composable
+private fun NonEditableFields(sessionType : SessionType, workOrder : String, loadNumber : String, loader : String, pieceCount : String, quantity : String, blNumber : String, checker : String, bargeIdentifier : String) {
+    if (sessionType == SessionType.SHIPMENT) {
+
+        StyledCardItem(text = "Work Order: $workOrder", backgroundColor = Color.LightGray)
+        StyledCardItem(text = "Load Number: $loadNumber", backgroundColor = Color.LightGray)
+        StyledCardItem(text = "Loader: $loader", backgroundColor = Color.LightGray)
+        StyledCardItem(text = "BL Number: $blNumber", backgroundColor = Color.LightGray)
+        StyledCardItem(text = "Piece Count: $pieceCount", backgroundColor = Color.LightGray)
+        StyledCardItem(text = "Quantity: $quantity", backgroundColor = Color.LightGray)
+
+    } else {
+
+        StyledCardItem(text = "Barge Identifier: $bargeIdentifier", backgroundColor = Color.LightGray)
+        StyledCardItem(text = "Checker: $checker", backgroundColor = Color.LightGray)
+
+    }
+}
+
+@DelicateCoroutinesApi
+@ExperimentalAnimationApi
+@Composable
+fun BlInput(focusManager: FocusManager, blList : List<Bl>, blNumberState : MutableState<String>, onChange : () -> Unit) {
     AutoCompleteBox(
         items = blList,
         itemContent = { bl ->
@@ -129,12 +181,12 @@ fun BlInput(focusManager: FocusManager, infoInputVM: InfoInputViewModel, mainAct
         }
     ) {
 
-        val value = mainActivityVM.bl.value
+        val value = blNumberState.value
 
         onItemSelected { bl ->
-            mainActivityVM.bl.value = bl.text
+            blNumberState.value = bl.text
             filter(bl.text)
-            infoInputVM.refresh()
+            onChange()
             focusManager.moveFocus(FocusDirection.Down)
         }
         OutlinedTextField(
@@ -148,9 +200,9 @@ fun BlInput(focusManager: FocusManager, infoInputVM: InfoInputViewModel, mainAct
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
             value = value,
             onValueChange = {  it ->
-                BasicItemValidator().updateItem(it, mainActivityVM.bl)
+                BasicItemValidator().updateItem(it, blNumberState)
                 filter(it)
-                infoInputVM.refresh()
+                onChange()
             },
             label = { Text(text="BL Number: ") })
     }
@@ -159,20 +211,19 @@ fun BlInput(focusManager: FocusManager, infoInputVM: InfoInputViewModel, mainAct
 @ExperimentalAnimationApi
 @DelicateCoroutinesApi
 @Composable
-fun BargeInput(focusManager: FocusManager, infoInputVM: InfoInputViewModel, mainActivityVM: MainActivityViewModel) {
-    val bargeList = infoInputVM.bargeList.value
+fun BargeInput(focusManager: FocusManager, bargeList : List<Barge>, bargeIdentifierState : MutableState<String>, onChange : () -> Unit) {
     AutoCompleteBox(
         items = bargeList,
         itemContent = { barge ->
             AutoCompleteItem(text = barge.text)
         }
     ) {
-        val value = mainActivityVM.barge.value
+        val value = bargeIdentifierState.value
 
         onItemSelected { barge ->
-            mainActivityVM.barge.value = barge.text
+            bargeIdentifierState.value = barge.text
             filter(barge.text)
-            infoInputVM.refresh()
+            onChange()
             focusManager.moveFocus(FocusDirection.Down)
         }
         OutlinedTextField(
@@ -186,9 +237,9 @@ fun BargeInput(focusManager: FocusManager, infoInputVM: InfoInputViewModel, main
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
             value = value,
             onValueChange = {
-                BasicItemValidator().updateItem(it, mainActivityVM.barge)
+                BasicItemValidator().updateItem(it, bargeIdentifierState)
                 filter(it)
-                infoInputVM.refresh()
+                onChange()
             },
             label= { Text(text="Barge Identifier: ") }
         )

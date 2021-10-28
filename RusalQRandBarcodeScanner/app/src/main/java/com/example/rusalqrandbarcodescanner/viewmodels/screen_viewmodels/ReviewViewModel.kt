@@ -23,12 +23,8 @@ class ReviewViewModel(private val invRepo : InventoryRepository, private val mai
         mainActivityVM.refresh()
     }
 
-    fun removeAllAddedItems() = viewModelScope.launch {
-        mainActivityVM.addedItems.value.forEach { it ->
-            if ('u' in it.barcode || 'n' in it.barcode) {
-                removeItem(it)
-            }
-        }
+    // Clears added items from current session - does not delete from repo or reset shipment / reception specific fields
+    fun clearAddedItems() = viewModelScope.launch {
         invRepo.removeAllAddedItems()
         mainActivityVM.refresh()
     }
