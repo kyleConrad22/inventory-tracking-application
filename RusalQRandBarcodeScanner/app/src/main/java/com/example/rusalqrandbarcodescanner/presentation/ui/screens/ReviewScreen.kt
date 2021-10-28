@@ -79,7 +79,7 @@ fun ReviewScreen(mainActivityVM : MainActivityViewModel, onBack : () -> Unit, on
                 Text(text = if (displayRemoveEntry) {
                     "Please select the item you would like to remove or view additional information for:"
                 } else {
-                    "Review ${sessionType.type}; if you would like to remove or view additional information for an item please select it:"
+                    "Review ${sessionType.type} - If you would like to remove or view additional information on an item please select it:"
                 }, modifier = Modifier.padding(16.dp))
 
                 GetRusalItemListView(
@@ -113,8 +113,10 @@ fun ReviewScreen(mainActivityVM : MainActivityViewModel, onBack : () -> Unit, on
                 }
                 if (showConfirmDialog.value) {
                     AlertDialog(
-                        onDismissRequest = onConfirm,
-                        title = { Text(text = "${sessionType.type} Confirmation") },
+                        onDismissRequest = {
+                           onConfirm()
+                           mainActivityVM.refresh()
+                        }, title = { Text(text = "${sessionType.type} Confirmation") },
                         text = { Text(text = "${sessionType.type} Confirmed") },
                         buttons = {
                             Row(modifier = Modifier.fillMaxWidth(),

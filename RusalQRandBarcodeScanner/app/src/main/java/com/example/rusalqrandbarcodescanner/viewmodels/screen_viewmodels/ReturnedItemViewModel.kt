@@ -95,7 +95,7 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
                     quantity = item.quantity,
                     dimension = item.dimension
                 )
-            } else {
+            } else if (mainActivityVM.sessionType.value == SessionType.SHIPMENT) {
                 locatedItem.value = RusalItem(
                     heatNum = heat,
                     barcode = "${heat}u${getNumberOfUnidentifiedBundles(heat) + 1}",
@@ -187,7 +187,7 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
     }
 
     // Adds new item to inventory if being added through reception as a new item
-    fun receiveNewItem() {
+    fun receiveNewItem() = viewModelScope.launch() {
         if (scannedItem.barcode == "") {
             scannedItem = RusalItem(
                 heatNum = heat,
@@ -195,9 +195,12 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
                 netWeightKg = scannedItemNetWeight.value,
                 grade = scannedItemGrade.value,
                 quantity = scannedItemQuantity.value,
-                barcode = "${heat}n",
+                barcode =
+                if (isBaseHeat(heat)) "${heat}u${getNumberOfUnidentifiedBundles(heat) + 1}"
+                else "${heat}n",
             )
         }
+        scannedItem.blNum = "N/A"
         scannedItem.mark = scannedItemMark.value
         scannedItem.barge = mainActivityVM.barge.value
         scannedItem.lot = "N/A"

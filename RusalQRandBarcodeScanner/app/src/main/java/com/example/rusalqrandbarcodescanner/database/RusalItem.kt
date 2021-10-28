@@ -16,7 +16,7 @@ data class RusalItem (
     @ColumnInfo(name = "dimension") val dimension: String = "",
     @ColumnInfo(name = "grade") val grade: String = "",
     @ColumnInfo(name = "certificate_num") val certificateNum: String = "",
-    @ColumnInfo(name = "bl_num") val blNum: String = "",
+    @ColumnInfo(name = "bl_num") var blNum: String = "",
     @PrimaryKey val barcode: String,
     @ColumnInfo(name = "work_order") val workOrder: String = "",
     @ColumnInfo(name = "load_num") val loadNum: String = "",
