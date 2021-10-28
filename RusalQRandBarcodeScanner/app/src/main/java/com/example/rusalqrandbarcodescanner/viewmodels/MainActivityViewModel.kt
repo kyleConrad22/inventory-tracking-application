@@ -114,8 +114,15 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
         return Commodity.BILLETS
     }
 
-    /* TODO - Ensure that all removed items have their shipment or reception fields cleared, and if they are new items that they are removed from the inventory*/
     fun removeAllAddedItems() = viewModelScope.launch {
+        addedItems.value.forEach { item ->
+            if ('u' in item.barcode || 'n' in item.barcode) repo.delete(item)
+
+            else
+                if (sessionType.value == SessionType.SHIPMENT) repo.removeItemFromShipment(item.heatNum)
+
+                else repo.removeItemFromReception(item.heatNum)
+        }
         repo.removeAllAddedItems()
         refresh()
     }
