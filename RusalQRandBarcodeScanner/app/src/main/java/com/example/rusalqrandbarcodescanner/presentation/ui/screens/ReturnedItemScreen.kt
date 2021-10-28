@@ -29,6 +29,7 @@ import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.ItemActionType
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
+import com.example.rusalqrandbarcodescanner.presentation.components.StyledCardItem
 import com.example.rusalqrandbarcodescanner.presentation.components.loading.BasicInputDialog
 import com.example.rusalqrandbarcodescanner.util.Commodity
 import com.example.rusalqrandbarcodescanner.util.displayedStringPostStringInsertion
@@ -162,7 +163,7 @@ fun AdditionDialog(returnedItemVM : ReturnedItemViewModel, heat : String, onBack
                 )
 
                 BasicInputDialog(
-                    label = "Quantity",
+                    label = "Piece Count",
                     userInput = returnedItemVM.scannedItemQuantity,
                     refresh = {
                         returnedItemVM.scannedItemQuantity.value = it
@@ -315,12 +316,13 @@ private fun NotInLoadedHeats(loadedHeatList : List<String>, heat : String, onDis
 
 @Composable
 private fun ValidHeat(item : RusalItem, onDismiss: () -> Unit, onConfirm: () -> Unit) {
-    Text(text = """
-        Heat Number: ${ displayedStringPostStringInsertion(item.heatNum, 6, "-") }
-        Piece Count: ${item.quantity}
-        BL Number: ${item.blNum}
-        Mark: ${item.mark}
-    """.trimIndent() + if (getCommodity(item) == Commodity.INGOTS) "\nLot: ${item.lot}" else "")
+    StyledCardItem(text = "Heat Number: ${ displayedStringPostStringInsertion(item.heatNum, 6, "-") }", backgroundColor = Color.Gray)
+    StyledCardItem(text = "BL Number: ${item.blNum}", backgroundColor = Color.LightGray)
+    StyledCardItem(text = "Mark: ${item.mark}", backgroundColor = Color.LightGray)
+    if (getCommodity(item) == Commodity.INGOTS) {
+        StyledCardItem(text = "Lot: ${item.lot}", backgroundColor = Color.LightGray)
+    }
+    Text(text = "Piece Count: ${item.quantity}")
     DenyOrConfirm(onDismiss = { onDismiss() }, onConfirm = { onConfirm() })
 }
 

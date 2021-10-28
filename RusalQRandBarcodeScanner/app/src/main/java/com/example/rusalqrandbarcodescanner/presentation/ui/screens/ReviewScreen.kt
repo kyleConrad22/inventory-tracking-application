@@ -23,6 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
+import com.example.rusalqrandbarcodescanner.presentation.components.StyledCardItem
 import com.example.rusalqrandbarcodescanner.presentation.components.progress.SessionProgress
 import com.example.rusalqrandbarcodescanner.util.Commodity
 import com.example.rusalqrandbarcodescanner.util.displayedStringPostStringInsertion
@@ -182,15 +183,16 @@ private fun RemoveDialog(onDismissRequest : () -> Unit, onRemoveRequest : () -> 
         onDismissRequest = onDismissRequest) {
         Surface(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
-                Text(text = "Heat Number: ${ displayedStringPostStringInsertion(item.heatNum, 6, "-") }")
-                Text(text = "BL Number: ${ item.blNum }")
+                StyledCardItem(text = "Heat Number: ${ displayedStringPostStringInsertion(item.heatNum, 6, "-") }", backgroundColor = Color.Gray)
+                StyledCardItem(text = "BL Number: ${item.blNum}", backgroundColor = Color.LightGray)
+                StyledCardItem(text = "Mark: ${item.mark}", backgroundColor = Color.LightGray)
+                if (getCommodity(item) == Commodity.INGOTS) {
+                    StyledCardItem(text = "Lot: ${item.lot}", backgroundColor = Color.LightGray)
+                }
                 Text(text = "Piece Count: ${ item.quantity }")
                 Text(text = "Net Weight Kg: ${ item.netWeightKg }")
                 Text(text = "Gross Weight Kg: ${ item.grossWeightKg }")
-                Text(text = "Mark: ${item.mark}")
-                if (getCommodity(item) == Commodity.INGOTS) {
-                    Text(text = "Lot: ${item.lot}")
-                }
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
