@@ -5,7 +5,6 @@ import RusalLineItemList from "./components/rusal_line_item_list";
 import RusalAddNewForm from "./rusal_add_new_form";
 import RusalDownloads from "./rusal_downloads";
 import RusalUpdateItem from "./rusal_update_item";
-import RusalUploadPackingList from "./rusal_upload_packing_list";
 
 export default function RusalPage() {
 
@@ -59,7 +58,6 @@ export default function RusalPage() {
                 </Route>
                 <Route path={`${path}/add`}>
                     <RusalAddNewForm handleSubmit={ handleSubmit } /> 
-                    <RusalUploadPackingList />
                 </Route>
                 <Route path={`${path}/update`}>
                     <RusalUpdateItem />
