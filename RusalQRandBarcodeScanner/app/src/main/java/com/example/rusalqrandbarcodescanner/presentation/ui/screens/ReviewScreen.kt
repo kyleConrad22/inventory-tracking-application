@@ -27,6 +27,7 @@ import com.example.rusalqrandbarcodescanner.presentation.components.StyledCardIt
 import com.example.rusalqrandbarcodescanner.presentation.components.progress.SessionProgress
 import com.example.rusalqrandbarcodescanner.util.Commodity
 import com.example.rusalqrandbarcodescanner.util.displayedStringPostStringInsertion
+import com.example.rusalqrandbarcodescanner.util.getCommodity
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReviewViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReviewViewModel.ReviewViewModelFactory
@@ -73,8 +74,7 @@ fun ReviewScreen(mainActivityVM : MainActivityViewModel, onBack : () -> Unit, on
                             onBack()
                         }
                     },
-                    item = item!!,
-                    getCommodity = { mainActivityVM.getItemCommodity(item!!) }
+                    item = item!!
                 )
             }else {
                 Text(text = if (displayRemoveEntry) {
@@ -84,13 +84,10 @@ fun ReviewScreen(mainActivityVM : MainActivityViewModel, onBack : () -> Unit, on
                 }, modifier = Modifier.padding(16.dp))
 
                 GetRusalItemListView(
-                    mainActivityVM.addedItems.value,
+                    mainActivityVM.displayedItems.value,
                     onClick = {
                         item = it
                         showRemoveDialog = true
-                    },
-                    getCommodity = {
-                        mainActivityVM.getItemCommodity(it)
                     }
                 )
 
@@ -133,7 +130,7 @@ fun ReviewScreen(mainActivityVM : MainActivityViewModel, onBack : () -> Unit, on
 
 
 @Composable
-private fun GetRusalItemListView(items : List<RusalItem>, onClick : (item : RusalItem) -> Unit, getCommodity: (item: RusalItem) -> Commodity) {
+private fun GetRusalItemListView(items : List<RusalItem>, onClick : (item : RusalItem) -> Unit) {
 
     LazyColumn (
         modifier = Modifier
@@ -144,14 +141,14 @@ private fun GetRusalItemListView(items : List<RusalItem>, onClick : (item : Rusa
         items(
             items = items,
             itemContent = { it ->
-                RusalItemListItem(item = it, onClick = { onClick(it) }, getCommodity = { getCommodity(it) })
+                RusalItemListItem(item = it, onClick = { onClick(it) })
             }
         )
     }
 }
 
 @Composable
-private fun RusalItemListItem(item: RusalItem, onClick: (item : RusalItem) -> Unit, getCommodity : (item : RusalItem) -> Commodity) {
+private fun RusalItemListItem(item: RusalItem, onClick: (item : RusalItem) -> Unit) {
     Card(
         modifier= Modifier
             .padding(horizontal = 8.dp, vertical = 8.dp)
@@ -176,7 +173,7 @@ private fun RusalItemListItem(item: RusalItem, onClick: (item : RusalItem) -> Un
 
 @ExperimentalComposeUiApi
 @Composable
-private fun RemoveDialog(onDismissRequest : () -> Unit, onRemoveRequest : () -> Unit, item : RusalItem, getCommodity: (item: RusalItem) -> Commodity) {
+private fun RemoveDialog(onDismissRequest : () -> Unit, onRemoveRequest : () -> Unit, item : RusalItem) {
     Dialog(properties = DialogProperties(usePlatformDefaultWidth = false),
         onDismissRequest = onDismissRequest) {
         Surface(modifier = Modifier.fillMaxSize()) {

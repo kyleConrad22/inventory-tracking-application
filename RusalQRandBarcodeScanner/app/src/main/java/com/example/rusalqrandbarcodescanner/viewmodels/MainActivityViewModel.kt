@@ -7,11 +7,12 @@ import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.services.HttpRequestHandler
-import com.example.rusalqrandbarcodescanner.util.Commodity
+import com.example.rusalqrandbarcodescanner.util.rusalItemListSortAscendingTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.lang.IllegalArgumentException
+import java.time.format.DateTimeFormatter
 
 class MainActivityViewModel(private val repo : InventoryRepository, application : Application): AndroidViewModel(application) {
 
@@ -28,6 +29,7 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
     val quantity = mutableStateOf("")
     val heatNum = mutableStateOf("")
 
+    val displayedItems = mutableStateOf(listOf<RusalItem>())
     val addedItemCount = mutableStateOf(0)
     val inboundItemCount = mutableStateOf(0)
     val addedItems = mutableStateOf(listOf<RusalItem>())
@@ -70,6 +72,15 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
         optionalCall()
     }
 
+    private suspend fun triggerPartialUpload() {
+        val firstLoaded = addedItems.value.subList(0, 10)
+        HttpRequestHandler.initUpdate(firstLoaded, sessionType.value, getApplication())
+        firstLoaded.forEach { item ->
+            repo.updateIsAddedStatus(false, item.heatNum)
+        }
+        updateAddedItems()
+    }
+
     fun clearInputFields() {
         workOrder.value = ""
         checker.value = ""
@@ -102,16 +113,9 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
         }
     }
 
-    private fun updateAddedItemCount() = viewModelScope.launch() {
+    private fun updateAddedItemCount() = viewModelScope.launch {
         addedItemCount.value = repo.getNumberOfAddedItems()
         setDisplayRemoveEntryContent()
-    }
-
-    fun getItemCommodity(item : RusalItem) : Commodity {
-        if (item.grade.contains("INGOTS")) {
-            return Commodity.INGOTS
-        }
-        return Commodity.BILLETS
     }
 
     fun removeAllAddedItems() = viewModelScope.launch {
@@ -128,7 +132,19 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
     }
 
     private fun updateAddedItems() = viewModelScope.launch {
-       addedItems.value = repo.getAddedItems()
+        addedItems.value = rusalItemListSortAscendingTime(repo.getAddedItems(), DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss"))
+        if (sessionType.value == SessionType.RECEPTION && addedItems.value.isNotEmpty() && addedItems.value.size % 20 == 0) {
+            triggerPartialUpload()
+        }
+        updateDisplayedItemList()
+    }
+
+    private fun updateDisplayedItemList() {
+        if (sessionType.value == SessionType.SHIPMENT || addedItems.value.size < 11) {
+            displayedItems.value = addedItems.value
+        } else {
+            displayedItems.value = addedItems.value.subList(addedItems.value.size - 10, addedItems.value.size)
+        }
     }
 
     fun insert(lineItem: RusalItem) = viewModelScope.launch {
@@ -144,5 +160,9 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }
+    }
+
+    companion object {
+        private const val TAG = "MainActivityViewModel"
     }
 }
