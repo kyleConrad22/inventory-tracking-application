@@ -48,8 +48,8 @@ public class ExcelHelper {
                 row.createCell(1).setCellValue(lineItem.getPackageNum());
                 row.createCell(2).setCellValue(lineItem.getNetWeightKg());
                 row.createCell(3).setCellValue(lineItem.getGrossWeightKg());
-                row.createCell(4).setCellValue(Long.parseLong(lineItem.getNetWeightKg())*2.20462);
-                row.createCell(5).setCellValue(Long.parseLong(lineItem.getGrossWeightKg())*2.20462);
+                row.createCell(4).setCellValue(Double.parseDouble(lineItem.getNetWeightKg())*2.20462);
+                row.createCell(5).setCellValue(Double.parseDouble(lineItem.getGrossWeightKg())*2.20462);
                 row.createCell(6).setCellValue(lineItem.getQuantity());
                 row.createCell(7).setCellValue(lineItem.getDimension());
                 row.createCell(8).setCellValue(lineItem.getGrade());

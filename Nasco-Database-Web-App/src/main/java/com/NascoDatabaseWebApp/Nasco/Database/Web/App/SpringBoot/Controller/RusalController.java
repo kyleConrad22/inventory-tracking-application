@@ -14,8 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.print.attribute.standard.Media;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -111,7 +109,7 @@ public class RusalController {
                 .body(file);
     }
 
-    @GetMapping("/excel/download-by-barge")
+    @GetMapping(value = "/excel/download-by-barge")
     ResponseEntity<Resource> downloadByBarge(@RequestParam final String barge) {
         String fileName = "rusal-barge-" + barge + ".xlsx";
         InputStreamResource file = new InputStreamResource(rusalLineItemService.loadByBarge(barge));
