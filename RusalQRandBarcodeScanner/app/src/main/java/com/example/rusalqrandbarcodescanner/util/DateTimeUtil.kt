@@ -21,3 +21,8 @@ fun rusalItemListSortAscendingTime(RusalItemList : List<RusalItem>, formatter : 
     }
     return list.toList()
 }
+
+fun getCurrentDateTime() : String {
+    val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")
+    return LocalDateTime.now().format(formatter)
+}

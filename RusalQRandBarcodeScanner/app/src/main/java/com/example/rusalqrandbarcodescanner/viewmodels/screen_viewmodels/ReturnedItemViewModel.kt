@@ -8,6 +8,9 @@ import com.example.rusalqrandbarcodescanner.domain.models.ItemActionType
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
 import com.example.rusalqrandbarcodescanner.util.Commodity
+import com.example.rusalqrandbarcodescanner.util.getCommodity
+import com.example.rusalqrandbarcodescanner.util.getCurrentDateTime
+import com.example.rusalqrandbarcodescanner.util.isBaseHeat
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
@@ -17,20 +20,12 @@ import java.time.format.DateTimeFormatter
 class ReturnedItemViewModel(private val invRepo : InventoryRepository, private val mainActivityVM : MainActivityViewModel) : ViewModel() {
 
     private var heat = mainActivityVM.heatNum.value
-    private var scannedItem = RusalItem(barcode = "") // Item returned from scanner and/or with values set through manual entry
 
     val uniqueList = mutableStateOf(listOf<RusalItem>())
     val loadedHeats = mutableStateOf(listOf<String>())
     val loading = mutableStateOf(true)
     val locatedItem : MutableState<RusalItem?> = mutableStateOf(null) // Item returned from database
     val itemActionType = mutableStateOf(ItemActionType.INVALID_HEAT)
-
-    val scannedItemGrade = mutableStateOf(scannedItem.grade)
-    val scannedItemGrossWeight = mutableStateOf(scannedItem.grossWeightKg)
-    val scannedItemNetWeight = mutableStateOf(scannedItem.netWeightKg)
-    val scannedItemQuantity = mutableStateOf(scannedItem.quantity)
-    val scannedItemMark = mutableStateOf("")
-    val isConfirmAdditionVisible = mutableStateOf(false)
 
     // Sets the state of ReturnedItem Screen on load
     init {
@@ -60,22 +55,8 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
                 else -> getReceptionItemType(locatedItem.value!!)
             }
 
-            // Sets scannedItem value if item was returned through a QR scan rather than through manual entry
-            if (itemActionType.value == ItemActionType.INVALID_HEAT && mainActivityVM.sessionType.value == SessionType.RECEPTION && mainActivityVM.scannedItem.barcode != "") {
-                scannedItem = mainActivityVM.scannedItem
-                scannedItemGrade.value = mainActivityVM.scannedItem.grade
-                scannedItemQuantity.value = mainActivityVM.scannedItem.quantity
-                scannedItemGrossWeight.value = mainActivityVM.scannedItem.grossWeightKg
-                scannedItemNetWeight.value = mainActivityVM.scannedItem.netWeightKg
-                refresh()
-            }
             loading.value = false
         }
-    }
-
-    // Checks if the confirm addition button should be visible, setting visibility as necessary
-    fun refresh() {
-        isConfirmAdditionVisible.value = "" !in listOf(scannedItemGrade.value, scannedItemGrossWeight.value, scannedItemNetWeight.value, scannedItemQuantity.value, scannedItemMark.value)
     }
 
     // Used to set parameters {locatedItem, and unique list (if necessary)} if the given heat is a base heat number
@@ -130,7 +111,7 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
     // Gets the list of all base heats currently added to the session
     private suspend fun getLoadedHeats() : List<String> {
         val result = mutableListOf<String>()
-        if (getCommodity(invRepo.findByBl(mainActivityVM.bl.value)) == Commodity.INGOTS) {
+        if (getCommodity(invRepo.findByBl(mainActivityVM.bl.value)[0]) == Commodity.INGOTS) {
             mainActivityVM.addedItems.value.forEach { item ->
                 if (result.find { it == item.heatNum } == null) {
                     result.add(item.heatNum)
@@ -139,13 +120,6 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
         }
         loadedHeats.value = result.toList()
         return result.toList()
-    }
-
-    private fun getCommodity(items : List<RusalItem>) : Commodity {
-        if (items[0].grade.contains("INGOTS")) {
-            return Commodity.INGOTS
-        }
-        return Commodity.BILLETS
     }
 
     fun isLastItem(sessionType: SessionType) : Boolean {
@@ -189,32 +163,6 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
         }
     }
 
-    // Adds new item to inventory if being added through reception as a new item
-    fun receiveNewItem() = viewModelScope.launch() {
-        if (scannedItem.barcode == "") {
-            scannedItem = RusalItem(
-                heatNum = heat,
-                grossWeightKg = scannedItemGrossWeight.value,
-                netWeightKg = scannedItemNetWeight.value,
-                grade = scannedItemGrade.value,
-                quantity = scannedItemQuantity.value,
-                barcode =
-                if (isBaseHeat(heat)) "${heat}u${getNumberOfUnidentifiedBundles(heat) + 1}"
-                else "${heat}n",
-            )
-        }
-        scannedItem.blNum = "N/A"
-        scannedItem.mark = scannedItemMark.value
-        scannedItem.barge = mainActivityVM.barge.value
-        scannedItem.lot = "N/A"
-        addItem(scannedItem)
-    }
-
-    private fun getCurrentDateTime() : String {
-        val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")
-        return LocalDateTime.now().format(formatter)
-    }
-
     private fun getUniqueBlAndOptionCombos(items : List<RusalItem>) : List<RusalItem> {
         val uniqueList = mutableListOf<RusalItem>()
         for (item in items) {
@@ -223,11 +171,6 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
             }
         }
         return uniqueList
-    }
-
-    // Determines if the given heat is a base heat
-    private fun isBaseHeat(heat : String) : Boolean {
-        return heat.length == 6
     }
 
     private suspend fun getNumberOfUnidentifiedBundles(heat : String) : Int {

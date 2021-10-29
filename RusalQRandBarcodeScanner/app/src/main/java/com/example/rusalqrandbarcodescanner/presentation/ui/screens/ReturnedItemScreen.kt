@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -17,8 +16,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -30,7 +27,6 @@ import com.example.rusalqrandbarcodescanner.domain.models.ItemActionType
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.StyledCardItem
-import com.example.rusalqrandbarcodescanner.presentation.components.loading.BasicInputDialog
 import com.example.rusalqrandbarcodescanner.util.Commodity
 import com.example.rusalqrandbarcodescanner.util.displayedStringPostStringInsertion
 import com.example.rusalqrandbarcodescanner.util.getCommodity
@@ -42,13 +38,12 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 @DelicateCoroutinesApi
 @ExperimentalComposeUiApi
 @Composable
-fun ReturnedItemScreen(mainActivityVM : MainActivityViewModel, onDismissNav : () -> Unit, onReviewNav : () -> Unit) {
+fun ReturnedItemScreen(mainActivityVM : MainActivityViewModel, onDismissNav : () -> Unit, onReviewNav : () -> Unit, onConfirmAddition : () -> Unit) {
     val application  = LocalContext.current.applicationContext as CodeApplication
 
     val returnedItemVM : ReturnedItemViewModel = viewModel(viewModelStoreOwner = LocalViewModelStoreOwner.current!!, key = "ReturnedItemVM", factory = ReturnedItemViewModelFactory(application.invRepository, mainActivityVM))
 
     val showAddedDialog = remember { mutableStateOf(false) }
-    val showAdditionDialog = remember { mutableStateOf(false) }
 
     val heat = displayedStringPostStringInsertion(mainActivityVM.heatNum.value, 6, "-")
     val loading = returnedItemVM.loading.value
@@ -75,16 +70,6 @@ fun ReturnedItemScreen(mainActivityVM : MainActivityViewModel, onDismissNav : ()
                 mainActivityVM.heatNum.value = ""
             }
         )
-    } else if (showAdditionDialog.value) {
-        AdditionDialog(returnedItemVM = returnedItemVM,
-            heat = heat,
-            onBack = {
-                showAdditionDialog.value = false
-            }, onConfirm = {
-                returnedItemVM.receiveNewItem()
-                showAddedDialog.value = true
-            }
-        )
     } else {
         Scaffold(topBar = { TopAppBar(title = { Text("Returned Item Info") }) }) {
 
@@ -103,9 +88,7 @@ fun ReturnedItemScreen(mainActivityVM : MainActivityViewModel, onDismissNav : ()
                         ItemActionType.INCORRECT_PIECE_COUNT -> IncorrectField(field = "Piece Count", retrievedValue = locatedItem!!.quantity, requestedValue = mainActivityVM.pieceCount.value, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) })
                         ItemActionType.INCORRECT_BL -> IncorrectField(field = "BL Number", retrievedValue = locatedItem!!.blNum, requestedValue = mainActivityVM.bl.value, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) })
                         ItemActionType.DUPLICATE -> DuplicateItem(sessionType = sessionType, scanTime = if (sessionType == SessionType.SHIPMENT) locatedItem!!.loadTime else locatedItem!!.receptionDate, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat =mainActivityVM.heatNum) })
-                        ItemActionType.INVALID_HEAT -> InvalidHeat(sessionType = sessionType, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) }, onConfirm = {
-                            showAdditionDialog.value = true
-                        })
+                        ItemActionType.INVALID_HEAT -> InvalidHeat(sessionType = sessionType, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) }, onConfirm = onConfirmAddition)
                         ItemActionType.INCORRECT_BARGE -> IncorrectField(field = "Barge",
                             heat = heat,
                             retrievedValue = locatedItem!!.barge,
@@ -119,137 +102,6 @@ fun ReturnedItemScreen(mainActivityVM : MainActivityViewModel, onDismissNav : ()
                     }
                 }
             }
-        }
-    }
-}
-
-// Displayed when user requests to add an item to reception, requests item information before confirming and adding item to inventory
-@DelicateCoroutinesApi
-@ExperimentalComposeUiApi
-@Composable
-fun AdditionDialog(returnedItemVM : ReturnedItemViewModel, heat : String, onBack : () -> Unit, onConfirm : () -> Unit) {
-    val focusManager  = LocalFocusManager.current
-
-    Dialog(properties = DialogProperties(usePlatformDefaultWidth = false), onDismissRequest = onBack) {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            Column(modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceEvenly) {
-
-                Text(text = "Heat Number: $heat")
-
-                BasicInputDialog(
-                    label = "Gross Weight",
-                    userInput = returnedItemVM.scannedItemGrossWeight,
-                    refresh = {
-                        returnedItemVM.scannedItemGrossWeight.value = it
-                        returnedItemVM.refresh()
-                    },
-                    focusManager = focusManager,
-                    lastInput = false,
-                    keyboardType = KeyboardType.Number
-                )
-
-                BasicInputDialog(
-                    label = "Net Weight",
-                    userInput = returnedItemVM.scannedItemNetWeight,
-                    refresh = {
-                        returnedItemVM.scannedItemNetWeight.value = it
-                        returnedItemVM.refresh()
-                    },
-                    focusManager = focusManager,
-                    lastInput = false,
-                    keyboardType = KeyboardType.Number
-                )
-
-                BasicInputDialog(
-                    label = "Piece Count",
-                    userInput = returnedItemVM.scannedItemQuantity,
-                    refresh = {
-                        returnedItemVM.scannedItemQuantity.value = it
-                        returnedItemVM.refresh()
-                    },
-                    focusManager = focusManager,
-                    lastInput = false,
-                    keyboardType = KeyboardType.Number
-                )
-
-                BasicInputDialog(
-                    label = "Mark",
-                    userInput = returnedItemVM.scannedItemMark,
-                    refresh = {
-                        returnedItemVM.scannedItemMark.value = it
-                        returnedItemVM.refresh()
-                    }, focusManager = focusManager,
-                    lastInput = true,
-                    keyboardType = KeyboardType.Password
-                )
-
-                CommodityTypeInput(userInput = returnedItemVM.scannedItemGrade, onSelect = { returnedItemVM.refresh() })
-
-                Row(modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly) {
-                    Button(onClick = onBack) {
-                        Text(text = "Deny", modifier = Modifier.padding(16.dp))
-                    }
-                    if (returnedItemVM.isConfirmAdditionVisible.value) {
-                        Button(onClick = onConfirm) {
-                            Text(text = "Confirm", modifier = Modifier.padding(16.dp))
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun CommodityTypeInput(userInput : MutableState<String>, onSelect : () -> Unit) {
-    Row(modifier = Modifier.fillMaxWidth(.9f)) {
-        Text(text = "Grade: ", modifier = Modifier.padding(16.dp))
-        if (userInput.value !in listOf("INGOTS", "BILLETS", "")) {
-            Text(text = userInput.value, modifier = Modifier.padding(16.dp))
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth(.9f),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)) {
-                items(
-                    items = listOf("INGOTS", "BILLETS"),
-                    itemContent = { item ->
-                        CommodityTypeCard(
-                            commodity = item,
-                            onClick = {
-                                if (item != userInput.value) userInput.value = item
-                                else userInput.value = ""
-                                onSelect()
-                            }, selectedItem = userInput.value
-                        )
-                    }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun CommodityTypeCard(commodity : String, onClick: (commodity : String) -> Unit, selectedItem : String) {
-    Card(
-        modifier = Modifier
-            .padding(16.dp)
-            .selectable(
-                selected = commodity == selectedItem,
-                onClick = {
-                    onClick(commodity)
-                }
-            )
-            .fillMaxWidth(),
-        backgroundColor =
-        if (selectedItem == commodity) Color.LightGray
-        else Color.White
-    ) {
-        Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(text = commodity, style = MaterialTheme.typography.h6)
         }
     }
 }

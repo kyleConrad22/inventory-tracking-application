@@ -53,6 +53,10 @@ class InventoryRepository(private val inventoryDao: InventoryDao) {
         inventoryDao.updateIsAddedStatus(isAdded, heat)
     }
 
+    suspend fun updateIsAddedStatusViaBarcode(isAdded : Boolean, barcode : String) = withContext(Dispatchers.IO) {
+        inventoryDao.updateIsAddedStatusViaBarcode(isAdded, barcode)
+    }
+
     suspend fun insert(rusalItem: RusalItem) = withContext(Dispatchers.IO) {
         inventoryDao.insert(rusalItem)
     }
@@ -79,6 +83,10 @@ class InventoryRepository(private val inventoryDao: InventoryDao) {
 
     suspend fun updateReceptionFields(receptionDate : String, checker : String, heatNum : String) = withContext(Dispatchers.IO) {
         inventoryDao.updateReceptionFields(receptionDate, checker, heatNum)
+    }
+
+    suspend fun updateReceptionFieldsViaBarcode(receptionDate : String, checker : String, barcode : String) = withContext(Dispatchers.IO) {
+        inventoryDao.updateReceptionFieldsViaBarcode(receptionDate, checker, barcode)
     }
 
     suspend fun getInboundItemCount(barge : String) : Int = withContext(Dispatchers.IO) {

@@ -8,3 +8,7 @@ fun getCommodity(item : RusalItem) : Commodity {
     }
     return Commodity.BILLETS
 }
+
+fun isBaseHeat(heat : String) : Boolean {
+    return heat.length == 6
+}

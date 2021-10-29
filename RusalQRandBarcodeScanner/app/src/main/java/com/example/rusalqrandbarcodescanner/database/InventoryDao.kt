@@ -35,6 +35,9 @@ interface InventoryDao {
     @Query("UPDATE current_inventory SET is_added = :reqIsAdded WHERE heat_num LIKE :searchHeatNum")
     suspend fun updateIsAddedStatus(reqIsAdded : Boolean, searchHeatNum : String)
 
+    @Query("UPDATE current_inventory SET is_added = :reqIsAdded WHERE barcode LIKE :searchBarcode")
+    suspend fun updateIsAddedStatusViaBarcode(reqIsAdded : Boolean, searchBarcode : String)
+
     @Update
     suspend fun update(rusalItem : RusalItem)
 
@@ -52,6 +55,9 @@ interface InventoryDao {
 
     @Query("UPDATE current_inventory SET reception_date = :reqReceptionDate, checker = :reqChecker WHERE heat_num = :searchHeatNum")
     suspend fun updateReceptionFields(reqReceptionDate : String, reqChecker : String, searchHeatNum : String)
+
+    @Query("UPDATE current_inventory SET reception_date = :reqReceptionDate, checker = :reqChecker WHERE barcode = :searchBarcode")
+    suspend fun updateReceptionFieldsViaBarcode(reqReceptionDate : String, reqChecker : String, searchBarcode : String)
 
     @Query("SELECT COUNT(barge) FROM current_inventory WHERE barge = :searchBarge")
     suspend fun getInboundItemCount(searchBarge : String) : Int

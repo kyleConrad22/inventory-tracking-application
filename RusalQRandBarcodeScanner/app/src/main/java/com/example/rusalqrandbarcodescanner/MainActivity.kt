@@ -164,7 +164,16 @@ class MainActivity : ComponentActivity() {
                                 NavOptions.Builder()
                                     .setPopUpTo(Screen.OptionsScreen.title, inclusive = false)
                                     .build())
+                        }, onConfirmAddition = {
+                            navController.navigate(Screen.NewItemScreen.title)
                         }
+                    )
+                }
+                composable(Screen.NewItemScreen.title) {
+                    NewItemScreen(
+                        onDismiss = {
+                            navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)
+                        }, mainActivityVM = mainActivityVM
                     )
                 }
             }
@@ -182,4 +191,5 @@ sealed class Screen(val title: String) {
     object ToBeImplementedScreen: Screen("ToBeImplemented")
     object ReviewScreen: Screen("Review")
     object ReturnedItemScreen : Screen("ReturnedItem")
+    object NewItemScreen : Screen("NewItemScreen")
 }
