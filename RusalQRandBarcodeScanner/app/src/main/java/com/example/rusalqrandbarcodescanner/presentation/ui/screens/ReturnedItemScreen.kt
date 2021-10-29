@@ -17,14 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.ItemActionType
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
+import com.example.rusalqrandbarcodescanner.presentation.components.ItemAddedDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.StyledCardItem
 import com.example.rusalqrandbarcodescanner.util.Commodity
@@ -45,61 +44,51 @@ fun ReturnedItemScreen(mainActivityVM : MainActivityViewModel, onDismissNav : ()
 
     val showAddedDialog = remember { mutableStateOf(false) }
 
-    val heat = displayedStringPostStringInsertion(mainActivityVM.heatNum.value, 6, "-")
+    val heat = remember { displayedStringPostStringInsertion(mainActivityVM.heatNum.value, 6, "-") }
     val loading = returnedItemVM.loading.value
     val sessionType = mainActivityVM.sessionType.value
     val itemType = returnedItemVM.itemActionType.value
     val locatedItem = returnedItemVM.locatedItem.value
 
     if (showAddedDialog.value) {
-        ItemAddedDialog(heat, mainActivityVM.sessionType.value.type, returnedItemVM.isLastItem(sessionType),
-            onDismiss = {
-                handleDismiss(
-                    onDismiss = {
-                        showAddedDialog.value = false
-                        onDismissNav()
-                    }, heat = mainActivityVM.heatNum
-                )
-            }, onAddition = {
-                showAddedDialog.value = false
-                if (!returnedItemVM.isLastItem(sessionType)) {
-                    onDismissNav()
-                } else {
-                    onReviewNav()
-                }
-                mainActivityVM.heatNum.value = ""
-            }
-        )
-    } else {
-        Scaffold(topBar = { TopAppBar(title = { Text("Returned Item Info") }) }) {
 
-            Column(modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceEvenly) {
-                if (loading) {
-                    LoadingDialog(isDisplayed = true)
-                } else {
-                    when (itemType) {
-                        ItemActionType.MULTIPLE_BLS_OR_PIECE_COUNTS -> MultipleBlsOrPieceCounts(uniqueComboList = returnedItemVM.uniqueList.value, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) }, onConfirm = {
-                            returnedItemVM.addItem()
-                            showAddedDialog.value = true
+        ItemAddedDialog(
+            onDismiss = {
+                if (!returnedItemVM.isLastItem(sessionType)) onDismissNav()
+                else onReviewNav()
+            }, heat = heat,
+            sessionType = mainActivityVM.sessionType.value.toString()
+        )
+    }
+
+    Scaffold(topBar = { TopAppBar(title = { Text("Returned Item Info") }) }) {
+
+        Column(modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly) {
+            if (loading) {
+                LoadingDialog(isDisplayed = true)
+            } else {
+                when (itemType) {
+                    ItemActionType.MULTIPLE_BLS_OR_PIECE_COUNTS -> MultipleBlsOrPieceCounts(uniqueComboList = returnedItemVM.uniqueList.value, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) }, onConfirm = {
+                        returnedItemVM.addItem()
+                        showAddedDialog.value = true
+                    })
+                    ItemActionType.NOT_IN_LOADED_HEATS -> NotInLoadedHeats(loadedHeatList = returnedItemVM.loadedHeats.value, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) })
+                    ItemActionType.INCORRECT_PIECE_COUNT -> IncorrectField(field = "Piece Count", retrievedValue = locatedItem!!.quantity, requestedValue = mainActivityVM.pieceCount.value, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) })
+                    ItemActionType.INCORRECT_BL -> IncorrectField(field = "BL Number", retrievedValue = locatedItem!!.blNum, requestedValue = mainActivityVM.bl.value, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) })
+                    ItemActionType.DUPLICATE -> DuplicateItem(sessionType = sessionType, scanTime = if (sessionType == SessionType.SHIPMENT) locatedItem!!.loadTime else locatedItem!!.receptionDate, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat =mainActivityVM.heatNum) })
+                    ItemActionType.INVALID_HEAT -> InvalidHeat(sessionType = sessionType, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) }, onConfirm = onConfirmAddition)
+                    ItemActionType.INCORRECT_BARGE -> IncorrectField(field = "Barge",
+                        heat = heat,
+                        retrievedValue = locatedItem!!.barge,
+                        requestedValue = mainActivityVM.barge.value, onDismiss = {
+                            handleDismiss(onDismiss = onDismissNav, heat =mainActivityVM.heatNum)
                         })
-                        ItemActionType.NOT_IN_LOADED_HEATS -> NotInLoadedHeats(loadedHeatList = returnedItemVM.loadedHeats.value, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) })
-                        ItemActionType.INCORRECT_PIECE_COUNT -> IncorrectField(field = "Piece Count", retrievedValue = locatedItem!!.quantity, requestedValue = mainActivityVM.pieceCount.value, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) })
-                        ItemActionType.INCORRECT_BL -> IncorrectField(field = "BL Number", retrievedValue = locatedItem!!.blNum, requestedValue = mainActivityVM.bl.value, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) })
-                        ItemActionType.DUPLICATE -> DuplicateItem(sessionType = sessionType, scanTime = if (sessionType == SessionType.SHIPMENT) locatedItem!!.loadTime else locatedItem!!.receptionDate, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat =mainActivityVM.heatNum) })
-                        ItemActionType.INVALID_HEAT -> InvalidHeat(sessionType = sessionType, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) }, onConfirm = onConfirmAddition)
-                        ItemActionType.INCORRECT_BARGE -> IncorrectField(field = "Barge",
-                            heat = heat,
-                            retrievedValue = locatedItem!!.barge,
-                            requestedValue = mainActivityVM.barge.value, onDismiss = {
-                                handleDismiss(onDismiss = onDismissNav, heat =mainActivityVM.heatNum)
-                            })
-                        ItemActionType.VALID -> ValidHeat(item = locatedItem!!, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) }, onConfirm = {
-                            returnedItemVM.addItem()
-                            showAddedDialog.value = true
-                        })
-                    }
+                    ItemActionType.VALID -> ValidHeat(item = locatedItem!!, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) }, onConfirm = {
+                        returnedItemVM.addItem()
+                        showAddedDialog.value = true
+                    })
                 }
             }
         }
@@ -210,27 +199,6 @@ private fun DenyOrConfirm(onDismiss: () -> Unit, onConfirm: () -> Unit) {
             onConfirm()
         }) {
             Text(text = "Add", modifier = Modifier.padding(16.dp))
-        }
-    }
-}
-
-@ExperimentalComposeUiApi
-@Composable
-private fun ItemAddedDialog(heat : String, type : String, isLastItem : Boolean, onDismiss : () -> Unit, onAddition : () -> Unit) {
-    Dialog(properties = DialogProperties(usePlatformDefaultWidth = false),
-        onDismissRequest = {
-            onDismiss()
-        }) {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
-                Text(text="Item with heat $heat has been added to the $type.", Modifier.padding(16.dp))
-                Button(onClick = {
-                    onAddition()
-                }) {
-                    Text(if (!isLastItem) {"Ok"} else { "Review $type" }, modifier = Modifier.padding(16.dp))
-                }
-            }
-
         }
     }
 }

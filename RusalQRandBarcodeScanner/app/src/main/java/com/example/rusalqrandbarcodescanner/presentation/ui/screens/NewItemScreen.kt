@@ -15,6 +15,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.rusalqrandbarcodescanner.CodeApplication
+import com.example.rusalqrandbarcodescanner.presentation.components.ItemAddedDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.StyledCardItem
 import com.example.rusalqrandbarcodescanner.presentation.components.loading.BasicInputDialog
 import com.example.rusalqrandbarcodescanner.util.displayedStringPostStringInsertion
@@ -23,7 +24,7 @@ import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.NewItem
 
 @Composable
 fun NewItemScreen(onDismiss : () -> Unit, mainActivityVM: MainActivityViewModel) {
-    val heat = displayedStringPostStringInsertion(mainActivityVM.heatNum.value, 6, "-")
+    val heat = remember { displayedStringPostStringInsertion(mainActivityVM.heatNum.value, 6, "-") }
 
     val newItemVM : NewItemViewModel = viewModel(factory = NewItemViewModel.NewItemViewModelFactory(mainActivityVM, (LocalContext.current.applicationContext as CodeApplication).invRepository))
     val focusManager = LocalFocusManager.current
@@ -31,98 +32,91 @@ fun NewItemScreen(onDismiss : () -> Unit, mainActivityVM: MainActivityViewModel)
     var showAddedDialog by remember { mutableStateOf(false) }
 
     if (showAddedDialog) {
-        AddedDialog(onDismiss)
+        ItemAddedDialog(
+            onDismiss = {
+                onDismiss()
+                mainActivityVM.heatNum.value = ""
+            },
+            heat = heat,
+            sessionType = mainActivityVM.sessionType.value.toString()
+        )
     }
 
-    Column(modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly) {
+    Scaffold(topBar = { TopAppBar(title = { Text("Receive New Item") }) }) {
 
-        StyledCardItem(text = "Heat Number: $heat", backgroundColor = Color.Gray)
+        Column(modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly) {
 
-        BasicInputDialog(
-            label = "Gross Weight",
-            userInput = newItemVM.scannedItemGrossWeight,
-            refresh = {
-                newItemVM.scannedItemGrossWeight.value = it
-                newItemVM.refresh()
-            },
-            focusManager = focusManager,
-            lastInput = false,
-            keyboardType = KeyboardType.Number
-        )
+            StyledCardItem(text = "Heat Number: $heat", backgroundColor = Color.Gray)
 
-        BasicInputDialog(
-            label = "Net Weight",
-            userInput = newItemVM.scannedItemNetWeight,
-            refresh = {
-                newItemVM.scannedItemNetWeight.value = it
-                newItemVM.refresh()
-            },
-            focusManager = focusManager,
-            lastInput = false,
-            keyboardType = KeyboardType.Number
-        )
+            BasicInputDialog(
+                label = "Gross Weight",
+                userInput = newItemVM.scannedItemGrossWeight,
+                refresh = {
+                    newItemVM.scannedItemGrossWeight.value = it
+                    newItemVM.refresh()
+                },
+                focusManager = focusManager,
+                lastInput = false,
+                keyboardType = KeyboardType.Number
+            )
 
-        BasicInputDialog(
-            label = "Piece Count",
-            userInput = newItemVM.scannedItemQuantity,
-            refresh = {
-                newItemVM.scannedItemQuantity.value = it
-                newItemVM.refresh()
-            },
-            focusManager = focusManager,
-            lastInput = false,
-            keyboardType = KeyboardType.Number
-        )
+            BasicInputDialog(
+                label = "Net Weight",
+                userInput = newItemVM.scannedItemNetWeight,
+                refresh = {
+                    newItemVM.scannedItemNetWeight.value = it
+                    newItemVM.refresh()
+                },
+                focusManager = focusManager,
+                lastInput = false,
+                keyboardType = KeyboardType.Number
+            )
 
-        BasicInputDialog(
-            label = "Mark",
-            userInput = newItemVM.scannedItemMark,
-            refresh = {
-                newItemVM.scannedItemMark.value = it
-                newItemVM.refresh()
-            }, focusManager = focusManager,
-            lastInput = true,
-            keyboardType = KeyboardType.Password
-        )
+            BasicInputDialog(
+                label = "Piece Count",
+                userInput = newItemVM.scannedItemQuantity,
+                refresh = {
+                    newItemVM.scannedItemQuantity.value = it
+                    newItemVM.refresh()
+                },
+                focusManager = focusManager,
+                lastInput = false,
+                keyboardType = KeyboardType.Number
+            )
 
-        CommodityTypeInput(userInput = newItemVM.scannedItemGrade,
-            onSelect = { newItemVM.refresh() })
+            BasicInputDialog(
+                label = "Mark",
+                userInput = newItemVM.scannedItemMark,
+                refresh = {
+                    newItemVM.scannedItemMark.value = it
+                    newItemVM.refresh()
+                }, focusManager = focusManager,
+                lastInput = true,
+                keyboardType = KeyboardType.Password
+            )
 
-        Row(modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly) {
-            Button(onClick = onDismiss) {
-                Text(text = "Deny", modifier = Modifier.padding(16.dp))
-            }
-            if (newItemVM.isConfirmAdditionVisible.value) {
-                Button(onClick = {
-                    newItemVM.receiveNewItem()
-                    showAddedDialog = true
-                }) {
-                    Text(text = "Confirm", modifier = Modifier.padding(16.dp))
-                }
-            }
-        }
-    }
-}
+            CommodityTypeInput(userInput = newItemVM.scannedItemGrade,
+                onSelect = { newItemVM.refresh() })
 
-@Composable
-fun AddedDialog(onDismiss : () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss, buttons = {
-            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+            Row(modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly) {
                 Button(onClick = onDismiss) {
-                    Text(text = "Dismiss", style = MaterialTheme.typography.h6, modifier = Modifier.padding(16.dp))
+                    Text(text = "Deny", modifier = Modifier.padding(16.dp))
                 }
-             }
-        }, title = {
-            Text(text = "Addition Confirmation")
-        }, text = {
-            Text(text = "Item added.")
+                if (newItemVM.isConfirmAdditionVisible.value) {
+                    Button(onClick = {
+                        newItemVM.receiveNewItem()
+                        showAddedDialog = true
+                    }) {
+                        Text(text = "Confirm", modifier = Modifier.padding(16.dp))
+                    }
+                }
+            }
         }
-    )
+    }
 }
 
 @Composable

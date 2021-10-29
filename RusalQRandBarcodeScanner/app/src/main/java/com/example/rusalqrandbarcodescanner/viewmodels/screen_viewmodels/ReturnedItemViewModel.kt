@@ -132,35 +132,31 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
     }
 
     // Adds item to current session using appropriate logic based on session type, if item is not null then will add item to inventory first
-    fun addItem(item : RusalItem? = null) {
-        loading.value = true
-        viewModelScope.launch {
-            if (item != null) {
-                invRepo.insert(item)
-            } else if (isBaseHeat(heat)) {
-                invRepo.insert(locatedItem.value!!)
-            }
-
-            invRepo.updateIsAddedStatus(true, heat)
-
-            if (mainActivityVM.sessionType.value == SessionType.SHIPMENT) {
-                invRepo.updateShipmentFields(
-                    mainActivityVM.workOrder.value,
-                    mainActivityVM.loadNum.value,
-                    mainActivityVM.loader.value,
-                    getCurrentDateTime(),
-                    heat)
-            } else {
-                invRepo.updateReceptionFields(
-                    getCurrentDateTime(),
-                    mainActivityVM.checker.value,
-                    heat
-                )
-            }
-            mainActivityVM.scannedItem = RusalItem(barcode = "")
-            mainActivityVM.refresh()
-            loading.value = false
+    fun addItem(item : RusalItem? = null) = viewModelScope.launch {
+        if (item != null) {
+            invRepo.insert(item)
+        } else if (isBaseHeat(heat)) {
+            invRepo.insert(locatedItem.value!!)
         }
+
+        invRepo.updateIsAddedStatus(true, heat)
+
+        if (mainActivityVM.sessionType.value == SessionType.SHIPMENT) {
+            invRepo.updateShipmentFields(
+                mainActivityVM.workOrder.value,
+                mainActivityVM.loadNum.value,
+                mainActivityVM.loader.value,
+                getCurrentDateTime(),
+                heat)
+        } else {
+            invRepo.updateReceptionFields(
+                getCurrentDateTime(),
+                mainActivityVM.checker.value,
+                heat
+            )
+        }
+        mainActivityVM.scannedItem = RusalItem(barcode = "")
+        mainActivityVM.refresh()
     }
 
     private fun getUniqueBlAndOptionCombos(items : List<RusalItem>) : List<RusalItem> {
