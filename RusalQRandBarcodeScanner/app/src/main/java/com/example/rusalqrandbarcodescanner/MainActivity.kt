@@ -68,78 +68,105 @@ class MainActivity : ComponentActivity() {
         RusalQRAndBarcodeScannerTheme() {
             NavHost(navController = navController,
                 startDestination = (Screen.SplashScreen.title)) {
-                composable(Screen.MainMenuScreen.title) { MainMenuScreen(
-                    mainActivityVM = mainActivityVM,
-                    onNavRequest = { dest ->
-                        navController.navigate(dest)
-                    }
-                )}
-                composable(Screen.ReviewScreen.title) { ReviewScreen(
-                    mainActivityVM = mainActivityVM,
-                    onBack = {
-                        if (!navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)) navController.popBackStack(Screen.MainMenuScreen.title, inclusive = false)
-                    }, onConfirm = {
-                        navController.popBackStack(Screen.MainMenuScreen.title, inclusive = false)
-                    }
-                )}
-                composable(Screen.ManualEntryScreen.title) { ManualEntryScreen(
-                    mainActivityVM = mainActivityVM,
-                    onBack = {
-                        navController.popBackStack()
-                    }, onRetrieve = {
-                        navController.navigate(Screen.ReturnedItemScreen.title)
-                    }
-                )}
-                composable(Screen.ScannerScreen.title) { ScannerScreen(
-                    mainActivityVM =  mainActivityVM,
-                    onBack = {
-                        navController.popBackStack()
-                    }, onValidScan = {
-                        navController.navigate(Screen.ReturnedItemScreen.title)
-                    }, onManualRequest = {
-                        navController.navigate(Screen.ManualEntryScreen.title)
-                    }
-                )}
-                composable(Screen.OptionsScreen.title) { OptionsScreen(
-                    mainActivityVM = mainActivityVM,
-                    onBack = {
-                        navController.popBackStack()
-                    }, onReview = {
-                        navController.navigate(Screen.ReviewScreen.title)
-                    }, onScanRequest = {
-                        navController.navigate(Screen.ScannerScreen.title)
-                    }
-                )}
-                composable(Screen.InfoInputScreen.title) { InfoInputScreen(
-                    mainActivityVM = mainActivityVM,
-                    onBack = {
-                        navController.popBackStack(Screen.MainMenuScreen.title, inclusive = false)
-                    }, onConfirm = {
-                        navController.navigate(Screen.OptionsScreen.title)
-                    }
-                )}
-                composable(Screen.ToBeImplementedScreen.title) { ToBeImplementedScreen(
-                    onBack = {
-                        navController.popBackStack()
-                    }
-                )}
-                composable(Screen.SplashScreen.title) { SplashScreen(
-                    mainActivityVM = mainActivityVM,
-                    onNavRequest = { dest ->
-                        if (dest == Screen.InfoInputScreen.title) {
-                            navController.navigate(Screen.MainMenuScreen.title)
+                composable(Screen.MainMenuScreen.title) {
+                    MainMenuScreen(
+                        mainActivityVM = mainActivityVM,
+                        onNavRequest = { dest ->
+                            navController.navigate(dest)
                         }
-                        navController.navigate(dest)
-                    }
-                )}
-                composable(Screen.ReturnedItemScreen.title) { ReturnedItemScreen(
-                    mainActivityVM = mainActivityVM,
-                    onDismissNav = {
-                        navController.popBackStack(Screen.OptionsScreen.title, inclusive = false)
-                    }, onReviewNav = {
-                        navController.navigate(Screen.ReviewScreen.title, NavOptions.Builder().setPopUpTo(Screen.OptionsScreen.title, inclusive = false).build())
-                    }
-                )}
+                    )
+                }
+                composable(Screen.ReviewScreen.title) {
+                    ReviewScreen(
+                        mainActivityVM = mainActivityVM,
+                        onBack = {
+                            if (!navController.popBackStack(Screen.OptionsScreen.title,
+                                    inclusive = false)
+                            ) navController.popBackStack(Screen.MainMenuScreen.title,
+                                inclusive = false)
+                        }, onConfirm = {
+                            navController.popBackStack(Screen.MainMenuScreen.title,
+                                inclusive = false)
+                        }
+                    )
+                }
+                composable(Screen.ManualEntryScreen.title) {
+                    ManualEntryScreen(
+                        mainActivityVM = mainActivityVM,
+                        onBack = {
+                            navController.popBackStack()
+                        }, onRetrieve = {
+                            navController.navigate(Screen.ReturnedItemScreen.title)
+                        }
+                    )
+                }
+                composable(Screen.ScannerScreen.title) {
+                    ScannerScreen(
+                        mainActivityVM = mainActivityVM,
+                        onBack = {
+                            navController.popBackStack()
+                        }, onValidScan = {
+                            navController.navigate(Screen.ReturnedItemScreen.title)
+                        }, onManualRequest = {
+                            navController.navigate(Screen.ManualEntryScreen.title)
+                        }
+                    )
+                }
+                composable(Screen.OptionsScreen.title) {
+                    OptionsScreen(
+                        mainActivityVM = mainActivityVM,
+                        onBack = {
+                            navController.popBackStack()
+                        }, onReview = {
+                            navController.navigate(Screen.ReviewScreen.title)
+                        }, onScanRequest = {
+                            navController.navigate(Screen.ScannerScreen.title)
+                        }
+                    )
+                }
+                composable(Screen.InfoInputScreen.title) {
+                    InfoInputScreen(
+                        mainActivityVM = mainActivityVM,
+                        onBack = {
+                            navController.popBackStack(Screen.MainMenuScreen.title,
+                                inclusive = false)
+                        }, onConfirm = {
+                            navController.navigate(Screen.OptionsScreen.title)
+                        }
+                    )
+                }
+                composable(Screen.ToBeImplementedScreen.title) {
+                    ToBeImplementedScreen(
+                        onBack = {
+                            navController.popBackStack()
+                        }
+                    )
+                }
+                composable(Screen.SplashScreen.title) {
+                    SplashScreen(
+                        mainActivityVM = mainActivityVM,
+                        onNavRequest = { dest ->
+                            if (dest == Screen.InfoInputScreen.title) {
+                                navController.navigate(Screen.MainMenuScreen.title)
+                            }
+                            navController.navigate(dest)
+                        }
+                    )
+                }
+                composable(Screen.ReturnedItemScreen.title) {
+                    ReturnedItemScreen(
+                        mainActivityVM = mainActivityVM,
+                        onDismissNav = {
+                            navController.popBackStack(Screen.OptionsScreen.title,
+                                inclusive = false)
+                        }, onReviewNav = {
+                            navController.navigate(Screen.ReviewScreen.title,
+                                NavOptions.Builder()
+                                    .setPopUpTo(Screen.OptionsScreen.title, inclusive = false)
+                                    .build())
+                        }
+                    )
+                }
             }
         }
     }

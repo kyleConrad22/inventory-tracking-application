@@ -16,7 +16,7 @@ import java.time.format.DateTimeFormatter
 
 class ReturnedItemViewModel(private val invRepo : InventoryRepository, private val mainActivityVM : MainActivityViewModel) : ViewModel() {
 
-    private val heat = mainActivityVM.heatNum.value
+    private var heat = mainActivityVM.heatNum.value
     private var scannedItem = RusalItem(barcode = "") // Item returned from scanner and/or with values set through manual entry
 
     val uniqueList = mutableStateOf(listOf<RusalItem>())
@@ -38,23 +38,27 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
 
         viewModelScope.launch {
 
-                if (isBaseHeat(heat)) {
-                    useBaseHeatLogic()
-                } else {
-                    locatedItem.value = invRepo.findByHeat(heat)
+            if (isBaseHeat(heat)) {
+                useBaseHeatLogic()
+            } else {
+                locatedItem.value = invRepo.findByHeat(heat)
+                if (heat[6] == '0' && locatedItem.value == null && heat.length > 7) {
+                    locatedItem.value = invRepo.findByHeat(heat.replaceRange(6..6, ""))
+                    if (locatedItem.value != null) heat = heat.replaceRange(6..6, "")
                 }
+            }
 
-                itemActionType.value = when {
-                    locatedItem.value == null -> ItemActionType.INVALID_HEAT
+            itemActionType.value = when {
+                locatedItem.value == null -> ItemActionType.INVALID_HEAT
 
-                    mainActivityVM.addedItems.value.find { it.heatNum == heat } != null || (mainActivityVM.sessionType.value == SessionType.RECEPTION && locatedItem.value!!.receptionDate != "") -> ItemActionType.DUPLICATE
+                mainActivityVM.addedItems.value.find { it.heatNum == heat } != null || (mainActivityVM.sessionType.value == SessionType.RECEPTION && locatedItem.value!!.receptionDate != "") -> ItemActionType.DUPLICATE
 
-                    uniqueList.value.size > 1 -> ItemActionType.MULTIPLE_BLS_OR_PIECE_COUNTS
+                uniqueList.value.size > 1 -> ItemActionType.MULTIPLE_BLS_OR_PIECE_COUNTS
 
-                    mainActivityVM.sessionType.value == SessionType.SHIPMENT -> getShipmentItemType(locatedItem.value!!)
+                mainActivityVM.sessionType.value == SessionType.SHIPMENT -> getShipmentItemType(locatedItem.value!!)
 
-                    else -> getReceptionItemType(locatedItem.value!!)
-                }
+                else -> getReceptionItemType(locatedItem.value!!)
+            }
 
             // Sets scannedItem value if item was returned through a QR scan rather than through manual entry
             if (itemActionType.value == ItemActionType.INVALID_HEAT && mainActivityVM.sessionType.value == SessionType.RECEPTION && mainActivityVM.scannedItem.barcode != "") {
