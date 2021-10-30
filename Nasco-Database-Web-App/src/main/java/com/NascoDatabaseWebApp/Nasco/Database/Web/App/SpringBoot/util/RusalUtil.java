@@ -21,10 +21,10 @@ public final class RusalUtil {
             LocalDateTime key = getLatestUpdateTime(keyItem);
 
             int j = i - 1;
-            while (j > 0 && key.compareTo(getLatestUpdateTime(arrayList.get(j))) > 0) {
+            while (j > -1 && key.compareTo(getLatestUpdateTime(arrayList.get(j))) > 0) {
                 arrayList.set(j + 1, arrayList.get(j--));
             }
-            arrayList.set(j, keyItem);
+            arrayList.set(j + 1, keyItem);
         }
         return arrayList;
     }
