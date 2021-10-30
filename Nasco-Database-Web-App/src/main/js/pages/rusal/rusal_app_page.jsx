@@ -4,8 +4,6 @@ import RusalLineItemList from "./components/rusal_line_item_list";
 import RusalAddNewForm from "./rusal_add_new_form";
 import RusalDownloads from "./rusal_downloads";
 import RusalUpdateItem from "./rusal_update_item";
-import LoadingIndicator from '../../core/loading_indicator'
-
 
 export default function RusalPage() {
 
@@ -18,7 +16,7 @@ export default function RusalPage() {
     }, []);
 
     function fetchRusalInventoryItems() {
-        fetch("/api/rusal")
+        fetch("/api/rusal/recent")
             .then(res => res.json())
             .then(
                 (response) => {

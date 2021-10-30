@@ -15,8 +15,6 @@ public interface RusalService {
 
     RusalLineItem save(RusalLineItem rusalLineItem);
     List<RusalLineItem> findAll();
-    List<RusalLineItem> findByOrderAndLoad(String workOrder, String loadNum);
-    List<RusalLineItem> findByBarge(String barge);
     void update(String heatNum, String workOrder, String loadNum, String loader, String loadTime);
     ByteArrayInputStream loadAll();
     ByteArrayInputStream loadByOrderAndLoad(String workOrder, String loadNum);
@@ -30,4 +28,5 @@ public interface RusalService {
     List<String> getUniqueLots();
     void updateShipment(List<RusalShipmentUpdateParams> updateParams);
     void insertItems(List<RusalLineItem> items);
+    List<RusalLineItem> findRecent();
 }

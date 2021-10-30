@@ -10,6 +10,7 @@ import java.io.ByteArrayInputStream;
 import java.util.List;
 
 import static com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.rusal.PackingListParser.parsePackingList;
+import static com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.util.RusalUtil.sortDescendingDateTime;
 
 @Service
 public class RusalLineItemService implements RusalService {
@@ -25,14 +26,6 @@ public class RusalLineItemService implements RusalService {
         return repository.findAll();
     }
 
-    public List<RusalLineItem> findByOrderAndLoad(String workOrder, String loadNum) {
-        return repository.findByOrderAndLoad(workOrder, loadNum);
-    }
-
-    public List<RusalLineItem> findByBarge(String barge) {
-        return repository.findByBarge(barge);
-    }
-
     public void update(String heatNum, String workOrder, String loadNum, String loader, String loadTime) {
         repository.updateShipment(heatNum, workOrder, loadNum, loader, loadTime);
     }
@@ -42,11 +35,11 @@ public class RusalLineItemService implements RusalService {
     }
 
     public ByteArrayInputStream loadByOrderAndLoad(String workOrder, String loadNum) {
-        return ExcelHelper.loadToExcel(findByOrderAndLoad(workOrder, loadNum));
+        return ExcelHelper.loadToExcel(repository.findByOrderAndLoad(workOrder, loadNum));
     }
 
     public ByteArrayInputStream loadByBarge(String barge) {
-        return ExcelHelper.loadToExcel(findByBarge(barge));
+        return ExcelHelper.loadToExcel(repository.findByBarge(barge));
     }
 
     public void addMark(String bl, String mark) {
@@ -59,9 +52,9 @@ public class RusalLineItemService implements RusalService {
 
     @Override
     public void updateReception(List<RusalReceptionUpdateParams> updateParams) {
-        updateParams.forEach(it -> {
-            repository.updateReception(it.getHeatNum(), it.getReceptionDate(), it.getChecker());
-        });
+        updateParams.forEach(it ->
+            repository.updateReception(it.getHeatNum(), it.getReceptionDate(), it.getChecker())
+        );
     }
 
     public void addLot(LotUpdateParams updateParams) {
@@ -85,14 +78,21 @@ public class RusalLineItemService implements RusalService {
     }
 
     public void updateShipment(List<RusalShipmentUpdateParams> updateParams) {
-        updateParams.forEach(it -> {
-            repository.updateShipment(it.getHeatNum(), it.getWorkOrder(), it.getLoadNum(), it.getLoader(), it.getLoadTime());
-        });
+        updateParams.forEach(it ->
+            repository.updateShipment(it.getHeatNum(), it.getWorkOrder(), it.getLoadNum(), it.getLoader(), it.getLoadTime())
+        );
     }
 
     public void insertItems(List<RusalLineItem> items) {
-        items.forEach(item -> {
-            repository.save(item);
-        });
+        items.forEach(item ->
+            repository.save(item)
+        );
+    }
+
+    public List<RusalLineItem> findRecent() {
+        List<RusalLineItem> items = sortDescendingDateTime(repository.findReceivedItems());
+
+        if (items.size() < 100) return items;
+        return items.subList(0, 100);
     }
 }

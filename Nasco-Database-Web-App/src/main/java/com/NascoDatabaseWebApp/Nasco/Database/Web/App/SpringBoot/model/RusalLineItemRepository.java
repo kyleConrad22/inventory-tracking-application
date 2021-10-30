@@ -68,4 +68,10 @@ public interface RusalLineItemRepository extends JpaRepository<RusalLineItem, St
         nativeQuery = true
     )
     void addLot(@Param("reqLot") String lot, @Param("searchBl") String bl, @Param("searchHeat") String heat);
+
+    @Query(
+        value = "SELECT * FROM current_inventory WHERE NULLIF(reception_date, '') IS NOT NULL",
+        nativeQuery = true
+    )
+    List<RusalLineItem> findReceivedItems();
 }
