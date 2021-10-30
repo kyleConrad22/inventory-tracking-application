@@ -7,8 +7,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class BrowserAutomationService {
-    public void createAlgomaReception(MultipartFile[] inFiles, LoginCredentials tc3Credentials) {
+    public void createAlgomaReception(MultipartFile[] inFiles, LoginCredentials tc3Credentials, String offloadDate) {
         AlgomaReception algomaReception = new AlgomaReception();
-        algomaReception.uploadReleases(inFiles, tc3Credentials);
+        algomaReception.uploadReleases(inFiles, tc3Credentials, offloadDate);
     }
 }

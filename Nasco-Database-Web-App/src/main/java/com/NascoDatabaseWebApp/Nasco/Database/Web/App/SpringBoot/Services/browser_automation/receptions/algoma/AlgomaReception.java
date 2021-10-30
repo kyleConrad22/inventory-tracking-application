@@ -22,15 +22,12 @@ import static java.util.Map.entry;
 
 public class AlgomaReception extends Reception implements PdfRelease {
 
-    public void uploadReleases(MultipartFile[] files, LoginCredentials credentials) {
+    public void uploadReleases(MultipartFile[] files, LoginCredentials credentials, String offloadDate) {
         List<AlgomaRelease> orders = new ArrayList<>();
         for (MultipartFile file : files) {
             String convertedFile = convertToText(readFile(file));
 
-            orders.add(parseRelease(convertedFile));
-
-            printOutput(convertedFile + orders.get(0));
-
+            orders.add(parseRelease(convertedFile, offloadDate));
         }
         try {
             loginTc3(credentials);
@@ -44,14 +41,12 @@ public class AlgomaReception extends Reception implements PdfRelease {
         }
     }
 
-    private AlgomaRelease parseRelease(String release) {
+    private AlgomaRelease parseRelease(String release, String offloadDate) {
         System.out.println("\nParsing release...");
         List<AlgomaItem> algomaItems = new ArrayList<>();
         String railcar = getRailcar(release);
-        String offloadDate = "";
         String bolNumber = getBolNumber(release);
         for (String page : getPages(release)) {
-            System.out.println(page);
 
             String poNumber = getPoNumber(page);
             String receiver = getReceiver(page);
@@ -308,9 +303,10 @@ public class AlgomaReception extends Reception implements PdfRelease {
     }
 
     private String getRemarks(Release release, String clerkInitials) {
+        AlgomaRelease algomaRelease = (AlgomaRelease) release;
         HashMap<String, Integer> hm = new HashMap<>();
 
-        for (AlgomaItem item : ((AlgomaRelease) release).getItems()) {
+        for (AlgomaItem item : algomaRelease.getItems()) {
             String receiver = item.getReceiver();
             if (hm.containsKey(receiver)) {
                 hm.put(receiver, hm.get(receiver) + 1);
@@ -321,10 +317,10 @@ public class AlgomaReception extends Reception implements PdfRelease {
 
         StringBuilder remarks  = new StringBuilder();
 
-        remarks.append(((AlgomaRelease) release).getRailcar())
+        remarks.append(algomaRelease.getRailcar())
                 .append("\n")
                 .append("Offloaded on ")
-                .append(((AlgomaRelease) release).getOffloadDate());
+                .append(algomaRelease.getOffloadDate());
 
         hm.forEach((receiver, count) -> {
 
@@ -344,8 +340,11 @@ public class AlgomaReception extends Reception implements PdfRelease {
 
     @Override
     protected void addReleaseItems(Sheet sheet, Release release) {
-        System.out.printf("\nAdding items for release %s...\n", ((AlgomaRelease) release).getBolNumber());
-        for (AlgomaItem item : ((AlgomaRelease) release).getItems()) {
+        AlgomaRelease algomaRelease = (AlgomaRelease) release;
+
+        System.out.printf("\nAdding items for release %s...\n", algomaRelease.getBolNumber());
+
+        for (AlgomaItem item : algomaRelease.getItems()) {
             Row row = sheet.createRow(sheet.getLastRowNum() + 1);
             row.createCell(0).setCellValue("Algoma 2021");
             row.createCell(1).setCellValue(item.getOrder());
@@ -360,9 +359,9 @@ public class AlgomaReception extends Reception implements PdfRelease {
             row.createCell(11).setCellValue("HeatNumber");
             row.createCell(12).setCellValue(item.getHeat());
             row.createCell(13).setCellValue("Scope");
-            row.createCell(14).setCellValue(((AlgomaRelease) release).getBolNumber() + " / " + item.getPoNumber() + " / " + item.getItemNumber());
+            row.createCell(14).setCellValue(algomaRelease.getBolNumber() + " / " + item.getPoNumber() + " / " + item.getItemNumber());
             row.createCell(15).setCellValue("Other");
-            row.createCell(16).setCellValue(((AlgomaRelease) release).getOffloadDate());
+            row.createCell(16).setCellValue(algomaRelease.getOffloadDate());
             row.createCell(17).setCellValue("Thickness");
             row.createCell(18).setCellValue(item.getThickness());
             row.createCell(19).setCellValue("in");
@@ -377,6 +376,7 @@ public class AlgomaReception extends Reception implements PdfRelease {
 
     protected void fillRemarks(String remarks) {
         System.out.println("\nFilling special instructions...");
+
         driver.findElement(By.id("specialInstructions")).sendKeys(remarks);
     }
 

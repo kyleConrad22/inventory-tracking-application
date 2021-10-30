@@ -35,6 +35,8 @@ export default function AlgomaForm( ) {
                 &nbsp;&nbsp;&nbsp;
                 <input id='files' name='files' type='file' multiple />
                 &nbsp;&nbsp;&nbsp;
+                <input id='offload-date' name='offloadDate' type='text' placeholder='Enter Railcar Offload Date' />
+                &nbsp;&nbsp;&nbsp;
                 <button id='submit'>Create Algoma Reception</button>
             </form>
         </div>
