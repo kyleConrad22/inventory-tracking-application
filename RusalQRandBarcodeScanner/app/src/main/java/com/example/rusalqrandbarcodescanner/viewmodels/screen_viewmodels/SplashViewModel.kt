@@ -17,6 +17,10 @@ class SplashViewModel(private val repo : InventoryRepository, private val mainAc
     init {
         mainActivityVM.loading.value = true
         viewModelScope.launch {
+            if (repo.getAllSuspend().isNullOrEmpty()) {
+                /* TODO - add logic to notify user when local database is empty and connection to server cannot be established
+                *   Again notify user when connection to server was successfully established and sync is starting */
+            }
             val items = repo.getAddedItems()
             if (items.isNotEmpty()) {
                 uiState.value = SplashState.Recreation
@@ -25,10 +29,15 @@ class SplashViewModel(private val repo : InventoryRepository, private val mainAc
                 destination.value = Screen.InfoInputScreen.title
                 mainActivityVM.loading.value = false
             } else {
+                mainActivityVM.showSnackBar("Syncing with database, this may take some time...")
                 mainActivityVM.updateLocalDatabase()
                 destination.value = Screen.MainMenuScreen.title
             }
         }
+    }
+
+    private fun updateLocalDatabase() {
+
     }
 
     class SplashViewModelFactory(private val repo : InventoryRepository, private val mainActivityVM : MainActivityViewModel) : ViewModelProvider.Factory {

@@ -1,7 +1,9 @@
 package com.example.rusalqrandbarcodescanner.viewmodels
 
 import android.app.Application
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.*
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
 import com.example.rusalqrandbarcodescanner.database.RusalItem
@@ -79,6 +81,7 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
             repo.updateIsAddedStatus(false, item.heatNum)
         }
         updateAddedItems()
+        showSnackBar("Starting sync with database...")
     }
 
     fun clearInputFields() {
@@ -160,6 +163,22 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }
+    }
+
+    // Sets state of snackBar in main activity
+    var isSnackBarShowing by mutableStateOf(false)
+        private set
+
+    var snackBarMessage by mutableStateOf("")
+        private set
+
+    fun showSnackBar(message : String) {
+        isSnackBarShowing = true
+        snackBarMessage = message
+    }
+
+    fun dismissSnackBar() {
+        isSnackBarShowing = false
     }
 
     companion object {

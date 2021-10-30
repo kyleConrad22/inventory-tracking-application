@@ -32,6 +32,7 @@ class ReviewViewModel(private val invRepo : InventoryRepository, private val mai
 
     fun initiateUpdate() {
         HttpRequestHandler.initUpdate(mainActivityVM.addedItems.value, mainActivityVM.sessionType.value, mainActivityVM.getApplication())
+        mainActivityVM.showSnackBar("Starting sync with database...")
     }
 
     class ReviewViewModelFactory(private val invRepo : InventoryRepository, private val mainActivityVM: MainActivityViewModel) : ViewModelProvider.Factory {
