@@ -4,12 +4,14 @@ import ReactDOM from "react-dom";
 
 import '../css/main.css'
 import Main from './main'
+import LoadingIndicator from "./core/loading_indicator";
 
 function App() {
     return (
         <div className="App">
             { /*<Navbar /> */}
-            <Main />        
+            <Main />
+            <LoadingIndicator />
         </div>
     );
 }

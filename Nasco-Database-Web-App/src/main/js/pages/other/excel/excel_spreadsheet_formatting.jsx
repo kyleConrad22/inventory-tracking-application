@@ -1,4 +1,5 @@
 import React, {useRef} from "react";
+import { trackPromise } from "../../../../resources/static/dist/react-app";
 
 export default function ExcelSpreadSheetFormatting() {
     
@@ -12,30 +13,32 @@ export default function ExcelSpreadSheetFormatting() {
             for (let i = 0; i < files.length; i++) {
                 formData.append('file', files[i])
             }
-        
-            fetch('/api/excel/algoma', {
-                method: 'POST',
-                body: formData
-            }).then(
-                (response) => response.blob()
-            ).then(
-                blob => {
-                    const url = window.URL.createObjectURL(new Blob([blob]))
-                    const link = document.createElement('a')
 
-                    link.href = url;
-                    link.setAttribute('download', 'algoma-report.xlsx');
+            trackPromise (
+                fetch('/api/excel/algoma', {
+                    method: 'POST',
+                    body: formData
+                }).then(
+                    (response) => response.blob()
+                ).then(
+                    blob => {
+                        const url = window.URL.createObjectURL(new Blob([blob]))
+                        const link = document.createElement('a')
 
-                    document.body.appendChild(link);
+                        link.href = url;
+                        link.setAttribute('download', 'algoma-report.xlsx');
 
-                    link.click();
+                        document.body.appendChild(link);
 
-                    link.parentNode.removeChild(link);
-                }
-            ).catch(
-                (error) => {
-                    alert(error)
-                }
+                        link.click();
+
+                        link.parentNode.removeChild(link);
+                    }
+                ).catch(
+                    (error) => {
+                        alert(error)
+                    }
+                )
             )
 
             return false;
@@ -62,30 +65,32 @@ export default function ExcelSpreadSheetFormatting() {
             const formData = new FormData()
             formData.append('file', files[0])
 
-            fetch('/api/excel/ssab', {
-                method: 'POST',
-                body: formData
-            }).then(
-                (response) => response.blob()
-            ).then(
-                blob => {
-                    const url = window.URL.createObjectURL(new Blob([blob]));
-                    const link = document.createElement('a');
+            trackPromise (
+                fetch('/api/excel/ssab', {
+                    method: 'POST',
+                    body: formData
+                }).then(
+                    (response) => response.blob()
+                ).then(
+                    blob => {
+                        const url = window.URL.createObjectURL(new Blob([blob]));
+                        const link = document.createElement('a');
 
-                    link.href = url;
-                    link.setAttribute('download', 'ssab-report.xlsx');
+                        link.href = url;
+                        link.setAttribute('download', 'ssab-report.xlsx');
 
-                    document.body.appendChild(link);
+                        document.body.appendChild(link);
 
-                    link.click();
+                        link.click();
 
-                    link.parentNode.removeChild(link);
+                        link.parentNode.removeChild(link);
 
-                }
-            ).catch(
-                (error) => {
-                    alert(error)
-                }
+                    }
+                ).catch(
+                    (error) => {
+                        alert(error)
+                    }
+                )
             )
             return false;
         }

@@ -26,6 +26,7 @@ export default function BrowserAutomationPage() {
                     <Link to={ `${url}/algoma` }>Algoma Reception</Link>
                 </li>
             </ul>
+
         </div>
     );
 }

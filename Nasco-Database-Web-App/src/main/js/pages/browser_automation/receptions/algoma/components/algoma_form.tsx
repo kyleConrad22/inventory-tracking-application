@@ -1,23 +1,26 @@
 import React from "react";
+import { trackPromise } from "react-promise-tracker";
 
 export default function AlgomaForm( ) {
 
     function handleSubmit(evt) {
 
-        evt.preventDefault();    
-        fetch('/api/browser/reception/algoma', {
-            method: 'POST',
-            body: new FormData(evt.target)
-        }).then(
-            (response) => {
-            if(!response.ok) {
-                alert('Something went wrong!')
+        evt.preventDefault();
+        trackPromise (
+            fetch('/api/browser/reception/algoma', {
+                method: 'POST',
+                body: new FormData(evt.target)
+            }).then(
+                (response) => {
+                if(!response.ok) {
+                    alert('Something went wrong!')
+                }
             }
-        }
-        ).catch(
-            (error) => {
-                alert(error)
-            }
+            ).catch(
+                (error) => {
+                    alert(error)
+                }
+            )
         )
         evt.target.reset()
         return false

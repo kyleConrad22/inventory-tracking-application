@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Switch, Link , Route, useRouteMatch} from "react-router-dom";
-
+import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
 import RusalLineItemList from "./components/rusal_line_item_list";
 import RusalAddNewForm from "./rusal_add_new_form";
 import RusalDownloads from "./rusal_downloads";
 import RusalUpdateItem from "./rusal_update_item";
+import LoadingIndicator from '../../core/loading_indicator'
+
 
 export default function RusalPage() {
 

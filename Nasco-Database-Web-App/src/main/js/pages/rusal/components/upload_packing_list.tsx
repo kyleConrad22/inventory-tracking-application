@@ -1,4 +1,5 @@
 import React from 'react'
+import { trackPromise } from 'react-promise-tracker'
 
 export default function UploadPackingList() {
 
@@ -6,21 +7,23 @@ export default function UploadPackingList() {
 
         evt.preventDefault()
 
-        fetch('/api/rusal/import/packing-list', {
-            method: 'POST',
-            body: new FormData(evt.target)
-        }).then(
-            (response) => {
-                if (response.ok) {
-                    alert('Upload of packing list successful!')
-                } else {
-                    alert('Something went wrong!')
+        trackPromise (
+            fetch('/api/rusal/import/packing-list', {
+                method: 'POST',
+                body: new FormData(evt.target)
+            }).then(
+                (response) => {
+                    if (response.ok) {
+                        alert('Upload of packing list successful!')
+                    } else {
+                        alert('Something went wrong!')
+                    }
                 }
-            }
-        ).catch(
-            (error) => {
-                alert(error)
-            }
+            ).catch(
+                (error) => {
+                    alert(error)
+                }
+            )
         )
         evt.target.reset()
         return false
