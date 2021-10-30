@@ -4,6 +4,7 @@ import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLine
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,10 +33,14 @@ public final class RusalUtil {
     private static LocalDateTime getLatestUpdateTime(RusalLineItem item) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
 
-        if (!item.getLoadTime().equals("")) {
-            return LocalDateTime.parse(item.getLoadTime());
-        } else {
-            return LocalDateTime.parse(item.getReceptionDate());
+        try {
+            if (!item.getLoadTime().equals("")) {
+                return LocalDateTime.parse(item.getLoadTime(), formatter);
+            } else {
+                return LocalDateTime.parse(item.getReceptionDate(), formatter);
+            }
+        } catch (DateTimeParseException e) {
+            return LocalDateTime.MIN;
         }
     }
 }

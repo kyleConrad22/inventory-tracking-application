@@ -75,7 +75,7 @@ public class RusalController {
                     .build());
     }
 
-    @PostMapping(value = "/recent")
+    @GetMapping(value = "/recent")
     @ResponseStatus(HttpStatus.OK)
     Iterable<RusalLineItem> recent() {
         return rusalLineItemService.findRecent();
