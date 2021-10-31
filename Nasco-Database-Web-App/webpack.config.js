@@ -1,13 +1,15 @@
 const path = require('path')
 
 module.exports = {
-    devtool: 'source-map',
+    devtool: 'inline-source-map',
     entry: 'app.jsx',
     output: {
         path: path.resolve(__dirname, './src/main/resources/static/dist'),
         filename: 'react-app.js',
-        publicPath: '/'
+        publicPath: '/',
+        sourceMapFilename: 'react-app.js.map'
     },
+    mode: 'development',
     module: {
         rules: [{
             test: /\.(js|jsx|tsx)$/,

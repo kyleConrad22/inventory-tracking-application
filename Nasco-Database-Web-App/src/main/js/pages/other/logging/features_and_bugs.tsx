@@ -4,7 +4,6 @@ import { Switch, Link, Route, useRouteMatch } from "react-router-dom";
 import BugList from "./bugs/bug_list";
 import FeatureList from "./features/feature_list";
 import FetchRequest from "../../../core/fetch_request";
-import ToBeImplemented from "../../../core/to_be_implemented";
 
 export default function FeaturesAndBugs() {
     

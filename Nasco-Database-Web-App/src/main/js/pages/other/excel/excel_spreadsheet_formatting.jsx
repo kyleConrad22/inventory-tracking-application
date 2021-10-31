@@ -1,5 +1,5 @@
 import React, {useRef} from "react";
-import { trackPromise } from "../../../../resources/static/dist/react-app";
+import { trackPromise } from 'react-promise-tracker';
 
 export default function ExcelSpreadSheetFormatting() {
     

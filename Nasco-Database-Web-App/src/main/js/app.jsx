@@ -2,9 +2,9 @@ import { BrowserRouter } from "react-router-dom";
 import React from "react";
 import ReactDOM from "react-dom";
 
+import LoadingIndicator from "./core/loading_indicator";
 import '../css/main.css'
 import Main from './main'
-import LoadingIndicator from "./core/loading_indicator";
 
 function App() {
     return (
