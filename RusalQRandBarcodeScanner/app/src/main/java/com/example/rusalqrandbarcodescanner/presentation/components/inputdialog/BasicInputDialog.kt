@@ -20,10 +20,11 @@ fun BasicInputDialog(
     refresh : (input : String) -> Unit,
     focusManager: FocusManager,
     lastInput : Boolean,
-    keyboardType : KeyboardType
+    keyboardType : KeyboardType,
+    modifier : Modifier = Modifier
 ) {
     OutlinedTextField(
-        modifier = Modifier.fillMaxWidth(.9f),
+        modifier = modifier.fillMaxWidth(.9f),
         singleLine = true,
         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = keyboardType, imeAction = if (lastInput) { ImeAction.Done } else { ImeAction.Next }),
         keyboardActions =
