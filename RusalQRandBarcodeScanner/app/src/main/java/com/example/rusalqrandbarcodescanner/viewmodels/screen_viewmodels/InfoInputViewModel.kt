@@ -1,25 +1,33 @@
 package com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.lifecycle.*
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.Barge
 import com.example.rusalqrandbarcodescanner.domain.models.Bl
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
+import com.example.rusalqrandbarcodescanner.util.inputvalidation.InputValidation
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
 
 @DelicateCoroutinesApi
 class InfoInputViewModel(private val mainActivityVM : MainActivityViewModel, private val invRepo : InventoryRepository) : ViewModel() {
-    val displayConfirmButton = mutableStateOf(false)
+    var displayConfirmButton by mutableStateOf(false)
+    var displayButtons by mutableStateOf(true)
 
     val blList : MutableState<List<Bl>> = mutableStateOf(listOf())
     val bargeList : MutableState<List<Barge>> = mutableStateOf(listOf())
 
     val loading = mutableStateOf(false)
+
+    var isValidLoad by mutableStateOf(true)
+    var isValidLoader by mutableStateOf(true)
+    var isValidChecker by mutableStateOf(true)
+    var isValidOrder by mutableStateOf(true)
+    var isValidPieceCount by mutableStateOf(true)
+    var isValidQuantity by mutableStateOf(true)
 
     init {
         viewModelScope.launch {
@@ -55,22 +63,45 @@ class InfoInputViewModel(private val mainActivityVM : MainActivityViewModel, pri
     }
 
     fun refresh() {
-        val valueList = if (mainActivityVM.sessionType.value == SessionType.SHIPMENT) {
-            listOf(
-                mainActivityVM.workOrder.value,
-                mainActivityVM.loadNum.value,
-                mainActivityVM.loader.value,
-                mainActivityVM.quantity.value,
-                mainActivityVM.bl.value,
-                mainActivityVM.pieceCount.value
-            )
-        } else {
-            listOf(
-                mainActivityVM.barge.value,
-                mainActivityVM.checker.value
-            )
-        }
-        displayConfirmButton.value = !valueList.contains("")
+        displayConfirmButton =
+            if (mainActivityVM.sessionType.value == SessionType.SHIPMENT)
+                "" !in listOf(
+                    mainActivityVM.loadNum.value,
+                    mainActivityVM.loader.value,
+                    mainActivityVM.quantity.value,
+                    mainActivityVM.bl.value,
+                    mainActivityVM.pieceCount.value
+                ) && mainActivityVM.workOrder.value.length == 9 && isValidLoad && isValidLoader && isValidOrder && isValidPieceCount
+
+            else
+                "" !in listOf(
+                    mainActivityVM.barge.value,
+                    mainActivityVM.checker.value
+                )
+    }
+
+    fun validateLoad(input : String) {
+        isValidLoad = InputValidation.lengthValidation(input, length = 2)
+    }
+
+    fun validateLoader(input : String) {
+        isValidLoader = InputValidation.lengthValidation(input, length = 29)
+    }
+
+    fun validateChecker(input : String) {
+        isValidChecker = InputValidation.lengthValidation(input, length = 29)
+    }
+
+    fun validateOrder(input : String) {
+        isValidOrder = InputValidation.validateOrder(input)
+    }
+
+    fun validatePieceCount(input : String) {
+        isValidPieceCount = InputValidation.lengthValidation(input, length = 2) && InputValidation.integerValidation(input)
+    }
+
+    fun validateQuantity(input : String) {
+        isValidQuantity = InputValidation.integerValidation(input)
     }
 
     class InfoInputViewModelFactory(private val mainActivityVM : MainActivityViewModel, private val invRepo : InventoryRepository) : ViewModelProvider.Factory {

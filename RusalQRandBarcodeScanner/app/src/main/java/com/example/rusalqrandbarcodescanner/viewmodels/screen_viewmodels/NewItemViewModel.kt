@@ -1,12 +1,15 @@
 package com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
 import com.example.rusalqrandbarcodescanner.util.getCurrentDateTime
+import com.example.rusalqrandbarcodescanner.util.inputvalidation.InputValidation
 import com.example.rusalqrandbarcodescanner.util.isBaseHeat
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import kotlinx.coroutines.*
@@ -24,8 +27,17 @@ class NewItemViewModel(private val mainActivityVM : MainActivityViewModel, priva
     val scannedItemMark = mutableStateOf("")
     val isConfirmAdditionVisible = mutableStateOf(false)
 
+    var isValidGrossWeight by mutableStateOf(true)
+    var isValidNetWeight by mutableStateOf(true)
+    var isValidQuantity by mutableStateOf(true)
+    var isValidMark by mutableStateOf(true)
+
+    init {
+        trySettingItemValuesViaScan()
+    }
+
     // Sets scannedItem value if item was returned through a QR scan rather than through manual entry
-    fun trySettingItemValuesViaScan() {
+    private fun trySettingItemValuesViaScan() {
         if (mainActivityVM.scannedItem.barcode != "") {
             scannedItem = mainActivityVM.scannedItem
             scannedItemGrade.value = mainActivityVM.scannedItem.grade
@@ -38,7 +50,9 @@ class NewItemViewModel(private val mainActivityVM : MainActivityViewModel, priva
 
     // Checks if the confirm addition button should be visible, setting visibility as necessary
     fun refresh() {
-        isConfirmAdditionVisible.value = "" !in listOf(scannedItemGrade.value, scannedItemGrossWeight.value, scannedItemNetWeight.value, scannedItemQuantity.value, scannedItemMark.value)
+        isConfirmAdditionVisible.value =
+            "" !in listOf(scannedItemGrade.value, scannedItemGrossWeight.value, scannedItemNetWeight.value, scannedItemQuantity.value, scannedItemMark.value)
+                    && isValidGrossWeight && isValidNetWeight && isValidMark && isValidQuantity
     }
 
     // Adds new item to inventory if being added through reception as a new item
@@ -76,6 +90,22 @@ class NewItemViewModel(private val mainActivityVM : MainActivityViewModel, priva
         }
         value.await()
         return result
+    }
+
+    fun validateGrossWeight(input : String) {
+        isValidGrossWeight = InputValidation.lengthValidation(input, 4) && InputValidation.integerValidation(input)
+    }
+
+    fun validateNetWeight(input : String) {
+        isValidNetWeight = InputValidation.lengthValidation(input, 4) && InputValidation.integerValidation(input)
+    }
+
+    fun validateQuantity(input : String) {
+        isValidQuantity = InputValidation.lengthValidation(input, 2) && InputValidation.integerValidation(input)
+    }
+
+    fun validateMark(input : String) {
+        isValidMark = InputValidation.lengthValidation(input, 29)
     }
 
     private fun addItem(item : RusalItem) = viewModelScope.launch {

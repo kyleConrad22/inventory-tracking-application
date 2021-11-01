@@ -1,6 +1,7 @@
 package com.example.rusalqrandbarcodescanner.presentation.ui.screens
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -28,6 +29,7 @@ import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialo
 import com.example.rusalqrandbarcodescanner.presentation.components.StyledCardItem
 import com.example.rusalqrandbarcodescanner.presentation.components.inputdialog.SingleHyphenTransformedInputDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.autocomplete.AutoCompleteBox
+import com.example.rusalqrandbarcodescanner.presentation.components.inputdialog.ValidatedInputDialog
 import com.example.rusalqrandbarcodescanner.util.inputvalidation.BasicItemValidator
 import com.example.rusalqrandbarcodescanner.util.inputvalidation.NameValidator
 import com.example.rusalqrandbarcodescanner.util.inputvalidation.NumberValidator
@@ -47,7 +49,6 @@ fun InfoInputScreen(mainActivityVM: MainActivityViewModel, onBack : () -> Unit, 
 
     val focusManager = LocalFocusManager.current
 
-    val displayConfirmButton = infoInputVM.displayConfirmButton.value
     val loading = infoInputVM.loading.value
 
     Scaffold(topBar = { TopAppBar(title = { Text(text = "${mainActivityVM.sessionType.value.type} Info Input", textAlign = TextAlign.Center) }) }) {
@@ -73,7 +74,8 @@ fun InfoInputScreen(mainActivityVM: MainActivityViewModel, onBack : () -> Unit, 
                         blNumberState = mainActivityVM.bl,
                         blList = infoInputVM.blList.value,
                         bargeList = infoInputVM.bargeList.value,
-                        onChange = { infoInputVM.refresh() }
+                        onChange = { infoInputVM.refresh() },
+                        infoInputVM = infoInputVM
                     )
                 else
                     NonEditableFields(sessionType = mainActivityVM.sessionType.value,
@@ -86,19 +88,21 @@ fun InfoInputScreen(mainActivityVM: MainActivityViewModel, onBack : () -> Unit, 
                         checker = mainActivityVM.checker.value,
                         bargeIdentifier = mainActivityVM.barge.value)
 
-                Row(modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly) {
-                    Button(onClick = onBack) {
-                        Text(text = "Back", modifier = Modifier.padding(14.dp))
-                    }
-                    if (displayConfirmButton) {
-                        Button(onClick = {
-                            mainActivityVM.refresh()
-                            onConfirm()
-                        }) {
-                            Text(text = "Confirm ${mainActivityVM.sessionType.value.type} Info",
-                                modifier = Modifier.padding(14.dp))
+                if (infoInputVM.displayButtons) {
+                    Row(modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceEvenly) {
+                        Button(onClick = onBack) {
+                            Text(text = "Back", modifier = Modifier.padding(14.dp))
+                        }
+                        if (infoInputVM.displayConfirmButton) {
+                            Button(onClick = {
+                                mainActivityVM.refresh()
+                                onConfirm()
+                            }) {
+                                Text(text = "Confirm ${mainActivityVM.sessionType.value.type} Info",
+                                    modifier = Modifier.padding(14.dp))
+                            }
                         }
                     }
                 }
@@ -110,44 +114,103 @@ fun InfoInputScreen(mainActivityVM: MainActivityViewModel, onBack : () -> Unit, 
 @DelicateCoroutinesApi
 @ExperimentalAnimationApi
 @Composable
-private fun EditableFields(sessionType : SessionType, focusManager : FocusManager, workOrderState : MutableState<String>, loadNumberState : MutableState<String>, loaderState : MutableState<String>, pieceCountState : MutableState<String>, quantityState : MutableState<String>, checkerState : MutableState<String>, bargeIdentifierState : MutableState<String>, blNumberState : MutableState<String>, blList : List<Bl>, bargeList : List<Barge>, onChange : () -> Unit) {
+private fun EditableFields(sessionType : SessionType, focusManager : FocusManager, workOrderState : MutableState<String>, loadNumberState : MutableState<String>, loaderState : MutableState<String>, pieceCountState : MutableState<String>, quantityState : MutableState<String>, checkerState : MutableState<String>, bargeIdentifierState : MutableState<String>, blNumberState : MutableState<String>, blList : List<Bl>, bargeList : List<Barge>, onChange : () -> Unit,
+    infoInputVM : InfoInputViewModel
+) {
+
     if (sessionType == SessionType.SHIPMENT) {
 
         SingleHyphenTransformedInputDialog(label = "Work Order", userInput = workOrderState, refresh = {
             WorkOrderValidator().updateWorkOrder(it, workOrderState)
             onChange()
-        }, focusManager = focusManager, lastInput = false, keyBoardType = KeyboardType.Password, insertionIndex = 3)
+        }, focusManager = focusManager,
+        lastInput = false,
+        keyBoardType = KeyboardType.Password,
+        insertionIndex = 3
+        )
 
-        BasicInputDialog(label = "Load", userInput = loadNumberState, refresh = {
-            NumberValidator().updateNumber(it, loadNumberState)
-            onChange()
-        }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Number)
+        ValidatedInputDialog(
+            label = "Load Number",
+            userInput = loadNumberState,
+            refresh = {
+                loadNumberState.value = it
+                onChange()
+            },
+            focusManager = focusManager,
+            lastInput = false,
+            keyboardType = KeyboardType.Number,
+            onValidation = {
+                infoInputVM.validateLoad(it)
+            }, isValid = infoInputVM.isValidLoad,
+            onInvalidText = "Invalid input, load number must be less than 3 digits long!"
+        )
 
-        BasicInputDialog(label = "Loader", userInput = loaderState, refresh = {
-            NameValidator().updateName(it, loaderState)
-            onChange()
-        }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Text)
+        ValidatedInputDialog(
+            label = "Loader",
+            userInput = loaderState,
+            refresh = {
+                loaderState.value = it
+                onChange()
+            }, focusManager = focusManager,
+            lastInput = false,
+            keyboardType = KeyboardType.Text,
+            onValidation = {
+                infoInputVM.validateLoader(it)
+            }, isValid = infoInputVM.isValidLoader,
+            onInvalidText = "Invalid input, name must be an less than 30 characters long!"
+        )
 
         BlInput(focusManager = focusManager, blList = blList, blNumberState = blNumberState, onChange = onChange)
 
-        BasicInputDialog(label = "Piece Count", userInput = pieceCountState, refresh = {
-            NumberValidator().updateNumber(it, pieceCountState)
-            onChange()
-        }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Number)
+        ValidatedInputDialog (
+            label = "Piece Count",
+            userInput = pieceCountState,
+            refresh = {
+                pieceCountState.value = it
+                onChange()
+            }, focusManager = focusManager,
+            lastInput = false,
+            keyboardType = KeyboardType.Number,
+            onValidation = {
+                infoInputVM.validatePieceCount(it)
+            }, isValid = infoInputVM.isValidPieceCount,
+            onInvalidText = "Invalid input, piece count must be an integer and less than 3 characters long!"
+        )
 
-        BasicInputDialog(label = "Quantity", userInput = quantityState, refresh = {
-            NumberValidator().updateNumber(it, quantityState)
-            onChange()
-        }, focusManager = focusManager, lastInput = true, keyboardType = KeyboardType.Number)
+        ValidatedInputDialog(
+            label = "Quantity",
+            userInput = quantityState,
+            refresh = {
+                quantityState.value = it
+                onChange()
+            },
+            focusManager = focusManager,
+            lastInput = true,
+            keyboardType = KeyboardType.Number,
+            onValidation = { infoInputVM.validateQuantity(it) },
+            isValid = infoInputVM.isValidQuantity,
+            onInvalidText = "Invalid input, quantity must be an integer!"
+        )
 
     } else {
 
         BargeInput(focusManager = focusManager, bargeList = bargeList, bargeIdentifierState = bargeIdentifierState, onChange = onChange )
 
-        BasicInputDialog(label = "Checker", userInput = checkerState, refresh = {
-            NameValidator().updateName(it, checkerState)
-            onChange()
-        }, focusManager = focusManager, lastInput = false, keyboardType = KeyboardType.Text)
+        ValidatedInputDialog(
+            label = "Checker",
+            userInput = checkerState,
+            refresh = {
+                checkerState.value = it
+                onChange()
+            }, focusManager = focusManager,
+            lastInput = true,
+            keyboardType = KeyboardType.Text,
+            onValidation = {
+               infoInputVM.validateChecker(it)
+            }, isValid = infoInputVM.isValidChecker,
+            onInvalidText = "Invalid input, name must be less than 30 characters long!"
+        )
+
     }
 }
 

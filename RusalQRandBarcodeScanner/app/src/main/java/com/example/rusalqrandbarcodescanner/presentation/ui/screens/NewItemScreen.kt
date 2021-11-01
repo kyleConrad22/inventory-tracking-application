@@ -17,7 +17,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.presentation.components.ItemAddedDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.StyledCardItem
-import com.example.rusalqrandbarcodescanner.presentation.components.loading.BasicInputDialog
+import com.example.rusalqrandbarcodescanner.presentation.components.inputdialog.ValidatedInputDialog
 import com.example.rusalqrandbarcodescanner.util.displayedStringPostStringInsertion
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.NewItemViewModel
@@ -50,8 +50,8 @@ fun NewItemScreen(onDismiss : () -> Unit, mainActivityVM: MainActivityViewModel)
 
             StyledCardItem(text = "Heat Number: $heat", backgroundColor = Color.Gray)
 
-            BasicInputDialog(
-                label = "Gross Weight",
+            ValidatedInputDialog(
+                label = "Gross Weight (KG)",
                 userInput = newItemVM.scannedItemGrossWeight,
                 refresh = {
                     newItemVM.scannedItemGrossWeight.value = it
@@ -59,11 +59,14 @@ fun NewItemScreen(onDismiss : () -> Unit, mainActivityVM: MainActivityViewModel)
                 },
                 focusManager = focusManager,
                 lastInput = false,
-                keyboardType = KeyboardType.Number
+                keyboardType = KeyboardType.Number,
+                onValidation = { newItemVM.validateGrossWeight(it) },
+                isValid = newItemVM.isValidGrossWeight,
+                onInvalidText = "Invalid input, gross weight must be an integer and less than 5 digits long!"
             )
 
-            BasicInputDialog(
-                label = "Net Weight",
+            ValidatedInputDialog(
+                label = "Net Weight (KG)",
                 userInput = newItemVM.scannedItemNetWeight,
                 refresh = {
                     newItemVM.scannedItemNetWeight.value = it
@@ -71,10 +74,13 @@ fun NewItemScreen(onDismiss : () -> Unit, mainActivityVM: MainActivityViewModel)
                 },
                 focusManager = focusManager,
                 lastInput = false,
-                keyboardType = KeyboardType.Number
+                keyboardType = KeyboardType.Number,
+                onValidation = { newItemVM.validateNetWeight(it) },
+                isValid = newItemVM.isValidNetWeight,
+                onInvalidText = "Invalid input, net weight must be an integer and less than 5 digits long!"
             )
 
-            BasicInputDialog(
+            ValidatedInputDialog(
                 label = "Piece Count",
                 userInput = newItemVM.scannedItemQuantity,
                 refresh = {
@@ -83,18 +89,25 @@ fun NewItemScreen(onDismiss : () -> Unit, mainActivityVM: MainActivityViewModel)
                 },
                 focusManager = focusManager,
                 lastInput = false,
-                keyboardType = KeyboardType.Number
+                keyboardType = KeyboardType.Number,
+                onValidation = { newItemVM.validateQuantity(it) },
+                isValid = newItemVM.isValidQuantity,
+                onInvalidText = "Invalid input, piece count must be an integer and less than 3 digits long!"
             )
 
-            BasicInputDialog(
+            ValidatedInputDialog(
                 label = "Mark",
                 userInput = newItemVM.scannedItemMark,
                 refresh = {
                     newItemVM.scannedItemMark.value = it
                     newItemVM.refresh()
-                }, focusManager = focusManager,
-                lastInput = true,
-                keyboardType = KeyboardType.Password
+                },
+                focusManager = focusManager,
+                lastInput = newItemVM.isValidMark,
+                keyboardType = KeyboardType.Password,
+                onValidation = { newItemVM.validateMark(it) },
+                isValid = newItemVM.isValidMark,
+                onInvalidText = "Invalid input, mark must be less than 30 characters long!"
             )
 
             CommodityTypeInput(userInput = newItemVM.scannedItemGrade,
