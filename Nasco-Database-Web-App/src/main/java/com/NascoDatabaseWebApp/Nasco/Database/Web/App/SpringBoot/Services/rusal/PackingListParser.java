@@ -214,5 +214,19 @@ public final class PackingListParser {
 class HeatBlCombination {
     private String heatNumber;
     private String blNumber;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof HeatBlCombination)) return false;
+        HeatBlCombination combo = (HeatBlCombination) o;
+        return heatNumber.equals(combo.heatNumber) && blNumber.equals(combo.blNumber);
+    }
+
+
+    @Override
+    public int hashCode() {
+        return heatNumber.hashCode() + blNumber.hashCode();
+    }
 }
 
