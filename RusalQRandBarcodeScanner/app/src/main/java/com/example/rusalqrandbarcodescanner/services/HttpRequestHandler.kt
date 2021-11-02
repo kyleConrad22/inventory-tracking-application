@@ -2,16 +2,14 @@ package com.example.rusalqrandbarcodescanner.services
 
 import android.content.Context
 import android.util.Log
-import androidx.compose.runtime.MutableState
 import androidx.work.*
-import com.android.volley.Request
 import com.android.volley.RequestQueue
-import com.android.volley.toolbox.*
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
 import com.example.rusalqrandbarcodescanner.services.util.RusalReceptionUpdateParams
 import com.example.rusalqrandbarcodescanner.services.util.RusalShipmentUpdateParams
+import com.example.rusalqrandbarcodescanner.services.worker.DownloadWorker
 import com.example.rusalqrandbarcodescanner.services.worker.NewItemUploadWorker
 import com.example.rusalqrandbarcodescanner.services.worker.ReceptionUploadWorker
 import com.example.rusalqrandbarcodescanner.services.worker.ShipmentUploadWorker
@@ -19,27 +17,29 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import kotlinx.coroutines.*
-import org.json.JSONException
-import org.json.JSONObject
+import java.io.IOException
 import java.util.*
 
 object HttpRequestHandler {
 
-    private const val WEB_API: String = "http://45.22.122.47:8081/api/rusal"
+    private const val TAG = "HttpRequestHandler"
     lateinit var requestQueue: RequestQueue
-    private var jsonResponse : String = ""
+    lateinit var repo : InventoryRepository
 
-    private fun retrieveInventory(callBack : VolleyCallBack) {
-        val stringRequest = StringRequest(Request.Method.GET, WEB_API, { response ->
-                print(response.replace("\\n", ""))
-                jsonResponse = response.replace("\\n", "")
-                callBack.onSuccess()
-        }, { error ->
-                error.printStackTrace()
-        })
+    @Suppress("BlockingMethodInNonBlockingContext")
+    @Throws(IOException::class)
+    suspend fun updateLocalDatabase(response : String) = withContext(Dispatchers.IO) {
+        val moshi = Moshi.Builder().build()
+        val listType = Types.newParameterizedType(List::class.java, RusalItem::class.java)
+        val adapter : JsonAdapter<List<RusalItem>> = moshi.adapter(listType)
 
-        requestQueue.add(stringRequest)
-        }
+        val items = adapter.fromJson(response)
+
+        items?.forEach { item ->
+            repo.insert(item)
+            Log.d(TAG, item.heatNum)
+        } ?: Log.e(TAG, "Response received was parsed as null")
+    }
 
     private suspend fun confirmShipment(items: List<RusalItem>, context : Context) = withContext(Dispatchers.IO) {
         val uuidFileName = UUID.randomUUID().toString() + ".txt"
@@ -52,7 +52,7 @@ object HttpRequestHandler {
 
         FileStorage.writeDataToFile(context, adapter.toJson(updateParams), uuidFileName)
 
-        val oneTimeWorkRequest = createDefaultOneTimeWorkRequest<ShipmentUploadWorker>(fileName = uuidFileName)
+        val oneTimeWorkRequest = createDefaultOneTimeWorkRequestUpload<ShipmentUploadWorker>(fileName = uuidFileName)
 
         WorkManager.getInstance(context).enqueue(oneTimeWorkRequest)
     }
@@ -68,23 +68,10 @@ object HttpRequestHandler {
 
         FileStorage.writeDataToFile(context, adapter.toJson(items), uuidFileName)
 
-        val oneTimeWorkRequest = createDefaultOneTimeWorkRequest<NewItemUploadWorker>(fileName = uuidFileName)
+        val oneTimeWorkRequest = createDefaultOneTimeWorkRequestUpload<NewItemUploadWorker>(fileName = uuidFileName)
 
         WorkManager.getInstance(context).enqueue(oneTimeWorkRequest)
 
-    }
-
-    private suspend fun addToRepo(response : String, invRepo : InventoryRepository) {
-        val moshi : Moshi = Moshi.Builder().build()
-        val listType = Types.newParameterizedType(List::class.java, RusalItem::class.java)
-        val adapter : JsonAdapter<List<RusalItem>> = moshi.adapter(listType)
-
-        val rusalItems = adapter.fromJson(response);
-
-        for (item in rusalItems!!) {
-            invRepo.insert(item)
-            Log.d("Debug", item.heatNum)
-        }
     }
 
     private fun confirmReception(items: List<RusalItem>, context : Context) {
@@ -99,13 +86,28 @@ object HttpRequestHandler {
 
         FileStorage.writeDataToFile(context, adapter.toJson(updateParams), uuidFileName)
 
-        val oneTimeWorkRequest = createDefaultOneTimeWorkRequest<ReceptionUploadWorker>(fileName = uuidFileName)
+        val oneTimeWorkRequest = createDefaultOneTimeWorkRequestUpload<ReceptionUploadWorker>(fileName = uuidFileName)
 
         WorkManager.getInstance(context).enqueue(oneTimeWorkRequest)
 
     }
 
-    private inline fun <reified T : ListenableWorker>createDefaultOneTimeWorkRequest(fileName : String) : OneTimeWorkRequest {
+    // To be used in ViewModel to initiate sync with Web API, returns the UUID of the initiated worker
+    fun startLocalDatabaseSync(context : Context) : UUID {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val workRequest = OneTimeWorkRequestBuilder<DownloadWorker>()
+            .setConstraints(constraints)
+            .build()
+
+        WorkManager.getInstance(context).enqueueUniqueWork("LocalDatabaseSync", ExistingWorkPolicy.REPLACE, workRequest)
+
+        return workRequest.id
+    }
+
+    private inline fun <reified T : ListenableWorker>createDefaultOneTimeWorkRequestUpload(fileName : String) : OneTimeWorkRequest {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
@@ -118,18 +120,6 @@ object HttpRequestHandler {
             .setConstraints(constraints)
             .setInputData(data)
             .build()
-    }
-
-    // Returns false when update complete to signify loading as completed
-    suspend fun initialize(invRepo: InventoryRepository, loading : MutableState<Boolean>) {
-        retrieveInventory(object : VolleyCallBack {
-            override fun onSuccess() {
-                CoroutineScope(Dispatchers.IO).launch {
-                    addToRepo(jsonResponse, invRepo)
-                    loading.value = false
-                }
-            }
-        })
     }
 
     // Initializes update to api given a list of items, creating new entries if the item was not found in the database

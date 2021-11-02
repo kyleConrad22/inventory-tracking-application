@@ -37,6 +37,7 @@ class MainActivity : ComponentActivity() {
         }
 
         HttpRequestHandler.requestQueue = Volley.newRequestQueue(this.applicationContext)
+        HttpRequestHandler.repo = (application as CodeApplication).invRepository
 
         setContent {
 

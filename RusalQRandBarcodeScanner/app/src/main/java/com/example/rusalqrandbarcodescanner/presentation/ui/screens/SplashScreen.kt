@@ -32,14 +32,13 @@ fun SplashScreen(mainActivityVM: MainActivityViewModel, onNavRequest : (dest : S
 
     val splashVM : SplashViewModel = viewModel(factory = SplashViewModel.SplashViewModelFactory((LocalContext.current.applicationContext as CodeApplication).invRepository, mainActivityVM))
 
-    val loading = mainActivityVM.loading.value
     val destination = splashVM.destination.value
 
     val scale = remember {
         androidx.compose.animation.core.Animatable(0f)
     }
 
-    if (!loading) {
+    if (!splashVM.loading) {
         if (splashVM.uiState.value == SplashState.Recreation) RecreationAlertDialog(onDismiss = { onNavRequest(destination) })
         else LaunchedEffect(key1 = true) { onNavRequest(destination) }
     }
@@ -63,7 +62,7 @@ fun SplashScreen(mainActivityVM: MainActivityViewModel, onNavRequest : (dest : S
                 Image(painter = painterResource(id = R.drawable.splash_screen),
                     contentDescription = "Logo",
                     modifier = Modifier.scale(scale.value))
-                CircularIndeterminateProgressBar(isDisplayed = loading)
+                CircularIndeterminateProgressBar(isDisplayed = true)
             }
 
         }

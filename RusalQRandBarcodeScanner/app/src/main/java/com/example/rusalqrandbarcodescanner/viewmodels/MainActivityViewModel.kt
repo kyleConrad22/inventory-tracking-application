@@ -60,12 +60,6 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
             checker.value = savedItem.checker
     }
 
-    /* TODO - Replace logic replacing local copy of database with logic updating local database */
-    suspend fun updateLocalDatabase() = withContext(Dispatchers.IO) {
-        repo.deleteAll()
-        HttpRequestHandler.initialize(repo, loading)
-    }
-
     fun refresh(optionalCall : () -> Unit = { /* Ignore */ }) {
         updateAddedItems()
         updateAddedItemCount()

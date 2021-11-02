@@ -48,11 +48,11 @@ class NewItemUploadWorker(context : Context, workerParams : WorkerParameters) : 
 
                         Result.success()
 
-                    } catch (e: InterruptedException) {
+                    } catch (e : InterruptedException) {
                         Log.d(TAG, "Error occurred while upload new item", e)
                         Result.retry()
 
-                    } catch (e: ExecutionException) {
+                    } catch (e : ExecutionException) {
 
                         // If output is empty and causes a ParseError then the call was successful
                         if (e.cause is ParseError) {
@@ -64,7 +64,7 @@ class NewItemUploadWorker(context : Context, workerParams : WorkerParameters) : 
                             Result.retry()
                         }
 
-                    } catch (e: TimeoutException) {
+                    } catch (e : TimeoutException) {
                         Log.d(TAG, "Error occurred while uploading new item", e)
                         Result.retry()
                     }
