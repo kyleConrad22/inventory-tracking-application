@@ -59,11 +59,11 @@ public final class PackingListParser {
                         break;
 
                     case "WEIGHT_GROSS":
-                        fieldValueMap.put(RusalField.GROSS_WEIGHT, cellValue);
+                        fieldValueMap.put(RusalField.GROSS_WEIGHT, cellValue.split("\\.")[0]);
                         break;
 
                     case "WEIGHT":
-                        fieldValueMap.put(RusalField.NET_WEIGHT, cellValue);
+                        fieldValueMap.put(RusalField.NET_WEIGHT, cellValue.split("\\.")[0]);
                         break;
 
                     case "DIMENSION":
