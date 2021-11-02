@@ -1,6 +1,8 @@
 package com.example.rusalqrandbarcodescanner
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -19,6 +21,7 @@ import androidx.work.WorkManager
 import com.android.volley.toolbox.Volley
 import com.example.rusalqrandbarcodescanner.presentation.ui.screens.*
 import com.example.rusalqrandbarcodescanner.presentation.ui.theme.RusalQRAndBarcodeScannerTheme
+import com.example.rusalqrandbarcodescanner.services.ConnectivityHandler
 import com.example.rusalqrandbarcodescanner.services.HttpRequestHandler
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel.MainActivityViewModelFactory
@@ -38,6 +41,7 @@ class MainActivity : ComponentActivity() {
 
         HttpRequestHandler.requestQueue = Volley.newRequestQueue(this.applicationContext)
         HttpRequestHandler.repo = (application as CodeApplication).invRepository
+        ConnectivityHandler.connectivityManager = applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
         setContent {
 

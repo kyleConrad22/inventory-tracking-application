@@ -3,6 +3,10 @@ package com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.Services.rusal
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItem;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.util.ExcelHelper;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.util.RusalField;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.lang.NonNull;
 import org.springframework.web.multipart.MultipartFile;
@@ -133,17 +137,17 @@ public final class PackingListParser {
         String lotIdentifier = getNextLotAlphabeticIdentifier(lotIdentifiers);
 
         AtomicInteger i = new AtomicInteger(1);
-        HashMap<String, String> heatLotMap = new HashMap<>();
+        HashMap<HeatBlCombination, String> lotMap = new HashMap<>();
 
         rusalItems.forEach(item -> {
             if (item.getGrade().contains("INGOTS")) {
-                String baseHeat = getBaseHeat(item.getHeatNum());
+                HeatBlCombination combo = new HeatBlCombination(getBaseHeat(item.getHeatNum()), item.getBlNum());
 
-                if (!heatLotMap.containsKey(baseHeat)) {
-                    heatLotMap.put(baseHeat, lotIdentifier + "-" + i.getAndIncrement());
+                if (!lotMap.containsKey(combo)) {
+                    lotMap.put(combo, lotIdentifier + "-" + i.getAndIncrement());
                 }
 
-                item.setLot(heatLotMap.get(baseHeat));
+                item.setLot(lotMap.get(combo));
 
             }
         });
@@ -203,4 +207,12 @@ public final class PackingListParser {
     private static String getBaseHeat(String heat) {
         return heat.substring(0, 6);
     }
+
 }
+
+@Getter @Setter @AllArgsConstructor
+class HeatBlCombination {
+    private String heatNumber;
+    private String blNumber;
+}
+

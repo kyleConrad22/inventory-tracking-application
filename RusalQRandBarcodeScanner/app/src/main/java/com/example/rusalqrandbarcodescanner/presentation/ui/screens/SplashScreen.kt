@@ -33,13 +33,14 @@ fun SplashScreen(mainActivityVM: MainActivityViewModel, onNavRequest : (dest : S
     val splashVM : SplashViewModel = viewModel(factory = SplashViewModel.SplashViewModelFactory((LocalContext.current.applicationContext as CodeApplication).invRepository, mainActivityVM))
 
     val destination = splashVM.destination.value
+    val uiState = splashVM.uiState
 
     val scale = remember {
         androidx.compose.animation.core.Animatable(0f)
     }
 
     if (!splashVM.loading) {
-        if (splashVM.uiState.value == SplashState.Recreation) RecreationAlertDialog(onDismiss = { onNavRequest(destination) })
+        if (uiState == SplashState.Recreation) RecreationAlertDialog(onDismiss = { onNavRequest(destination) })
         else LaunchedEffect(key1 = true) { onNavRequest(destination) }
     }
 
@@ -57,15 +58,23 @@ fun SplashScreen(mainActivityVM: MainActivityViewModel, onNavRequest : (dest : S
     }
 
         // Image
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-                Image(painter = painterResource(id = R.drawable.splash_screen),
-                    contentDescription = "Logo",
-                    modifier = Modifier.scale(scale.value))
-                CircularIndeterminateProgressBar(isDisplayed = true)
-            }
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+            Image(painter = painterResource(id = R.drawable.splash_screen),
+                contentDescription = "Logo",
+                modifier = Modifier.scale(scale.value))
+
+            CircularIndeterminateProgressBar(isDisplayed = true)
+
+            if (uiState == SplashState.NoConnectionEmpty)
+                Text(text = "No network connection, this application requires network connection on startup to function, and will attempt to download database when connection is re-established", modifier = Modifier.padding(16.dp))
+
+            else if (uiState == SplashState.NoConnectionNonEmpty)
+                Text(text = "No network connection, note that local database may be outdated until network connection is established.", modifier = Modifier.padding(16.dp))
 
         }
+
+    }
 }
 
 @Composable

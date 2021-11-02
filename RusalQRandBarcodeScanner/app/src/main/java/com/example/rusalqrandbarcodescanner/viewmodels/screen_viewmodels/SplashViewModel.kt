@@ -10,8 +10,10 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.example.rusalqrandbarcodescanner.Screen
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
+import com.example.rusalqrandbarcodescanner.services.ConnectivityHandler
 import com.example.rusalqrandbarcodescanner.services.HttpRequestHandler
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 import java.util.*
@@ -19,40 +21,47 @@ import java.util.*
 class SplashViewModel(private val repo : InventoryRepository, private val mainActivityVM : MainActivityViewModel) : ViewModel() {
 
     val destination = mutableStateOf("")
-    val uiState = mutableStateOf<SplashState>(SplashState.Base)
+    var uiState by mutableStateOf<SplashState>(SplashState.Base)
     var loading by mutableStateOf(true)
 
     private lateinit var liveData : LiveData<WorkInfo?>
-    private val observer = Observer<WorkInfo?>{ workInfo ->
 
-        loading = if (workInfo != null) {
-            val state = workInfo.state
-            Log.d(TAG, workInfo.state.toString())
-            !state.isFinished
-        } else {
-            Log.d(TAG, "WorkInfo is null")
-            true
+    private val observer = Observer<WorkInfo?> { workInfo ->
+        if (uiState !in listOf(SplashState.NoConnectionNonEmpty, SplashState.NoConnectionEmpty)) {
+            loading = if (workInfo != null) {
+                val state = workInfo.state
+                Log.d(TAG, workInfo.state.toString())
+                !state.isFinished
+            } else {
+                Log.d(TAG, "WorkInfo is null")
+                true
+            }
+            Log.d(TAG, loading.toString())
         }
-        Log.d(TAG, loading.toString())
     }
-
 
     init {
         viewModelScope.launch {
-            val workerId : UUID
-            if (repo.getAllSuspend().isNullOrEmpty()) {
-                /* TODO - add logic to notify user when local database is empty and connection to server cannot be established
-                *   Again notify user when connection to server was successfully established and sync is starting */
+
+            if (!ConnectivityHandler.isConnectedOrConnecting()) {
+                uiState =
+                    if (repo.getAllSuspend().isNullOrEmpty()) SplashState.NoConnectionEmpty
+                    else SplashState.NoConnectionNonEmpty
             }
+
+            val workerId : UUID
+
             val items = repo.getAddedItems()
             if (items.isNotEmpty()) {
-                uiState.value = SplashState.Recreation
+                /* TODO - Initiate background update with WorkManager, add code once update method has been updated to no longer delete local database*/
+                uiState = SplashState.Recreation
                 mainActivityVM.recreateSession(items[0])
                 mainActivityVM.refresh()
                 destination.value = Screen.InfoInputScreen.title
                 mainActivityVM.loading.value = false
+
             } else {
-                mainActivityVM.showSnackBar("Syncing with database, this may take some time...")
+                mainActivityVM.showSnackBar("Attempting to sync with database, this may take some time...")
                 workerId = HttpRequestHandler.startLocalDatabaseSync(mainActivityVM.getApplication())
                 liveData = WorkManager.getInstance(mainActivityVM.getApplication())
                     .getWorkInfoByIdLiveData(workerId)
@@ -60,10 +69,17 @@ class SplashViewModel(private val repo : InventoryRepository, private val mainAc
                 destination.value = Screen.MainMenuScreen.title
             }
 
+            if (uiState == SplashState.NoConnectionNonEmpty) {
+                Log.d(TAG, "Starting")
+                delay(5000L)
+                Log.d(TAG, "Stopping")
+                loading = false
+            }
         }
     }
 
     override fun onCleared() {
+        Log.d(TAG, "CLEARING")
         liveData.removeObserver(observer)
         super.onCleared()
     }
@@ -84,5 +100,8 @@ class SplashViewModel(private val repo : InventoryRepository, private val mainAc
 
 sealed class SplashState {
     object Recreation : SplashState()
+    object NoConnectionEmpty : SplashState()
+    object NoConnectionNonEmpty : SplashState()
+    object Updating : SplashState()
     object Base : SplashState()
 }
