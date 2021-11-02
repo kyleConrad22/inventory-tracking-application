@@ -1,7 +1,6 @@
 package com.example.rusalqrandbarcodescanner.presentation.ui.screens
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -24,15 +23,12 @@ import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.domain.models.Barge
 import com.example.rusalqrandbarcodescanner.domain.models.Bl
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
-import com.example.rusalqrandbarcodescanner.presentation.components.loading.BasicInputDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.StyledCardItem
 import com.example.rusalqrandbarcodescanner.presentation.components.inputdialog.SingleHyphenTransformedInputDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.autocomplete.AutoCompleteBox
 import com.example.rusalqrandbarcodescanner.presentation.components.inputdialog.ValidatedInputDialog
 import com.example.rusalqrandbarcodescanner.util.inputvalidation.BasicItemValidator
-import com.example.rusalqrandbarcodescanner.util.inputvalidation.NameValidator
-import com.example.rusalqrandbarcodescanner.util.inputvalidation.NumberValidator
 import com.example.rusalqrandbarcodescanner.util.inputvalidation.WorkOrderValidator
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.InfoInputViewModel
@@ -98,7 +94,9 @@ fun InfoInputScreen(mainActivityVM: MainActivityViewModel, onBack : () -> Unit, 
                         if (infoInputVM.displayConfirmButton) {
                             Button(onClick = {
                                 mainActivityVM.refresh()
-                                onConfirm()
+                                if (infoInputVM.onConfirmValidator()) {
+                                    onConfirm()
+                                }
                             }) {
                                 Text(text = "Confirm ${mainActivityVM.sessionType.value.type} Info",
                                     modifier = Modifier.padding(14.dp))
@@ -146,7 +144,7 @@ private fun EditableFields(sessionType : SessionType, focusManager : FocusManage
         )
 
         ValidatedInputDialog(
-            label = "Loader",
+            label = "Loader Name",
             userInput = loaderState,
             refresh = {
                 loaderState.value = it
@@ -160,7 +158,15 @@ private fun EditableFields(sessionType : SessionType, focusManager : FocusManage
             onInvalidText = "Invalid input, name must be an less than 30 characters long!"
         )
 
-        BlInput(focusManager = focusManager, blList = blList, blNumberState = blNumberState, onChange = onChange)
+        Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+            if (!infoInputVM.isValidBl) {
+                Text(text = "Invalid input, BL number must be selected from provided drop-down menu!", color = Color.Red, modifier = Modifier.padding(8.dp))
+            }
+            BlInput(focusManager = focusManager,
+                blList = blList,
+                blNumberState = blNumberState,
+                onChange = onChange)
+        }
 
         ValidatedInputDialog (
             label = "Piece Count",
@@ -194,10 +200,18 @@ private fun EditableFields(sessionType : SessionType, focusManager : FocusManage
 
     } else {
 
-        BargeInput(focusManager = focusManager, bargeList = bargeList, bargeIdentifierState = bargeIdentifierState, onChange = onChange )
+        Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+            if (!infoInputVM.isValidBarge) {
+                Text(text = "Invalid input, barge identifier must be selected from provided drop-down menu!", color = Color.Red, modifier = Modifier.padding(8.dp))
+            }
+            BargeInput(focusManager = focusManager,
+                bargeList = bargeList,
+                bargeIdentifierState = bargeIdentifierState,
+                onChange = onChange)
 
+        }
         ValidatedInputDialog(
-            label = "Checker",
+            label = "Checker Name",
             userInput = checkerState,
             refresh = {
                 checkerState.value = it

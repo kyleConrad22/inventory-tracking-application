@@ -33,7 +33,7 @@ fun MainMenuScreen(mainActivityVM: MainActivityViewModel, onNavRequest : (dest :
 
             Button(onClick = {
                 newSessionType.value = SessionType.SHIPMENT
-                handleClick(onNavRequest = onNavRequest, mainActivityVM.sessionType, SessionType.SHIPMENT, hasItems, showAlertDialog)
+                handleClick(onNavRequest = onNavRequest, mainActivityVM.sessionType, SessionType.SHIPMENT, hasItems, showAlertDialog, onDiffentSessionTypes = { mainActivityVM.clearInputFields() })
             }) {
                 Text(text = "New Shipment",
                     modifier = Modifier
@@ -44,7 +44,7 @@ fun MainMenuScreen(mainActivityVM: MainActivityViewModel, onNavRequest : (dest :
             }
             Button(onClick = {
                 newSessionType.value = SessionType.RECEPTION
-                handleClick(onNavRequest = onNavRequest, mainActivityVM.sessionType, SessionType.RECEPTION, hasItems, showAlertDialog)
+                handleClick(onNavRequest = onNavRequest, mainActivityVM.sessionType, SessionType.RECEPTION, hasItems, showAlertDialog, onDiffentSessionTypes = { mainActivityVM.clearInputFields() })
             }) {
                 Text(text = "New Reception",
                     modifier = Modifier
@@ -55,7 +55,7 @@ fun MainMenuScreen(mainActivityVM: MainActivityViewModel, onNavRequest : (dest :
             }
             Button(onClick = {
                 newSessionType.value = SessionType.GENERAL
-                handleClick(onNavRequest = onNavRequest, mainActivityVM.sessionType, SessionType.GENERAL, hasItems, showAlertDialog)
+                handleClick(onNavRequest = onNavRequest, mainActivityVM.sessionType, SessionType.GENERAL, hasItems, showAlertDialog,onDiffentSessionTypes = { mainActivityVM.clearInputFields() })
             }) {
                 Text(text = "Get Item Info",
                     modifier = Modifier
@@ -73,7 +73,7 @@ fun MainMenuScreen(mainActivityVM: MainActivityViewModel, onNavRequest : (dest :
             }, onConfirm = {
                 mainActivityVM.removeAllAddedItems()
                 mainActivityVM.clearInputFields()
-                handleClick(onNavRequest = onNavRequest, mainActivityVM.sessionType, newSessionType.value, containsItems = false, showAlertDialog)
+                handleClick(onNavRequest = onNavRequest, mainActivityVM.sessionType, newSessionType.value, containsItems = false, showAlertDialog, onDiffentSessionTypes =  { mainActivityVM.clearInputFields() })
             }, onReview = {
                 onNavRequest(Screen.ReviewScreen.title)
             }, currentSessionType = mainActivityVM.sessionType.value, newSessionType = newSessionType.value
@@ -81,8 +81,10 @@ fun MainMenuScreen(mainActivityVM: MainActivityViewModel, onNavRequest : (dest :
     }
 }
 
-fun handleClick(onNavRequest: (dest: String) -> Unit, currentSessionType: MutableState<SessionType>, newSessionType: SessionType, containsItems: Boolean, showAlertDialog : MutableState<Boolean>) {
+fun handleClick(onNavRequest: (dest: String) -> Unit, currentSessionType: MutableState<SessionType>, newSessionType: SessionType, containsItems: Boolean, showAlertDialog : MutableState<Boolean>, onDiffentSessionTypes : () -> Unit) {
     if (!containsItems || currentSessionType.value == newSessionType) {
+
+        if (currentSessionType.value != newSessionType) onDiffentSessionTypes()
 
         currentSessionType.value = newSessionType
 

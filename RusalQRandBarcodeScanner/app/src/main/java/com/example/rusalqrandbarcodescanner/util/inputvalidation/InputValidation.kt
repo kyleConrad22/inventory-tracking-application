@@ -1,5 +1,8 @@
 package com.example.rusalqrandbarcodescanner.util.inputvalidation
 
+import com.example.rusalqrandbarcodescanner.domain.models.Barge
+import com.example.rusalqrandbarcodescanner.domain.models.Bl
+
 class InputValidation {
 
     companion object {
@@ -23,6 +26,24 @@ class InputValidation {
             } catch (e : Exception) {
                 false
             }
+        }
+
+        // Returns true if barge list contains the given input, false otherwise
+        fun inBargeListValidation(input : String, bargeList : List<Barge>) : Boolean {
+            if (input == "") return true
+            bargeList.forEach { barge ->
+                if (barge.text == input) return true
+            }
+            return false
+        }
+
+        //Returns true if bl list contains the given input, false otherwise
+        fun inBlListValidation(input : String, blList : List<Bl>) : Boolean {
+            if (input == "") return true
+            blList.forEach { bl ->
+                if (bl.text == input) return true
+            }
+            return false
         }
     }
 }

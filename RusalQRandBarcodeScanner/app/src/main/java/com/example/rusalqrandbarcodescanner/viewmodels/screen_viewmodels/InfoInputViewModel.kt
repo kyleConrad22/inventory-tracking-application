@@ -22,6 +22,8 @@ class InfoInputViewModel(private val mainActivityVM : MainActivityViewModel, pri
 
     val loading = mutableStateOf(false)
 
+    var isValidBl by mutableStateOf(true)
+    var isValidBarge by mutableStateOf(true)
     var isValidLoad by mutableStateOf(true)
     var isValidLoader by mutableStateOf(true)
     var isValidChecker by mutableStateOf(true)
@@ -80,6 +82,13 @@ class InfoInputViewModel(private val mainActivityVM : MainActivityViewModel, pri
                 )
     }
 
+    // To be run when confirm is pressed, validates barge or bl input and returns true if both are true
+    fun onConfirmValidator() : Boolean {
+        validateBl()
+        validateBarge()
+        return isValidBarge && isValidBl
+    }
+
     fun validateLoad(input : String) {
         isValidLoad = InputValidation.lengthValidation(input, length = 2)
     }
@@ -102,6 +111,14 @@ class InfoInputViewModel(private val mainActivityVM : MainActivityViewModel, pri
 
     fun validateQuantity(input : String) {
         isValidQuantity = InputValidation.integerValidation(input)
+    }
+
+    private fun validateBl() {
+        isValidBl = InputValidation.inBlListValidation(mainActivityVM.bl.value, blList.value)
+    }
+
+    private fun validateBarge() {
+        isValidBarge = InputValidation.inBargeListValidation(mainActivityVM.barge.value, bargeList.value)
     }
 
     class InfoInputViewModelFactory(private val mainActivityVM : MainActivityViewModel, private val invRepo : InventoryRepository) : ViewModelProvider.Factory {
