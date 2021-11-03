@@ -23,9 +23,9 @@ fun ItemAddedDialog(onDismiss : () -> Unit, heat : String, sessionType : String)
                 }
             }
         }, title = {
-            Text(text = "Addition Confirmation")
+            Text(text = "Item Added")
         }, text = {
-            Text(text = "$heat added to $sessionType")
+            Text(text = "Item identified by $heat has been added to the $sessionType")
         }
     )
 }

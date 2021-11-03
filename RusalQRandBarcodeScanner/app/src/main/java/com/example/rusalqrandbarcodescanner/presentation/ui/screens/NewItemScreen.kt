@@ -34,6 +34,7 @@ fun NewItemScreen(onDismiss : () -> Unit, mainActivityVM: MainActivityViewModel)
     if (showAddedDialog) {
         ItemAddedDialog(
             onDismiss = {
+                showAddedDialog = false
                 onDismiss()
                 mainActivityVM.heatNum.value = ""
             },
@@ -117,7 +118,7 @@ fun NewItemScreen(onDismiss : () -> Unit, mainActivityVM: MainActivityViewModel)
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly) {
                 Button(onClick = onDismiss) {
-                    Text(text = "Deny", modifier = Modifier.padding(16.dp))
+                    Text(text = "Dismiss", modifier = Modifier.padding(16.dp))
                 }
                 if (newItemVM.isConfirmAdditionVisible.value) {
                     Button(onClick = {

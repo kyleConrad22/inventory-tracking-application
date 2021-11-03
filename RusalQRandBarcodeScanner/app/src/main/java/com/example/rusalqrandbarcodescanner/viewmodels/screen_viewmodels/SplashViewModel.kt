@@ -30,13 +30,11 @@ class SplashViewModel(private val repo : InventoryRepository, private val mainAc
         if (uiState !in listOf(SplashState.NoConnectionNonEmpty, SplashState.NoConnectionEmpty)) {
             loading = if (workInfo != null) {
                 val state = workInfo.state
-                Log.d(TAG, workInfo.state.toString())
                 !state.isFinished
             } else {
                 Log.d(TAG, "WorkInfo is null")
                 true
             }
-            Log.d(TAG, loading.toString())
         }
     }
 
@@ -58,7 +56,7 @@ class SplashViewModel(private val repo : InventoryRepository, private val mainAc
                 mainActivityVM.recreateSession(items[0])
                 mainActivityVM.refresh()
                 destination.value = Screen.InfoInputScreen.title
-                mainActivityVM.loading.value = false
+                loading = false
 
             } else {
                 mainActivityVM.showSnackBar("Attempting to sync with database, this may take some time...")

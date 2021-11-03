@@ -34,10 +34,11 @@ class ReturnedItemViewModel(private val invRepo : InventoryRepository, private v
         viewModelScope.launch {
 
             if (isBaseHeat(heat)) {
-                useBaseHeatLogic()
+                if (mainActivityVM.sessionType.value == SessionType.SHIPMENT) useBaseHeatLogic()
+                else locatedItem.value = null
             } else {
                 locatedItem.value = invRepo.findByHeat(heat)
-                if (heat[6] == '0' && locatedItem.value == null && heat.length > 7) {
+                if (heat.length > 6 && heat[6] == '0' && locatedItem.value == null && heat.length > 7) {
                     locatedItem.value = invRepo.findByHeat(heat.replaceRange(6..6, ""))
                     if (locatedItem.value != null) heat = heat.replaceRange(6..6, "")
                 }

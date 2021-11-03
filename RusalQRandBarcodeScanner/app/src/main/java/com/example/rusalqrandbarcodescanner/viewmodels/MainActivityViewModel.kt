@@ -75,7 +75,6 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
             repo.updateIsAddedStatus(false, item.heatNum)
         }
         updateAddedItems()
-        showSnackBar("Starting sync with database...")
     }
 
     fun clearInputFields() {

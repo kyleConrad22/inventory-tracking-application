@@ -47,7 +47,7 @@ fun ReviewScreen(mainActivityVM : MainActivityViewModel, onBack : () -> Unit, on
     var showRemoveDialog by remember { mutableStateOf(false) }
     val showConfirmDialog = remember { mutableStateOf(false) }
 
-    Scaffold(topBar = { TopAppBar(title = { Text(text="Rusal Scanner", textAlign = TextAlign.Center) }) }) {
+    Scaffold(topBar = { TopAppBar(title = { Text(text="Review ${sessionType.type}", textAlign = TextAlign.Center) }) }) {
 
         SessionProgress(
             sessionType = sessionType,

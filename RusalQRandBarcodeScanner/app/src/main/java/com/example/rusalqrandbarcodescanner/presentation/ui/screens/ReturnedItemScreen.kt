@@ -54,10 +54,12 @@ fun ReturnedItemScreen(mainActivityVM : MainActivityViewModel, onDismissNav : ()
 
         ItemAddedDialog(
             onDismiss = {
+                showAddedDialog.value = false
+                mainActivityVM.heatNum.value = ""
                 if (!returnedItemVM.isLastItem(sessionType)) onDismissNav()
                 else onReviewNav()
             }, heat = heat,
-            sessionType = mainActivityVM.sessionType.value.toString()
+            sessionType = mainActivityVM.sessionType.value.type.lowercase()
         )
     }
 
@@ -75,15 +77,16 @@ fun ReturnedItemScreen(mainActivityVM : MainActivityViewModel, onDismissNav : ()
                         showAddedDialog.value = true
                     })
                     ItemActionType.NOT_IN_LOADED_HEATS -> NotInLoadedHeats(loadedHeatList = returnedItemVM.loadedHeats.value, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) })
-                    ItemActionType.INCORRECT_PIECE_COUNT -> IncorrectField(field = "Piece Count", retrievedValue = locatedItem!!.quantity, requestedValue = mainActivityVM.pieceCount.value, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) })
-                    ItemActionType.INCORRECT_BL -> IncorrectField(field = "BL Number", retrievedValue = locatedItem!!.blNum, requestedValue = mainActivityVM.bl.value, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) })
+                    ItemActionType.INCORRECT_PIECE_COUNT -> IncorrectField(field = "Piece Count", retrievedValue = locatedItem!!.quantity, requestedValue = mainActivityVM.pieceCount.value, heat = heat, sessionType = sessionType.type.lowercase(), onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) })
+                    ItemActionType.INCORRECT_BL -> IncorrectField(field = "BL Number", retrievedValue = locatedItem!!.blNum, requestedValue = mainActivityVM.bl.value, heat = heat, sessionType = sessionType.type.lowercase(), onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) })
                     ItemActionType.DUPLICATE -> DuplicateItem(sessionType = sessionType, scanTime = if (sessionType == SessionType.SHIPMENT) locatedItem!!.loadTime else locatedItem!!.receptionDate, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat =mainActivityVM.heatNum) })
                     ItemActionType.INVALID_HEAT -> InvalidHeat(sessionType = sessionType, heat = heat, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) }, onConfirm = onConfirmAddition)
                     ItemActionType.INCORRECT_BARGE -> IncorrectField(field = "Barge",
                         heat = heat,
                         retrievedValue = locatedItem!!.barge,
-                        requestedValue = mainActivityVM.barge.value, onDismiss = {
-                            handleDismiss(onDismiss = onDismissNav, heat =mainActivityVM.heatNum)
+                        requestedValue = mainActivityVM.barge.value,
+                        sessionType = sessionType.type.lowercase(), onDismiss = {
+                            handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum)
                         })
                     ItemActionType.VALID -> ValidHeat(item = locatedItem!!, onDismiss = { handleDismiss(onDismiss = onDismissNav, heat = mainActivityVM.heatNum) }, onConfirm = {
                         returnedItemVM.addItem()
@@ -101,9 +104,9 @@ fun handleDismiss(onDismiss: () -> Unit, heat : MutableState<String>) {
 }
 
 @Composable
-private fun IncorrectField(field: String, heat: String, retrievedValue: String, requestedValue: String, onDismiss : () -> Unit) {
+private fun IncorrectField(field: String, heat: String, retrievedValue: String, requestedValue: String, sessionType : String, onDismiss : () -> Unit) {
     Text(text = """
-        Item with heat $heat cannot be added to shipment!
+        Item with heat $heat cannot be added to $sessionType!
         Incorrect $field, returned item has a $field of $retrievedValue and the requested $field is $requestedValue.
     """.trimIndent(), modifier = Modifier.padding(16.dp))
     DismissButton {
