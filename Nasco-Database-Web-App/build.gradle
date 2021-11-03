@@ -7,7 +7,7 @@ plugins {
 
 group = 'com.NascoDatabaseWebApp'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '8'
+sourceCompatibility = "11"
 
 repositories {
 	mavenCentral()
@@ -57,3 +57,4 @@ task buildReactApp(type: NodeTask, dependsOn: 'npmInstall') {
 processResources.dependsOn 'buildReactApp'
 clean.delete << file('node_modules')
 clean.delete << file('src/main/resources/static/dist')
+targetCompatibility = JavaVersion.VERSION_11

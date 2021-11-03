@@ -210,7 +210,7 @@ public class AlgomaReception extends Reception implements PdfRelease {
 
     private List<String> getMarks(String page) {
         return collectMatches(
-            Pattern.compile("(?<=\\s)[A-Z]{3}[0-9]{4,5}[A-Z]?(?=\\s)", Pattern.MULTILINE),
+            Pattern.compile("(?<=\\s)[A-Z]{3}[0-9]{4,5}[A-Z]?\\d?(?=\\s)", Pattern.MULTILINE),
             page
         );
     }
