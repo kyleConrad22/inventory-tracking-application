@@ -60,6 +60,7 @@ class SplashViewModel(private val repo : InventoryRepository, private val mainAc
 
             } else {
                 mainActivityVM.showSnackBar("Attempting to sync with database, this may take some time...")
+                repo.deleteAll() /* TODO - REMOVE DELETE ALL STATEMENT / FOR DEMO PURPOSES ONLY*/
                 workerId = HttpRequestHandler.startLocalDatabaseSync(mainActivityVM.getApplication())
                 liveData = WorkManager.getInstance(mainActivityVM.getApplication())
                     .getWorkInfoByIdLiveData(workerId)
