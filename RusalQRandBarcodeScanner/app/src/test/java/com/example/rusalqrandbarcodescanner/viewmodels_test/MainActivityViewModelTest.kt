@@ -6,7 +6,7 @@ import com.example.rusalqrandbarcodescanner.MainCoroutineExtension
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
-import junit.framework.Assert.assertEquals
+import junit.framework.Assert.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.jupiter.api.Test
@@ -135,6 +135,50 @@ class MainActivityViewModelTest {
             viewModel.sessionType.value = SessionType.SHIPMENT
         }
 
+        @Nested
+        inner class SetDisplayRemoveEntryContentTest {
+
+            @Test
+            fun `updates to false when quantity is empty`() {
+                viewModel.quantity.value = ""
+                viewModel.addedItemCount.value = 0
+
+                assertFalse(viewModel.displayRemoveEntryContent.value)
+                viewModel.setDisplayRemoveEntryContent()
+                assertFalse(viewModel.displayRemoveEntryContent.value)
+            }
+
+            @Test
+            fun `updates to false when quantity is 0`() {
+                viewModel.quantity.value = "0"
+                viewModel.addedItemCount.value = 0
+
+                assertFalse(viewModel.displayRemoveEntryContent.value)
+                viewModel.setDisplayRemoveEntryContent()
+                assertFalse(viewModel.displayRemoveEntryContent.value)
+            }
+
+            @Test
+            fun `updates to false when quantity is greater than 0 and addedItemCount is 0`() {
+                viewModel.quantity.value = "1"
+                viewModel.addedItemCount.value = 0
+
+                assertFalse(viewModel.displayRemoveEntryContent.value)
+                viewModel.setDisplayRemoveEntryContent()
+                assertFalse(viewModel.displayRemoveEntryContent.value)
+            }
+
+            @Test
+            fun `updates to true when quantity is greater than 0 and addedItemCount is greater than 0`() {
+                viewModel.quantity.value = "1"
+                viewModel.addedItemCount.value = 1
+
+                assertFalse(viewModel.displayRemoveEntryContent.value)
+                viewModel.setDisplayRemoveEntryContent()
+                assertTrue(viewModel.displayRemoveEntryContent.value)
+            }
+        }
+
     }
 
     @Nested
@@ -145,6 +189,16 @@ class MainActivityViewModelTest {
             viewModel.sessionType.value = SessionType.RECEPTION
         }
 
+        @Nested
+        inner class SetDisplayRemoveEntryContentTest {
+
+            @Test
+            fun `updates to false in all cases`() {
+                assertFalse(viewModel.displayRemoveEntryContent.value)
+                viewModel.setDisplayRemoveEntryContent()
+                assertFalse(viewModel.displayRemoveEntryContent.value)
+            }
+        }
     }
 
 }
