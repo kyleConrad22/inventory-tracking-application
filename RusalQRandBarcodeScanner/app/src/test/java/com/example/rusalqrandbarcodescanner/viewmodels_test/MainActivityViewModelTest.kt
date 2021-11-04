@@ -1,5 +1,6 @@
 package com.example.rusalqrandbarcodescanner.viewmodels_test
 
+import androidx.compose.runtime.MutableState
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.MainCoroutineExtension
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
@@ -33,6 +34,30 @@ class MainActivityViewModelTest {
         viewModel = MainActivityViewModel(application = application, repo = repo)
         viewModel.barge.value = "Test"
 
+    }
+
+    @Nested
+    inner class ClearInputFieldsTest {
+
+        private lateinit var inputFields : List<MutableState<String>>
+
+        @BeforeEach
+        fun setup() {
+            inputFields = listOf(
+                viewModel.quantity, viewModel.heatNum, viewModel.workOrder, viewModel.barge, viewModel.pieceCount, viewModel.bl,
+                viewModel.loadNum, viewModel.loader, viewModel.checker
+            )
+
+            inputFields.forEach { it.value = "Test" }
+        }
+
+        @Test
+        fun `clear all fields when function is called`() {
+            viewModel.clearInputFields()
+            inputFields.forEach {
+                assertEquals("", it.value)
+            }
+        }
     }
 
     @Nested

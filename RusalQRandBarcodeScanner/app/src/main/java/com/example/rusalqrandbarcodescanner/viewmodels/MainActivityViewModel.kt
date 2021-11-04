@@ -78,7 +78,7 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
         updateAddedItems()
     }
 
-    fun clearInputFields() {
+    internal fun clearInputFields() {
         workOrder.value = ""
         checker.value = ""
         loadNum.value = ""
