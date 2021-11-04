@@ -141,7 +141,7 @@ class MainActivityViewModelTest {
             @Test
             fun `updates to false when quantity is empty`() {
                 viewModel.quantity.value = ""
-                viewModel.addedItemCount.value = 0
+                viewModel.addedItemCount.value = 1
 
                 assertFalse(viewModel.displayRemoveEntryContent.value)
                 viewModel.setDisplayRemoveEntryContent()
@@ -151,7 +151,7 @@ class MainActivityViewModelTest {
             @Test
             fun `updates to false when quantity is 0`() {
                 viewModel.quantity.value = "0"
-                viewModel.addedItemCount.value = 0
+                viewModel.addedItemCount.value = 1
 
                 assertFalse(viewModel.displayRemoveEntryContent.value)
                 viewModel.setDisplayRemoveEntryContent()
@@ -176,6 +176,16 @@ class MainActivityViewModelTest {
                 assertFalse(viewModel.displayRemoveEntryContent.value)
                 viewModel.setDisplayRemoveEntryContent()
                 assertTrue(viewModel.displayRemoveEntryContent.value)
+            }
+
+            @Test
+            fun `updates to false when quantity is not an integer`() {
+                viewModel.quantity.value = "f"
+                viewModel.addedItemCount.value = 1
+
+                assertFalse(viewModel.displayRemoveEntryContent.value)
+                viewModel.setDisplayRemoveEntryContent()
+                assertFalse(viewModel.displayRemoveEntryContent.value)
             }
         }
 
