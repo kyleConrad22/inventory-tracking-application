@@ -91,15 +91,15 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
         refresh()
     }
 
-    private fun updateReceivedItemCount() = viewModelScope.launch {
+    internal fun updateReceivedItemCount() = viewModelScope.launch {
         receivedItemCount.value = repo.getReceivedItemCount(barge.value)
     }
 
-    private fun updateInboundItemCount() = viewModelScope.launch {
+    internal fun updateInboundItemCount() = viewModelScope.launch {
         inboundItemCount.value = repo.getInboundItemCount(barge.value)
     }
 
-    private fun setDisplayRemoveEntryContent() {
+    internal fun setDisplayRemoveEntryContent() {
         if (sessionType.value == SessionType.SHIPMENT) {
             val calcQuantity : Int = if (quantity.value == "") { 0 } else { quantity.value.toInt() }
 
@@ -110,7 +110,7 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
         }
     }
 
-    fun updateAddedItemCount() = viewModelScope.launch {
+    internal fun updateAddedItemCount() = viewModelScope.launch {
         addedItemCount.value = repo.getNumberOfAddedItems()
         setDisplayRemoveEntryContent()
     }
