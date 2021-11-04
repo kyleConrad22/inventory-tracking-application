@@ -10,7 +10,7 @@ android {
     defaultConfig {
         applicationId "com.example.rusalqrandbarcodescanner"
         minSdk 26
-        targetSdk 31
+        targetSdk 30
         versionCode 1
         versionName "1.0"
 
@@ -52,11 +52,24 @@ android {
             includeAndroidResources = true
         }
     }
+
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+    testLogging {
+        exceptionFormat "full"
+        events "started", "skipped", "passed", "failed"
+        showStandardStreams true
+    }
 }
 
 dependencies {
 
     // General Implementations
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2'
     implementation 'androidx.core:core-ktx:1.3.2'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.3.0'
@@ -103,7 +116,6 @@ dependencies {
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
-    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
 
     // Camera Implementation
     implementation "androidx.camera:camera-core:$camerax_version"
@@ -113,10 +125,13 @@ dependencies {
     implementation "androidx.camera:camera-extensions:1.0.0-alpha27"
 
     // Testing Implementation
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.2"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.2"
+    testImplementation "org.junit.vintage:junit-vintage-engine:5.7.2"
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-    testImplementation "org.mockito:mockito-core:1.10.19"
+    testImplementation "org.mockito:mockito-core:4.0.0"
+    testImplementation "org.mockito:mockito-inline:4.0.0"
+    testImplementation "org.mockito:mockito-junit-jupiter:4.0.0"
     testImplementation "androidx.test:core:1.4.0"
     testImplementation "org.robolectric:robolectric:4.6"
 }

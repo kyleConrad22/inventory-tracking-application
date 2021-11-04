@@ -11,7 +11,6 @@ import kotlinx.coroutines.withContext
 @Suppress("RedundantSuspendModifier")
 @WorkerThread
 class InventoryRepository(private val inventoryDao: InventoryDao) {
-    val fullInventory: Flow<List<RusalItem>> = inventoryDao.getAll()
 
     suspend fun getAllSuspend() : List<RusalItem>? = withContext(Dispatchers.IO) {
         return@withContext try {
@@ -101,7 +100,7 @@ class InventoryRepository(private val inventoryDao: InventoryDao) {
         return@withContext try {
             inventoryDao.findByBl(bl)
         } catch (e : EmptyResultSetException) {
-            listOf<RusalItem>()
+            listOf()
         }
     }
 
