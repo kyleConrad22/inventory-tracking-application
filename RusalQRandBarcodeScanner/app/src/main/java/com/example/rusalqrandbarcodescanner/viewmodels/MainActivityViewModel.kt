@@ -56,9 +56,10 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
             pieceCount.value = savedItem.quantity
             quantity.value = "10" // TODO - Add saved state handle such that quantity can be retained across process death
 
-        } else
+        } else {
             barge.value = savedItem.barge
             checker.value = savedItem.checker
+        }
     }
 
     fun refresh(optionalCall : () -> Unit = { /* Ignore */ }) {

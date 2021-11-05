@@ -33,7 +33,6 @@ class MainActivityViewModelTest {
     @BeforeEach
     fun setup() {
         viewModel = MainActivityViewModel(application = application, repo = repo)
-        viewModel.barge.value = "Test"
 
     }
 
@@ -63,6 +62,11 @@ class MainActivityViewModelTest {
 
     @Nested
     inner class UpdateReceivedItemCountTest {
+
+        @BeforeEach
+        fun setup() {
+            viewModel.barge.value = "Test"
+        }
 
         @Test
         fun `updates to correct value given there exist received items for given barge`() = runBlockingTest {
@@ -108,6 +112,11 @@ class MainActivityViewModelTest {
 
     @Nested
     inner class UpdateInboundItemCountTest {
+
+        @BeforeEach
+        fun setup() {
+            viewModel.barge.value = "Test"
+        }
 
         @Test
         fun `updates given there exist inbound items on given barge`() = runBlockingTest {
