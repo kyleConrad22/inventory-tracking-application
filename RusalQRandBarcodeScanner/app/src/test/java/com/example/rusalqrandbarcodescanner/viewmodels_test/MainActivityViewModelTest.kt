@@ -3,6 +3,7 @@ package com.example.rusalqrandbarcodescanner.viewmodels_test
 import androidx.compose.runtime.MutableState
 import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.MainCoroutineExtension
+import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
@@ -128,6 +129,67 @@ class MainActivityViewModelTest {
     }
 
     @Nested
+    inner class RecreateSessionTest {
+
+        private lateinit var fieldValues : List<MutableState<String>>
+        private lateinit var receptionValues : List<MutableState<String>>
+        private lateinit var shipmentValues : List<MutableState<String>>
+
+        @BeforeEach
+        fun setup() {
+            fieldValues = listOf(viewModel.barge, viewModel.checker, viewModel.workOrder, viewModel.loadNum, viewModel.loader, viewModel.quantity, viewModel.bl, viewModel.pieceCount)
+            receptionValues = listOf(viewModel.barge, viewModel.checker)
+            shipmentValues = listOf(viewModel.workOrder, viewModel.loadNum, viewModel.loader, viewModel.bl, viewModel.pieceCount)
+        }
+
+        @Test
+        fun `restore session as shipment given loadTime is non-empty and receptionTime is empty`() {
+
+            fieldValues.forEach { assertEquals("", it.value) }
+
+            viewModel.recreateSession(
+                RusalItem(loader = "Test", loadNum = "Test", workOrder = "Test", blNum = "Test", quantity = "Test", loadTime = "Test", barcode = "Test", barge = "Test", checker = "Test", receptionDate = "")
+            )
+
+            receptionValues.forEach { assertEquals("", it.value) }
+            shipmentValues.forEach { assertEquals("Test", it.value) }
+            assertEquals("10", viewModel.quantity.value)
+        }
+
+        @Test
+        fun `restore session as shipment given loadTime is non-empty and receptionTime is non-empty`() {
+
+            fieldValues.forEach { assertEquals("", it.value) }
+
+            viewModel.recreateSession(
+                RusalItem(loader = "Test", loadNum = "Test", workOrder = "Test", blNum = "Test", quantity = "Test", loadTime = "Test", barcode = "Test", barge = "Test", checker = "Test", receptionDate = "Test")
+            )
+
+            receptionValues.forEach { assertEquals("", it.value) }
+            shipmentValues.forEach { assertEquals("Test", it.value) }
+            assertEquals("10", viewModel.quantity.value)
+        }
+
+        @Test
+        fun `restore session as reception given loadTime is empty and receptionTime is non-empty`() {
+            fieldValues.forEach { assertEquals("", it.value) }
+
+            viewModel.recreateSession(
+                RusalItem(loader = "Test", loadNum = "Test", workOrder = "Test", blNum = "Test", quantity = "Test", loadTime = "", barcode = "Test", barge = "Test", checker = "Test", receptionDate = "Test")
+            )
+
+            receptionValues.forEach{ assertEquals("Test", it.value) }
+            shipmentValues.forEach { assertEquals("", it.value) }
+            assertEquals("", viewModel.quantity.value)
+        }
+
+        @Test
+        fun `DO SOMETHING given loadTime is empty and receptionTime is empty`() {
+            /* TODO - determine logic to be taken in this case and write appropriate test case */
+        }
+    }
+
+    @Nested
     inner class ShipmentTest {
 
         @BeforeEach
@@ -209,6 +271,7 @@ class MainActivityViewModelTest {
                 assertFalse(viewModel.displayRemoveEntryContent.value)
             }
         }
+
     }
 
 }
