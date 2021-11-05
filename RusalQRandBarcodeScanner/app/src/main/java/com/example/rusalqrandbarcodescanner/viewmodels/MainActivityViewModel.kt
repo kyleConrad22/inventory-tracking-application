@@ -108,7 +108,7 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
                 0
             }
 
-            displayRemoveEntryContent.value = calcQuantity - addedItemCount.value > 0
+            displayRemoveEntryContent.value = calcQuantity > 0 && addedItemCount.value > 0
 
         } else {
             displayRemoveEntryContent.value = false
