@@ -251,6 +251,68 @@ class MainActivityViewModelTest {
             }
         }
 
+        @Nested
+        inner class RemoveAllAddedItemsTest {
+
+            private lateinit var testItemList : List<RusalItem>
+
+            @Test
+            fun `delete item from repo given it is a new item`() = runBlockingTest {
+                testItemList = listOf(RusalItem(barcode = "n"))
+                viewModel.addedItems.value = testItemList
+
+                viewModel.removeAllAddedItems()
+                verify(repo).delete(testItemList[0])
+                verify(repo, times(0)).removeItemFromShipment(anyString())
+                verify(repo, times(0)).removeItemFromReception(anyString())
+            }
+
+            @Test
+            fun `delete item from repo given it is an unidentified item`() = runBlockingTest {
+                testItemList = listOf(RusalItem(barcode = "u"))
+                viewModel.addedItems.value = testItemList
+
+                viewModel.removeAllAddedItems()
+                verify(repo).delete(testItemList[0])
+                verify(repo, times(0)).removeItemFromReception(anyString())
+                verify(repo, times(0)).removeItemFromShipment(anyString())
+            }
+
+            @Test
+            fun `delete multiple items from repo given items are either new or unidentified`() = runBlockingTest {
+                testItemList = listOf(RusalItem(barcode = "n"), RusalItem(barcode = "u"))
+                viewModel.addedItems.value = testItemList
+
+                viewModel.removeAllAddedItems()
+                verify(repo).delete(testItemList[0])
+                verify(repo).delete(testItemList[1])
+                verify(repo, times(0)).removeItemFromShipment(anyString())
+                verify(repo, times(0)).removeItemFromReception(anyString())
+            }
+
+            @Test
+            fun `call removeItemFromShipment given item is neither new nor unidentified`() = runBlockingTest {
+                testItemList = listOf(RusalItem(barcode = "Test", heatNum = "1"))
+                viewModel.addedItems.value = testItemList
+
+                viewModel.removeAllAddedItems()
+                verify(repo, times(0)).delete(any())
+                verify(repo).removeItemFromShipment("1")
+                verify(repo, times(0)).removeItemFromReception(anyString())
+            }
+
+            @Test
+            fun `call removeItemFromShipment multiple times given items are neither new nor unidentified`() = runBlockingTest {
+                testItemList = listOf(RusalItem(barcode = "Test1", heatNum = "1"), RusalItem(barcode = "Test2", heatNum = "2"))
+                viewModel.addedItems.value = testItemList
+
+                viewModel.removeAllAddedItems()
+                verify(repo, times(0)).delete(any())
+                listOf("1", "2").forEach { verify(repo).removeItemFromShipment(it) }
+                verify(repo, times(0)).removeItemFromReception(anyString())
+
+            }
+        }
     }
 
     @Nested
@@ -269,6 +331,68 @@ class MainActivityViewModelTest {
                 assertFalse(viewModel.displayRemoveEntryContent.value)
                 viewModel.setDisplayRemoveEntryContent()
                 assertFalse(viewModel.displayRemoveEntryContent.value)
+            }
+        }
+
+        @Nested
+        inner class RemoveAllAddedItemsTest {
+
+            private lateinit var testItemList : List<RusalItem>
+
+            @Test
+            fun `delete item from repo given it is a new item`() = runBlockingTest {
+                testItemList = listOf(RusalItem(barcode = "n"))
+                viewModel.addedItems.value = testItemList
+
+                viewModel.removeAllAddedItems()
+                verify(repo).delete(testItemList[0])
+                verify(repo, times(0)).removeItemFromShipment(anyString())
+                verify(repo, times(0)).removeItemFromReception(anyString())
+            }
+
+            @Test
+            fun `delete item from repo given it is an unidentified item`() = runBlockingTest {
+                testItemList = listOf(RusalItem(barcode = "u"))
+                viewModel.addedItems.value = testItemList
+
+                viewModel.removeAllAddedItems()
+                verify(repo).delete(testItemList[0])
+                verify(repo, times(0)).removeItemFromReception(anyString())
+                verify(repo, times(0)).removeItemFromShipment(anyString())
+            }
+
+            @Test
+            fun `delete multiple items from repo given items are either new or unidentified`() = runBlockingTest {
+                testItemList = listOf(RusalItem(barcode = "n"), RusalItem(barcode = "u"))
+                viewModel.addedItems.value = testItemList
+
+                viewModel.removeAllAddedItems()
+                verify(repo).delete(testItemList[0])
+                verify(repo).delete(testItemList[1])
+                verify(repo, times(0)).removeItemFromShipment(anyString())
+                verify(repo, times(0)).removeItemFromReception(anyString())
+            }
+
+            @Test
+            fun `call removeItemFromReception given item is neither new nor unidentified`() = runBlockingTest {
+                testItemList = listOf(RusalItem(barcode = "Test", heatNum = "1"))
+                viewModel.addedItems.value = testItemList
+
+                viewModel.removeAllAddedItems()
+                verify(repo, times(0)).delete(any())
+                verify(repo).removeItemFromReception("1")
+                verify(repo, times(0)).removeItemFromShipment(anyString())
+            }
+
+            @Test
+            fun `call removeItemFromReception multiple times given items are all neither new nor unidentified`() = runBlockingTest {
+                testItemList = listOf(RusalItem(barcode = "Test1", heatNum = "1"), RusalItem(barcode = "Test2", heatNum = "2"))
+                viewModel.addedItems.value = testItemList
+
+                viewModel.removeAllAddedItems()
+                verify(repo, times(0)).delete(any())
+                listOf("1", "2").forEach { verify(repo).removeItemFromReception(it) }
+                verify(repo, times(0)).removeItemFromShipment(anyString())
             }
         }
 

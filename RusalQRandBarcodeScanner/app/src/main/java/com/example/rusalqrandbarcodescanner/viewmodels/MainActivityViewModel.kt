@@ -42,7 +42,7 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
 
     val displayRemoveEntryContent = mutableStateOf(false)
 
-    fun recreateSession(savedItem : RusalItem) {
+    internal fun recreateSession(savedItem : RusalItem) {
 
         sessionType.value =
             if (savedItem.loadTime != "") SessionType.SHIPMENT
