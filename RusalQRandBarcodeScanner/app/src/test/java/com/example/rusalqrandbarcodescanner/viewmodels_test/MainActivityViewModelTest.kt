@@ -190,6 +190,18 @@ class MainActivityViewModelTest {
     }
 
     @Nested
+    inner class InsertTest {
+
+        @Test
+        fun `calls repo insert method for supplied item`() = runBlockingTest {
+            val item = RusalItem(barcode = "Test")
+            viewModel.insert(item)
+            verify(repo).insert(item)
+            verifyNoMoreInteractions(repo)
+        }
+    }
+
+    @Nested
     inner class ShipmentTest {
 
         @BeforeEach

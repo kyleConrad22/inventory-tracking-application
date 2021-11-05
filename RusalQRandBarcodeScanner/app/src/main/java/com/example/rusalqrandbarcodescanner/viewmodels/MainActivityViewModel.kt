@@ -119,7 +119,7 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
         setDisplayRemoveEntryContent()
     }
 
-    fun removeAllAddedItems() = viewModelScope.launch {
+    internal fun removeAllAddedItems() = viewModelScope.launch {
         addedItems.value.forEach { item ->
             if ('u' in item.barcode || 'n' in item.barcode) repo.delete(item)
 
@@ -132,7 +132,7 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
         refresh()
     }
 
-    fun updateAddedItems() = viewModelScope.launch {
+    internal fun updateAddedItems() = viewModelScope.launch {
         addedItems.value = rusalItemListSortAscendingTime(repo.getAddedItems(), DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss"))
         if (sessionType.value == SessionType.RECEPTION && addedItems.value.isNotEmpty() && addedItems.value.size % 20 == 0) {
             triggerPartialUpload()
@@ -140,7 +140,7 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
         updateDisplayedItemList()
     }
 
-    fun updateDisplayedItemList() {
+    internal fun updateDisplayedItemList() {
         if (sessionType.value == SessionType.SHIPMENT || addedItems.value.size < 11) {
             displayedItems.value = addedItems.value
         } else {
@@ -148,7 +148,7 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
         }
     }
 
-    fun insert(lineItem: RusalItem) = viewModelScope.launch {
+    internal fun insert(lineItem: RusalItem) = viewModelScope.launch {
         repo.insert(lineItem)
     }
 
