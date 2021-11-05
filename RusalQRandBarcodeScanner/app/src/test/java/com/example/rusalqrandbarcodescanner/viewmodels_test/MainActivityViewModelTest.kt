@@ -8,14 +8,16 @@ import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import junit.framework.Assert.*
+import org.mockito.kotlin.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
-import org.mockito.Mockito.*
 import org.mockito.junit.jupiter.MockitoExtension
 
 @ExperimentalCoroutinesApi
@@ -34,6 +36,11 @@ class MainActivityViewModelTest {
     fun setup() {
         viewModel = MainActivityViewModel(application = application, repo = repo)
 
+    }
+
+    @AfterEach
+    fun validate() {
+        validateMockitoUsage()
     }
 
     @Nested
@@ -277,6 +284,11 @@ class MainActivityViewModelTest {
 
             private lateinit var testItemList : List<RusalItem>
 
+            @BeforeEach
+            fun setup() = runBlockingTest {
+                doReturn(listOf<RusalItem>()).`when`(repo).getAddedItems()
+            }
+
             @Test
             fun `delete item from repo given it is a new item`() = runBlockingTest {
                 testItemList = listOf(RusalItem(barcode = "n"))
@@ -284,8 +296,8 @@ class MainActivityViewModelTest {
 
                 viewModel.removeAllAddedItems()
                 verify(repo).delete(testItemList[0])
-                verify(repo, times(0)).removeItemFromShipment(anyString())
-                verify(repo, times(0)).removeItemFromReception(anyString())
+                verify(repo, never()).removeItemFromShipment(anyString())
+                verify(repo, never()).removeItemFromReception(anyString())
             }
 
             @Test
@@ -295,8 +307,8 @@ class MainActivityViewModelTest {
 
                 viewModel.removeAllAddedItems()
                 verify(repo).delete(testItemList[0])
-                verify(repo, times(0)).removeItemFromReception(anyString())
-                verify(repo, times(0)).removeItemFromShipment(anyString())
+                verify(repo, never()).removeItemFromReception(anyString())
+                verify(repo, never()).removeItemFromShipment(anyString())
             }
 
             @Test
@@ -307,8 +319,8 @@ class MainActivityViewModelTest {
                 viewModel.removeAllAddedItems()
                 verify(repo).delete(testItemList[0])
                 verify(repo).delete(testItemList[1])
-                verify(repo, times(0)).removeItemFromShipment(anyString())
-                verify(repo, times(0)).removeItemFromReception(anyString())
+                verify(repo, never()).removeItemFromShipment(anyString())
+                verify(repo, never()).removeItemFromReception(anyString())
             }
 
             @Test
@@ -317,9 +329,9 @@ class MainActivityViewModelTest {
                 viewModel.addedItems.value = testItemList
 
                 viewModel.removeAllAddedItems()
-                verify(repo, times(0)).delete(any())
+                verify(repo, never()).delete(any())
                 verify(repo).removeItemFromShipment("1")
-                verify(repo, times(0)).removeItemFromReception(anyString())
+                verify(repo, never()).removeItemFromReception(anyString())
             }
 
             @Test
@@ -328,9 +340,9 @@ class MainActivityViewModelTest {
                 viewModel.addedItems.value = testItemList
 
                 viewModel.removeAllAddedItems()
-                verify(repo, times(0)).delete(any())
+                verify(repo, never()).delete(any())
                 listOf("1", "2").forEach { verify(repo).removeItemFromShipment(it) }
-                verify(repo, times(0)).removeItemFromReception(anyString())
+                verify(repo, never()).removeItemFromReception(anyString())
 
             }
         }
@@ -360,6 +372,11 @@ class MainActivityViewModelTest {
 
             private lateinit var testItemList : List<RusalItem>
 
+            @BeforeEach
+            fun setup() = runBlockingTest {
+                doReturn(listOf<RusalItem>()).`when`(repo).getAddedItems()
+            }
+
             @Test
             fun `delete item from repo given it is a new item`() = runBlockingTest {
                 testItemList = listOf(RusalItem(barcode = "n"))
@@ -390,7 +407,7 @@ class MainActivityViewModelTest {
                 viewModel.removeAllAddedItems()
                 verify(repo).delete(testItemList[0])
                 verify(repo).delete(testItemList[1])
-                verify(repo, times(0)).removeItemFromShipment(anyString())
+                verify(repo, never()).removeItemFromShipment(anyString())
                 verify(repo, times(0)).removeItemFromReception(anyString())
             }
 
