@@ -20,7 +20,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito
-import org.mockito.Spy
 import org.mockito.junit.jupiter.MockitoExtension
 
 @ExperimentalCoroutinesApi
@@ -44,6 +43,17 @@ class MainActivityViewModelTest {
     @AfterEach
     fun validate() {
         validateMockitoUsage()
+    }
+
+    // Used to initialize test list of RusalItems of a given size
+    private fun getTestList(size : Int) : List<RusalItem> {
+        val mutableList = mutableListOf<RusalItem>()
+
+        var i = 0;
+        while (i < size) {
+            mutableList.add(RusalItem(barcode = "Test${i++}"))
+        }
+        return mutableList.toList()
     }
 
     @Nested
@@ -250,6 +260,38 @@ class MainActivityViewModelTest {
         }
 
         @Nested
+        inner class UpdateDisplayedItemListTest {
+
+            @Test
+            fun `equal to addedItems for addedItems size less than 10`() {
+
+                viewModel.addedItems.value = getTestList(9)
+                assertEquals(listOf<RusalItem>(), viewModel.displayedItems.value)
+                viewModel.updateDisplayedItemList()
+                assertEquals(viewModel.addedItems.value, viewModel.displayedItems.value)
+            }
+
+            @Test
+            fun `equal to addedItems for addedItems size equal to 10`() {
+
+                viewModel.addedItems.value = getTestList(10)
+                assertEquals(listOf<RusalItem>(), viewModel.displayedItems.value)
+                viewModel.updateDisplayedItemList()
+                assertEquals(viewModel.addedItems.value, viewModel.displayedItems.value)
+            }
+
+            @Test
+            fun `equal to addedItems for addedItems size greater than 10`() {
+
+                viewModel.addedItems.value = getTestList(11)
+                assertEquals(listOf<RusalItem>(), viewModel.displayedItems.value)
+                viewModel.updateDisplayedItemList()
+                assertEquals(viewModel.addedItems.value, viewModel.displayedItems.value)
+            }
+
+        }
+
+        @Nested
         inner class SetDisplayRemoveEntryContentTest {
 
             @Test
@@ -378,6 +420,38 @@ class MainActivityViewModelTest {
         @BeforeEach
         fun setup() {
             viewModel.sessionType.value = SessionType.RECEPTION
+        }
+
+        @Nested
+        inner class UpdateDisplayedItemsListTest {
+
+            @Test
+            fun `set equal to addedItems given addedItems size is less than 10`() {
+
+                viewModel.addedItems.value = getTestList(9)
+                assertEquals(listOf<RusalItem>(), viewModel.displayedItems.value)
+                viewModel.updateDisplayedItemList()
+                assertEquals(viewModel.addedItems.value, viewModel.displayedItems.value)
+            }
+
+            @Test
+            fun `set equal to addedItems given addedItems size is equal to 10`() {
+
+                viewModel.addedItems.value = getTestList(10)
+                assertEquals(listOf<RusalItem>(), viewModel.displayedItems.value)
+                viewModel.updateDisplayedItemList()
+                assertEquals(viewModel.addedItems.value, viewModel.displayedItems.value)
+            }
+
+            @Test
+            fun `set equal to last 10 items from addedItems given addedItems size is greater than 10`() {
+
+                viewModel.addedItems.value = getTestList(11)
+                assertEquals(listOf<RusalItem>(), viewModel.displayedItems.value)
+                viewModel.updateDisplayedItemList()
+                assertEquals(viewModel.addedItems.value.subList(viewModel.addedItems.value.size - 10, viewModel.addedItems.value.size), viewModel.displayedItems.value)
+            }
+
         }
 
         @Nested
