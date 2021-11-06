@@ -57,6 +57,31 @@ class MainActivityViewModelTest {
     }
 
     @Nested
+    inner class ShowSnackBarTest {
+
+        @Test
+        fun `sets snackBar visibility to true and sets snackBar message to specified message`() {
+            assertEquals(viewModel.snackBarMessage, "")
+            assertFalse(viewModel.isSnackBarShowing)
+            viewModel.showSnackBar("Test")
+            assertEquals("Test", viewModel.snackBarMessage)
+            assertTrue(viewModel.isSnackBarShowing)
+        }
+
+    }
+
+    @Nested
+    inner class DismissSnackBarTest {
+
+        @Test
+        fun `sets snackBar visibility to false`() {
+            assertFalse(viewModel.isSnackBarShowing)
+            viewModel.dismissSnackBar()
+            assertFalse(viewModel.isSnackBarShowing)
+        }
+    }
+
+    @Nested
     inner class RefreshTest {
 
         @Test

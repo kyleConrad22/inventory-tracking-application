@@ -149,17 +149,6 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
         repo.insert(lineItem)
     }
 
-    class MainActivityViewModelFactory(private val repository: InventoryRepository, private val application : Application) :
-        ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(MainActivityViewModel::class.java)) {
-                @Suppress("UNCHECKED_CAST")
-                return MainActivityViewModel(repository, application) as T
-            }
-            throw IllegalArgumentException("Unknown ViewModel class")
-        }
-    }
-
     // Sets state of snackBar in main activity
     var isSnackBarShowing by mutableStateOf(false)
         private set
@@ -174,6 +163,17 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
 
     fun dismissSnackBar() {
         isSnackBarShowing = false
+    }
+
+    class MainActivityViewModelFactory(private val repository: InventoryRepository, private val application : Application) :
+        ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(MainActivityViewModel::class.java)) {
+                @Suppress("UNCHECKED_CAST")
+                return MainActivityViewModel(repository, application) as T
+            }
+            throw IllegalArgumentException("Unknown ViewModel class")
+        }
     }
 
     companion object {
