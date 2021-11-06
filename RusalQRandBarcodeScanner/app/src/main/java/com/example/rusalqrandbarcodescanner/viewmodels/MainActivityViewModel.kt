@@ -1,7 +1,6 @@
 package com.example.rusalqrandbarcodescanner.viewmodels
 
 import android.app.Application
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -11,9 +10,7 @@ import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.services.HttpRequestHandler
 import com.example.rusalqrandbarcodescanner.util.rusalItemListSortAscendingTime
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.lang.IllegalArgumentException
 import java.time.format.DateTimeFormatter
 
@@ -62,12 +59,11 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
         }
     }
 
-    fun refresh(optionalCall : () -> Unit = { /* Ignore */ }) {
+    internal fun refresh() {
         updateAddedItems()
         updateAddedItemCount()
         updateInboundItemCount()
         updateReceivedItemCount()
-        optionalCall()
     }
 
     private suspend fun triggerPartialUpload() {

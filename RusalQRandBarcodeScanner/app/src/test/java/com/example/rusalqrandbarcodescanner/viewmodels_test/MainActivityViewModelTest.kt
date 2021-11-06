@@ -7,9 +7,10 @@ import com.example.rusalqrandbarcodescanner.database.RusalItem
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.repositories.InventoryRepository
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
-import junit.framework.Assert.*
+import org.junit.Assert.*
 import org.mockito.kotlin.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
@@ -18,6 +19,8 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
+import org.mockito.Mockito
+import org.mockito.Spy
 import org.mockito.junit.jupiter.MockitoExtension
 
 @ExperimentalCoroutinesApi
@@ -41,6 +44,27 @@ class MainActivityViewModelTest {
     @AfterEach
     fun validate() {
         validateMockitoUsage()
+    }
+
+    @Nested
+    inner class RefreshTest {
+
+        @Test
+        fun `calls all internal methods when called`() {
+            val viewModelSpy = Mockito.spy(viewModel)
+
+            doReturn(Job()).`when`(viewModelSpy).updateAddedItemCount()
+            doReturn(Job()).`when`(viewModelSpy).updateAddedItems()
+            doReturn(Job()).`when`(viewModelSpy).updateReceivedItemCount()
+            doReturn(Job()).`when`(viewModelSpy).updateInboundItemCount()
+
+            viewModelSpy.refresh()
+            verify(viewModelSpy).updateAddedItemCount()
+            verify(viewModelSpy).updateAddedItems()
+            verify(viewModelSpy).updateReceivedItemCount()
+            verify(viewModelSpy).updateInboundItemCount()
+        }
+
     }
 
     @Nested
