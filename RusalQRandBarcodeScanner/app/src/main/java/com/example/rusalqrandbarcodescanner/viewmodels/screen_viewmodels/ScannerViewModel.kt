@@ -16,7 +16,7 @@ class ScannerViewModel(private val mainActivityVM : MainActivityViewModel) : Vie
     val isScanned = mutableStateOf(false)
 
     // Checks if scanned code is valid and sets UI State accordingly
-    private fun checkIsValid(rawValue : String) {
+    internal fun checkIsValid(rawValue : String) {
         uiState.value = ScannerState.Loading
         uiState.value =
             if (QRValidator.isValidRusalCode(rawValue)) ScannerState.ValidScan
@@ -24,7 +24,7 @@ class ScannerViewModel(private val mainActivityVM : MainActivityViewModel) : Vie
     }
 
     // Logic to be taken on scan, if valid code sends relevant retrieved information to Main Activity ViewModel
-    fun onScan(rawValue : String, onValidScan : () -> Unit) {
+    internal fun onScan(rawValue : String, onValidScan : () -> Unit) {
         checkIsValid(rawValue)
         if (uiState.value == ScannerState.ValidScan) {
             val scannedItem : RusalItem = QRParser.parseRusalCode(rawValue)
