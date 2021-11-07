@@ -17,8 +17,8 @@ import java.lang.IllegalArgumentException
 
 class NewItemViewModel(private val mainActivityVM : MainActivityViewModel, private val repo : InventoryRepository) : ViewModel() {
 
-    private var heat = mainActivityVM.heatNum.value
-    private var scannedItem = RusalItem(barcode = "") // Item returned from scanner and/or with values set through manual entry
+    var heat = mainActivityVM.heatNum.value
+    var scannedItem = RusalItem(barcode = "") // Item returned from scanner and/or with values set through manual entry
 
     val scannedItemGrade = mutableStateOf(scannedItem.grade)
     val scannedItemGrossWeight = mutableStateOf(scannedItem.grossWeightKg)
@@ -37,7 +37,7 @@ class NewItemViewModel(private val mainActivityVM : MainActivityViewModel, priva
     }
 
     // Sets scannedItem value if item was returned through a QR scan rather than through manual entry
-    private fun trySettingItemValuesViaScan() {
+    internal fun trySettingItemValuesViaScan() {
         if (mainActivityVM.scannedItem.barcode != "") {
             scannedItem = mainActivityVM.scannedItem
             scannedItemGrade.value = mainActivityVM.scannedItem.grade
@@ -49,14 +49,14 @@ class NewItemViewModel(private val mainActivityVM : MainActivityViewModel, priva
     }
 
     // Checks if the confirm addition button should be visible, setting visibility as necessary
-    fun refresh() {
+    internal fun refresh() {
         isConfirmAdditionVisible.value =
             "" !in listOf(scannedItemGrade.value, scannedItemGrossWeight.value, scannedItemNetWeight.value, scannedItemQuantity.value, scannedItemMark.value)
                     && isValidGrossWeight && isValidNetWeight && isValidMark && isValidQuantity
     }
 
     // Adds new item to inventory if being added through reception as a new item
-    fun receiveNewItem() = viewModelScope.launch() {
+    internal fun receiveNewItem() = viewModelScope.launch() {
         if (scannedItem.barcode == "") {
             scannedItem = RusalItem(
                 heatNum = heat,
@@ -76,20 +76,12 @@ class NewItemViewModel(private val mainActivityVM : MainActivityViewModel, priva
         addItem(scannedItem)
     }
 
-    private suspend fun getNumberOfUnidentifiedBundles(heat : String) : Int {
-        var result = 0
-        val value = GlobalScope.async {
-            withContext(Dispatchers.Main) {
-                val repoData = repo.findByBarcodes("${heat}u")
-                result = if (repoData.isNullOrEmpty()) {
-                    0
-                } else {
-                    repoData.size
-                }
-            }
-        }
-        value.await()
-        return result
+    internal suspend fun getNumberOfUnidentifiedBundles(heat : String) : Int {
+        val repoData = repo.findByBarcodes("${heat}u")
+
+        return if (repoData.isNullOrEmpty()) 0
+        else repoData.size
+
     }
 
     fun validateGrossWeight(input : String) {
@@ -108,7 +100,7 @@ class NewItemViewModel(private val mainActivityVM : MainActivityViewModel, priva
         isValidMark = InputValidation.lengthValidation(input, 29)
     }
 
-    private fun addItem(item : RusalItem) = viewModelScope.launch {
+    internal fun addItem(item : RusalItem) = viewModelScope.launch {
         repo.insert(item)
         repo.updateIsAddedStatusViaBarcode(true, item.barcode)
         repo.updateReceptionFieldsViaBarcode(getCurrentDateTime(), mainActivityVM.checker.value, item.barcode)
