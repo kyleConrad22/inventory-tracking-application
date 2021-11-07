@@ -84,19 +84,19 @@ class NewItemViewModel(private val mainActivityVM : MainActivityViewModel, priva
 
     }
 
-    fun validateGrossWeight(input : String) {
+    internal fun validateGrossWeight(input : String) {
         isValidGrossWeight = InputValidation.lengthValidation(input, 4) && InputValidation.integerValidation(input)
     }
 
-    fun validateNetWeight(input : String) {
+    internal fun validateNetWeight(input : String) {
         isValidNetWeight = InputValidation.lengthValidation(input, 4) && InputValidation.integerValidation(input)
     }
 
-    fun validateQuantity(input : String) {
+    internal fun validateQuantity(input : String) {
         isValidQuantity = InputValidation.lengthValidation(input, 2) && InputValidation.integerValidation(input)
     }
 
-    fun validateMark(input : String) {
+    internal fun validateMark(input : String) {
         isValidMark = InputValidation.lengthValidation(input, 29)
     }
 
