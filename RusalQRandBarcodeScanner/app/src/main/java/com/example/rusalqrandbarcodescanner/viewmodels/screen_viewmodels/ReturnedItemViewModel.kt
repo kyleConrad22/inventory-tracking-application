@@ -14,8 +14,6 @@ import com.example.rusalqrandbarcodescanner.util.isBaseHeat
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 class ReturnedItemViewModel(private val invRepo : InventoryRepository, private val mainActivityVM : MainActivityViewModel) : ViewModel() {
 
