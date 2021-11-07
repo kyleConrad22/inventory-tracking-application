@@ -12,7 +12,6 @@ import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
 
-@DelicateCoroutinesApi
 class InfoInputViewModel(private val mainActivityVM : MainActivityViewModel, private val invRepo : InventoryRepository) : ViewModel() {
     var displayConfirmButton by mutableStateOf(false)
     var displayButtons by mutableStateOf(true)
@@ -44,7 +43,7 @@ class InfoInputViewModel(private val mainActivityVM : MainActivityViewModel, pri
         }
     }
 
-    private fun getUniqueBargeList(items : List<RusalItem>) : List<Barge> {
+    internal fun getUniqueBargeList(items : List<RusalItem>) : List<Barge> {
         val result = mutableListOf<Barge>()
         for (item in items) {
             if (result.find { it.text == item.barge } == null) {
@@ -54,7 +53,7 @@ class InfoInputViewModel(private val mainActivityVM : MainActivityViewModel, pri
         return result.toList()
     }
 
-    private fun getUniqueBlList(items : List<RusalItem>) : List<Bl> {
+    internal fun getUniqueBlList(items : List<RusalItem>) : List<Bl> {
         val result = mutableListOf<Bl>()
         for (item in items) {
             if (result.find {it.text == item.blNum } == null) {
@@ -64,7 +63,7 @@ class InfoInputViewModel(private val mainActivityVM : MainActivityViewModel, pri
         return result.toList()
     }
 
-    fun refresh() {
+    internal fun refresh() {
         displayConfirmButton =
             if (mainActivityVM.sessionType.value == SessionType.SHIPMENT)
                 "" !in listOf(
@@ -79,10 +78,10 @@ class InfoInputViewModel(private val mainActivityVM : MainActivityViewModel, pri
                 "" !in listOf(
                     mainActivityVM.barge.value,
                     mainActivityVM.checker.value
-                )
+                ) && isValidChecker
     }
 
-    // To be run when confirm is pressed, validates barge or bl input and returns true if both are true
+    // To be run when confirm button is pressed, validates barge and bl input and returns true if both are valid
     fun onConfirmValidator() : Boolean {
         validateBl()
         validateBarge()
@@ -113,11 +112,11 @@ class InfoInputViewModel(private val mainActivityVM : MainActivityViewModel, pri
         isValidQuantity = InputValidation.integerValidation(input)
     }
 
-    private fun validateBl() {
+    internal fun validateBl() {
         isValidBl = InputValidation.inBlListValidation(mainActivityVM.bl.value, blList.value)
     }
 
-    private fun validateBarge() {
+    internal fun validateBarge() {
         isValidBarge = InputValidation.inBargeListValidation(mainActivityVM.barge.value, bargeList.value)
     }
 
