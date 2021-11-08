@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
 import RusalLineItemList from "./components/rusal_line_item_list";
-import RusalAddNewForm from "./rusal_add_new_form";
+import UploadPackingList from "./components/upload_packing_list";
 import RusalDownloads from "./rusal_downloads";
 import RusalUpdateItem from "./rusal_update_item";
 
@@ -28,27 +28,6 @@ export default function RusalPage() {
             )
     }
 
-    function handleSubmit(evt) {
-        evt.preventDefault();
-        fetch("/api/rusal", {
-            method: "POST",
-            body: new FormData(evt.target)
-        }).then(
-            (response) => {
-                if (response.ok) {
-                    fetchRusalInventoryItems();
-                } else {
-                    alert("Failed to create new Rusal item");
-                }
-            }).catch(
-                (error) => {
-                    // Network errors
-                    alert(error)
-            });
-        evt.target.reset();
-        return false;
-    }
-
     return (
         <div className='center' id = "rusal-all">
             <Switch>
@@ -56,7 +35,9 @@ export default function RusalPage() {
                     <h3>Please Choose a Function</h3>
                 </Route>
                 <Route path={`${path}/add`}>
-                    <RusalAddNewForm handleSubmit={ handleSubmit } /> 
+                    <h3>Add Rusal Items</h3>
+                    &nbsp;&nbsp;&nbsp;
+                    <UploadPackingList /> 
                 </Route>
                 <Route path={`${path}/update`}>
                     <RusalUpdateItem />
