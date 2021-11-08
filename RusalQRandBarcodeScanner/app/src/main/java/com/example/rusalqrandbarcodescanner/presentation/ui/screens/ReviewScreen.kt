@@ -26,7 +26,7 @@ import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.presentation.components.StyledCardItem
 import com.example.rusalqrandbarcodescanner.presentation.components.progress.SessionProgress
 import com.example.rusalqrandbarcodescanner.util.Commodity
-import com.example.rusalqrandbarcodescanner.util.displayedStringPostStringInsertion
+import com.example.rusalqrandbarcodescanner.util.stringInsertion
 import com.example.rusalqrandbarcodescanner.util.getCommodity
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReviewViewModel
@@ -163,7 +163,7 @@ private fun RusalItemListItem(item: RusalItem, onClick: (item : RusalItem) -> Un
                 .padding(16.dp)
                 .fillMaxWidth()
                 .align(Alignment.CenterVertically)) {
-                Text(text = "Heat: ${ displayedStringPostStringInsertion(item.heatNum, 6, "-") }" , style = MaterialTheme.typography.h6)
+                Text(text = "Heat: ${ stringInsertion(item.heatNum, 6, "-") }" , style = MaterialTheme.typography.h6)
                 Text(text="BL: ${item.blNum}", style = MaterialTheme.typography.h6)
                 Text(if (getCommodity(item) == Commodity.BILLETS) {"Mark: ${item.mark}"} else {"Lot: ${item.lot}"}, style = MaterialTheme.typography.h6)
             }
@@ -178,7 +178,7 @@ private fun RemoveDialog(onDismissRequest : () -> Unit, onRemoveRequest : () -> 
         onDismissRequest = onDismissRequest) {
         Surface(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
-                StyledCardItem(text = "Heat Number: ${ displayedStringPostStringInsertion(item.heatNum, 6, "-") }", backgroundColor = Color.Gray)
+                StyledCardItem(text = "Heat Number: ${ stringInsertion(item.heatNum, 6, "-") }", backgroundColor = Color.Gray)
                 StyledCardItem(text = "BL Number: ${item.blNum}", backgroundColor = Color.LightGray)
                 StyledCardItem(text = "Mark: ${item.mark}", backgroundColor = Color.LightGray)
                 if (getCommodity(item) == Commodity.INGOTS) {

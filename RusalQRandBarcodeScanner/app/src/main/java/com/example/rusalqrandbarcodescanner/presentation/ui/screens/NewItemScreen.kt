@@ -18,13 +18,13 @@ import com.example.rusalqrandbarcodescanner.CodeApplication
 import com.example.rusalqrandbarcodescanner.presentation.components.ItemAddedDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.StyledCardItem
 import com.example.rusalqrandbarcodescanner.presentation.components.inputdialog.ValidatedInputDialog
-import com.example.rusalqrandbarcodescanner.util.displayedStringPostStringInsertion
+import com.example.rusalqrandbarcodescanner.util.stringInsertion
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.NewItemViewModel
 
 @Composable
 fun NewItemScreen(onDismiss : () -> Unit, mainActivityVM: MainActivityViewModel) {
-    val heat = remember { displayedStringPostStringInsertion(mainActivityVM.heatNum.value, 6, "-") }
+    val heat = remember { stringInsertion(mainActivityVM.heatNum.value, 6, "-") }
 
     val newItemVM : NewItemViewModel = viewModel(factory = NewItemViewModel.NewItemViewModelFactory(mainActivityVM, (LocalContext.current.applicationContext as CodeApplication).invRepository))
     val focusManager = LocalFocusManager.current

@@ -9,7 +9,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.rusalqrandbarcodescanner.domain.models.SessionType
 import com.example.rusalqrandbarcodescanner.presentation.components.progress.SessionProgress
-import com.example.rusalqrandbarcodescanner.util.displayedStringPostStringInsertion
+import com.example.rusalqrandbarcodescanner.util.stringInsertion
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 
 @Composable
@@ -37,7 +37,7 @@ fun OptionsScreen(mainActivityVM : MainActivityViewModel, onScanRequest : () -> 
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
             if (sessionType == SessionType.SHIPMENT) {
-                Text(text = "${displayedStringPostStringInsertion(mainActivityVM.workOrder.value, 3, "-")} Load ${mainActivityVM.loadNum.value} Shipment")
+                Text(text = "${stringInsertion(mainActivityVM.workOrder.value, 3, "-")} Load ${mainActivityVM.loadNum.value} Shipment")
             } else {
                 Text(text = "Barge ${mainActivityVM.barge.value} Reception")
             }

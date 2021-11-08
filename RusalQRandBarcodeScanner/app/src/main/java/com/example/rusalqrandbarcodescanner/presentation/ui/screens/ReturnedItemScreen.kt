@@ -27,7 +27,7 @@ import com.example.rusalqrandbarcodescanner.presentation.components.ItemAddedDia
 import com.example.rusalqrandbarcodescanner.presentation.components.LoadingDialog
 import com.example.rusalqrandbarcodescanner.presentation.components.StyledCardItem
 import com.example.rusalqrandbarcodescanner.util.Commodity
-import com.example.rusalqrandbarcodescanner.util.displayedStringPostStringInsertion
+import com.example.rusalqrandbarcodescanner.util.stringInsertion
 import com.example.rusalqrandbarcodescanner.util.getCommodity
 import com.example.rusalqrandbarcodescanner.viewmodels.MainActivityViewModel
 import com.example.rusalqrandbarcodescanner.viewmodels.screen_viewmodels.ReturnedItemViewModel
@@ -44,7 +44,7 @@ fun ReturnedItemScreen(mainActivityVM : MainActivityViewModel, onDismissNav : ()
 
     val showAddedDialog = remember { mutableStateOf(false) }
 
-    val heat = remember { displayedStringPostStringInsertion(mainActivityVM.heatNum.value, 6, "-") }
+    val heat = remember { stringInsertion(mainActivityVM.heatNum.value, 6, "-") }
     val loading = returnedItemVM.loading.value
     val sessionType = mainActivityVM.sessionType.value
     val itemType = returnedItemVM.itemActionType.value
@@ -160,7 +160,7 @@ private fun NotInLoadedHeats(loadedHeatList : List<String>, heat : String, onDis
 
 @Composable
 private fun ValidHeat(item : RusalItem, onDismiss: () -> Unit, onConfirm: () -> Unit) {
-    StyledCardItem(text = "Heat Number: ${ displayedStringPostStringInsertion(item.heatNum, 6, "-") }", backgroundColor = Color.Gray)
+    StyledCardItem(text = "Heat Number: ${ stringInsertion(item.heatNum, 6, "-") }", backgroundColor = Color.Gray)
     StyledCardItem(text = "BL Number: ${item.blNum}", backgroundColor = Color.LightGray)
     StyledCardItem(text = "Mark: ${item.mark}", backgroundColor = Color.LightGray)
     if (getCommodity(item) == Commodity.INGOTS) {
