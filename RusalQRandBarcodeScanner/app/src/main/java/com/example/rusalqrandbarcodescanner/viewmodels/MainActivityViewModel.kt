@@ -12,7 +12,6 @@ import com.example.rusalqrandbarcodescanner.services.HttpRequestHandler
 import com.example.rusalqrandbarcodescanner.util.rusalItemListSortAscendingTime
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
-import java.time.format.DateTimeFormatter
 
 class MainActivityViewModel(private val repo : InventoryRepository, application : Application): AndroidViewModel(application) {
 
@@ -130,7 +129,7 @@ class MainActivityViewModel(private val repo : InventoryRepository, application 
     }
 
     internal fun updateAddedItems() = viewModelScope.launch {
-        addedItems.value = rusalItemListSortAscendingTime(repo.getAddedItems(), DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss"))
+        addedItems.value = rusalItemListSortAscendingTime(repo.getAddedItems())
         if (sessionType.value == SessionType.RECEPTION && addedItems.value.isNotEmpty() && addedItems.value.size % 20 == 0) {
             triggerPartialUpload()
         }

@@ -4,8 +4,10 @@ import com.example.rusalqrandbarcodescanner.database.RusalItem
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-// Sort a given list of RusalItem objects by ascending dateTime order
-fun rusalItemListSortAscendingTime(RusalItemList : List<RusalItem>, formatter : DateTimeFormatter) : List<RusalItem> {
+private val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")
+
+// Sort a given list of RusalItem objects by ascending reception dateTime order
+fun rusalItemListSortAscendingTime(RusalItemList : List<RusalItem>) : List<RusalItem> {
     val list = RusalItemList.toMutableList()
 
     if (list.size in 0..1) return list.toList()
@@ -23,6 +25,5 @@ fun rusalItemListSortAscendingTime(RusalItemList : List<RusalItem>, formatter : 
 }
 
 fun getCurrentDateTime() : String {
-    val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")
     return LocalDateTime.now().format(formatter)
 }
