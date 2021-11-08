@@ -17,14 +17,14 @@ export default function RusalLineItemList(props) {
             <tbody>
                 <tr className='bordered-row'>
                     <th>Heat Number</th>
-                    <th>Gross Weight Kg</th>
-                    <th>Net Weight Kg</th>
                     <th>Grade</th>
-                    <th>Dimensions</th>
                     <th>Piece Count</th>
                     <th>BL Number</th>
+                    <th>Barge</th>
+                    <th>Reception Time</th>
                     <th>Work Order</th>
-                    <th>Load</th>
+                    <th>Load Number</th>
+                    <th>Shipment Time</th>
                 </tr>
                 {rusalLineItems}
             </tbody>
