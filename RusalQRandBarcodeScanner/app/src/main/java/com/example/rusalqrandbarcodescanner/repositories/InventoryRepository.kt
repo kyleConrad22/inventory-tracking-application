@@ -5,7 +5,6 @@ import androidx.room.EmptyResultSetException
 import com.example.rusalqrandbarcodescanner.database.InventoryDao
 import com.example.rusalqrandbarcodescanner.database.RusalItem
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
 @Suppress("RedundantSuspendModifier")
