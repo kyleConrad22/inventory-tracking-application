@@ -23,3 +23,21 @@ table {
     position: absolute; left: 50%; right: 50%;
     transform: translate(-50%, -50%);
 }
+
+.center {
+    margin : auto;
+    width : 50%;
+    text-align : center;
+}
+
+.center ul {
+    display : flex;
+    margin : auto;
+    width : auto;
+    zoom : 1;
+    flex-direction: column;
+}
+
+.center li {
+    text-align : left;
+}

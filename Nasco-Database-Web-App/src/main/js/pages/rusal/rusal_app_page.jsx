@@ -50,7 +50,7 @@ export default function RusalPage() {
     }
 
     return (
-        <div id = "rusal-all">
+        <div className='center' id = "rusal-all">
             <Switch>
                 <Route exact path={path}>
                     <h3>Please Choose a Function</h3>

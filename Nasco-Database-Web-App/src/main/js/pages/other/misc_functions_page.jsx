@@ -8,7 +8,7 @@ export default function MiscFunctionsPage() {
     let { path, url } = useRouteMatch();
 
     return (
-        <div>
+        <div className='center'>
             <h1>Misc Functions Page</h1>
             <ToBeImplemented />
             <h2>Functions</h2>

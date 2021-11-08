@@ -11,7 +11,7 @@ export default function FeaturesAndBugs() {
 
     return (
         <div>
-            <h1>Features and Bugs</h1>
+            <h3>Features and Bugs</h3>
             <ul>
                 <li>
                     <Link to={`${url}/features`}>Features</Link>

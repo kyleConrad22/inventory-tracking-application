@@ -2,13 +2,13 @@ import React from "react";
 import { Switch, Route, Link, useRouteMatch } from "react-router-dom";
 
 import ToBeImplemented from "../../core/to_be_implemented";
-import AlgomaReceptionButton from "./algoma_reception_button";
+import AlgomaReception from "./receptions/algoma/alogoma_reception";
 
 export default function BrowserAutomationPage() {
     let { path, url } = useRouteMatch();
 
     return (
-        <div>
+        <div className='center'>
             <h1>Browser Automation</h1>
             <ToBeImplemented />
             <h2>Functions</h2>
@@ -17,7 +17,7 @@ export default function BrowserAutomationPage() {
                     <h3>Please Select a Function.</h3>
                 </Route>
                 <Route path={ `${path}/algoma` }>
-                    <AlgomaReceptionButton />
+                    <AlgomaReception />
                 </Route>
             </Switch>
 

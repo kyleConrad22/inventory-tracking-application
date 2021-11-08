@@ -47,7 +47,7 @@ export default function LandingPage() {
 
     console.log("Made it to Landing Page!")
     return (
-        <div>
+        <div className='center'>
             <h2>Landing Page</h2>
             <h3>Navigation Buttons</h3>
             <RusalButton />
