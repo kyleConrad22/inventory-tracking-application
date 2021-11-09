@@ -69,8 +69,8 @@ public class RusalLineItemService implements RusalService {
         List<RusalLineItem> rusalItems = parsePackingList(file, getUniqueLots());
         rusalItems.forEach(item -> {
             item.setBarge(barge);
-            repository.save(item);
         });
+        repository.saveAll(rusalItems);
     }
 
     public List<String> getUniqueLots() {
