@@ -16,7 +16,8 @@ export const LoadingIndicator = props => {
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                position : 'absolute'
+                position : 'absolute',
+                background: 'rgba(255, 255, 255, 0.5)'
             }}>
             <h3>Loading, this may take some time...</h3>
             <Loader type="ThreeDots" color="#1753D0" height='100' width='100' />
