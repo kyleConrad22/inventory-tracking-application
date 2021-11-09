@@ -29,4 +29,5 @@ public interface RusalService {
     void updateShipment(List<RusalShipmentUpdateParams> updateParams);
     void insertItems(List<RusalLineItem> items);
     List<RusalLineItem> findRecent();
+    String getReceptionProgress(String barge);
 }

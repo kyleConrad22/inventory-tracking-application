@@ -95,4 +95,8 @@ public class RusalLineItemService implements RusalService {
         if (items.size() < 100) return items;
         return items.subList(0, 100);
     }
+
+    public String getReceptionProgress(String barge) {
+        return repository.countReceivedItems(barge) + " of " + repository.countIncomingItems(barge);
+    }
 }

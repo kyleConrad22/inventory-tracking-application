@@ -1,17 +1,17 @@
 #rusal-all {
     background: rgb(255, 255, 255);
     margin: 0 auto;
-    width: 1200px;
+    width: 1200px
 }
 
 td, th {
     text-align: center;
-    padding: 1rem;
+    padding: 1rem
 }
 
 table {
     width: 90%;
-    border-collapse: collapse;
+    border-collapse: collapse
 }
 
 .bordered-row {
@@ -21,13 +21,13 @@ table {
 
 .centered {
     position: absolute; left: 50%; right: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%)
 }
 
 .center {
     margin : auto;
     width : 50%;
-    text-align : center;
+    text-align : center
 }
 
 .center ul {
@@ -35,9 +35,36 @@ table {
     margin : auto;
     width : auto;
     zoom : 1;
-    flex-direction: column;
+    flex-direction: column
 }
 
 .center li {
-    text-align : left;
+    text-align : left
+}
+
+.wrapper-inline-row {
+    display : inline-flex;
+    flex-direction: row;
+    margin : auto;
+    width : auto;
+    zoom : 1
+}
+
+.wrapper-padded {
+    padding : 10px
+}
+
+.wrapper-padded-form {
+    margin: auto;
+    padding : 10px
+}
+
+.wrapper-padded-form input {
+    margin-left: 10px;
+    margin-right: 10px
+}
+
+.wrapper-padded-form button {
+    margin-left : 10px;
+    margin-right : 10px
 }

@@ -10,7 +10,7 @@ export default function RusalLineItemList(props) {
 
     const rusalLineItems = props.rusalLineItems.map(rusalLineItem => 
         <RusalLineItem key={rusalLineItem.heatNum} rusalLineItem={rusalLineItem}/>
-    );
+    )
 
     return (
         <table>

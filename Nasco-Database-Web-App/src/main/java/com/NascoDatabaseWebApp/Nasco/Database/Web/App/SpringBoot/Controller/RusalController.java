@@ -5,6 +5,7 @@ import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.LotUpdate
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalLineItem;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalReceptionUpdateParams;
 import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.model.RusalShipmentUpdateParams;
+import com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.util.StringResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -173,5 +174,11 @@ public class RusalController {
     @ResponseStatus(HttpStatus.OK)
     void insertItems(@RequestBody final List<RusalLineItem> newItems) {
         rusalLineItemService.insertItems(newItems);
+    }
+
+    @GetMapping(value = "/reception/progress", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    StringResponse getReceptionProgress(@RequestParam final String barge) {
+        return new StringResponse(rusalLineItemService.getReceptionProgress(barge));
     }
 }

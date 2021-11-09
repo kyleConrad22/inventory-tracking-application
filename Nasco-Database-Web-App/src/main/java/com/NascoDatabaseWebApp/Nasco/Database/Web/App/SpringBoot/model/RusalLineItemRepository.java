@@ -74,4 +74,16 @@ public interface RusalLineItemRepository extends JpaRepository<RusalLineItem, St
         nativeQuery = true
     )
     List<RusalLineItem> findReceivedItems();
+
+    @Query(
+        value = "SELECT COUNT(reception_date) FROM current_inventory WHERE barge = :searchBarge",
+        nativeQuery = true
+    )
+    int countIncomingItems(@Param("searchBarge") String barge);
+
+    @Query(
+        value = "SELECT COUNT(reception_date) FROM current_inventory WHERE barge = :searchBarge AND NULLIF(reception_date, '') IS NOT NULL",
+        nativeQuery = true
+    )
+    int countReceivedItems(@Param("searchBarge") String barge);
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
+import GetReceptionProgress from "./components/get_reception_progress";
 import RusalLineItemList from "./components/rusal_line_item_list";
 import UploadPackingList from "./components/upload_packing_list";
 import RusalDownloads from "./rusal_downloads";
@@ -16,11 +17,12 @@ export default function RusalPage() {
     }, []);
 
     function fetchRusalInventoryItems() {
+
         fetch("/api/rusal/recent")
             .then(res => res.json())
             .then(
                 (response) => {
-                    setRusalLineItems(response);
+                    setRusalLineItems(response)
                 },
                 (error) => {
                     alert(error);
@@ -57,6 +59,7 @@ export default function RusalPage() {
                     <Link to={`${url}/downloads`}>Download Options</Link>
                 </li>
             </ul>
+            <GetReceptionProgress />
             <h1>Rusal Inventory Items</h1>
             <RusalLineItemList rusalLineItems={ rusalLineItems } />
         </div>
