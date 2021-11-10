@@ -9,7 +9,7 @@ import Main from './main'
 function App() {
     return (
         <div className="App">
-            { /*<Navbar /> */}
+            { /* <Navbar /> */}
             <LoadingIndicator />
             <Main />
         </div>
