@@ -28,6 +28,7 @@ class SplashViewModel(private val repo : InventoryRepository, private val mainAc
 
     private val observer = Observer<WorkInfo?> { workInfo ->
         if (uiState !in listOf(SplashState.NoConnectionNonEmpty, SplashState.NoConnectionEmpty)) {
+
             loading = if (workInfo != null) {
                 val state = workInfo.state
                 !state.isFinished

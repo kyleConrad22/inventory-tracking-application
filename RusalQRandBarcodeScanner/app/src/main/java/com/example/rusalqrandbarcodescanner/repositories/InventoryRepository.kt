@@ -112,4 +112,12 @@ class InventoryRepository(private val inventoryDao: InventoryDao) {
         inventoryDao.updateIsAddedStatus(reqIsAdded = false, searchHeatNum = heatNum)
         inventoryDao.updateReceptionFields(reqChecker = "", reqReceptionDate = "", searchHeatNum = heatNum)
     }
+
+    suspend fun getIncomingItems(barge : String) : List<RusalItem> = withContext(Dispatchers.IO) {
+        return@withContext try {
+            inventoryDao.getIncomingItems(searchBarge = barge)
+        } catch (e : EmptyResultSetException) {
+            listOf()
+        }
+    }
 }

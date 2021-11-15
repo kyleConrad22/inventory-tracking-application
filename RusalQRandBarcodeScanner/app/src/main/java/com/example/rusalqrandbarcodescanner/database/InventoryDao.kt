@@ -47,6 +47,9 @@ interface InventoryDao {
     @Delete
     suspend fun delete(rusalItem: RusalItem)
 
+    @Query("SELECT * FROM current_inventory WHERE barge = :searchBarge")
+    suspend fun getIncomingItems(searchBarge : String) : List<RusalItem>
+
     @Query("SELECT * FROM current_inventory WHERE is_added = 1")
     suspend fun getAddedItems() : List<RusalItem>
 

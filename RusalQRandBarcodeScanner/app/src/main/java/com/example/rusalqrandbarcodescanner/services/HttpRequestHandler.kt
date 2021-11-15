@@ -39,6 +39,7 @@ object HttpRequestHandler {
             repo.insert(item)
             Log.d(TAG, item.heatNum)
         } ?: Log.e(TAG, "Response received was parsed as null")
+
     }
 
     private suspend fun confirmShipment(items: List<RusalItem>, context : Context) = withContext(Dispatchers.IO) {
