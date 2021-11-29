@@ -83,6 +83,6 @@ class ReceptionUploadWorker(context : Context, workerParams : WorkerParameters) 
 
     companion object {
         private const val TAG = "ReceptionUploadWorker"
-        private const val WEB_API_URL: String = "http://45.22.122.47:8081/api/rusal/update/reception"
+        private const val WEB_API_URL: String = "http://172.78.63.188:8081/api/rusal/update/reception"
     }
 }
