@@ -11,6 +11,7 @@ jar {
 				'Main-Class': 'com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.NascoDatabaseWebAppApplication'
 		)
 	}
+	archiveFileName 'app.jar'
 }
 
 group = 'com.NascoDatabaseWebApp'
