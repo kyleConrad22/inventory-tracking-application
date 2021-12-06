@@ -14,6 +14,7 @@ repositories {
 }
 
 node {
+	download=true
 	version = '14.15.5'
 }
 
