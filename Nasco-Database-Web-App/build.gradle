@@ -51,6 +51,11 @@ task copyToLib(type: Copy) {
 	from(configurations.runtimeClasspath)
 }
 
+task stage(dependsOn: ['build', 'clean'])
+build.mustRunAfter clean
+
+stage.dependsOn(copyToLib)
+
 task buildReactApp(type: NodeTask, dependsOn: 'npmInstall') {
 	script = project.file('node_modules/webpack/bin/webpack.js')
 	args = [
@@ -60,7 +65,7 @@ task buildReactApp(type: NodeTask, dependsOn: 'npmInstall') {
 	]
 }
 
-processResources.dependsOn 'buildReactApp'
+processResources.dependsOn('buildReactApp')
 clean.delete << file('node_modules')
 clean.delete << file('src/main/resources/static/dist')
 targetCompatibility = JavaVersion.VERSION_11
