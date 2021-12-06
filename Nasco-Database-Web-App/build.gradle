@@ -46,6 +46,11 @@ test {
 	useJUnitPlatform()
 }
 
+task copyToLib(type: Copy) {
+	into "$buildDir/libs"
+	from(configurations.runtimeClasspath)
+}
+
 task buildReactApp(type: NodeTask, dependsOn: 'npmInstall') {
 	script = project.file('node_modules/webpack/bin/webpack.js')
 	args = [
