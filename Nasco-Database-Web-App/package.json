@@ -3,6 +3,9 @@
   "description": "NASCO support application using React and Spring Boot",
   "homepage": "http://localhost:8081/",
   "build": "webpack-dev-server --mode development --open",
+  "scripts": {
+    "start": "node app.jsx"
+  },
   "env": {
     "development": {
       "compact": false
