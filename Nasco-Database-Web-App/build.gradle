@@ -12,6 +12,10 @@ jar {
 		)
 	}
 	archiveName 'app.jar'
+
+	from {
+		configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+	}
 }
 
 group = 'com.NascoDatabaseWebApp'
