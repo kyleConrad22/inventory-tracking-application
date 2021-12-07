@@ -5,20 +5,10 @@ plugins {
 	id 'java'
 }
 
-jar {
+bootJar {
 
-	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+	archiveFileName = 'app.jar'
 
-	manifest {
-		attributes(
-				'Main-Class': 'com.NascoDatabaseWebApp.Nasco.Database.Web.App.SpringBoot.NascoDatabaseWebAppApplication'
-		)
-	}
-	archiveName 'app.jar'
-
-	from {
-		configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-	}
 }
 
 group = 'com.NascoDatabaseWebApp'
