@@ -13,11 +13,21 @@ import java.util.regex.Pattern;
 public abstract class AutomatedSession {
     public final WebDriver driver;
 
+    private final String GOOGLE_CHROME_PATH = "/app/.apt/usr/bin/google_chrome";
+    private final String CHROMEDRIVER_PATH = "/app/.chromedriver/bin/chromedriver.exe";
+
     public AutomatedSession() {
+        /*
         String chromeDriverPath = System.getProperty("user.dir") + "\\chromedriver.exe";
-        System.setProperty("webdriver.chrome.driver", chromeDriverPath);
+         */
+
+        System.setProperty("webdriver.chrome.driver", CHROMEDRIVER_PATH);
+
+
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless", "--disable-gpu", "--window-size=1920,1200", "--ignore-certificate-errors");
+        options.setBinary(GOOGLE_CHROME_PATH);
+        
         this.driver = new ChromeDriver(options);
     }
 
