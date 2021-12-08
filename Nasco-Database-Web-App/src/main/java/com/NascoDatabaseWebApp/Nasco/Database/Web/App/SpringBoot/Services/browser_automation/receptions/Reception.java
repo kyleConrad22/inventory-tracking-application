@@ -55,7 +55,7 @@ public abstract class Reception extends AutomatedSession {
         } catch (WebDriverException e) {
             SeleniumHelper.executeClickOnBlockedElement(driver, element);
         }
-        webDriverWait.until(ExpectedConditions.elementToBeClickable(By.id("react-select-9-input"))).sendKeys(site + Keys.RETURN);
+        webDriverWait.until(ExpectedConditions.elementToBeClickable(By.id("_site"))).sendKeys(site + Keys.RETURN);
         String radio = "radio_transportationType_";
         switch (transportationType) {
             case "Vessel":
@@ -91,12 +91,12 @@ public abstract class Reception extends AutomatedSession {
         }
 
         driver.findElement(By.xpath("/html/body/div[3]/div/form/header/menu/button[2]")).click();
-        webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("react-select-5-input")));
+        webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("_carrier")));
     }
 
     public void setInventory(String inventory) {
         System.out.printf("\nSetting inventory as %s...\n", inventory);
-        driver.findElement(By.id("react-select-13-input")).sendKeys(inventory + Keys.RETURN);
+        driver.findElement(By.id("_impactedInventories.0")).sendKeys(inventory + Keys.RETURN);
     }
 
     // Try to click header button; if header button is not found then click on "sticky" header button

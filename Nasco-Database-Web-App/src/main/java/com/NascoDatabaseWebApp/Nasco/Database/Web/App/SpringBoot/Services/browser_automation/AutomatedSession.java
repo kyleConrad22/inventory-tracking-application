@@ -17,17 +17,20 @@ public abstract class AutomatedSession {
     private final String CHROMEDRIVER_PATH = "/app/.chromedriver/bin/chromedriver.exe";
 
     public AutomatedSession() {
+
+        // Use following for local servers / When not being run on Heroku - replace CHROMEDRIVER_PATH with chromeDriverPath
+        // Comment out options.setBinary(GOOGLE_CHROME_PATH);
         /*
         String chromeDriverPath = System.getProperty("user.dir") + "\\chromedriver.exe";
          */
 
-        System.setProperty("webdriver.chrome.driver", CHROMEDRIVER_PATH);
+        System.setProperty("webdriver.chrome.driver", System.getenv("CHROMEDRIVER_PATH"));
 
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless", "--disable-gpu", "--window-size=1920,1200", "--ignore-certificate-errors");
-        options.setBinary(GOOGLE_CHROME_PATH);
-        
+        options.setBinary(System.getenv("GOOGLE_CHROME_PATH"));
+
         this.driver = new ChromeDriver(options);
     }
 

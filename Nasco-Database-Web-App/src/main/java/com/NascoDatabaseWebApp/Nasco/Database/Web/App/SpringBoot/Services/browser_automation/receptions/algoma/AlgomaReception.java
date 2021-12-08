@@ -383,7 +383,7 @@ public class AlgomaReception extends Reception implements PdfRelease {
     protected void fillTransportationFields(Release release, String clerkInitials) {
         System.out.println("\nFilling transportation fields...");
 
-        driver.findElement(By.id("react-select-5-input")).sendKeys("CN" + Keys.RETURN);
+        driver.findElement(By.id("_carrier")).sendKeys("CN" + Keys.RETURN);
         driver.findElement(By.id("driverName")).sendKeys(clerkInitials);
         driver.findElement(By.id("carrierBill")).sendKeys("Add In");
         driver.findElement(By.id("transportationNumber")).sendKeys(((AlgomaRelease) release).getRailcar());
