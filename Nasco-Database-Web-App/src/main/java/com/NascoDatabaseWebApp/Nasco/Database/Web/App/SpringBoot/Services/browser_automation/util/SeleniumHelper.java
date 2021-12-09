@@ -38,6 +38,7 @@ public final class SeleniumHelper {
         } catch (final InterruptedException e) {
             // The thread was interrupted during sleep, wait, or join
         } catch (final java.util.concurrent.TimeoutException e) {
+            System.out.println(driver.getPageSource());
             throw new TimeoutException();
             // Task time taken surpassed specified timeoutSeconds
         } catch (final ExecutionException e) {
