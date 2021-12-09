@@ -61,17 +61,37 @@ public abstract class AutomatedSession {
         if (element.getAttribute("id").equals("i0118")) {
             element.sendKeys(credentials.getPassword() + Keys.RETURN);
 
-            // Check for "Stay Signed-In" confirmation dialog and take respective action
+            // Check for "Stay Signed-In", "More Info Required", or TC3 home page and take respective action
             try {
-                element = SeleniumHelper.waitForEitherElement(driver, 60, By.id("idBtn_Back"), By.xpath("//*[@id=\"viewport\"]/article/section/div/div[1]/div[2]/div"));
-                if (element.getAttribute("id").equals("idBtn_Back")) {
-                    element.click();
-                }
+                element = SeleniumHelper.waitForOneOfThreeElements(driver, 60, By.id("idBtn_Back"), By.id("idSubmit_ProofUp_Redirect"), By.xpath("//*[@id=\"viewport\"]/article/section/div/div[1]/div[2]/div"));
+                if (element.getAttribute("id").equals("idSubmit_ProofUp_Redirect")) navigateMoreInfoRequired();
+                else checkForStaySignedIn();
+
             } catch (TimeoutException e) {
                 System.out.println("A TimeoutException occurred while waiting for user to authenticate sign-in credentials!");
             }
         }
         webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"viewport\"]/article/section/div/div[1]/div[2]/div")));
+    }
+
+    // Logic to be take when user is prompted for additional information after authentication
+    private void navigateMoreInfoRequired() {
+        final WebDriverWait webDriverWait = new WebDriverWait(driver, 30);
+
+        driver.findElement(By.id("idSubmit_ProofUp_Redirect")).click();
+        webDriverWait.until(ExpectedConditions.elementToBeClickable(By.id("id__13"))).click();
+
+        checkForStaySignedIn();
+    }
+
+    /*
+     Checks for "Stay Signed In" page presence, if present will click the "No" Button
+     Always the last page displayed (if it is displayed) before navigation to TC3, thus if it is not visible can assume that TC3 page is displayed
+     */
+    private void checkForStaySignedIn() {
+
+        WebElement element = SeleniumHelper.waitForEitherElement(driver, 60, By.id("idBtn_Back"), By.xpath("//*[@id=\"viewport\"]/article/section/div/div[1]/div[2]/div"));
+        if (element.getAttribute("id").equals("idBtn_Back")) element.click();
     }
 
     protected void endSession() {
