@@ -62,9 +62,13 @@ public abstract class AutomatedSession {
             element.sendKeys(credentials.getPassword() + Keys.RETURN);
 
             // Check for "Stay Signed-In" confirmation dialog and take respective action
-            element = SeleniumHelper.waitForEitherElement(driver, 60, By.id("idBtn_Back"), By.xpath("//*[@id=\"viewport\"]/article/section/div/div[1]/div[2]/div"));
-            if (element.getAttribute("id").equals("idBtn_Back")) {
-                element.click();
+            try {
+                element = SeleniumHelper.waitForEitherElement(driver, 60, By.id("idBtn_Back"), By.xpath("//*[@id=\"viewport\"]/article/section/div/div[1]/div[2]/div"));
+                if (element.getAttribute("id").equals("idBtn_Back")) {
+                    element.click();
+                }
+            } catch (TimeoutException e) {
+                System.out.println("A TimeoutException occurred while waiting for user to authenticate sign-in credentials!");
             }
         }
         webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"viewport\"]/article/section/div/div[1]/div[2]/div")));
