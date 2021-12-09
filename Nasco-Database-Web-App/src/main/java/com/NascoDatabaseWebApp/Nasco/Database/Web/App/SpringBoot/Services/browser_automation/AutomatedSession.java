@@ -28,8 +28,8 @@ public abstract class AutomatedSession {
 
 
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless", "--disable-gpu", "--window-size=1920,1200", "--ignore-certificate-errors", "--disable-dev-shm-usage");
         options.setBinary(System.getenv("GOOGLE_CHROME_BIN"));
+        options.addArguments("--no-sandbox", "--headless", "--disable-gpu", "--window-size=1920,1200", "--ignore-certificate-errors", "--disable-dev-shm-usage");
 
         this.driver = new ChromeDriver(options);
     }
