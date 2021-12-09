@@ -62,7 +62,7 @@ public abstract class AutomatedSession {
             element.sendKeys(credentials.getPassword() + Keys.RETURN);
 
             // Check for "Stay Signed-In" confirmation dialog and take respective action
-            element = SeleniumHelper.waitForEitherElement(driver, 20, By.id("idBtn_Back"), By.xpath("//*[@id=\"viewport\"]/article/section/div/div[1]/div[2]/div"));
+            element = SeleniumHelper.waitForEitherElement(driver, 60, By.id("idBtn_Back"), By.xpath("//*[@id=\"viewport\"]/article/section/div/div[1]/div[2]/div"));
             if (element.getAttribute("id").equals("idBtn_Back")) {
                 element.click();
             }
